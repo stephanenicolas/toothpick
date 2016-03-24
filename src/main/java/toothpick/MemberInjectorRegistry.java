@@ -1,3 +1,5 @@
+package toothpick;
+
 /**
  * Retrieve instance of factories.
  */

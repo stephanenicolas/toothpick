@@ -1,3 +1,5 @@
+package toothpick;
+
 /**
  * Creates instance of classes.
  */

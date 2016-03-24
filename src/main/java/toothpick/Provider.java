@@ -1,3 +1,5 @@
+package toothpick;
+
 /**
  * Provides instances of a given type.
  * This indirection layer to accessing instances
@@ -6,4 +8,6 @@
  */
 public interface Provider<T> {
   T get();
+
+  void setInjector(Injector injector);
 }
