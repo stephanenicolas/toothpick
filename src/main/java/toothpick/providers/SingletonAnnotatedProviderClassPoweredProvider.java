@@ -11,14 +11,15 @@ public class SingletonAnnotatedProviderClassPoweredProvider<T> extends BaseProvi
   private Class<T> key;
   private Class<? extends Provider<? extends T>> providerClass;
 
-  public SingletonAnnotatedProviderClassPoweredProvider(Class<T> key, Class<? extends Provider<? extends T>> providerClass) {
+  public SingletonAnnotatedProviderClassPoweredProvider(Class<T> key,
+      Class<? extends Provider<? extends T>> providerClass) {
     this.key = key;
     this.providerClass = providerClass;
   }
 
-  @Override
-  public T get() {
-    Factory<? extends Provider<? extends T>> providerFactory = FactoryRegistry.getFactory(providerClass);
+  @Override public T get() {
+    Factory<? extends Provider<? extends T>> providerFactory =
+        FactoryRegistry.getFactory(providerClass);
     Provider<? extends T> provider = providerFactory.createInstance(getInjector());
     getInjector().getScope().put(key, provider);
     return null;

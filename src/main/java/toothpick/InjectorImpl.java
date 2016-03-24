@@ -8,6 +8,9 @@ import toothpick.config.Module;
 import toothpick.providers.FactoryPoweredProvider;
 import toothpick.providers.SingletonPoweredProvider;
 
+/**
+ * This class should never be used outside of the toothpick library.
+ */
 public class InjectorImpl implements Injector {
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
@@ -28,18 +31,15 @@ public class InjectorImpl implements Injector {
     }
   }
 
-  @Override
-  public Injector getParent() {
+  @Override public Injector getParent() {
     return parent;
   }
 
-  @Override
-  public Object getKey() {
+  @Override public Object getKey() {
     return key;
   }
 
-  @Override
-  public <T> T getScopedInstance(Class<T> clazz) {
+  @Override public <T> T getScopedInstance(Class<T> clazz) {
     Provider<T> provider = scope.get(clazz);
     if (provider == null) {
       return null;
@@ -47,9 +47,9 @@ public class InjectorImpl implements Injector {
     return provider.get();
   }
 
-  @Override
-  public <T> void inject(T obj) {
-    MemberInjector<T> memberInjector = MemberInjectorRegistry.getMemberInjector((Class<T>) obj.getClass());
+  @Override public <T> void inject(T obj) {
+    MemberInjector<T> memberInjector =
+        MemberInjectorRegistry.getMemberInjector((Class<T>) obj.getClass());
     memberInjector.inject(obj, this);
   }
 
@@ -57,8 +57,7 @@ public class InjectorImpl implements Injector {
     return scope;
   }
 
-  @Override
-  public <T> T createInstance(Class<T> clazz) {
+  @Override public <T> T createInstance(Class<T> clazz) {
     synchronized (clazz) {
       for (Injector parentInjector : parentInjectors) {
         T scopedInstance = parentInjector.getScopedInstance(clazz);
@@ -80,7 +79,7 @@ public class InjectorImpl implements Injector {
   private List<Injector> getParentInjectors() {
     List<Injector> parentInjectors = new ArrayList<>();
     Injector currentInjector = this;
-    while( currentInjector != null ) {
+    while (currentInjector != null) {
       parentInjectors.add(0, currentInjector);
       currentInjector = currentInjector.getParent();
     }

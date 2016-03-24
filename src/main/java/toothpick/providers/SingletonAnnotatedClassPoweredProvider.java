@@ -18,8 +18,7 @@ public class SingletonAnnotatedClassPoweredProvider<T> extends BaseProvider<T> {
     this.clazz = clazz;
   }
 
-  @Override
-  public T get() {
+  @Override public T get() {
     Factory<T> factory = FactoryRegistry.getFactory(clazz);
     T instance = factory.createInstance(getInjector());
     getInjector().getScope().put(key, new SingletonPoweredProvider(instance));

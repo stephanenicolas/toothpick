@@ -16,12 +16,10 @@ public class NonSingletonAnnotatedClassPoweredProvider<T, IMPL extends T> extend
     this.implClass = implClass;
   }
 
-  @Override
-  public T get() {
+  @Override public T get() {
     Factory<IMPL> factory = FactoryRegistry.getFactory(implClass);
     IMPL instance = factory.createInstance(getInjector());
     getInjector().getScope().put(key, new FactoryPoweredProvider<>(factory, getInjector()));
     return instance;
-
   }
 }

@@ -11,6 +11,7 @@ public interface Injector {
   <T> T getScopedInstance(Class<T> clazz);
 
   <T> void inject(T obj);
+
   <T> T createInstance(Class<T> clazz);
 
   Injector getParent();

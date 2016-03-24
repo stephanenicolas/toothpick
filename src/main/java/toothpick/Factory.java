@@ -5,6 +5,8 @@ package toothpick;
  */
 public interface Factory<T> {
   T createInstance(Injector injector);
+
   boolean hasSingletonAnnotation();
+
   boolean hasProducesSingletonAnnotation();
 }

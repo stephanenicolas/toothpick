@@ -19,8 +19,7 @@ public class FactoryPoweredProvider<T> extends BaseProvider<T> {
     this.factory = factory;
   }
 
-  @Override
-  public T get() {
+  @Override public T get() {
     return factory.createInstance(getInjector());
   }
 }

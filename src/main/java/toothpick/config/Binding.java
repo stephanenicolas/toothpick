@@ -46,7 +46,6 @@ public class Binding<T> {
     mode = Mode.PROVIDER_CLASS;
   }
 
-
   public Provider<T> toProvider() {
     switch (mode) {
       case SIMPLE:

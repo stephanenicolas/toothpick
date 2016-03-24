@@ -9,8 +9,7 @@ public class SingletonPoweredProvider<T> extends BaseProvider<T> {
     this.instance = instance;
   }
 
-  @Override
-  public T get() {
+  @Override public T get() {
     return instance;
   }
 }
