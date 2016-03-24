@@ -10,7 +10,7 @@ public interface Injector {
 
   <T> T getScopedInstance(Class<T> clazz);
 
-  void inject(Object obj);
+  <T> void inject(T obj);
   <T> T createInstance(Class<T> clazz);
 
   Injector getParent();

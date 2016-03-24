@@ -20,6 +20,4 @@ public class FactoryRegistry {
       throw new RuntimeException("This should not happen. Impossible to access factory constructor for class " + clazz.getName());
     }
   }
-
-
 }

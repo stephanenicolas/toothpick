@@ -48,8 +48,9 @@ public class InjectorImpl implements Injector {
   }
 
   @Override
-  public void inject(Object obj) {
-
+  public <T> void inject(T obj) {
+    MemberInjector<T> memberInjector = MemberInjectorRegistry.getMemberInjector((Class<T>) obj.getClass());
+    memberInjector.inject(obj, this);
   }
 
   public IdentityHashMap<Class, Provider> getScope() {
