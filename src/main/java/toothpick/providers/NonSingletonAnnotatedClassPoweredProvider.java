@@ -4,9 +4,6 @@ import toothpick.Factory;
 import toothpick.FactoryRegistry;
 import toothpick.Provider;
 
-/**
- * Created by snicolas on 3/24/16.
- */
 public class NonSingletonAnnotatedClassPoweredProvider<T, IMPL extends T> extends BaseProvider<T> {
   private Class<T> key;
   private Class<IMPL> implClass;

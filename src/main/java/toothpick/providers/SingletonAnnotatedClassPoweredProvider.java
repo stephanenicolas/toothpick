@@ -6,9 +6,6 @@ import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.Provider;
 
-/**
- * Created by snicolas on 3/24/16.
- */
 public class SingletonAnnotatedClassPoweredProvider<T> extends BaseProvider<T> {
   private Class<T> key;
   private Class<T> clazz;

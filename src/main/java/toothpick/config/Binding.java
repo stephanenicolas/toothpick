@@ -10,9 +10,6 @@ import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
 import toothpick.providers.SingletonPoweredProvider;
 import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
 
-/**
- * Created by snicolas on 3/24/16.
- */
 public class Binding<T> {
   private Class<T> key;
   private Mode mode;

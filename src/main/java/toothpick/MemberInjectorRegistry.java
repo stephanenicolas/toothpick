@@ -11,7 +11,7 @@ public class MemberInjectorRegistry {
 
     try {
       Class<MemberInjector<T>> memberInjectorClass =
-          (Class<MemberInjector<T>>) Class.forName(clazz.getName() + "$$Factory");
+          (Class<MemberInjector<T>>) Class.forName(clazz.getName() + "$$MemberInjector");
       return memberInjectorClass.newInstance();
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("Impossible to get the member injector class for class "

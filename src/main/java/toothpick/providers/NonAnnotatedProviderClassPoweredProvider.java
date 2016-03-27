@@ -4,9 +4,6 @@ import toothpick.Factory;
 import toothpick.FactoryRegistry;
 import toothpick.Provider;
 
-/**
- * Created by snicolas on 3/24/16.
- */
 public class NonAnnotatedProviderClassPoweredProvider<T> extends BaseProvider<T> {
   private final Class<T> key;
   private final Class<? extends Provider<T>> providerClass;

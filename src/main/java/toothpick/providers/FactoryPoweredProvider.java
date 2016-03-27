@@ -4,9 +4,6 @@ import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.Provider;
 
-/**
- * Created by snicolas on 3/24/16.
- */
 public class FactoryPoweredProvider<T> extends BaseProvider<T> {
   private Factory<T> factory;
 

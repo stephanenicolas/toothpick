@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import toothpick.config.bindings.SingletonBinding;
 
-/**
- * Created by snicolas on 3/24/16.
- */
 public class Module {
   private Set<Binding> bindingSet = new HashSet<>();
 
