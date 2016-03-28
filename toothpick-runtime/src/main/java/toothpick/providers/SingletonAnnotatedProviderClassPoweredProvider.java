@@ -5,14 +5,12 @@ import toothpick.FactoryRegistry;
 import toothpick.InjectorImpl;
 import toothpick.Provider;
 
-public class SingletonAnnotatedProviderClassPoweredProvider<T> extends BaseProvider<T> {
-  private Class<T> key;
+public class SingletonAnnotatedProviderClassPoweredProvider<T> extends ReplaceInScopeProvider<T> {
   private Class<? extends Provider<? extends T>> providerClass;
 
   public SingletonAnnotatedProviderClassPoweredProvider(InjectorImpl injector, Class<T> key,
       Class<? extends Provider<? extends T>> providerClass) {
-    super(injector);
-    this.key = key;
+    super(injector, key);
     this.providerClass = providerClass;
   }
 
@@ -21,7 +19,7 @@ public class SingletonAnnotatedProviderClassPoweredProvider<T> extends BaseProvi
     Factory<? extends Provider<? extends T>> providerFactory =
         FactoryRegistry.getFactory(providerClass);
     Provider<? extends T> provider = providerFactory.createInstance(getInjector());
-    getInjector().getScope().put(key, provider);
+    replaceInScope(provider);
     return null;
   }
 }

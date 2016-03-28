@@ -1,10 +1,11 @@
 package toothpick.providers;
 
-public class SingletonPoweredProvider<T> extends BaseProvider<T> {
+import toothpick.Provider;
+
+public class SingletonPoweredProvider<T> implements Provider<T> {
   private T instance;
 
   public SingletonPoweredProvider(T instance) {
-    super(null);
     this.instance = instance;
   }
 
