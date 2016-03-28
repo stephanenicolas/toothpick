@@ -4,6 +4,9 @@ package toothpick;
  * Retrieve instance of factories.
  */
 public class MemberInjectorRegistry {
+  private MemberInjectorRegistry() {
+  }
+
   public static <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
     if (clazz == null) {
       throw new IllegalArgumentException("Class can't be null");

@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+
+dependencies {
+  compile deps.inject
+
+  testCompile deps.junit
+}
+
+//Integration tests
+configurations {
+  itestCompile.extendsFrom testCompile
+}
+
+sourceSets {
+  itest {
+    compileClasspath += main.output + test.output
+    runtimeClasspath += main.output + test.output
+
+    java.srcDir file('src/itest/java')
+  }
+}
+
+task itest(type: Test) {
+  testClassesDir = sourceSets.itest.output.classesDir
+  classpath = sourceSets.itest.runtimeClasspath
+
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}

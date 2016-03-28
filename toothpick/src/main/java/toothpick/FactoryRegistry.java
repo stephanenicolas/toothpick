@@ -4,6 +4,9 @@ package toothpick;
  * Retrieve instance of factories.
  */
 public class FactoryRegistry {
+  private FactoryRegistry() {
+  }
+
   public static <T> Factory<T> getFactory(Class<T> clazz) {
     if (clazz == null) {
       throw new IllegalArgumentException("Class can't be null");

@@ -10,6 +10,8 @@ import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
 import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
 import toothpick.providers.SingletonPoweredProvider;
 
+import static java.lang.String.format;
+
 public class Binding<T> {
   private Class<T> key;
   private Mode mode;
@@ -67,8 +69,11 @@ public class Binding<T> {
         } else {
           return new NonAnnotatedProviderClassPoweredProvider<>(key, providerClass);
         }
+
+      default:
+        throw new IllegalStateException(
+            format("mode is not handled: %s. This should not happen.", mode));
     }
-    throw new IllegalStateException("mode is null");
   }
 
   private enum Mode {
