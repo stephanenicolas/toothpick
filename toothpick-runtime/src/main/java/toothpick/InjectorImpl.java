@@ -6,7 +6,14 @@ import java.util.List;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.providers.FactoryPoweredProvider;
+import toothpick.providers.NonAnnotatedProviderClassPoweredProvider;
+import toothpick.providers.NonSingletonAnnotatedClassPoweredProvider;
+import toothpick.providers.ProducesSingletonAnnotatedProviderClassPoweredProvider;
+import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
+import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
 import toothpick.providers.SingletonPoweredProvider;
+
+import static java.lang.String.format;
 
 /**
  * This class should never be used outside of the toothpick library.
@@ -26,7 +33,7 @@ public class InjectorImpl implements Injector {
 
   public void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
-      Provider provider = binding.toProvider();
+      Provider provider = toProvider(binding);
       provider.setInjector(this);
     }
   }
@@ -91,4 +98,35 @@ public class InjectorImpl implements Injector {
       installModule(module);
     }
   }
+
+  private <T> Provider<T> toProvider(Binding<T> binding) {
+    switch (binding.getMode()) {
+      case SIMPLE:
+        return new SingletonAnnotatedClassPoweredProvider<>(binding.getKey(), binding.getKey());
+      case CLASS:
+        Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getImplementationClass());
+        if (factory.hasSingletonAnnotation()) {
+          return new SingletonAnnotatedClassPoweredProvider(binding.getKey(), binding.getImplementationClass());
+        } else {
+          return new NonSingletonAnnotatedClassPoweredProvider<>(binding.getKey(), binding.getImplementationClass());
+        }
+      case INSTANCE:
+        return new SingletonPoweredProvider<>(binding.getInstance());
+      case PROVIDER_INSTANCE:
+        return binding.getProviderInstance();
+      case PROVIDER_CLASS:
+        Factory<? extends Provider<T>> providerFactory = FactoryRegistry.getFactory(binding.getProviderClass());
+        if (providerFactory.hasSingletonAnnotation()) {
+          return new SingletonAnnotatedProviderClassPoweredProvider(binding.getKey(), binding.getProviderClass());
+        } else if (providerFactory.hasProducesSingletonAnnotation()) {
+          return new ProducesSingletonAnnotatedProviderClassPoweredProvider<>(binding.getKey(), binding.getProviderClass());
+        } else {
+          return new NonAnnotatedProviderClassPoweredProvider<>(binding.getKey(), binding.getProviderClass());
+        }
+
+      default:
+        throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
+    }
+  }
+
 }

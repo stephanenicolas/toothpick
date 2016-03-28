@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+
+dependencies {
+  compile project(':toothpick')
+  compile deps.inject
+
+  testCompile deps.junit
+}
