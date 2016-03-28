@@ -73,7 +73,7 @@ public class InjectorImpl implements Injector {
 
   private void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
-      toProvider(binding);
+      scope.put(binding.getKey(), toProvider(binding));
     }
   }
 

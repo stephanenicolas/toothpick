@@ -45,8 +45,7 @@ public class SimpleInstanceCreationWithModuleTest {
 
   private static class SimpleModule extends Module {
     public SimpleModule() {
-      Foo instance = new Foo();
-      bind(Foo.class).to(instance);
+      bind(Foo.class).to(Foo.class);
     }
   }
 
@@ -66,10 +65,6 @@ public class SimpleInstanceCreationWithModuleTest {
     }
 
     @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean needsInjection() {
       return false;
     }
   }

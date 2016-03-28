@@ -50,9 +50,5 @@ public class SingletonCreationWithoutModuleTest {
     @Override public boolean hasProducesSingletonAnnotation() {
       return false;
     }
-
-    @Override public boolean needsInjection() {
-      return false;
-    }
   }
 }

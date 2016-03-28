@@ -12,6 +12,9 @@ import javax.inject.Singleton;
  * need an annotated constructor, other we will fall back on reflection and emit
  * a warning at runtime.
  * There can be one and only one annotated constructor.
+ *
+ * If a factory detects that a {@code T} has {@javax.inject.Inject} annotated fields,
+ * or one of its super classes, then it will inject the created instance of {@code T}.
  */
 public interface Factory<T> {
   /**
@@ -35,14 +38,4 @@ public interface Factory<T> {
    * @return true iff the class is annotated as a producer class whose instances will produce a singleton.
    */
   boolean hasProducesSingletonAnnotation();
-
-  /**
-   * Signals that the instances of this class need to be injected after creation.
-   * i.e : they have directly, or indirectly via a super class, {@link Inject} annotated
-   * members.
-   * In this case, they will be injected using the scope/injector used to create them.
-   * @return true iff the instances of the class need to be injected.
-   * @see Injector#inject(Object)
-   */
-  boolean needsInjection();
 }
