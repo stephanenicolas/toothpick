@@ -40,7 +40,7 @@ subprojects { project ->
   afterEvaluate {
     if (project.tasks.findByName('check')) {
       check.dependsOn('checkstyle')
-      //check.dependsOn('coveralls')
+      check.dependsOn('jacocoTestReport')
 
       jacocoTestReport {
         reports {
@@ -48,24 +48,36 @@ subprojects { project ->
           html.enabled = true
         }
       }
+
+      tasks.coveralls {
+        dependsOn 'check'
+      }
+
+      tasks.withType(Test) {
+
+        testLogging {
+           events "passed", "skipped", "failed"
+        }
+        // ensure tasks don't overwrite the default report directories used by the 'test' task
+        reports.html.destination = "${buildDir}/reports/${name}"
+        reports.junitXml.destination = "${buildDir}/reports/${name}/results"
+        binResultsDir = file("${buildDir}/reports/${name}/results/binary/${name}")
+      }
     }
   }
 }
-
 
 ext {
   javaVersion = 1.8
 }
 
-ext.deps = [
-    // Common
-    inject: 'javax.inject:javax.inject:1',
+ext.deps = [// Common
+            inject        : 'javax.inject:javax.inject:1',
 
-    // Compiler
-    javapoet: 'com.squareup:javapoet:1.4.0',
+            // Compiler
+            javapoet      : 'com.squareup:javapoet:1.4.0',
 
-    // Test dependencies
-    junit: 'junit:junit:4.12',
-    truth: 'com.google.truth:truth:0.27',
-    compiletesting: 'com.google.testing.compile:compile-testing:0.7',
-]
+            // Test dependencies
+            junit         : 'junit:junit:4.12',
+            truth         : 'com.google.truth:truth:0.27',
+            compiletesting: 'com.google.testing.compile:compile-testing:0.7',]
