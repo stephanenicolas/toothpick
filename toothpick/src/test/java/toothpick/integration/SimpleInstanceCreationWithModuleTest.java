@@ -1,7 +1,11 @@
-package toothpick;
+package toothpick.integration;
 
 import javax.inject.Inject;
 import org.junit.Test;
+import toothpick.Factory;
+import toothpick.Injector;
+import toothpick.InjectorImpl;
+import toothpick.config.Module;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -10,13 +14,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 /*
  * Creates a instance in the simplest possible way
-  * without any module.
+  * with a module that binds a single class.
  */
-public class SimpleInstanceCreationWithoutModuleTest {
+public class SimpleInstanceCreationWithModuleTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo");
+    Injector injector = new InjectorImpl(null, "foo", new SimpleModule());
 
     //WHEN
     Foo instance = injector.createInstance(Foo.class);
@@ -27,7 +31,7 @@ public class SimpleInstanceCreationWithoutModuleTest {
 
   @Test public void testSimpleInjectionIsNotProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo");
+    Injector injector = new InjectorImpl(null, "foo", new SimpleModule());
 
     //WHEN
     Foo instance = injector.createInstance(Foo.class);
@@ -37,6 +41,13 @@ public class SimpleInstanceCreationWithoutModuleTest {
     assertThat(instance, notNullValue());
     assertThat(instance2, notNullValue());
     assertThat(instance, not(sameInstance(instance2)));
+  }
+
+  private static class SimpleModule extends Module {
+    public SimpleModule() {
+      Foo instance = new Foo();
+      bind(Foo.class).to(instance);
+    }
   }
 
   public static class Foo {

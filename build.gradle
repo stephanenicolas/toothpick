@@ -6,6 +6,7 @@ subprojects { project ->
     mavenCentral()
   }
 
+  apply plugin: 'jacoco'
   apply plugin: 'checkstyle'
 
   checkstyle {
@@ -24,15 +25,28 @@ subprojects { project ->
   afterEvaluate {
     if (project.tasks.findByName('check')) {
       check.dependsOn('checkstyle')
+      //check.dependsOn('coveralls')
+
+      jacocoTestReport {
+        reports {
+          xml.enabled = true // coveralls plugin depends on xml format report
+          html.enabled = true
+        }
+      }
     }
   }
 
   buildscript {
     repositories {
       mavenCentral()
+      jcenter()
+    }
+    dependencies {
+      classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
     }
   }
 }
+
 
 ext {
   javaVersion = 1.8

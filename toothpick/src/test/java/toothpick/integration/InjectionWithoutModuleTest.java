@@ -1,7 +1,11 @@
-package toothpick;
+package toothpick.integration;
 
 import javax.inject.Inject;
 import org.junit.Test;
+import toothpick.Factory;
+import toothpick.Injector;
+import toothpick.InjectorImpl;
+import toothpick.MemberInjector;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
