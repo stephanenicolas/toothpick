@@ -1,12 +1,27 @@
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
+  }
+}
+
 subprojects { project ->
   group = GROUP
   version = VERSION_NAME
 
   repositories {
     mavenCentral()
+    jcenter()
   }
 
   apply plugin: 'jacoco'
+  apply plugin: 'com.github.kt3k.coveralls'
   apply plugin: 'checkstyle'
 
   checkstyle {
@@ -33,16 +48,6 @@ subprojects { project ->
           html.enabled = true
         }
       }
-    }
-  }
-
-  buildscript {
-    repositories {
-      mavenCentral()
-      jcenter()
-    }
-    dependencies {
-      classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
     }
   }
 }
