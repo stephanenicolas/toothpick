@@ -15,8 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class SingletonCreationWithModuleTest {
 
-  @Test
-  public void testIsProducingSingleton() throws Exception {
+  @Test public void testIsProducingSingleton() throws Exception {
     //GIVEN
     Injector injector = new InjectorImpl(null, "foo", new SimpleModule());
 
@@ -29,7 +28,6 @@ public class SingletonCreationWithModuleTest {
     assertThat(instance2, notNullValue());
     assertThat(instance, sameInstance(instance2));
   }
-
 
   private static class SimpleModule extends Module {
     public SimpleModule() {
@@ -44,8 +42,7 @@ public class SingletonCreationWithModuleTest {
     }
   }
 
-  @SuppressWarnings("unused")
-  public static class Foo$$Factory implements Factory<Foo>{
+  @SuppressWarnings("unused") public static class Foo$$Factory implements Factory<Foo> {
     @Override public Foo createInstance(Injector injector) {
       return new Foo();
     }
@@ -58,5 +55,4 @@ public class SingletonCreationWithModuleTest {
       return false;
     }
   }
-
 }

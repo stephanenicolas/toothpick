@@ -3,9 +3,7 @@ package toothpick;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.junit.Test;
-import toothpick.config.Module;
 
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,8 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class SingletonCreationWithoutModuleTest {
 
-  @Test
-  public void testIsProducingSingleton() throws Exception {
+  @Test public void testIsProducingSingleton() throws Exception {
     //GIVEN
     Injector injector = new InjectorImpl(null, "foo");
 
@@ -38,8 +35,7 @@ public class SingletonCreationWithoutModuleTest {
     }
   }
 
-  @SuppressWarnings("unused")
-  public static class Foo$$Factory implements Factory<Foo>{
+  @SuppressWarnings("unused") public static class Foo$$Factory implements Factory<Foo> {
     @Override public Foo createInstance(Injector injector) {
       return new Foo();
     }
@@ -52,5 +48,4 @@ public class SingletonCreationWithoutModuleTest {
       return false;
     }
   }
-
 }

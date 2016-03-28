@@ -1,7 +1,6 @@
 package toothpick.providers;
 
 import toothpick.Factory;
-import toothpick.Injector;
 import toothpick.Provider;
 
 public class ProducerFactoryPoweredProvider<T> extends BaseProvider<T> {

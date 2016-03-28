@@ -2,7 +2,6 @@ package toothpick.providers;
 
 import toothpick.Factory;
 import toothpick.FactoryRegistry;
-import toothpick.Provider;
 
 public class NonSingletonAnnotatedClassPoweredProvider<T, IMPL extends T> extends BaseProvider<T> {
   private Class<T> key;

@@ -1,7 +1,5 @@
 package toothpick.providers;
 
-import toothpick.Provider;
-
 public class SingletonPoweredProvider<T> extends BaseProvider<T> {
   private T instance;
 

@@ -7,8 +7,8 @@ import toothpick.providers.NonAnnotatedProviderClassPoweredProvider;
 import toothpick.providers.NonSingletonAnnotatedClassPoweredProvider;
 import toothpick.providers.ProducesSingletonAnnotatedProviderClassPoweredProvider;
 import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
-import toothpick.providers.SingletonPoweredProvider;
 import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
+import toothpick.providers.SingletonPoweredProvider;
 
 public class Binding<T> {
   private Class<T> key;

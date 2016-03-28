@@ -14,7 +14,8 @@ public class SingletonAnnotatedProviderClassPoweredProvider<T> extends BaseProvi
     this.providerClass = providerClass;
   }
 
-  @Override public T get() {
+  @Override
+  public T get() {
     Factory<? extends Provider<? extends T>> providerFactory =
         FactoryRegistry.getFactory(providerClass);
     Provider<? extends T> provider = providerFactory.createInstance(getInjector());

@@ -4,9 +4,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /*
@@ -15,8 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class InjectionWithoutModuleTest {
 
-  @Test
-  public void testSimpleInjection() throws Exception {
+  @Test public void testSimpleInjection() throws Exception {
     //GIVEN
     Injector injector = new InjectorImpl(null, "foo");
     Foo foo = new Foo();
@@ -37,20 +34,18 @@ public class InjectionWithoutModuleTest {
   }
 
   public static class Bar {
-    @Inject
-    public Bar() {
+    @Inject public Bar() {
     }
   }
 
-  @SuppressWarnings("unused")
-  public static class Foo$$MemberInjector implements MemberInjector<Foo>{
+  @SuppressWarnings("unused") public static class Foo$$MemberInjector
+      implements MemberInjector<Foo> {
     @Override public void inject(Foo foo, Injector injector) {
       foo.bar = injector.createInstance(Bar.class);
     }
   }
 
-  @SuppressWarnings("unused")
-  public static class Bar$$Factory implements Factory<Bar>{
+  @SuppressWarnings("unused") public static class Bar$$Factory implements Factory<Bar> {
     @Override public Bar createInstance(Injector injector) {
       return new Bar();
     }
@@ -63,5 +58,4 @@ public class InjectionWithoutModuleTest {
       return false;
     }
   }
-
 }

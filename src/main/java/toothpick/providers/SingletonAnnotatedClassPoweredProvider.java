@@ -2,9 +2,6 @@ package toothpick.providers;
 
 import toothpick.Factory;
 import toothpick.FactoryRegistry;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
-import toothpick.Provider;
 
 public class SingletonAnnotatedClassPoweredProvider<T> extends BaseProvider<T> {
   private Class<T> key;
