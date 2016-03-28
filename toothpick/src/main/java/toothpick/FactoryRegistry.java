@@ -2,6 +2,13 @@ package toothpick;
 
 /**
  * Retrieve instance of factories.
+ * TODO get rid of reflection.
+ * The plan is to use a tree of FactoryRegistry :
+ * when a lib is compiled, we pass an argument to the processor
+ * that creates the FactoryRegistry in a given package. It can have dependencies :
+ * other factory registries.
+ * A factory registry will care about the class it knows the factory of, and can
+ * delegate to its dependencies when it doesn't know the factory.
  */
 public class FactoryRegistry {
   private FactoryRegistry() {

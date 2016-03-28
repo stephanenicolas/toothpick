@@ -22,20 +22,13 @@ public class InjectorImpl implements Injector {
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
   private Object key;
-  private final List<Injector> parentInjectors;
+  private final List<InjectorImpl> parentInjectors;
 
   public InjectorImpl(Injector parent, Object key, Module... modules) {
     this.parent = parent;
     this.key = key;
     parentInjectors = getParentInjectors();
     installModules(modules);
-  }
-
-  public void installModule(Module module) {
-    for (Binding binding : module.getBindingSet()) {
-      Provider provider = toProvider(binding);
-      provider.setInjector(this);
-    }
   }
 
   @Override public Injector getParent() {
@@ -46,17 +39,8 @@ public class InjectorImpl implements Injector {
     return key;
   }
 
-  @Override public <T> T getScopedInstance(Class<T> clazz) {
-    Provider<T> provider = scope.get(clazz);
-    if (provider == null) {
-      return null;
-    }
-    return provider.get();
-  }
-
   @Override public <T> void inject(T obj) {
-    MemberInjector<T> memberInjector =
-        MemberInjectorRegistry.getMemberInjector((Class<T>) obj.getClass());
+    MemberInjector<T> memberInjector = MemberInjectorRegistry.getMemberInjector((Class<T>) obj.getClass());
     memberInjector.inject(obj, this);
   }
 
@@ -66,7 +50,11 @@ public class InjectorImpl implements Injector {
 
   @Override public <T> T createInstance(Class<T> clazz) {
     synchronized (clazz) {
-      for (Injector parentInjector : parentInjectors) {
+      //TODO here we could crawl the parents in both directions
+      //we can adopt the strategy pattern to customize the algorithm.
+      //TODO we should prevent a parent and a transitive child from having the same bindings
+      //TODO make this a runtime parameter.
+      for (InjectorImpl parentInjector : parentInjectors) {
         T scopedInstance = parentInjector.getScopedInstance(clazz);
         if (scopedInstance != null) {
           return scopedInstance;
@@ -78,17 +66,43 @@ public class InjectorImpl implements Injector {
     if (factory.hasSingletonAnnotation()) {
       scope.put(clazz, new SingletonPoweredProvider(instance));
     } else {
-      scope.put(clazz, new FactoryPoweredProvider(factory, this));
+      scope.put(clazz, new FactoryPoweredProvider(this, factory));
     }
     return instance;
   }
 
-  private List<Injector> getParentInjectors() {
-    List<Injector> parentInjectors = new ArrayList<>();
-    Injector currentInjector = this;
+  private void installModule(Module module) {
+    for (Binding binding : module.getBindingSet()) {
+      toProvider(binding);
+    }
+  }
+
+  /**
+   * Obtains the instance of the class {@code clazz} that is scoped in the current scope, if any.
+   * Ancestors are not taken into account.
+   *
+   * @param clazz the class for which to obtain the scoped instance of this injector, if one is scoped.
+   * @param <T> the type of {@code clazz}.
+   * @return the scoped instance of this injector, if one is scoped, {@code Null} otherwise.
+   */
+  private <T> T getScopedInstance(Class<T> clazz) {
+    Provider<T> provider = scope.get(clazz);
+    if (provider == null) {
+      return null;
+    }
+    return provider.get();
+  }
+
+  /**
+   * @return the list of all parent injectors, in order, sorted from the oldest to this.
+   * TODO this could be a strategy.
+   */
+  private List<InjectorImpl> getParentInjectors() {
+    List<InjectorImpl> parentInjectors = new ArrayList<>();
+    InjectorImpl currentInjector = this;
     while (currentInjector != null) {
       parentInjectors.add(0, currentInjector);
-      currentInjector = currentInjector.getParent();
+      currentInjector = (InjectorImpl) currentInjector.getParent();
     }
     return parentInjectors;
   }
@@ -102,13 +116,13 @@ public class InjectorImpl implements Injector {
   private <T> Provider<T> toProvider(Binding<T> binding) {
     switch (binding.getMode()) {
       case SIMPLE:
-        return new SingletonAnnotatedClassPoweredProvider<>(binding.getKey(), binding.getKey());
+        return new SingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
       case CLASS:
         Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getImplementationClass());
         if (factory.hasSingletonAnnotation()) {
-          return new SingletonAnnotatedClassPoweredProvider(binding.getKey(), binding.getImplementationClass());
+          return new SingletonAnnotatedClassPoweredProvider(this, binding.getKey(), binding.getImplementationClass());
         } else {
-          return new NonSingletonAnnotatedClassPoweredProvider<>(binding.getKey(), binding.getImplementationClass());
+          return new NonSingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getImplementationClass());
         }
       case INSTANCE:
         return new SingletonPoweredProvider<>(binding.getInstance());
@@ -117,16 +131,15 @@ public class InjectorImpl implements Injector {
       case PROVIDER_CLASS:
         Factory<? extends Provider<T>> providerFactory = FactoryRegistry.getFactory(binding.getProviderClass());
         if (providerFactory.hasSingletonAnnotation()) {
-          return new SingletonAnnotatedProviderClassPoweredProvider(binding.getKey(), binding.getProviderClass());
+          return new SingletonAnnotatedProviderClassPoweredProvider(this, binding.getKey(), binding.getProviderClass());
         } else if (providerFactory.hasProducesSingletonAnnotation()) {
-          return new ProducesSingletonAnnotatedProviderClassPoweredProvider<>(binding.getKey(), binding.getProviderClass());
+          return new ProducesSingletonAnnotatedProviderClassPoweredProvider<>(this, binding.getKey(), binding.getProviderClass());
         } else {
-          return new NonAnnotatedProviderClassPoweredProvider<>(binding.getKey(), binding.getProviderClass());
+          return new NonAnnotatedProviderClassPoweredProvider<>(this, binding.getKey(), binding.getProviderClass());
         }
 
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
     }
   }
-
 }

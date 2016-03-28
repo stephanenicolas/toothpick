@@ -1,17 +1,13 @@
 package toothpick.providers;
 
 import toothpick.Factory;
-import toothpick.Injector;
+import toothpick.InjectorImpl;
 
 public class FactoryPoweredProvider<T> extends BaseProvider<T> {
   private Factory<T> factory;
 
-  public FactoryPoweredProvider(Factory<T> factory, Injector injector) {
-    this.factory = factory;
-    setInjector(injector);
-  }
-
-  public FactoryPoweredProvider(Factory<T> factory) {
+  public FactoryPoweredProvider(InjectorImpl injector, Factory<T> factory) {
+    super(injector);
     this.factory = factory;
   }
 

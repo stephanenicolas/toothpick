@@ -6,6 +6,12 @@ import javax.inject.Singleton;
 /**
  * Creates instances of classes.
  * Factories are discovered via a {@link FactoryRegistry}.
+ * Implementations are generated during annotation processing.
+ * As soon as a class as an {@link javax.inject.Inject} annotated constructor,
+ * a factory is created. All classes that need to be created via toothpick
+ * need an annotated constructor, other we will fall back on reflection and emit
+ * a warning at runtime.
+ * There can be one and only one annotated constructor.
  */
 public interface Factory<T> {
   /**

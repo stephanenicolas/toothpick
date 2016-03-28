@@ -2,6 +2,8 @@ package toothpick;
 
 /**
  * Retrieve instance of factories.
+ * @see FactoryRegistry
+ * TODO document properly
  */
 public class MemberInjectorRegistry {
   private MemberInjectorRegistry() {

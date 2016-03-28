@@ -2,14 +2,16 @@ package toothpick.providers;
 
 import toothpick.Factory;
 import toothpick.FactoryRegistry;
+import toothpick.InjectorImpl;
 import toothpick.Provider;
 
 public class ProducesSingletonAnnotatedProviderClassPoweredProvider<T> extends BaseProvider<T> {
   private Class<T> key;
   private Class<? extends Provider<? extends T>> providerClass;
 
-  public ProducesSingletonAnnotatedProviderClassPoweredProvider(Class<T> key,
+  public ProducesSingletonAnnotatedProviderClassPoweredProvider(InjectorImpl injector, Class<T> key,
       Class<? extends Provider<? extends T>> providerClass) {
+    super(injector);
     this.key = key;
     this.providerClass = providerClass;
   }
