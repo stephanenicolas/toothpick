@@ -42,8 +42,7 @@ public class InjectionWithoutModuleTest {
     }
   }
 
-  @SuppressWarnings("unused") public static class Foo$$MemberInjector
-      implements MemberInjector<Foo> {
+  @SuppressWarnings("unused") public static class Foo$$MemberInjector implements MemberInjector<Foo> {
     @Override public void inject(Foo foo, Injector injector) {
       foo.bar = injector.createInstance(Bar.class);
     }
@@ -59,6 +58,10 @@ public class InjectionWithoutModuleTest {
     }
 
     @Override public boolean hasProducesSingletonAnnotation() {
+      return false;
+    }
+
+    @Override public boolean needsInjection() {
       return false;
     }
   }
