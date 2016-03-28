@@ -3,12 +3,12 @@ package toothpick.providers;
 import toothpick.Factory;
 import toothpick.FactoryRegistry;
 import toothpick.InjectorImpl;
-import toothpick.ProducesSingleton;
+import toothpick.ProvidesSingleton;
 import toothpick.Provider;
 
 /**
  * A provider that uses a {@link Factory} of provider to provide instances.
- * The provider class should not be annotated with {@link ProducesSingleton}
+ * The provider class should not be annotated with {@link ProvidesSingleton}
  * or {@link @Singleton}.
  * The provider will first create a provider using the factory, then ask it to provide
  * an instance of {@code T}.

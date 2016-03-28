@@ -10,5 +10,5 @@ import javax.inject.Singleton;
  * case, the provider itself would be a singleton, but it tells nothing about the instances
  * provided by the provider.
  */
-public @interface ProducesSingleton {
+public @interface ProvidesSingleton {
 }
