@@ -8,10 +8,13 @@ subprojects { project ->
 
   apply plugin: 'checkstyle'
 
-  task checkstyle(type: Checkstyle) {
+  checkstyle {
     configFile rootProject.file('checkstyle.xml')
+  }
+
+  task checkstyle(type: Checkstyle) {
     source 'src/main/java'
-    ignoreFailures false
+    ignoreFailures true
     showViolations true
     include '**/*.java'
 

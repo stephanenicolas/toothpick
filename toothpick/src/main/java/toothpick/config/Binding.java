@@ -71,8 +71,7 @@ public class Binding<T> {
         }
 
       default:
-        throw new IllegalStateException(
-            format("mode is not handled: %s. This should not happen.", mode));
+        throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", mode));
     }
   }
 
