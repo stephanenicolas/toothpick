@@ -1,15 +1,18 @@
 package toothpick.integration.bindings;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.junit.Test;
-import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
-import toothpick.MemberInjector;
 import toothpick.Provider;
-import toothpick.ProvidesSingleton;
 import toothpick.config.Module;
+import toothpick.integration.data.Bar;
+import toothpick.integration.data.Foo;
+import toothpick.integration.data.FooSingleton;
+import toothpick.integration.data.IFoo;
+import toothpick.integration.data.IFooProvider;
+import toothpick.integration.data.IFooProviderAnnotatedProvidesSingleton;
+import toothpick.integration.data.IFooProviderAnnotatedSingleton;
+import toothpick.integration.data.IFooSingleton;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.not;
@@ -241,196 +244,5 @@ public class AllBindingsTest {
     //we will have to do something similar for Lazy anyway.
     //assertThat(((IFooProvider)providerInstance).bar, notNullValue());
     //plus some test to check that we use the same provider
-  }
-
-  //*******************************************************************************************
-  //Test classes & the code that should be generated, duplicate those tests & use generated code.
-  //TODO make external all classes below
-  //*******************************************************************************************
-
-  public static class Foo implements IFoo {
-    @Inject Bar bar; //annotation is not needed, but it's a better example
-
-    public Foo() {
-    }
-  }
-
-  @Singleton //annotation is not needed, but it's a better example
-  public static class FooSingleton implements IFooSingleton {
-    @Inject Bar bar; //annotation is not needed, but it's a better example
-
-    public FooSingleton() {
-    }
-  }
-
-  public static class Bar {
-    @Inject public Bar() {
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Foo$$Factory implements Factory<Foo> {
-    @Override public Foo createInstance(Injector injector) {
-      Foo foo = new Foo();
-      injector.inject(foo);
-      return foo;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Foo$$MemberInjector implements MemberInjector<Foo> {
-    @Override public void inject(Foo foo, Injector injector) {
-      foo.bar = injector.createInstance(Bar.class);
-    }
-  }
-
-  @SuppressWarnings("unused") public static class FooSingleton$$MemberInjector implements MemberInjector<FooSingleton> {
-    @Override public void inject(FooSingleton foo, Injector injector) {
-      foo.bar = injector.createInstance(Bar.class);
-    }
-  }
-
-  @SuppressWarnings("unused") public static class FooSingleton$$Factory implements Factory<FooSingleton> {
-    @Override public FooSingleton createInstance(Injector injector) {
-      FooSingleton foo = new FooSingleton();
-      injector.inject(foo);
-      return foo;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return true;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Bar$$Factory implements Factory<Bar> {
-    @Override public Bar createInstance(Injector injector) {
-      return new Bar();
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  private interface IFooSingleton {
-  }
-
-  private interface IFoo {
-  }
-
-  private static class IFooProvider implements Provider<IFoo> {
-    @Inject Bar bar;
-
-    @Inject public IFooProvider() {
-    }
-
-    @Override public IFoo get() {
-      return new Foo();
-    }
-  }
-
-  @Singleton private static class IFooProviderAnnotatedSingleton implements Provider<IFoo> {
-    @Inject Bar bar;
-
-    @Inject public IFooProviderAnnotatedSingleton() {
-    }
-
-    @Override public IFoo get() {
-      return new Foo();
-    }
-  }
-
-  @ProvidesSingleton private static class IFooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
-    @Inject Bar bar;
-
-    @Inject public IFooProviderAnnotatedProvidesSingleton() {
-    }
-
-    @Override public IFoo get() {
-      return new Foo();
-    }
-  }
-
-  @SuppressWarnings("unused") public static class IFooProvider$$Factory implements Factory<IFooProvider> {
-    @Override public IFooProvider createInstance(Injector injector) {
-      IFooProvider iFooProvider = new IFooProvider();
-      injector.inject(iFooProvider);
-      return iFooProvider;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class IFooProviderAnnotatedSingleton$$Factory implements Factory<IFooProviderAnnotatedSingleton> {
-    @Override public IFooProviderAnnotatedSingleton createInstance(Injector injector) {
-      IFooProviderAnnotatedSingleton iFooProviderAnnotatedSingleton = new IFooProviderAnnotatedSingleton();
-      injector.inject(iFooProviderAnnotatedSingleton);
-      return iFooProviderAnnotatedSingleton;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return true;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class IFooProviderAnnotatedProvidesSingleton$$Factory
-      implements Factory<IFooProviderAnnotatedProvidesSingleton> {
-    @Override public IFooProviderAnnotatedProvidesSingleton createInstance(Injector injector) {
-      IFooProviderAnnotatedProvidesSingleton iFooProviderAnnotatedSingleton = new IFooProviderAnnotatedProvidesSingleton();
-      injector.inject(iFooProviderAnnotatedSingleton);
-      return iFooProviderAnnotatedSingleton;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return true;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class IFooProvider$$MemberInjector implements MemberInjector<IFooProvider> {
-    @Override public void inject(IFooProvider foo, Injector injector) {
-      foo.bar = injector.createInstance(Bar.class);
-    }
-  }
-
-  @SuppressWarnings("unused") public static class IFooProviderAnnotatedSingleton$$MemberInjector
-      implements MemberInjector<IFooProviderAnnotatedSingleton> {
-    @Override public void inject(IFooProviderAnnotatedSingleton foo, Injector injector) {
-      foo.bar = injector.createInstance(Bar.class);
-    }
-  }
-
-  @SuppressWarnings("unused") public static class IFooProviderAnnotatedProvidesSingleton$$MemberInjector
-      implements MemberInjector<IFooProviderAnnotatedProvidesSingleton> {
-    @Override public void inject(IFooProviderAnnotatedProvidesSingleton foo, Injector injector) {
-      foo.bar = injector.createInstance(Bar.class);
-    }
   }
 }

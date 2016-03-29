@@ -3,6 +3,7 @@ package toothpick;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.providers.FactoryPoweredProvider;
@@ -48,11 +49,9 @@ public class InjectorImpl implements Injector {
 
   @Override public <T> T createInstance(Class<T> clazz) {
     synchronized (clazz) {
-      //TODO here we could crawl the parents in both directions
-      //we can adopt the strategy pattern to customize the algorithm.
-      //TODO we should prevent a parent and a transitive child from having the same bindings
-      //TODO make this a runtime parameter.
-      for (InjectorImpl parentInjector : parentInjectors) {
+      ListIterator<InjectorImpl> reverseIterator = parentInjectors.listIterator(parentInjectors.size());
+      while (reverseIterator.hasPrevious()) {
+        InjectorImpl parentInjector = reverseIterator.previous();
         T scopedInstance = parentInjector.getScopedInstance(clazz);
         if (scopedInstance != null) {
           return scopedInstance;
@@ -62,7 +61,8 @@ public class InjectorImpl implements Injector {
     Factory<T> factory = FactoryRegistry.getFactory(clazz);
     T instance = factory.createInstance(this);
     if (factory.hasSingletonAnnotation()) {
-      scope.put(clazz, new SingletonPoweredProvider(instance));
+      //singleton classes discovered dynamically go to root scope.
+      getParentInjectors().get(0).getScope().put(clazz, new SingletonPoweredProvider(instance));
     } else {
       scope.put(clazz, new FactoryPoweredProvider(this, factory));
     }
@@ -151,10 +151,10 @@ public class InjectorImpl implements Injector {
           return new NonAnnotatedProviderClassPoweredProvider<>(this, binding.getKey(), binding.getProviderClass());
         }
 
-      //JACOCO:OFF
+        //JACOCO:OFF
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
-      //JACOCO:ON
+        //JACOCO:ON
     }
   }
 }
