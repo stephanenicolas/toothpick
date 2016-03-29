@@ -25,6 +25,6 @@ public class SingletonAnnotatedProviderClassPoweredProvider<T> extends ReplaceIn
     Factory<? extends Provider<? extends T>> providerFactory = FactoryRegistry.getFactory(providerClass);
     Provider<? extends T> provider = providerFactory.createInstance(getInjector());
     replaceInScope(provider);
-    return null;
+    return provider.get();
   }
 }

@@ -113,13 +113,23 @@ public class InjectorImpl implements Injector {
     }
   }
 
+  //do not change the return type to Provider<? extends T>.
+  //it would be cool and more convenient for bindings, but it would
+  //make the APIs very unstable as you could not get any instance of the
+  //implementation class via an injector, it would fail but be syntactically valid.
+  //only creating an instance of the interface is valid with this syntax.
   private <T> Provider<T> toProvider(Binding<T> binding) {
     switch (binding.getMode()) {
       case SIMPLE:
-        return new SingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
-      case CLASS:
-        Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getImplementationClass());
+        Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getKey());
         if (factory.hasSingletonAnnotation()) {
+          return new SingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
+        } else {
+          return new NonSingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
+        }
+      case CLASS:
+        Factory<? extends T> factory2 = FactoryRegistry.getFactory(binding.getImplementationClass());
+        if (factory2.hasSingletonAnnotation()) {
           return new SingletonAnnotatedClassPoweredProvider(this, binding.getKey(), binding.getImplementationClass());
         } else {
           return new NonSingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getImplementationClass());

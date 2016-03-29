@@ -1,4 +1,4 @@
-package toothpick.integration;
+package toothpick.integration.getInstance;
 
 import javax.inject.Inject;
 import org.junit.Test;

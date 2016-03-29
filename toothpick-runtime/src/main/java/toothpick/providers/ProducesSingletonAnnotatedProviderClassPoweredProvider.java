@@ -29,6 +29,6 @@ public class ProducesSingletonAnnotatedProviderClassPoweredProvider<T> extends R
     Provider<? extends T> provider = providerFactory.createInstance(getInjector());
     T instance = provider.get();
     replaceInScope(new SingletonPoweredProvider<>(instance));
-    return null;
+    return instance;
   }
 }
