@@ -13,7 +13,7 @@ public final class ToothPick {
 
   //http://stackoverflow.com/a/29421697/693752
   //it should really be final, if not volatile
-  private static final ConcurrentHashMap<Object, Injector> mapKeyToInjector = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<Object, Injector> MAP_KEY_TO_INJECTOR = new ConcurrentHashMap<>();
 
   //JACOCO:OFF
   private ToothPick() {
@@ -25,30 +25,30 @@ public final class ToothPick {
   }
 
   public static Injector createInjector(Injector parent, Object key, Module... modules) {
-    Injector injector = mapKeyToInjector.get(key);
+    Injector injector = MAP_KEY_TO_INJECTOR.get(key);
     if (injector != null) {
       throw new IllegalStateException(format("An injector for key %s already exists: %s", key, injector));
     }
 
-    synchronized (mapKeyToInjector) {
-      injector = mapKeyToInjector.get(key);
+    synchronized (MAP_KEY_TO_INJECTOR) {
+      injector = MAP_KEY_TO_INJECTOR.get(key);
       if (injector != null) {
         throw new IllegalStateException(format("An injector for key %s already exists: %s", key, injector));
       }
-      injector = new InjectorImpl(parent, key, modules);
-      mapKeyToInjector.put(key, injector);
+      injector = new InjectorImpl(parent, modules);
+      MAP_KEY_TO_INJECTOR.put(key, injector);
     }
     return injector;
   }
 
   public static Injector getInjector(Object key) {
-    return mapKeyToInjector.get(key);
+    return MAP_KEY_TO_INJECTOR.get(key);
   }
 
   public static Injector getOrCreateInjector(Injector parent, Object key, Module... modules) {
     Injector injector = getInjector(key);
     if (injector == null) {
-      synchronized (mapKeyToInjector) {
+      synchronized (MAP_KEY_TO_INJECTOR) {
         if (injector == null) {
           injector = createInjector(parent, key, modules);
         }
@@ -62,10 +62,10 @@ public final class ToothPick {
     if (injector == null) {
       return;
     }
-    mapKeyToInjector.remove(key);
+    MAP_KEY_TO_INJECTOR.remove(key);
   }
 
   public static void reset() {
-    mapKeyToInjector.clear();
+    MAP_KEY_TO_INJECTOR.clear();
   }
 }

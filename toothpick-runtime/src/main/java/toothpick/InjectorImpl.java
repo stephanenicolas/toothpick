@@ -21,22 +21,16 @@ import static java.lang.String.format;
 public class InjectorImpl implements Injector {
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
-  private Object key;
   private final List<InjectorImpl> parentInjectors;
 
-  public InjectorImpl(Injector parent, Object key, Module... modules) {
+  public InjectorImpl(Injector parent, Module... modules) {
     this.parent = parent;
-    this.key = key;
     parentInjectors = getParentInjectors();
     installModules(modules);
   }
 
   @Override public Injector getParent() {
     return parent;
-  }
-
-  @Override public Object getKey() {
-    return key;
   }
 
   @Override public <T> void inject(T obj) {

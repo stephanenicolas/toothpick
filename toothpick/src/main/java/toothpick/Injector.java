@@ -7,12 +7,6 @@ package toothpick;
  */
 public interface Injector {
   /**
-   * The key that identifies the injector in toothpick.
-   * @return the key of this injector.
-   */
-  Object getKey();
-
-  /**
    * Injects all fields of an object. This object will be the starting point of an injection sub-graph, i.e.
    * all dependencies of this object will be injected as well when created.
    * @param obj the object of which to all fields will be injected.

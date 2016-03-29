@@ -19,7 +19,7 @@ public class SingletonCreationWithoutModuleTest {
 
   @Test public void testIsProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo");
+    Injector injector = new InjectorImpl(null);
 
     //WHEN
     Foo instance = injector.createInstance(Foo.class);

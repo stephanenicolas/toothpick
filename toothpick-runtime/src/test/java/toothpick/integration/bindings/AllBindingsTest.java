@@ -39,7 +39,7 @@ public class AllBindingsTest {
 
   @Test public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(Foo.class);
       }
@@ -58,7 +58,7 @@ public class AllBindingsTest {
 
   @Test public void simpleBinding_shouldCreateInjectedSingletons_whenSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(FooSingleton.class);
       }
@@ -77,7 +77,7 @@ public class AllBindingsTest {
 
   @Test public void bindToClass_shouldCreateInjectedInstances_whenBoundClassNotAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(IFoo.class).to(Foo.class);
       }
@@ -100,7 +100,7 @@ public class AllBindingsTest {
 
   @Test public void bindToClass_shouldCreateInjectedSingletons_whenBoundClassAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(IFooSingleton.class).to(FooSingleton.class);
       }
@@ -124,7 +124,7 @@ public class AllBindingsTest {
     //GIVEN
     final Provider<IFoo> providerInstance = new IFooProvider();
 
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(IFoo.class).toProvider(providerInstance);
       }
@@ -144,7 +144,7 @@ public class AllBindingsTest {
 
   @Test public void bindToProviderClass_shouldCreateNonInjectedInstances_whenProviderClassIsNotAnnotated() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(IFoo.class).toProvider(IFooProvider.class);
       }
@@ -171,7 +171,7 @@ public class AllBindingsTest {
   @Test public void bindToProviderClass_shouldCreateNonInjectedInstancesWithProviderSingleton_whenProviderClassIsAnnotatedSingleton()
       throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedSingleton.class);
       }
@@ -198,7 +198,7 @@ public class AllBindingsTest {
 
   @Test public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, "foo", new Module() {
+    Injector injector = new InjectorImpl(null, new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedProvidesSingleton.class);
       }
