@@ -28,6 +28,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * So that when factories are used, we create injected stuff, which is larger than the contract above.
  * Larger means that a class can have a factory that inject new instances, but if we bind this class
  * to provider, the factory is not used an injection takes place only if the provides asks for it.
+ * TODO this tests demonstrates that we need a strategy here again : do we want to inject stuff
+ * in instances created by providers. That's not an abvious question :
+ * if we do inject instances created by providers, it means that things are easy, to make them optimized we need a fast check
+ * too see if injection is needed, which means findind the information wether or not the class of the things produced need injection
+ * if we don't then toothpick contract is simpler : we inject stuff that toothpick create. Nothing else.
+ * A confgiurable strategy for this would be nice.
  */
 public class AllBindingsTest {
 
