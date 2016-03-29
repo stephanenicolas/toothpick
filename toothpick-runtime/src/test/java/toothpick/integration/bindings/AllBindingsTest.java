@@ -75,6 +75,27 @@ public class AllBindingsTest {
     assertThat(foo.bar, isA(Bar.class));
   }
 
+  @Test public void singletonBinding_shouldCreateNonInjectedSingleton() throws Exception {
+    //GIVEN
+    Foo instance = new Foo();
+    Injector injector = new InjectorImpl(null, new Module() {
+      {
+        bind(Foo.class).to(instance);
+      }
+    });
+
+    //WHEN
+    Foo foo = injector.createInstance(Foo.class);
+    Foo foo2 = injector.createInstance(Foo.class);
+
+    //THEN
+    assertThat(foo, notNullValue());
+    assertThat(foo, sameInstance(foo2));
+    assertThat(foo, sameInstance(instance));
+    assertThat(foo.bar, nullValue());
+  }
+
+
   @Test public void bindToClass_shouldCreateInjectedInstances_whenBoundClassNotAnnotatedSingleton() throws Exception {
     //GIVEN
     Injector injector = new InjectorImpl(null, new Module() {
