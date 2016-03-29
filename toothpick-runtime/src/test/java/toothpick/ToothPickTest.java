@@ -95,9 +95,11 @@ public class ToothPickTest {
 
     //WHEN
     Injector injector = ToothPick.getOrCreateInjector(injectorParent, "foo");
+    Injector injector2 = ToothPick.getOrCreateInjector(injectorParent, "foo");
 
     //THEN
     assertThat(injector, notNullValue());
+    assertThat(injector2, sameInstance(injector));
     assertThat(injector.getParent(), sameInstance(injectorParent));
   }
 
