@@ -77,6 +77,31 @@ public class ToothPickTest {
   }
 
   @Test
+  public void getOrCreateInjector_shouldReturnAnInjector_WhenOneWasCreatedWithSameKey() throws Exception {
+    //GIVEN
+    Injector injector = ToothPick.createInjector("foo");
+
+    //WHEN
+    Injector injector2 = ToothPick.getOrCreateInjector(null, "foo");
+
+    //THEN
+    assertThat(injector, sameInstance(injector2));
+  }
+
+  @Test
+  public void getOrCreateInjector_shouldReturnANewInjectorInjector_WhenOneWasNotCreatedWithSameKey() throws Exception {
+    //GIVEN
+    Injector injectorParent = ToothPick.createInjector("bar");
+
+    //WHEN
+    Injector injector = ToothPick.getOrCreateInjector(injectorParent, "foo");
+
+    //THEN
+    assertThat(injector, notNullValue());
+    assertThat(injector.getParent(), sameInstance(injectorParent));
+  }
+
+  @Test
   public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasNotCreated() throws Exception {
     //GIVEN
 
