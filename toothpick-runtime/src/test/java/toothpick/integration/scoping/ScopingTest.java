@@ -1,12 +1,11 @@
 package toothpick.integration.scoping;
 
-import javax.inject.Singleton;
 import org.junit.Test;
-import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
-import toothpick.MemberInjector;
 import toothpick.config.Module;
+import toothpick.integration.data.Foo;
+import toothpick.integration.data.FooSingleton;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -72,33 +71,5 @@ public class ScopingTest {
     //THEN
     assertThat(instance, sameInstance(instance2));
     assertThat(instance, notNullValue());
-  }
-
-  public static class Foo {
-  }
-
-  @Singleton //not used really but more clear to demonstrate what we do
-  public static class FooSingleton {
-  }
-
-  @SuppressWarnings("unused") public static class FooSingleton$$Factory implements Factory<FooSingleton> {
-    @Override public FooSingleton createInstance(Injector injector) {
-      return new FooSingleton();
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return true;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class FooSingleton$$MemberInjector implements MemberInjector<FooSingleton> {
-
-    @Override public void inject(FooSingleton fooSingleton, Injector injector) {
-
-    }
   }
 }

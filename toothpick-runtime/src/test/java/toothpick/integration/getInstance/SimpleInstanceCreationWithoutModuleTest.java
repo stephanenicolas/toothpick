@@ -1,10 +1,9 @@
 package toothpick.integration.getInstance;
 
-import javax.inject.Inject;
 import org.junit.Test;
-import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
+import toothpick.integration.data.Foo;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -40,25 +39,5 @@ public class SimpleInstanceCreationWithoutModuleTest {
     assertThat(instance, notNullValue());
     assertThat(instance2, notNullValue());
     assertThat(instance, not(sameInstance(instance2)));
-  }
-
-  public static class Foo {
-    @Inject //annotation is not needed, but it's a better example
-    public Foo() {
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Foo$$Factory implements Factory<Foo> {
-    @Override public Foo createInstance(Injector injector) {
-      return new Foo();
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
   }
 }

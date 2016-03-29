@@ -1,11 +1,10 @@
 package toothpick.integration.getInstance;
 
-import javax.inject.Inject;
 import org.junit.Test;
-import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.config.Module;
+import toothpick.integration.data.Foo;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -46,26 +45,6 @@ public class SimpleInstanceCreationWithModuleTest {
   private static class SimpleModule extends Module {
     public SimpleModule() {
       bind(Foo.class).to(Foo.class);
-    }
-  }
-
-  public static class Foo {
-    @Inject //annotation is not needed, but it's a better example
-    public Foo() {
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Foo$$Factory implements Factory<Foo> {
-    @Override public Foo createInstance(Injector injector) {
-      return new Foo();
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
     }
   }
 }

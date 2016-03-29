@@ -1,13 +1,13 @@
 package toothpick.integration.getInstance.inject;
 
-import javax.inject.Inject;
 import org.junit.Test;
-import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
-import toothpick.MemberInjector;
 import toothpick.Provider;
 import toothpick.config.Module;
+import toothpick.integration.data.Bar;
+import toothpick.integration.data.Foo;
+import toothpick.integration.data.FooProvider;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -83,86 +83,5 @@ public class CreatedInstancesAreInjectedWhenNeeded {
 
     //THEN
     assertThat(foo.bar, nullValue());
-  }
-
-  public static class FooProvider implements Provider<Foo> {
-    @Inject Bar bar; //annotation is not needed, but it's a better example
-
-    @Override public Foo get() {
-      return new Foo();
-    }
-  }
-
-  @SuppressWarnings("unused") public static class FooProvider$$MemberInjector implements MemberInjector<FooProvider> {
-    @Override public void inject(FooProvider foo, Injector injector) {
-      Bar bar = injector.createInstance(Bar.class);
-      foo.bar = bar;
-    }
-  }
-
-  public static class Foo {
-    @Inject Bar bar; //annotation is not needed, but it's a better example
-
-    public Foo() {
-    }
-  }
-
-  public static class Bar {
-    @Inject public Bar() {
-    }
-  }
-
-  @SuppressWarnings("unused") public static class FooProvider$$Factory implements Factory<FooProvider> {
-    @Inject Bar bar; //annotation is not needed, but it's a better example
-
-    @Override public FooProvider createInstance(Injector injector) {
-      FooProvider fooProvider = new FooProvider();
-      injector.inject(fooProvider);
-      return fooProvider;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Foo$$MemberInjector implements MemberInjector<Foo> {
-    @Override public void inject(Foo foo, Injector injector) {
-      foo.bar = injector.createInstance(Bar.class);
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Foo$$Factory implements Factory<Foo> {
-    @Override public Foo createInstance(Injector injector) {
-      Foo foo = new Foo();
-      injector.inject(foo);
-      return foo;
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
-  }
-
-  @SuppressWarnings("unused") public static class Bar$$Factory implements Factory<Bar> {
-    @Override public Bar createInstance(Injector injector) {
-      return new Bar();
-    }
-
-    @Override public boolean hasSingletonAnnotation() {
-      return false;
-    }
-
-    @Override public boolean hasProducesSingletonAnnotation() {
-      return false;
-    }
   }
 }
