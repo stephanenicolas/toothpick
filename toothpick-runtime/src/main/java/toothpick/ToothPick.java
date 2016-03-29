@@ -11,7 +11,9 @@ import static java.lang.String.format;
  */
 public final class ToothPick {
 
-  private static ConcurrentHashMap<Object, Injector> mapKeyToInjector = new ConcurrentHashMap<>();
+  //http://stackoverflow.com/a/29421697/693752
+  //it should really be final, if not volatile
+  private static final ConcurrentHashMap<Object, Injector> mapKeyToInjector = new ConcurrentHashMap<>();
 
   private ToothPick() {
   }
