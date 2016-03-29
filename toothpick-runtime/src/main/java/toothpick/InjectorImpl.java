@@ -29,6 +29,10 @@ public class InjectorImpl implements Injector {
     installModules(modules);
   }
 
+  public InjectorImpl(Module... modules) {
+    this(null, modules);
+  }
+
   @Override public Injector getParent() {
     return parent;
   }
@@ -112,7 +116,7 @@ public class InjectorImpl implements Injector {
   //make the APIs very unstable as you could not get any instance of the
   //implementation class via an injector, it would fail but be syntactically valid.
   //only creating an instance of the interface is valid with this syntax.
-  private <T> Provider<T> toProvider(Binding<T> binding) {
+  /*VisibleForTesting*/ <T> Provider<T> toProvider(Binding<T> binding) {
     switch (binding.getMode()) {
       case SIMPLE:
         Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getKey());

@@ -20,7 +20,7 @@ public class SimpleInstanceCreationWithModuleTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, new SimpleModule());
+    Injector injector = new InjectorImpl(new SimpleModule());
 
     //WHEN
     Foo instance = injector.createInstance(Foo.class);
@@ -31,7 +31,7 @@ public class SimpleInstanceCreationWithModuleTest {
 
   @Test public void testSimpleInjectionIsNotProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null, new SimpleModule());
+    Injector injector = new InjectorImpl(new SimpleModule());
 
     //WHEN
     Foo instance = injector.createInstance(Foo.class);

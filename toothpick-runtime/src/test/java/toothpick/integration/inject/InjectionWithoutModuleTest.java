@@ -19,7 +19,7 @@ public class InjectionWithoutModuleTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(null);
+    Injector injector = new InjectorImpl();
     Foo foo = new Foo();
 
     //WHEN
