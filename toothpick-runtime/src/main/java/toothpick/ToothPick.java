@@ -15,10 +15,9 @@ public final class ToothPick {
   //it should really be final, if not volatile
   private static final ConcurrentHashMap<Object, Injector> MAP_KEY_TO_INJECTOR = new ConcurrentHashMap<>();
 
-  //JACOCO:OFF
   private ToothPick() {
+    throw new RuntimeException("Constructor can't be invoked even via reflection.");
   }
-  //JACOCO:ON
 
   public static Injector createInjector(Object key, Module... modules) {
     return createInjector(null, key, modules);
