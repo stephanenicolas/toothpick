@@ -117,6 +117,9 @@ public class InjectorImpl implements Injector {
   //implementation class via an injector, it would fail but be syntactically valid.
   //only creating an instance of the interface is valid with this syntax.
   /*VisibleForTesting*/ <T> Provider<T> toProvider(Binding<T> binding) {
+    if (binding == null) {
+      throw new IllegalStateException("null binding are not allowed. Should not happen unless getBindingSet is overridden.");
+    }
     switch (binding.getMode()) {
       case SIMPLE:
         Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getKey());
@@ -148,8 +151,10 @@ public class InjectorImpl implements Injector {
           return new NonAnnotatedProviderClassPoweredProvider<>(this, binding.getKey(), binding.getProviderClass());
         }
 
+      //JACOCO:OFF
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
+      //JACOCO:ON
     }
   }
 }

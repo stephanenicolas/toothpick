@@ -77,7 +77,7 @@ public class AllBindingsTest {
 
   @Test public void singletonBinding_shouldCreateNonInjectedSingleton() throws Exception {
     //GIVEN
-    Foo instance = new Foo();
+    final Foo instance = new Foo();
     Injector injector = new InjectorImpl(new Module() {
       {
         bind(Foo.class).to(instance);
