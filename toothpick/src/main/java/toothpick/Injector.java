@@ -36,16 +36,31 @@ public interface Injector {
    * to the clazz will be used to create one.
    * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created instance
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.
-   * @param clazz the class for which to obtain an instance in the scope of this injector.
+   * @param clazz the class for which to obtain a provider in the scope of this injector.
    * @param <T> the type of {@code clazz}.
    * @return a scoped provider or a new one using the factory associated to {@code clazz}.
    */
   <T> Provider<T> getProvider(Class<T> clazz);
 
   /**
+   * Returns a {@code Lazy} of {@code clazz} if one is scoped in the current
+   * scope, or its ancestors. If there is no such lazy, the factory associated
+   * to the clazz will be used to create one.
+   * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created lazy
+   * will be scoped in the root scope of the current scope.
+   * @param clazz the class for which to obtain a lazy in the scope of this injector.
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   */
+  <T> Lazy<T> getLazy(Class<T> clazz);
+
+  /**
    * @return the parent of this injector. Can be null for a root injector.
    */
   Injector getParent();
+
 }

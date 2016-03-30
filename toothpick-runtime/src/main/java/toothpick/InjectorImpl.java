@@ -95,6 +95,11 @@ public class InjectorImpl implements Injector {
     return newProvider;
   }
 
+  @Override public <T> Lazy<T> getLazy(Class<T> clazz) {
+    Provider<T> provider = getProvider(clazz);
+    return new LazyImpl<>(provider);
+  }
+
   private void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
       scope.put(binding.getKey(), toProvider(binding));

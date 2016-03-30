@@ -1,30 +1,34 @@
 package toothpick.integration.inject.provider;
 
+import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
+import toothpick.config.Binding;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
+import toothpick.integration.data.FooWithProvider;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /*
- * Test injection of providers.
+ * Test injection of {@code Provider}s.
  */
 public class InjectionOfProviderTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN
     Injector injector = new InjectorImpl();
-    Foo foo = new Foo();
+    FooWithProvider fooWithProvider = new FooWithProvider();
 
     //WHEN
-    injector.inject(foo);
+    injector.inject(fooWithProvider);
 
     //THEN
-    assertThat(foo.bar, notNullValue());
-    assertThat(foo.bar, isA(Bar.class));
+    assertThat(fooWithProvider.bar, notNullValue());
+    assertThat(fooWithProvider.bar, isA(Provider.class));
+    assertThat(fooWithProvider.bar.get(), isA(Bar.class));
   }
 }
