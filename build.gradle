@@ -51,13 +51,13 @@ subprojects { project ->
         //from http://stackoverflow.com/a/29887806/693752
         //from http://stackoverflow.com/a/17411305/693752
         //this doesn't work to filter the generated class out of the jacoco report
-//        afterEvaluate {
-//          classDirectories = files(classDirectories.files.collect {
-//            fileTree(exclude: ['**/*Factory*',
-//                          '**/*MemberInjector*'])
-//          })
-//        }
-//      }
+        //        afterEvaluate {
+        //          classDirectories = files(classDirectories.files.collect {
+        //            fileTree(exclude: ['**/*Factory*',
+        //                          '**/*MemberInjector*'])
+        //          })
+        //        }
+      }
 
       tasks.coveralls {
         dependsOn 'check'

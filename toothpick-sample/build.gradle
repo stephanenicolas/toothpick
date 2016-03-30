@@ -9,3 +9,14 @@ dependencies {
   testCompile deps.junit
   testCompile deps.easymock
 }
+
+afterEvaluate {
+  if (project.tasks.findByName('check')) {
+    jacocoTestReport {
+      reports {
+        xml.enabled = false
+        html.enabled = false
+      }
+    }
+  }
+}
