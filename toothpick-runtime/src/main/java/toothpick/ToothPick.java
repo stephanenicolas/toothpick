@@ -48,6 +48,7 @@ public final class ToothPick {
     Injector injector = getInjector(key);
     if (injector == null) {
       synchronized (MAP_KEY_TO_INJECTOR) {
+        injector = getInjector(key);
         if (injector == null) {
           injector = createInjector(parent, key, modules);
         }
