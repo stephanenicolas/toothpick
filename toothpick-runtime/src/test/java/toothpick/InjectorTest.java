@@ -4,6 +4,7 @@ import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.integration.data.Foo;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -34,6 +35,34 @@ public class InjectorTest {
     //THEN
     assertThat(instance, sameInstance(testFoo));
   }
+
+  @Test public void installOverrideModules_shoudNotInstallOverrideBindings_whenCalledWithoutTestModules() {
+    //GIVEN
+    InjectorImpl injector = new InjectorImpl(new ProdModule());
+    injector.installOverrideModules();
+
+    //WHEN
+    Foo instance = injector.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance, notNullValue());
+  }
+
+  @Test public void installOverrideModules_shoudInstallOverrideBindingsAgain_whenCalledTwice() {
+    //GIVEN
+    Foo testFoo = new Foo();
+    Foo testFoo2 = new Foo();
+    InjectorImpl injector = new InjectorImpl(new ProdModule());
+    injector.installOverrideModules(new TestModule(testFoo));
+    injector.installOverrideModules(new TestModule(testFoo2));
+
+    //WHEN
+    Foo instance = injector.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance, sameInstance(testFoo2));
+  }
+
 
   private static class TestModule extends Module {
     public TestModule(Foo foo) {
