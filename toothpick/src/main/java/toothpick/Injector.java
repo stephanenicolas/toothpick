@@ -1,5 +1,6 @@
 package toothpick;
 
+import java.util.concurrent.Future;
 import javax.inject.Provider;
 import toothpick.config.Module;
 
@@ -49,19 +50,38 @@ public interface Injector {
   <T> Provider<T> getProvider(Class<T> clazz);
 
   /**
-   * Returns a {@code Lazy} of {@code clazz} if one is scoped in the current
-   * scope, or its ancestors. If there is no such lazy, the factory associated
+   * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
    * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created lazy
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain a lazy in the scope of this injector.
    * @param <T> the type of {@code clazz}.
    * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   * @see #getProvider(Class)
    */
   <T> Lazy<T> getLazy(Class<T> clazz);
+
+  /**
+   * Returns a {@code Future} of {@code clazz} if one provider is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
+   * to the clazz will be used to create one.
+   * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
+   * will be scoped in the root scope of the current scope.
+   *
+   * All future are executed on a background thread pool. TODO make this configurable.
+   *
+   * @param clazz the class for which to obtain a future in the scope of this injector.
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped future or a new one using the factory associated to {@code clazz}.
+   * @see #getProvider(Class)
+   */
+  <T> Future<T> getFuture(Class<T> clazz);
 
   /**
    * @return the parent of this injector. Can be null for a root injector.

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
@@ -21,6 +24,7 @@ import static java.lang.String.format;
  * This class should never be used outside of the toothpick library.
  */
 public class InjectorImpl implements Injector {
+  public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
   //parentInjectors, sorted from this the root injector
@@ -109,6 +113,11 @@ public class InjectorImpl implements Injector {
   @Override public <T> Lazy<T> getLazy(Class<T> clazz) {
     Provider<T> provider = getProvider(clazz);
     return new LazyImpl<>(provider);
+  }
+
+  @Override public <T> Future<T> getFuture(Class<T> clazz) {
+    final Provider<T> provider = getProvider(clazz);
+    return EXECUTOR_SERVICE.submit(new ProviderCallable<>(provider));
   }
 
   @Override public void installOverrideModules(Module... modules) {
