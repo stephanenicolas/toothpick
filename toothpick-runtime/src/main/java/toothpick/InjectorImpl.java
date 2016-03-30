@@ -24,6 +24,7 @@ public class InjectorImpl implements Injector {
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
   private final List<InjectorImpl> parentInjectors;
+  private boolean hasOverrides;
 
   public InjectorImpl(Injector parent, Module... modules) {
     this.parent = parent;
@@ -100,9 +101,20 @@ public class InjectorImpl implements Injector {
     return new LazyImpl<>(provider);
   }
 
+  @Override public void installOverrideModules(Module... modules) {
+    //we allow multiple calls to this method
+    boolean oldHasOverrides = hasOverrides;
+    hasOverrides = false;
+    installModules(modules);
+    boolean doOverrideModulesExist = modules != null && modules.length != 0;
+    hasOverrides = oldHasOverrides || doOverrideModulesExist;
+  }
+
   private void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
-      scope.put(binding.getKey(), toProvider(binding));
+      if (!hasOverrides || !scope.containsKey(binding.getKey())) {
+        scope.put(binding.getKey(), toProvider(binding));
+      }
     }
   }
 

@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+
+dependencies {
+  compile project(':toothpick')
+  compile project(':toothpick-runtime')
+  compile deps.inject
+
+  testCompile deps.junit
+  testCompile deps.easymock
+}

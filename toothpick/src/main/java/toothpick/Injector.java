@@ -1,6 +1,7 @@
 package toothpick;
 
 import javax.inject.Provider;
+import toothpick.config.Module;
 
 /**
  * Allows to inject members of a given instance,
@@ -11,6 +12,7 @@ public interface Injector {
   /**
    * Injects all fields of an object. This object will be the starting point of an injection sub-graph, i.e.
    * all dependencies of this object will be injected as well when created.
+   *
    * @param obj the object of which to all fields will be injected.
    * @param <T> the type of {@code clazz}.
    */
@@ -24,6 +26,7 @@ public interface Injector {
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created instance
    * will be scoped in the root scope of the current scope.
+   *
    * @param clazz the class for which to obtain an instance in the scope of this injector.
    * @param <T> the type of {@code clazz}.
    * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
@@ -38,6 +41,7 @@ public interface Injector {
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.
+   *
    * @param clazz the class for which to obtain a provider in the scope of this injector.
    * @param <T> the type of {@code clazz}.
    * @return a scoped provider or a new one using the factory associated to {@code clazz}.
@@ -52,6 +56,7 @@ public interface Injector {
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created lazy
    * will be scoped in the root scope of the current scope.
+   *
    * @param clazz the class for which to obtain a lazy in the scope of this injector.
    * @param <T> the type of {@code clazz}.
    * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
@@ -63,4 +68,12 @@ public interface Injector {
    */
   Injector getParent();
 
+  /**
+   * Allows to define override module. These method should only be used for testing.
+   * DO NOT USE IT IN PRODUCTION.
+   * Override modules will have preseance over other modules, allowing to define stubs/fake/mocks.
+   *
+   * @param modules an array of modules that define override bindings.
+   */
+  void installOverrideModules(Module... modules);
 }

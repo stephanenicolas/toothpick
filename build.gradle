@@ -56,7 +56,7 @@ subprojects { project ->
       tasks.withType(Test) {
 
         testLogging {
-           events "passed", "skipped", "failed"
+          events "passed", "skipped", "failed"
         }
         // ensure tasks don't overwrite the default report directories used by the 'test' task
         reports.html.destination = "${buildDir}/reports/${name}"
@@ -80,4 +80,5 @@ ext.deps = [// Common
             // Test dependencies
             junit         : 'junit:junit:4.12',
             truth         : 'com.google.truth:truth:0.27',
-            compiletesting: 'com.google.testing.compile:compile-testing:0.7',]
+            compiletesting: 'com.google.testing.compile:compile-testing:0.7',
+            easymock      : 'org.easymock:easymock:3.4',]
