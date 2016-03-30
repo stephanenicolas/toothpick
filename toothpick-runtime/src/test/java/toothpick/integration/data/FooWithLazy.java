@@ -1,7 +1,6 @@
 package toothpick.integration.data;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import toothpick.Lazy;
 
 public class FooWithLazy implements IFoo {

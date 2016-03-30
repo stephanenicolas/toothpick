@@ -1,13 +1,11 @@
 package toothpick.integration.inject.lazy;
 
-import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.Lazy;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.FooWithLazy;
-import toothpick.integration.data.FooWithProvider;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;

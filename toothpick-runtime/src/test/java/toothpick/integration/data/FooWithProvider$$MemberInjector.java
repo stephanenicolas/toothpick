@@ -1,6 +1,5 @@
 package toothpick.integration.data;
 
-import javax.inject.Provider;
 import toothpick.Injector;
 import toothpick.MemberInjector;
 
