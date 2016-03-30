@@ -2,8 +2,8 @@ package toothpick;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
@@ -23,12 +23,18 @@ import static java.lang.String.format;
 public class InjectorImpl implements Injector {
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
+  //parentInjectors, sorted from this the root injector
   private final List<InjectorImpl> parentInjectors;
   private boolean hasOverrides;
 
   public InjectorImpl(Injector parent, Module... modules) {
     this.parent = parent;
-    parentInjectors = getParentInjectors();
+    if (parent == null) {
+      parentInjectors = new ArrayList<>();
+    } else {
+      parentInjectors = new ArrayList<>(((InjectorImpl) parent).parentInjectors);
+    }
+    parentInjectors.add(0, this);
     installModules(modules);
   }
 
@@ -51,9 +57,9 @@ public class InjectorImpl implements Injector {
 
   @Override public <T> T getInstance(Class<T> clazz) {
     synchronized (clazz) {
-      ListIterator<InjectorImpl> reverseIterator = parentInjectors.listIterator(parentInjectors.size());
-      while (reverseIterator.hasPrevious()) {
-        InjectorImpl parentInjector = reverseIterator.previous();
+      Iterator<InjectorImpl> iterator = parentInjectors.iterator();
+      while (iterator.hasNext()) {
+        InjectorImpl parentInjector = iterator.next();
         T scopedInstance = parentInjector.getScopedInstance(clazz);
         if (scopedInstance != null) {
           return scopedInstance;
@@ -64,18 +70,22 @@ public class InjectorImpl implements Injector {
     T instance = factory.createInstance(this);
     if (factory.hasSingletonAnnotation()) {
       //singleton classes discovered dynamically go to root scope.
-      getParentInjectors().get(0).getScope().put(clazz, new SingletonPoweredProvider(instance));
+      getRootInjector().getScope().put(clazz, new SingletonPoweredProvider(instance));
     } else {
       scope.put(clazz, new FactoryPoweredProvider(this, factory));
     }
     return instance;
   }
 
+  private InjectorImpl getRootInjector() {
+    return parentInjectors.get(parentInjectors.size() - 1);
+  }
+
   @Override public <T> Provider<T> getProvider(Class<T> clazz) {
     synchronized (clazz) {
-      ListIterator<InjectorImpl> reverseIterator = parentInjectors.listIterator(parentInjectors.size());
-      while (reverseIterator.hasPrevious()) {
-        InjectorImpl parentInjector = reverseIterator.previous();
+      Iterator<InjectorImpl> iterator = parentInjectors.iterator();
+      while (iterator.hasNext()) {
+        InjectorImpl parentInjector = iterator.next();
         Provider<T> scopedProvider = parentInjector.getScopedProvider(clazz);
         if (scopedProvider != null) {
           return scopedProvider;
@@ -88,7 +98,7 @@ public class InjectorImpl implements Injector {
     if (factory.hasSingletonAnnotation()) {
       //singleton classes discovered dynamically go to root scope.
       newProvider = new SingletonPoweredProvider(instance);
-      getParentInjectors().get(0).getScope().put(clazz, newProvider);
+      getRootInjector().getScope().put(clazz, newProvider);
     } else {
       newProvider = new FactoryPoweredProvider(this, factory);
       scope.put(clazz, newProvider);
@@ -144,20 +154,6 @@ public class InjectorImpl implements Injector {
    */
   private <T> Provider<T> getScopedProvider(Class<T> clazz) {
     return scope.get(clazz);
-  }
-
-  /**
-   * @return the list of all parent injectors, in order, sorted from the oldest to this.
-   * TODO this could be a strategy.
-   */
-  private List<InjectorImpl> getParentInjectors() {
-    List<InjectorImpl> parentInjectors = new ArrayList<>();
-    InjectorImpl currentInjector = this;
-    while (currentInjector != null) {
-      parentInjectors.add(0, currentInjector);
-      currentInjector = (InjectorImpl) currentInjector.getParent();
-    }
-    return parentInjectors;
   }
 
   private void installModules(Module[] modules) {
