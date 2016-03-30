@@ -20,8 +20,8 @@ public class SingletonCreationWithoutModuleTest {
     Injector injector = new InjectorImpl();
 
     //WHEN
-    FooSingleton instance = injector.createInstance(FooSingleton.class);
-    FooSingleton instance2 = injector.createInstance(FooSingleton.class);
+    FooSingleton instance = injector.getInstance(FooSingleton.class);
+    FooSingleton instance2 = injector.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(instance, notNullValue());

@@ -1,6 +1,6 @@
 package toothpick.config;
 
-import toothpick.Provider;
+import javax.inject.Provider;
 
 public class Binding<T> {
   private Class<T> key;

@@ -1,7 +1,7 @@
 package toothpick.integration.data;
 
 import javax.inject.Inject;
-import toothpick.Provider;
+import javax.inject.Provider;
 
 public class IFooProvider implements Provider<IFoo> {
   @Inject public Bar bar;

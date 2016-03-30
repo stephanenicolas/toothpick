@@ -1,10 +1,10 @@
 package toothpick.providers;
 
+import javax.inject.Provider;
 import toothpick.Factory;
 import toothpick.FactoryRegistry;
 import toothpick.InjectorImpl;
 import toothpick.ProvidesSingleton;
-import toothpick.Provider;
 
 /**
  * A producer that uses a {@link Factory} of providers to produces instances of {@code T}.

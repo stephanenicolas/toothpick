@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.providers.FactoryPoweredProvider;
@@ -47,7 +48,7 @@ public class InjectorImpl implements Injector {
     return scope;
   }
 
-  @Override public <T> T createInstance(Class<T> clazz) {
+  @Override public <T> T getInstance(Class<T> clazz) {
     synchronized (clazz) {
       ListIterator<InjectorImpl> reverseIterator = parentInjectors.listIterator(parentInjectors.size());
       while (reverseIterator.hasPrevious()) {
@@ -67,6 +68,31 @@ public class InjectorImpl implements Injector {
       scope.put(clazz, new FactoryPoweredProvider(this, factory));
     }
     return instance;
+  }
+
+  @Override public <T> Provider<T> getProvider(Class<T> clazz) {
+    synchronized (clazz) {
+      ListIterator<InjectorImpl> reverseIterator = parentInjectors.listIterator(parentInjectors.size());
+      while (reverseIterator.hasPrevious()) {
+        InjectorImpl parentInjector = reverseIterator.previous();
+        Provider<T> scopedProvider = parentInjector.getScopedProvider(clazz);
+        if (scopedProvider != null) {
+          return scopedProvider;
+        }
+      }
+    }
+    Factory<T> factory = FactoryRegistry.getFactory(clazz);
+    T instance = factory.createInstance(this);
+    final Provider<T> newProvider;
+    if (factory.hasSingletonAnnotation()) {
+      //singleton classes discovered dynamically go to root scope.
+      newProvider = new SingletonPoweredProvider(instance);
+      getParentInjectors().get(0).getScope().put(clazz, newProvider);
+    } else {
+      newProvider = new FactoryPoweredProvider(this, factory);
+      scope.put(clazz, newProvider);
+    }
+    return newProvider;
   }
 
   private void installModule(Module module) {
@@ -89,6 +115,18 @@ public class InjectorImpl implements Injector {
       return null;
     }
     return provider.get();
+  }
+
+  /**
+   * Obtains the provider of the class {@code clazz} that is scoped in the current scope, if any.
+   * Ancestors are not taken into account.
+   *
+   * @param clazz the class for which to obtain the scoped provider of this injector, if one is scoped.
+   * @param <T> the type of {@code clazz}.
+   * @return the scoped provider of this injector, if one is scoped, {@code Null} otherwise.
+   */
+  private <T> Provider<T> getScopedProvider(Class<T> clazz) {
+    return scope.get(clazz);
   }
 
   /**

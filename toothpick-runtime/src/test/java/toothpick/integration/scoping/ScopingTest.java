@@ -33,7 +33,7 @@ public class ScopingTest {
     });
 
     //WHEN
-    Foo instance = injector.createInstance(Foo.class);
+    Foo instance = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo2, sameInstance(instance));
@@ -51,8 +51,8 @@ public class ScopingTest {
     Injector injector = new InjectorImpl(injectorParent);
 
     //WHEN
-    Foo instance = injector.createInstance(Foo.class);
-    Foo instance2 = injectorParent.createInstance(Foo.class);
+    Foo instance = injector.getInstance(Foo.class);
+    Foo instance2 = injectorParent.getInstance(Foo.class);
 
     //THEN
     assertThat(foo1, sameInstance(instance));
@@ -65,8 +65,8 @@ public class ScopingTest {
     Injector injector = new InjectorImpl(injectorParent);
 
     //WHEN
-    FooSingleton instance = injector.createInstance(FooSingleton.class);
-    FooSingleton instance2 = injectorParent.createInstance(FooSingleton.class);
+    FooSingleton instance = injector.getInstance(FooSingleton.class);
+    FooSingleton instance2 = injectorParent.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(instance, sameInstance(instance2));

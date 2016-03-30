@@ -5,7 +5,7 @@ import toothpick.MemberInjector;
 
 @SuppressWarnings("unused") public class FooProvider$$MemberInjector implements MemberInjector<FooProvider> {
   @Override public void inject(FooProvider foo, Injector injector) {
-    Bar bar = injector.createInstance(Bar.class);
+    Bar bar = injector.getInstance(Bar.class);
     foo.bar = bar;
   }
 }

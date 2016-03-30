@@ -1,7 +1,7 @@
 package toothpick.providers;
 
+import javax.inject.Provider;
 import toothpick.InjectorImpl;
-import toothpick.Provider;
 
 /**
  * Base class of providers that replace themselves in the scope with a more efficient provider.

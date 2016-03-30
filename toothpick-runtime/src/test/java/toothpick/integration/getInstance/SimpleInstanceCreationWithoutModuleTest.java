@@ -21,7 +21,7 @@ public class SimpleInstanceCreationWithoutModuleTest {
     Injector injector = new InjectorImpl();
 
     //WHEN
-    Foo instance = injector.createInstance(Foo.class);
+    Foo instance = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());
@@ -32,8 +32,8 @@ public class SimpleInstanceCreationWithoutModuleTest {
     Injector injector = new InjectorImpl();
 
     //WHEN
-    Foo instance = injector.createInstance(Foo.class);
-    Foo instance2 = injector.createInstance(Foo.class);
+    Foo instance = injector.getInstance(Foo.class);
+    Foo instance2 = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());

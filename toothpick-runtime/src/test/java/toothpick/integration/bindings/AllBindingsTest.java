@@ -1,9 +1,9 @@
 package toothpick.integration.bindings;
 
+import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
-import toothpick.Provider;
 import toothpick.config.Module;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
@@ -49,8 +49,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    Foo foo = injector.createInstance(Foo.class);
-    Foo foo2 = injector.createInstance(Foo.class);
+    Foo foo = injector.getInstance(Foo.class);
+    Foo foo2 = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -68,8 +68,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    FooSingleton foo = injector.createInstance(FooSingleton.class);
-    FooSingleton foo2 = injector.createInstance(FooSingleton.class);
+    FooSingleton foo = injector.getInstance(FooSingleton.class);
+    FooSingleton foo2 = injector.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -88,8 +88,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    Foo foo = injector.createInstance(Foo.class);
-    Foo foo2 = injector.createInstance(Foo.class);
+    Foo foo = injector.getInstance(Foo.class);
+    Foo foo2 = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -107,8 +107,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    IFoo foo = injector.createInstance(IFoo.class);
-    IFoo foo2 = injector.createInstance(IFoo.class);
+    IFoo foo = injector.getInstance(IFoo.class);
+    IFoo foo2 = injector.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -130,8 +130,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    FooSingleton foo = injector.createInstance(FooSingleton.class);
-    FooSingleton foo2 = injector.createInstance(FooSingleton.class);
+    FooSingleton foo = injector.getInstance(FooSingleton.class);
+    FooSingleton foo2 = injector.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -154,8 +154,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    IFoo foo = injector.createInstance(IFoo.class);
-    IFoo foo2 = injector.createInstance(IFoo.class);
+    IFoo foo = injector.getInstance(IFoo.class);
+    IFoo foo2 = injector.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -174,8 +174,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    IFoo foo = injector.createInstance(IFoo.class);
-    IFoo foo2 = injector.createInstance(IFoo.class);
+    IFoo foo = injector.getInstance(IFoo.class);
+    IFoo foo2 = injector.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -201,8 +201,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    IFoo foo = injector.createInstance(IFoo.class);
-    IFoo foo2 = injector.createInstance(IFoo.class);
+    IFoo foo = injector.getInstance(IFoo.class);
+    IFoo foo2 = injector.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -228,8 +228,8 @@ public class AllBindingsTest {
     });
 
     //WHEN
-    IFoo foo = injector.createInstance(IFoo.class);
-    IFoo foo2 = injector.createInstance(IFoo.class);
+    IFoo foo = injector.getInstance(IFoo.class);
+    IFoo foo2 = injector.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());

@@ -6,6 +6,6 @@ import toothpick.MemberInjector;
 @SuppressWarnings("unused") public class IFooProviderAnnotatedProvidesSingleton$$MemberInjector
     implements MemberInjector<IFooProviderAnnotatedProvidesSingleton> {
   @Override public void inject(IFooProviderAnnotatedProvidesSingleton foo, Injector injector) {
-    foo.bar = injector.createInstance(Bar.class);
+    foo.bar = injector.getInstance(Bar.class);
   }
 }

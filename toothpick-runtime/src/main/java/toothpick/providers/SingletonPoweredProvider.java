@@ -1,6 +1,6 @@
 package toothpick.providers;
 
-import toothpick.Provider;
+import javax.inject.Provider;
 
 /**
  * A provider that always return the same {@link javax.inject.Singleton} instance

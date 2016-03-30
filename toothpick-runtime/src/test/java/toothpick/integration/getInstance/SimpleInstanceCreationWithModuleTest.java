@@ -22,7 +22,7 @@ public class SimpleInstanceCreationWithModuleTest {
     Injector injector = new InjectorImpl(new SimpleModule());
 
     //WHEN
-    Foo instance = injector.createInstance(Foo.class);
+    Foo instance = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());
@@ -33,8 +33,8 @@ public class SimpleInstanceCreationWithModuleTest {
     Injector injector = new InjectorImpl(new SimpleModule());
 
     //WHEN
-    Foo instance = injector.createInstance(Foo.class);
-    Foo instance2 = injector.createInstance(Foo.class);
+    Foo instance = injector.getInstance(Foo.class);
+    Foo instance2 = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());

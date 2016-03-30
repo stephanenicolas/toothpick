@@ -1,7 +1,7 @@
 package toothpick.integration.data;
 
 import javax.inject.Inject;
-import toothpick.Provider;
+import javax.inject.Provider;
 import toothpick.ProvidesSingleton;
 
 @ProvidesSingleton public class IFooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {

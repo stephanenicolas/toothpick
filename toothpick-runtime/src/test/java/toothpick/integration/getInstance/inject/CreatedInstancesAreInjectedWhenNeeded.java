@@ -1,9 +1,9 @@
 package toothpick.integration.getInstance.inject;
 
+import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
-import toothpick.Provider;
 import toothpick.config.Module;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
@@ -29,7 +29,7 @@ public class CreatedInstancesAreInjectedWhenNeeded {
     });
 
     //WHEN
-    Foo foo = injector.createInstance(Foo.class);
+    Foo foo = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo.bar, notNullValue());
@@ -49,7 +49,7 @@ public class CreatedInstancesAreInjectedWhenNeeded {
     });
 
     //WHEN
-    Foo foo = injector.createInstance(Foo.class);
+    Foo foo = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo.bar, nullValue());
@@ -64,7 +64,7 @@ public class CreatedInstancesAreInjectedWhenNeeded {
     });
 
     //WHEN
-    Foo foo = injector.createInstance(Foo.class);
+    Foo foo = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo.bar, nullValue());
@@ -79,7 +79,7 @@ public class CreatedInstancesAreInjectedWhenNeeded {
     });
 
     //WHEN
-    Foo foo = injector.createInstance(Foo.class);
+    Foo foo = injector.getInstance(Foo.class);
 
     //THEN
     assertThat(foo.bar, nullValue());
