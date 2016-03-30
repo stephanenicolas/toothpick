@@ -16,9 +16,4 @@ public class SimpleEntryPoint {
   public int multiply() {
     return 3 * computer.compute();
   }
-
-  public static void main(String[] args) {
-    int result = new SimpleEntryPoint().multiply();
-    System.out.printf("result: %d\n", result);
-  }
 }
