@@ -48,18 +48,16 @@ subprojects { project ->
           html.enabled = true
         }
 
-        afterEvaluate {
-          classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                exclude: ['codeeval/**',
-                          'crackingthecode/part3knowledgebased/**',
-                          '**/Chapter7ObjectOrientedDesign**',
-                          '**/Chapter11Testing**',
-                          '**/Chapter12SystemDesignAndMemoryLimits**',
-                          'projecteuler/**'])
-          })
-        }
-      }
+        //from http://stackoverflow.com/a/29887806/693752
+        //from http://stackoverflow.com/a/17411305/693752
+        //this doesn't work to filter the generated class out of the jacoco report
+//        afterEvaluate {
+//          classDirectories = files(classDirectories.files.collect {
+//            fileTree(exclude: ['**/*Factory*',
+//                          '**/*MemberInjector*'])
+//          })
+//        }
+//      }
 
       tasks.coveralls {
         dependsOn 'check'
