@@ -4,10 +4,10 @@ public class FactoryGenerator {
 
   private static final String FACTORY_SUFFIX = "$$Factory";
 
-  private InjectionTarget injectionTarget;
+  private FactoryInjectionTarget factoryInjectionTarget;
 
-  public FactoryGenerator(InjectionTarget injectionTarget) {
-    this.injectionTarget = injectionTarget;
+  public FactoryGenerator(FactoryInjectionTarget factoryInjectionTarget) {
+    this.factoryInjectionTarget = factoryInjectionTarget;
   }
 
   public String brewJava() {
@@ -23,6 +23,6 @@ public class FactoryGenerator {
   }
 
   public String getFqcn() {
-    return injectionTarget.getFqcn() + FACTORY_SUFFIX;
+    return factoryInjectionTarget.getFqcn() + FACTORY_SUFFIX;
   }
 }

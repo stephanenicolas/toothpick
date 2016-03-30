@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.type.TypeMirror;
 
-public final class InjectionTarget {
+public final class FactoryInjectionTarget {
 
   public final List<TypeMirror> parameters = new ArrayList<>();
   public final String classPackage;
@@ -12,9 +12,11 @@ public final class InjectionTarget {
   public final String targetClass;
   public final boolean hasSingletonAnnotation;
   public final boolean hasProducesSingletonAnnotation;
+  //TODO detect if class or super class has injected members hasInjectedMembers
+  //if so, the factory has to call inject on the created instance.
 
-  public InjectionTarget(String classPackage, String className, String targetClass,
-      boolean hasSingletonAnnotation, boolean hasProducesSingletonAnnotation) {
+  public FactoryInjectionTarget(String classPackage, String className, String targetClass, boolean hasSingletonAnnotation,
+      boolean hasProducesSingletonAnnotation) {
     this.classPackage = classPackage;
     this.className = className;
     this.targetClass = targetClass;
