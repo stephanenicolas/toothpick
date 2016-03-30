@@ -106,7 +106,7 @@ public class InjectorImpl implements Injector {
     boolean oldHasOverrides = hasOverrides;
     hasOverrides = false;
     installModules(modules);
-    boolean doOverrideModulesExist = modules != null && modules.length != 0;
+    boolean doOverrideModulesExist = modules != null;
     hasOverrides = oldHasOverrides || doOverrideModulesExist;
   }
 

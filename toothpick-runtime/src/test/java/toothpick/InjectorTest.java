@@ -2,6 +2,7 @@ package toothpick;
 
 import org.junit.Test;
 import toothpick.config.Module;
+import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -63,6 +64,20 @@ public class InjectorTest {
     assertThat(instance, sameInstance(testFoo2));
   }
 
+  @Test public void installOverrideModules_shoudNotOverrideOtherBindings() {
+    //GIVEN
+    Foo testFoo = new Foo();
+    InjectorImpl injector = new InjectorImpl(new ProdModule2());
+    injector.installOverrideModules(new TestModule(testFoo));
+
+    //WHEN
+    Foo fooInstance = injector.getInstance(Foo.class);
+    Bar barInstance = injector.getInstance(Bar.class);
+
+    //THEN
+    assertThat(fooInstance, sameInstance(testFoo));
+    assertThat(barInstance, notNullValue());
+  }
 
   private static class TestModule extends Module {
     public TestModule(Foo foo) {
@@ -73,6 +88,13 @@ public class InjectorTest {
   private static class ProdModule extends Module {
     public ProdModule() {
       bind(Foo.class).to(new Foo());
+    }
+  }
+
+  private static class ProdModule2 extends Module {
+    public ProdModule2() {
+      bind(Foo.class).to(new Foo());
+      bind(Bar.class).to(new Bar());
     }
   }
 }
