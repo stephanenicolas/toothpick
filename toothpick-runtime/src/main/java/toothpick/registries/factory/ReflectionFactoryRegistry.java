@@ -1,6 +1,7 @@
-package toothpick.registries;
+package toothpick.registries.factory;
 
 import toothpick.Factory;
+import toothpick.registries.FactoryRegistry;
 
 /**
  * Finds instances of {@link Factory} via reflection.

@@ -4,7 +4,7 @@ import javax.inject.Provider;
 import toothpick.Factory;
 import toothpick.InjectorImpl;
 import toothpick.ProvidesSingleton;
-import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.factory.FactoryRegistryLocator;
 
 /**
  * A producer that uses a {@link Factory} of providers to produces instances of {@code T}.

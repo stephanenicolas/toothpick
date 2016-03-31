@@ -2,7 +2,7 @@ package toothpick.providers;
 
 import toothpick.Factory;
 import toothpick.InjectorImpl;
-import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.factory.FactoryRegistryLocator;
 
 /**
  * A producer that uses a {@link javax.inject.Singleton} annotated class to produces instances of {@code T}.

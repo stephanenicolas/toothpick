@@ -17,7 +17,7 @@ import toothpick.providers.ProducesSingletonAnnotatedProviderClassPoweredProvide
 import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
 import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
 import toothpick.providers.SingletonPoweredProvider;
-import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.factory.FactoryRegistryLocator;
 import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static java.lang.String.format;
