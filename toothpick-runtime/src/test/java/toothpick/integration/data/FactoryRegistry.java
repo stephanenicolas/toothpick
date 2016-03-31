@@ -22,7 +22,7 @@ public class FactoryRegistry extends AbstractFactoryRegistry {
       case "toothpick.integration.data.IFooProviderAnnotatedSingleton":
         return (Factory<T>) new IFooProviderAnnotatedSingleton$$Factory();
       default:
-        return super.getFactory(clazz);
+        return getFactoryInChildrenRegistries(clazz);
     }
   }
 }

@@ -1,20 +1,14 @@
-package toothpick.registries.factory;
+package toothpick.registries;
 
 import toothpick.Factory;
 
 /**
- * Retrieve instance of factories.
- * TODO get rid of reflection.
- * The plan is to use a tree of FactoryRegistry :
- * when a lib is compiled, we pass an argument to the processor
- * that creates the FactoryRegistry in a given package. It can have dependencies :
- * other factory registries.
- * A factory registry will care about the class it knows the factory of, and can
- * delegate to its dependencies when it doesn't know the factory.
- *
- * @see Factory
+ * Finds instances of {@link Factory} via reflection.
  */
-public class ReflectionFactoryRegistry extends AbstractFactoryRegistry {
+public class ReflectionFactoryRegistry implements FactoryRegistry {
+
+  public static final String FACTORY_SUFFIX = "$$Factory";
+
   public <T> Factory<T> getFactory(Class<T> clazz) {
     if (clazz == null) {
       throw new IllegalArgumentException("Class can't be null");
@@ -22,7 +16,7 @@ public class ReflectionFactoryRegistry extends AbstractFactoryRegistry {
 
     System.out.printf("Warning class %s has no generated factory, falling back on reflection. This slows down your app.\n", clazz);
     try {
-      Class<Factory<T>> factoryClass = (Class<Factory<T>>) Class.forName(clazz.getName() + "$$Factory");
+      Class<Factory<T>> factoryClass = (Class<Factory<T>>) Class.forName(clazz.getName() + FACTORY_SUFFIX);
       return factoryClass.newInstance();
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("Impossible to get the factory class for class " + clazz.getName() + ". Add an inject annotated constructor.");

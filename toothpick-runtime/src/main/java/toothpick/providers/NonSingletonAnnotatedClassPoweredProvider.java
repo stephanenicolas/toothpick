@@ -2,7 +2,7 @@ package toothpick.providers;
 
 import toothpick.Factory;
 import toothpick.InjectorImpl;
-import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.FactoryRegistryLocator;
 
 /**
  * A provider that provides instances of a class {@code T} that is not annotated with {@link javax.inject.Singleton}.
