@@ -2,9 +2,9 @@ package toothpick.providers;
 
 import javax.inject.Provider;
 import toothpick.Factory;
-import toothpick.FactoryRegistry;
 import toothpick.InjectorImpl;
 import toothpick.ProvidesSingleton;
+import toothpick.registries.factory.FactoryRegistryLocator;
 
 /**
  * A producer that uses a {@link Factory} of providers to produces instances of {@code T}.
@@ -12,6 +12,7 @@ import toothpick.ProvidesSingleton;
  * The producer will always ask the factory to create a provider first and
  * ask the provider to create an instance of {@code T}, then we don't use the provider
  * any more and return the singleton.
+ *
  * @param <T> the type of the instances provided by this provider.
  */
 public class ProducesSingletonAnnotatedProviderClassPoweredProvider<T> extends ReplaceInScopeProvider<T> {
@@ -24,8 +25,7 @@ public class ProducesSingletonAnnotatedProviderClassPoweredProvider<T> extends R
   }
 
   @Override public T get() {
-    Factory<? extends Provider<? extends T>> providerFactory =
-        FactoryRegistry.getFactory(providerClass);
+    Factory<? extends Provider<? extends T>> providerFactory = FactoryRegistryLocator.getFactory(providerClass);
     Provider<? extends T> provider = providerFactory.createInstance(getInjector());
     T instance = provider.get();
     replaceInScope(new SingletonPoweredProvider<>(instance));

@@ -5,6 +5,7 @@ import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.config.Module;
+import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
 import toothpick.integration.data.FooProvider;
@@ -18,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Creates a instance in the simplest possible way
   * without any module.
  */
-public class CreatedInstancesAreInjectedWhenNeeded {
+public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickIntegrationTest {
 
   @Test public void createdInstance_shouldBeInjected_whenBindingToAClassWithInjectFields() throws Exception {
     //GIVEN

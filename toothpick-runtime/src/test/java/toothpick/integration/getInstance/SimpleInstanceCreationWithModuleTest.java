@@ -4,6 +4,7 @@ import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.config.Module;
+import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.Foo;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -15,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Creates a instance in the simplest possible way
   * with a module that binds a single class.
  */
-public class SimpleInstanceCreationWithModuleTest {
+public class SimpleInstanceCreationWithModuleTest extends ToothPickIntegrationTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN

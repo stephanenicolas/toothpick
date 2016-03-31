@@ -1,4 +1,6 @@
-package toothpick;
+package toothpick.registries.factory;
+
+import toothpick.Factory;
 
 /**
  * Retrieve instance of factories.
@@ -12,15 +14,13 @@ package toothpick;
  *
  * @see Factory
  */
-public class FactoryRegistry {
-  private FactoryRegistry() {
-  }
-
-  public static <T> Factory<T> getFactory(Class<T> clazz) {
+public class ReflectionFactoryRegistry extends AbstractFactoryRegistry {
+  public <T> Factory<T> getFactory(Class<T> clazz) {
     if (clazz == null) {
       throw new IllegalArgumentException("Class can't be null");
     }
 
+    System.out.printf("Warning class %s has no generated factory, falling back on reflection. This slows down your app.\n", clazz);
     try {
       Class<Factory<T>> factoryClass = (Class<Factory<T>>) Class.forName(clazz.getName() + "$$Factory");
       return factoryClass.newInstance();

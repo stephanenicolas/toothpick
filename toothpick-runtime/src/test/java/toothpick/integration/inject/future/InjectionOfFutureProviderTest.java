@@ -4,6 +4,7 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
+import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.FooWithFuture;
 
@@ -15,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /*
  * Test injection of {@code Lazy}s.
  */
-public class InjectionOfFutureProviderTest {
+public class InjectionOfFutureProviderTest extends ToothPickIntegrationTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN

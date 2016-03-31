@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 //TODO more unit tests
-public class InjectorTest {
+public class InjectorTest extends ToothPickBaseTest {
 
   @Test(expected = IllegalStateException.class) public void toProvider_shoudThrowException_whenBindingIsNull() throws Exception {
     //GIVEN

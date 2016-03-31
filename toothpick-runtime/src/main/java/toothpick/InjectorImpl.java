@@ -17,6 +17,8 @@ import toothpick.providers.ProducesSingletonAnnotatedProviderClassPoweredProvide
 import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
 import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
 import toothpick.providers.SingletonPoweredProvider;
+import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static java.lang.String.format;
 
@@ -51,7 +53,7 @@ public class InjectorImpl implements Injector {
   }
 
   @Override public <T> void inject(T obj) {
-    MemberInjector<T> memberInjector = MemberInjectorRegistry.getMemberInjector((Class<T>) obj.getClass());
+    MemberInjector<T> memberInjector = MemberInjectorRegistryLocator.getMemberInjector((Class<T>) obj.getClass());
     memberInjector.inject(obj, this);
   }
 
@@ -70,7 +72,7 @@ public class InjectorImpl implements Injector {
         }
       }
     }
-    Factory<T> factory = FactoryRegistry.getFactory(clazz);
+    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
     T instance = factory.createInstance(this);
     if (factory.hasSingletonAnnotation()) {
       //singleton classes discovered dynamically go to root scope.
@@ -96,7 +98,7 @@ public class InjectorImpl implements Injector {
         }
       }
     }
-    Factory<T> factory = FactoryRegistry.getFactory(clazz);
+    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
     T instance = factory.createInstance(this);
     final Provider<T> newProvider;
     if (factory.hasSingletonAnnotation()) {
@@ -182,14 +184,14 @@ public class InjectorImpl implements Injector {
     }
     switch (binding.getMode()) {
       case SIMPLE:
-        Factory<? extends T> factory = FactoryRegistry.getFactory(binding.getKey());
+        Factory<? extends T> factory = FactoryRegistryLocator.getFactory(binding.getKey());
         if (factory.hasSingletonAnnotation()) {
           return new SingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
         } else {
           return new NonSingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
         }
       case CLASS:
-        Factory<? extends T> factory2 = FactoryRegistry.getFactory(binding.getImplementationClass());
+        Factory<? extends T> factory2 = FactoryRegistryLocator.getFactory(binding.getImplementationClass());
         if (factory2.hasSingletonAnnotation()) {
           return new SingletonAnnotatedClassPoweredProvider(this, binding.getKey(), binding.getImplementationClass());
         } else {
@@ -200,7 +202,7 @@ public class InjectorImpl implements Injector {
       case PROVIDER_INSTANCE:
         return binding.getProviderInstance();
       case PROVIDER_CLASS:
-        Factory<? extends Provider<T>> providerFactory = FactoryRegistry.getFactory(binding.getProviderClass());
+        Factory<? extends Provider<T>> providerFactory = FactoryRegistryLocator.getFactory(binding.getProviderClass());
         //TODO use a single class here
         //or at least pass them the factory !
         if (providerFactory.hasSingletonAnnotation()) {

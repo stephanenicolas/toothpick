@@ -4,6 +4,7 @@ import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.config.Module;
+import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.Foo;
 import toothpick.integration.data.FooSingleton;
 
@@ -15,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /*
  * Tests scopes related features of toothpick.
  */
-public class ScopingTest {
+public class ScopingTest extends ToothPickIntegrationTest {
 
   @Test public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
     //GIVEN

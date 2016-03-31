@@ -3,11 +3,13 @@ package toothpick.sample;
 import org.easymock.EasyMockRule;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.ToothPick;
 import toothpick.config.Module;
+import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -20,6 +22,10 @@ public class SimpleEntryPointTest {
   @Rule public EasyMockRule mocks = new EasyMockRule(this);
   @TestSubject private SimpleEntryPoint simpleEntryPointUnderTest = new SimpleEntryPoint();
   @Mock private Computer mockComputer;
+
+  @BeforeClass public static void setUp() throws Exception {
+    MemberInjectorRegistryLocator.addRegistry(new MemberInjectorRegistry());
+  }
 
   @Test public void testMultiply() throws Exception {
     //GIVEN

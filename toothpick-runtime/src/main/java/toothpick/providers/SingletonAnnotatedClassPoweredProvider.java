@@ -1,8 +1,8 @@
 package toothpick.providers;
 
 import toothpick.Factory;
-import toothpick.FactoryRegistry;
 import toothpick.InjectorImpl;
+import toothpick.registries.factory.FactoryRegistryLocator;
 
 /**
  * A producer that uses a {@link javax.inject.Singleton} annotated class to produces instances of {@code T}.
@@ -20,7 +20,7 @@ public class SingletonAnnotatedClassPoweredProvider<T> extends ReplaceInScopePro
   }
 
   @Override public T get() {
-    Factory<T> factory = FactoryRegistry.getFactory(clazz);
+    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
     T instance = factory.createInstance(getInjector());
     replaceInScope(new SingletonPoweredProvider(instance));
     return instance;

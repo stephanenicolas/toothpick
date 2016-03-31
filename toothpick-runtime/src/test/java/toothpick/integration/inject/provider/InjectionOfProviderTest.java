@@ -4,6 +4,7 @@ import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
+import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.FooSingleton;
 import toothpick.integration.data.FooWithProvider;
@@ -18,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /*
  * Test injection of {@code Provider}s.
  */
-public class InjectionOfProviderTest {
+public class InjectionOfProviderTest extends ToothPickIntegrationTest {
 
   @Test public void testSimpleInjection_shouldReturnAProviderOfInstances_whenInjectedClassIsNotAnnotatedWithSingleton() throws Exception {
     //GIVEN

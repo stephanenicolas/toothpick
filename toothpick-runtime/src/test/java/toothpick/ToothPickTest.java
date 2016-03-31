@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-public class ToothPickTest {
+public class ToothPickTest extends ToothPickBaseTest {
 
   @Test public void getInjector_shouldReturnNull_whenNoInjectorByThisKeyWasCreated() throws Exception {
     //GIVEN

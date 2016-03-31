@@ -5,6 +5,7 @@ import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
 import toothpick.config.Module;
+import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
 import toothpick.integration.data.FooSingleton;
@@ -38,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * if we don't then toothpick contract is simpler : we inject stuff that toothpick create. Nothing else.
  * A configurable strategy for this would be nice.
  */
-public class AllBindingsTest {
+public class AllBindingsTest extends ToothPickIntegrationTest {
 
   @Test public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {
     //GIVEN
