@@ -104,7 +104,8 @@ public class FactoryProcessor extends AbstractProcessor {
     return targetClassMap;
   }
 
-  private void parseInject(Element element, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
+  private void parseInject(Element element,
+      Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -114,8 +115,9 @@ public class FactoryProcessor extends AbstractProcessor {
 
     // Another constructor already used for the class.
     if (targetClassMap.containsKey(enclosingElement)) {
-      throw new IllegalStateException(String.format("@%s class %s must not have more than one "
-          + "annotated constructor.", Inject.class.getSimpleName(), element.getSimpleName()));
+      throw new IllegalStateException(
+          String.format("@%s class %s must not have more than one " + "annotated constructor.",
+              Inject.class.getSimpleName(), element.getSimpleName()));
     }
 
     targetClassMap.put(enclosingElement, createInjectionTarget(element));
@@ -152,11 +154,12 @@ public class FactoryProcessor extends AbstractProcessor {
     final String className = getClassName(enclosingElement, classPackage);
     final String targetClass = enclosingElement.getQualifiedName().toString();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
-    final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement,
-        "ProvidesSingleton");
+    final boolean hasProducesSingletonAnnotation =
+        hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
 
-    FactoryInjectionTarget factoryInjectionTarget = new FactoryInjectionTarget(classPackage, className, targetClass,
-        hasSingletonAnnotation, hasProducesSingletonAnnotation);
+    FactoryInjectionTarget factoryInjectionTarget =
+        new FactoryInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation,
+            hasProducesSingletonAnnotation);
     addParameters(element, factoryInjectionTarget);
 
     return factoryInjectionTarget;
