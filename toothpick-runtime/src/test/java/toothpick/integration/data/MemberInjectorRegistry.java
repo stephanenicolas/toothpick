@@ -32,7 +32,7 @@ public class MemberInjectorRegistry extends AbstractMemberInjectorRegistry {
       case "toothpick.integration.data.IFooProviderAnnotatedSingleton":
         return (MemberInjector<T>) new IFooProviderAnnotatedSingleton$$MemberInjector();
       default:
-        return super.getMemberInjector(clazz);
+        return getMemberInjectorInChildrenRegistries(clazz);
     }
   }
 }

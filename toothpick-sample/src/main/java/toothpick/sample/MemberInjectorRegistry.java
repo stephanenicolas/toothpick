@@ -10,7 +10,7 @@ public class MemberInjectorRegistry extends AbstractMemberInjectorRegistry {
       case "toothpick.sample.SimpleEntryPoint":
         return (MemberInjector<T>) new SimpleEntryPoint$$MemberInjector();
       default:
-        return super.getMemberInjector(clazz);
+        return getMemberInjectorInChildrenRegistries(clazz);
     }
   }
 }

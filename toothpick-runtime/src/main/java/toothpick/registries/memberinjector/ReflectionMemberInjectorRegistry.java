@@ -1,18 +1,10 @@
 package toothpick.registries.memberinjector;
 
+import toothpick.Factory;
 import toothpick.MemberInjector;
 
 /**
- * Retrieve instance of factories.
- * TODO get rid of reflection.
- * The plan is to use a tree of AbstractMemberInjectorRegistry :
- * when a lib is compiled, we pass an argument to the processor
- * that creates the AbstractMemberInjectorRegistry in a given package. It can have dependencies :
- * other member injector registries.
- * A member injector registry will care about the class it knows the member injector of, and can
- * delegate to its dependencies when it doesn't know the member injector.
- *
- * @see MemberInjector
+ * Finds instances of {@link Factory} via reflection.
  */
 public class ReflectionMemberInjectorRegistry extends AbstractMemberInjectorRegistry {
 
