@@ -3,8 +3,8 @@ package toothpick.integration.getInstance;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
+import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
-import toothpick.integration.ToothPickIntegrationTest;
 import toothpick.integration.data.FooSingleton;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Creates a singleton in the simplest possible way
   * without any module.
  */
-public class SingletonCreationWithModuleTest extends ToothPickIntegrationTest {
+public class SingletonCreationWithModuleTest extends ToothPickBaseTest {
 
   @Test public void testIsProducingSingleton() throws Exception {
     //GIVEN

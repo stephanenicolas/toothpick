@@ -3,7 +3,7 @@ package toothpick.integration.inject;
 import org.junit.Test;
 import toothpick.Injector;
 import toothpick.InjectorImpl;
-import toothpick.integration.ToothPickIntegrationTest;
+import toothpick.ToothPickBaseTest;
 import toothpick.integration.data.Bar;
 import toothpick.integration.data.Foo;
 
@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Creates a instance in the simplest possible way
   * without any module.
  */
-public class InjectionWithoutModuleTest extends ToothPickIntegrationTest {
+public class InjectionWithoutModuleTest extends ToothPickBaseTest {
 
   @Test public void testSimpleInjection() throws Exception {
     //GIVEN
