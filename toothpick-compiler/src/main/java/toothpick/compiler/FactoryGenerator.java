@@ -1,4 +1,4 @@
-package toothpick;
+package toothpick.compiler;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -8,6 +8,8 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
+import toothpick.Factory;
+import toothpick.Injector;
 
 public class FactoryGenerator {
 

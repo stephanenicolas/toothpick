@@ -1,4 +1,4 @@
-package toothpick;
+package toothpick.compiler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
