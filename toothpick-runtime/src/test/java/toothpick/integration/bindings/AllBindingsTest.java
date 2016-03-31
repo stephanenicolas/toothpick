@@ -14,6 +14,7 @@ import toothpick.integration.data.IFooProvider;
 import toothpick.integration.data.IFooProviderAnnotatedProvidesSingleton;
 import toothpick.integration.data.IFooProviderAnnotatedSingleton;
 import toothpick.integration.data.IFooSingleton;
+import toothpick.integration.data.IFooWithBarProvider;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.not;
@@ -183,13 +184,27 @@ public class AllBindingsTest extends ToothPickIntegrationTest {
     assertThat(foo2, not(sameInstance(foo)));
     assertThat(((Foo) foo).bar, nullValue());
     assertThat(((Foo) foo2).bar, nullValue());
-    //TODO here we should be able to get the provider by injecting it
-    //it requires a lot of work
-    //1) change internal providers so that the instance of provider never changes
-    //2) create a getProvider method in injectors
-    //3) change member injector to call the get provider method appropriately
-    //we will have to do something similar for Lazy anyway.
-    //assertThat(((IFooProvider)providerInstance).bar, notNullValue());
+  }
+
+  //we use a provider that would need to be injected and pass the injected dependence
+  //to the produced object, so it's easy to test.
+  @Test public void bindToProviderClass_shouldCreateInjectedProvider() throws Exception {
+    //GIVEN
+    Injector injector = new InjectorImpl(new Module() {
+      {
+        bind(IFoo.class).toProvider(IFooWithBarProvider.class);
+      }
+    });
+
+    //WHEN
+    IFoo foo = injector.getInstance(IFoo.class);
+    IFoo foo2 = injector.getInstance(IFoo.class);
+
+    //THEN
+    assertThat(foo, notNullValue());
+    assertThat(foo2, not(sameInstance(foo)));
+    assertThat(((Foo) foo).bar, notNullValue());
+    assertThat(((Foo) foo2).bar, notNullValue());
   }
 
   @Test public void bindToProviderClass_shouldCreateNonInjectedInstancesWithProviderSingleton_whenProviderClassIsAnnotatedSingleton()
@@ -210,14 +225,6 @@ public class AllBindingsTest extends ToothPickIntegrationTest {
     assertThat(foo2, not(sameInstance(foo)));
     assertThat(((Foo) foo).bar, nullValue());
     assertThat(((Foo) foo2).bar, nullValue());
-    //TODO here we should be able to get the provider by injecting it
-    //it requires a lot of work
-    //1) change internal providers so that the instance of provider never changes
-    //2) create a getProvider method in injectors
-    //3) change member injector to call the get provider method appropriately
-    //we will have to do something similar for Lazy anyway.
-    //assertThat(((IFooProvider)providerInstance).bar, notNullValue());
-    //plus some test to check that we use the same provider
   }
 
   @Test public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
@@ -237,13 +244,5 @@ public class AllBindingsTest extends ToothPickIntegrationTest {
     assertThat(foo2, sameInstance(foo));
     assertThat(((Foo) foo).bar, nullValue());
     assertThat(((Foo) foo2).bar, nullValue());
-    //TODO here we should be able to get the provider by injecting it
-    //it requires a lot of work
-    //1) change internal providers so that the instance of provider never changes
-    //2) create a getProvider method in injectors
-    //3) change member injector to call the get provider method appropriately
-    //we will have to do something similar for Lazy anyway.
-    //assertThat(((IFooProvider)providerInstance).bar, notNullValue());
-    //plus some test to check that we use the same provider
   }
 }

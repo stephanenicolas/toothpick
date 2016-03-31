@@ -20,8 +20,8 @@ public interface Factory<T> {
   /**
    * Creates a new instance of T using its {@link Inject} annotated
    * constructor. There must be one and only annotated constructor.
-   * TODO : fallback on reflection to call default constuctor and emit a slow down warning.
    * If T has {@link Inject} annotated fields, then the new instance will be injected after creation.
+   *
    * @param injector the scope/injector in which to look for all dependencies of the instance T.
    * @return a new instance of T, injected if needed.
    */
@@ -29,12 +29,14 @@ public interface Factory<T> {
 
   /**
    * Signals that the class is annotated with {@link Singleton}.
+   *
    * @return true iff the class is annotated as a singleton.
    */
   boolean hasSingletonAnnotation();
 
   /**
    * Signals that the class is anotated with {@link ProvidesSingleton}.
+   *
    * @return true iff the class is annotated as a producer class whose instances will produce a singleton.
    */
   boolean hasProducesSingletonAnnotation();

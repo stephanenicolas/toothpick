@@ -17,6 +17,8 @@ public class FactoryRegistry extends AbstractFactoryRegistry {
         return (Factory<T>) new FooSingleton$$Factory();
       case "toothpick.integration.data.IFooProvider":
         return (Factory<T>) new IFooProvider$$Factory();
+      case "toothpick.integration.data.IFooWithBarProvider":
+        return (Factory<T>) new IFooWithBarProvider$$Factory();
       case "toothpick.integration.data.IFooProviderAnnotatedProvidesSingleton":
         return (Factory<T>) new IFooProviderAnnotatedProvidesSingleton$$Factory();
       case "toothpick.integration.data.IFooProviderAnnotatedSingleton":

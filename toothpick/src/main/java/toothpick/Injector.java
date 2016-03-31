@@ -23,7 +23,6 @@ public interface Injector {
    * Returns the instance of {@code clazz} if one is scoped in the current
    * scope, or its ancestors. If there is no such instance, the factory associated
    * to the clazz will be used.
-   * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created instance
    * will be scoped in the root scope of the current scope.
@@ -38,7 +37,6 @@ public interface Injector {
    * Returns a {@code Provider} of {@code clazz} if one is scoped in the current
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
-   * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.
@@ -53,7 +51,6 @@ public interface Injector {
    * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
-   * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.
@@ -69,7 +66,6 @@ public interface Injector {
    * Returns a {@code Future} of {@code clazz} if one provider is scoped in the current
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
-   * TODO : in case no factory is found, fallback on reflection and emit a slow down warning.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
    * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.

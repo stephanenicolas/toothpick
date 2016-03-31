@@ -27,6 +27,8 @@ public class MemberInjectorRegistry extends AbstractMemberInjectorRegistry {
         return (MemberInjector<T>) new FooWithProviderOfSingleton$$MemberInjector();
       case "toothpick.integration.data.IFooProvider":
         return (MemberInjector<T>) new IFooProvider$$MemberInjector();
+      case "toothpick.integration.data.IFooWithBarProvider":
+        return (MemberInjector<T>) new IFooWithBarProvider$$MemberInjector();
       case "toothpick.integration.data.IFooProviderAnnotatedProvidesSingleton":
         return (MemberInjector<T>) new IFooProviderAnnotatedProvidesSingleton$$MemberInjector();
       case "toothpick.integration.data.IFooProviderAnnotatedSingleton":

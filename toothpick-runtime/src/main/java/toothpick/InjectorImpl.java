@@ -203,8 +203,7 @@ public class InjectorImpl implements Injector {
         return binding.getProviderInstance();
       case PROVIDER_CLASS:
         Factory<? extends Provider<T>> providerFactory = FactoryRegistryLocator.getFactory(binding.getProviderClass());
-        //TODO use a single class here
-        //or at least pass them the factory !
+        //TODO pass them the factory !
         if (providerFactory.hasSingletonAnnotation()) {
           return new SingletonAnnotatedProviderClassPoweredProvider(this, binding.getKey(), binding.getProviderClass());
         } else if (providerFactory.hasProducesSingletonAnnotation()) {
