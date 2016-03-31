@@ -1,4 +1,4 @@
-package toothpick.compiler;
+package toothpick.compiler.factory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package toothpick.compiler;
+package toothpick.compiler.factory;
 
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;

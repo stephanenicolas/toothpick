@@ -1,4 +1,4 @@
-package toothpick.compiler;
+package toothpick.compiler.factory;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;

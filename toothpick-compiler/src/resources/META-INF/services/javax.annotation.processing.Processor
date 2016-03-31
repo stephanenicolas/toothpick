@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 toothpick.compiler.FactoryProcessor
+=======
+toothpick.compiler.factory.FactoryProcessor
+toothpick.compiler.memberinjector.MemberInjectorProcessor
+>>>>>>> create second processor for member injectors

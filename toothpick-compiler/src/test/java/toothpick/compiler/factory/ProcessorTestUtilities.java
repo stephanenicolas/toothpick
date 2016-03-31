@@ -1,4 +1,4 @@
-package toothpick.compiler;
+package toothpick.compiler.factory;
 
 import java.util.Arrays;
 import javax.annotation.processing.Processor;
