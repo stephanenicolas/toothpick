@@ -9,4 +9,6 @@ dependencies {
   testCompile deps.junit
   testCompile deps.truth
   testCompile deps.compiletesting
+  //from https://github.com/google/compile-testing/issues/28
+  testCompile files(System.getenv("JAVA_HOME") + "/lib/tools.jar")
 }
