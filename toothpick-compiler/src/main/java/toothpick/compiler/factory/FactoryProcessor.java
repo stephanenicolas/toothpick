@@ -143,6 +143,17 @@ import static javax.tools.Diagnostic.Kind.ERROR;
     final String targetClass = enclosingElement.getQualifiedName().toString();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
+    boolean needsMemberInjection = needsMemberInjection(enclosingElement);
+
+    FactoryInjectionTarget factoryInjectionTarget =
+        new FactoryInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation, hasProducesSingletonAnnotation,
+            needsMemberInjection);
+    addParameters(element, factoryInjectionTarget);
+
+    return factoryInjectionTarget;
+  }
+
+  private boolean needsMemberInjection(TypeElement enclosingElement) {
     boolean needsMemberInjection = false;
     TypeElement currentTypeElement = enclosingElement;
     while (!"java.lang.Object".equals(currentTypeElement.getQualifiedName().toString())) {
@@ -155,13 +166,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
       }
       currentTypeElement = (TypeElement) ((DeclaredType) currentTypeElement.getSuperclass()).asElement();
     }
-
-    FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation, hasProducesSingletonAnnotation,
-            needsMemberInjection);
-    addParameters(element, factoryInjectionTarget);
-
-    return factoryInjectionTarget;
+    return needsMemberInjection;
   }
 
   private void addParameters(Element element, FactoryInjectionTarget factoryInjectionTarget) {
