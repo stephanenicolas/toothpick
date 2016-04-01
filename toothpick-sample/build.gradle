@@ -5,6 +5,7 @@ dependencies {
   compile project(':toothpick')
   compile project(':toothpick-runtime')
   compile deps.inject
+  compile project(':toothpick-compiler')
 
   testCompile deps.junit
   testCompile deps.easymock
@@ -20,3 +21,12 @@ afterEvaluate {
     }
   }
 }
+
+compileJava {
+  doFirst {
+    options.compilerArgs = [
+        '-processor', "toothpick.compiler.factory.FactoryProcessor"
+    ]
+  }
+}
+

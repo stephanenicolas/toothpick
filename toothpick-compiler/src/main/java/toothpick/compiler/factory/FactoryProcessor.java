@@ -12,6 +12,8 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
@@ -28,6 +30,7 @@ import javax.tools.JavaFileObject;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
+@SupportedAnnotationTypes({"javax.inject.Inject"})
 public class FactoryProcessor extends AbstractProcessor {
 
   private Elements elementUtils;
@@ -36,24 +39,17 @@ public class FactoryProcessor extends AbstractProcessor {
 
   @Override public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
+    System.out.println("coucou");
 
     elementUtils = processingEnv.getElementUtils();
     typeUtils = processingEnv.getTypeUtils();
     filer = processingEnv.getFiler();
   }
 
-  @Override public Set<String> getSupportedAnnotationTypes() {
-    Set<String> supportTypes = new LinkedHashSet<>();
-    supportTypes.add(Inject.class.getCanonicalName());
-    return supportTypes;
-  }
-
-  @Override public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.latestSupported();
-  }
-
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    System.out.println("coucou");
+
     Map<TypeElement, FactoryInjectionTarget> targetClassMap = findAndParseTargets(roundEnv);
 
     for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : targetClassMap.entrySet()) {
