@@ -7,6 +7,6 @@ import javax.inject.Singleton;
 public class FooSingleton implements IFooSingleton {
   @Inject public Bar bar; //annotation is not needed, but it's a better example
 
-  public FooSingleton() {
+  @Inject public FooSingleton() {
   }
 }

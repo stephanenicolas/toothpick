@@ -23,24 +23,20 @@ public class FactoryGenerator {
 
   public String brewJava() {
     // Interface to implement
-    ClassName className =
-        ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className);
-    ParameterizedTypeName parameterizedTypeName =
-        ParameterizedTypeName.get(ClassName.get(Factory.class), className);
+    ClassName className = ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className);
+    ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(Factory.class), className);
 
     // Build class
-    TypeSpec.Builder factoryTypeSpec =
-        TypeSpec.classBuilder(factoryInjectionTarget.className + FACTORY_SUFFIX)
-            .addModifiers(Modifier.PUBLIC)
-            .addSuperinterface(parameterizedTypeName);
+    TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(factoryInjectionTarget.className + FACTORY_SUFFIX)
+        .addModifiers(Modifier.PUBLIC)
+        .addSuperinterface(parameterizedTypeName);
     emitCreateInstance(factoryTypeSpec);
     emitHasSingleton(factoryTypeSpec);
     emitHasProducesSingleton(factoryTypeSpec);
 
-    JavaFile javaFile =
-        JavaFile.builder(factoryInjectionTarget.classPackage, factoryTypeSpec.build())
-            .addFileComment("Generated code from ToothPick. Do not modify!")
-            .build();
+    JavaFile javaFile = JavaFile.builder(factoryInjectionTarget.classPackage, factoryTypeSpec.build())
+        .addFileComment("Generated code from ToothPick. Do not modify!")
+        .build();
     return javaFile.toString();
   }
 
@@ -53,25 +49,37 @@ public class FactoryGenerator {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addParameter(ClassName.get(Injector.class), "injector")
-        .returns(
-            ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
+        .returns(ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
 
-    StringBuilder returnStatement = new StringBuilder("return new ");
-    returnStatement.append(factoryInjectionTarget.className).append("(");
+    StringBuilder localVarStatement = new StringBuilder("");
+    localVarStatement.append(factoryInjectionTarget.className).append(" ");
+    String varName = "" + Character.toLowerCase(factoryInjectionTarget.className.charAt(0));
+    varName += factoryInjectionTarget.className.substring(1);
+    localVarStatement.append(varName).append(" = ");
+    localVarStatement.append("new ");
+    localVarStatement.append(factoryInjectionTarget.className).append("(");
     int counter = 1;
     String prefix = "";
 
     for (TypeMirror typeMirror : factoryInjectionTarget.parameters) {
       String paramName = "param" + counter++;
       TypeName paramType = TypeName.get(typeMirror);
-      createInstanceBuilder.addStatement("$T $L = injector.getInstance($T.class)", paramType,
-          paramName, paramType);
-      returnStatement.append(prefix);
-      returnStatement.append(paramName);
+      createInstanceBuilder.addStatement("$T $L = injector.getInstance($T.class)", paramType, paramName, paramType);
+      localVarStatement.append(prefix);
+      localVarStatement.append(paramName);
       prefix = ", ";
     }
 
-    returnStatement.append(")");
+    localVarStatement.append(")");
+    createInstanceBuilder.addStatement(localVarStatement.toString());
+    if (factoryInjectionTarget.needsMemberInjection) {
+      StringBuilder injectStatement = new StringBuilder("injector.inject(");
+      injectStatement.append(varName);
+      injectStatement.append(")");
+      createInstanceBuilder.addStatement(injectStatement.toString());
+    }
+    StringBuilder returnStatement = new StringBuilder("return ");
+    returnStatement.append(varName);
     createInstanceBuilder.addStatement(returnStatement.toString());
 
     builder.addMethod(createInstanceBuilder.build());
@@ -87,12 +95,11 @@ public class FactoryGenerator {
   }
 
   private void emitHasProducesSingleton(TypeSpec.Builder builder) {
-    MethodSpec.Builder hasProducesSingletonBuilder =
-        MethodSpec.methodBuilder("hasProducesSingletonAnnotation")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .returns(TypeName.BOOLEAN)
-            .addStatement("return $L", factoryInjectionTarget.hasProducesSingletonAnnotation);
+    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProducesSingletonAnnotation")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return $L", factoryInjectionTarget.hasProducesSingletonAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 }

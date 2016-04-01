@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
@@ -13,9 +13,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.inject.Inject;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -30,8 +28,7 @@ import javax.tools.JavaFileObject;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
-@SupportedAnnotationTypes({"javax.inject.Inject"})
-public class FactoryProcessor extends AbstractProcessor {
+@SupportedAnnotationTypes({ "javax.inject.Inject" }) public class FactoryProcessor extends AbstractProcessor {
 
   private Elements elementUtils;
   private Types typeUtils;
@@ -46,8 +43,7 @@ public class FactoryProcessor extends AbstractProcessor {
     filer = processingEnv.getFiler();
   }
 
-  @Override
-  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+  @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     System.out.println("coucou");
 
     Map<TypeElement, FactoryInjectionTarget> targetClassMap = findAndParseTargets(roundEnv);
@@ -70,8 +66,7 @@ public class FactoryProcessor extends AbstractProcessor {
           try {
             writer.close();
           } catch (IOException e) {
-            error(typeElement, "Unable to close factory source file for type %s: %s", typeElement,
-                e.getMessage());
+            error(typeElement, "Unable to close factory source file for type %s: %s", typeElement, e.getMessage());
           }
         }
       }
@@ -91,8 +86,7 @@ public class FactoryProcessor extends AbstractProcessor {
           StringWriter stackTrace = new StringWriter();
           e.printStackTrace(new PrintWriter(stackTrace));
 
-          error(element, "Unable to generate factory when parsing @Inject.\n\n%s",
-              stackTrace.toString());
+          error(element, "Unable to generate factory when parsing @Inject.\n\n%s", stackTrace.toString());
         }
       }
     }
@@ -100,8 +94,7 @@ public class FactoryProcessor extends AbstractProcessor {
     return targetClassMap;
   }
 
-  private void parseInject(Element element,
-      Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
+  private void parseInject(Element element, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -112,8 +105,8 @@ public class FactoryProcessor extends AbstractProcessor {
     // Another constructor already used for the class.
     if (targetClassMap.containsKey(enclosingElement)) {
       throw new IllegalStateException(
-          String.format("@%s class %s must not have more than one " + "annotated constructor.",
-              Inject.class.getSimpleName(), element.getSimpleName()));
+          String.format("@%s class %s must not have more than one " + "annotated constructor.", Inject.class.getSimpleName(),
+              element.getSimpleName()));
     }
 
     targetClassMap.put(enclosingElement, createInjectionTarget(element));
@@ -126,8 +119,7 @@ public class FactoryProcessor extends AbstractProcessor {
     // Verify modifiers.
     Set<Modifier> modifiers = element.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(element, "@%s constructors must not be private. (%s)", Inject.class.getSimpleName(),
-          enclosingElement.getQualifiedName());
+      error(element, "@%s constructors must not be private. (%s)", Inject.class.getSimpleName(), enclosingElement.getQualifiedName());
       valid = false;
     }
 
@@ -135,8 +127,7 @@ public class FactoryProcessor extends AbstractProcessor {
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (parentModifiers.contains(PRIVATE)) {
-      error(element, "@%s class %s must not be private or static.", Inject.class.getSimpleName(),
-          element.getSimpleName());
+      error(element, "@%s class %s must not be private or static.", Inject.class.getSimpleName(), element.getSimpleName());
       valid = false;
     }
 
@@ -150,12 +141,19 @@ public class FactoryProcessor extends AbstractProcessor {
     final String className = getClassName(enclosingElement, classPackage);
     final String targetClass = enclosingElement.getQualifiedName().toString();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
-    final boolean hasProducesSingletonAnnotation =
-        hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
+    final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
+    boolean needsMemberInjection = false;
+    List<? extends Element> enclosedElements = enclosingElement.getEnclosedElements();
+    for (Element enclosedElement : enclosedElements) {
+      if (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) {
+        needsMemberInjection = true;
+        break;
+      }
+    }
 
     FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation,
-            hasProducesSingletonAnnotation);
+        new FactoryInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation, hasProducesSingletonAnnotation,
+            needsMemberInjection);
     addParameters(element, factoryInjectionTarget);
 
     return factoryInjectionTarget;

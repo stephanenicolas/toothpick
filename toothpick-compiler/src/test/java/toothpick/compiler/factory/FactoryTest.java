@@ -26,7 +26,8 @@ public class FactoryTest {
         "public class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Injector injector) {", //
-        "    return new TestEmptyConstructor();", //
+        "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
+        "    return testEmptyConstructor;", //
         "  }", //
         "  @Override", //
         "  public boolean hasSingletonAnnotation() {", //
@@ -68,7 +69,8 @@ public class FactoryTest {
         "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
         "    String param1 = injector.getInstance(String.class);", //
         "    Integer param2 = injector.getInstance(Integer.class);", //
-        "    return new TestNonEmptyConstructor(param1, param2);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
         "  public boolean hasSingletonAnnotation() {", //
@@ -112,7 +114,8 @@ public class FactoryTest {
         "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
         "    String param1 = injector.getInstance(String.class);", //
         "    Integer param2 = injector.getInstance(Integer.class);", //
-        "    return new TestNonEmptyConstructor(param1, param2);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
         "  public boolean hasSingletonAnnotation() {", //
@@ -156,7 +159,8 @@ public class FactoryTest {
         "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
         "    String param1 = injector.getInstance(String.class);", //
         "    Integer param2 = injector.getInstance(Integer.class);", //
-        "    return new TestNonEmptyConstructor(param1, param2);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
         "  public boolean hasSingletonAnnotation() {", //

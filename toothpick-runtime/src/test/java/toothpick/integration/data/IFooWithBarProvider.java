@@ -4,9 +4,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class IFooWithBarProvider implements Provider<IFoo> {
-  @Inject public Bar bar;
+  private Bar bar;
 
-  @Inject public IFooWithBarProvider() {
+  @Inject public IFooWithBarProvider(Bar bar) {
+    this.bar = bar;
   }
 
   @Override public IFoo get() {

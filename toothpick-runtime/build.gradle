@@ -6,4 +6,13 @@ dependencies {
   compile deps.inject
 
   testCompile deps.junit
+  testCompile project(':toothpick-compiler')
+}
+
+compileTestJava {
+  doFirst {
+    options.compilerArgs = [
+        '-processor', "toothpick.compiler.factory.FactoryProcessor"
+    ]
+  }
 }
