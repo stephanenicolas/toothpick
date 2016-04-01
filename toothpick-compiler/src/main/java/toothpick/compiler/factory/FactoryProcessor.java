@@ -144,15 +144,16 @@ import static javax.tools.Diagnostic.Kind.ERROR;
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
     boolean needsMemberInjection = false;
-    while (!"java.lang.Object".equals(enclosingElement.getQualifiedName().toString())) {
-      List<? extends Element> enclosedElements = enclosingElement.getEnclosedElements();
+    TypeElement currentTypeElement = enclosingElement;
+    while (!"java.lang.Object".equals(currentTypeElement.getQualifiedName().toString())) {
+      List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
       for (Element enclosedElement : enclosedElements) {
         if (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) {
           needsMemberInjection = true;
           break;
         }
       }
-      enclosingElement = (TypeElement) ((DeclaredType) enclosingElement.getSuperclass()).asElement();
+      currentTypeElement = (TypeElement) ((DeclaredType) currentTypeElement.getSuperclass()).asElement();
     }
 
     FactoryInjectionTarget factoryInjectionTarget =
