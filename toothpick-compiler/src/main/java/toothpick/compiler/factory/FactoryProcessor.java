@@ -21,6 +21,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -143,12 +144,15 @@ import static javax.tools.Diagnostic.Kind.ERROR;
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
     boolean needsMemberInjection = false;
-    List<? extends Element> enclosedElements = enclosingElement.getEnclosedElements();
-    for (Element enclosedElement : enclosedElements) {
-      if (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) {
-        needsMemberInjection = true;
-        break;
+    while (!"java.lang.Object".equals(enclosingElement.getQualifiedName().toString())) {
+      List<? extends Element> enclosedElements = enclosingElement.getEnclosedElements();
+      for (Element enclosedElement : enclosedElements) {
+        if (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) {
+          needsMemberInjection = true;
+          break;
+        }
       }
+      enclosingElement = (TypeElement) ((DeclaredType) enclosingElement.getSuperclass()).asElement();
     }
 
     FactoryInjectionTarget factoryInjectionTarget =
