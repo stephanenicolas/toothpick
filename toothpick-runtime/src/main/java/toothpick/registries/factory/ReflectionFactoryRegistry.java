@@ -15,7 +15,7 @@ public class ReflectionFactoryRegistry implements FactoryRegistry {
       throw new IllegalArgumentException("Class can't be null");
     }
 
-    System.out.printf("Warning class %s has no generated factory, falling back on reflection. This slows down your app.\n", clazz);
+    System.out.printf("Warning class %s has no registered factory, falling back on reflection. This slows down your app.\n", clazz);
     try {
       Class<Factory<T>> factoryClass = (Class<Factory<T>>) Class.forName(clazz.getName() + FACTORY_SUFFIX);
       return factoryClass.newInstance();

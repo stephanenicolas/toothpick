@@ -13,7 +13,7 @@ public class ReflectionMemberInjectorRegistry extends AbstractMemberInjectorRegi
       throw new IllegalArgumentException("Class can't be null");
     }
 
-    System.out.printf("Warning class %s has no generated memberInjector, falling back on reflection. This slows down your app.\n", clazz);
+    System.out.printf("Warning class %s has no registered memberInjector, falling back on reflection. This slows down your app.\n", clazz);
     try {
       Class<MemberInjector<T>> memberInjectorClass = (Class<MemberInjector<T>>) Class.forName(clazz.getName() + "$$MemberInjector");
       return memberInjectorClass.newInstance();
