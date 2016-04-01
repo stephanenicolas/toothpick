@@ -2,12 +2,12 @@ package toothpick.compiler.memberinjector;
 
 public class MemberInjectorRegistryGenerator {
 
-  private static final String MemberInjector_SUFFIX = "$$MemberInjector";
+  private static final String MEMBER_INJECTOR_SUFFIX = "$$MemberInjector";
 
-  private MemberInjectorInjectionTarget MemberInjectorInjectionTarget;
+  private MemberInjectorInjectionTarget memberInjectorInjectionTarget;
 
-  public MemberInjectorRegistryGenerator(MemberInjectorInjectionTarget MemberInjectorInjectionTarget) {
-    this.MemberInjectorInjectionTarget = MemberInjectorInjectionTarget;
+  public MemberInjectorRegistryGenerator(MemberInjectorInjectionTarget memberInjectorInjectionTarget) {
+    this.memberInjectorInjectionTarget = memberInjectorInjectionTarget;
   }
 
   public String brewJava() {
@@ -23,6 +23,6 @@ public class MemberInjectorRegistryGenerator {
   }
 
   public String getFqcn() {
-    return MemberInjectorInjectionTarget.getFqcn() + MemberInjector_SUFFIX;
+    return memberInjectorInjectionTarget.getFqcn() + MEMBER_INJECTOR_SUFFIX;
   }
 }

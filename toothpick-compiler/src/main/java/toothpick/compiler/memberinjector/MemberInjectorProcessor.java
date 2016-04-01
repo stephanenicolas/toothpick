@@ -64,15 +64,15 @@ public class MemberInjectorProcessor extends AbstractProcessor {
 
     for (Map.Entry<TypeElement, MemberInjectorInjectionTarget> entry : targetClassMap.entrySet()) {
       TypeElement typeElement = entry.getKey();
-      MemberInjectorInjectionTarget MemberInjectorInjectionTarget = entry.getValue();
+      MemberInjectorInjectionTarget memberInjectorInjectionTarget = entry.getValue();
 
       Writer writer = null;
       // Generate the ExtraInjector
       try {
-        MemberInjectorGenerator MemberInjectorGenerator = new MemberInjectorGenerator(MemberInjectorInjectionTarget);
-        JavaFileObject jfo = filer.createSourceFile(MemberInjectorGenerator.getFqcn(), typeElement);
+        MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorInjectionTarget);
+        JavaFileObject jfo = filer.createSourceFile(memberInjectorGenerator.getFqcn(), typeElement);
         writer = jfo.openWriter();
-        writer.write(MemberInjectorGenerator.brewJava());
+        writer.write(memberInjectorGenerator.brewJava());
       } catch (IOException e) {
         error(typeElement, "Unable to write MemberInjector for type %s: %s", typeElement, e.getMessage());
       } finally {
@@ -157,18 +157,18 @@ public class MemberInjectorProcessor extends AbstractProcessor {
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
 
-    MemberInjectorInjectionTarget MemberInjectorInjectionTarget =
+    MemberInjectorInjectionTarget memberInjectorInjectionTarget =
         new MemberInjectorInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation, hasProducesSingletonAnnotation);
-    addParameters(element, MemberInjectorInjectionTarget);
+    addParameters(element, memberInjectorInjectionTarget);
 
-    return MemberInjectorInjectionTarget;
+    return memberInjectorInjectionTarget;
   }
 
-  private void addParameters(Element element, MemberInjectorInjectionTarget MemberInjectorInjectionTarget) {
+  private void addParameters(Element element, MemberInjectorInjectionTarget memberInjectorInjectionTarget) {
     ExecutableElement executableElement = (ExecutableElement) element;
 
     for (TypeParameterElement typeParameterElement : executableElement.getTypeParameters()) {
-      MemberInjectorInjectionTarget.parameters.add(typeParameterElement.getGenericElement().asType());
+      memberInjectorInjectionTarget.parameters.add(typeParameterElement.getGenericElement().asType());
     }
   }
 
