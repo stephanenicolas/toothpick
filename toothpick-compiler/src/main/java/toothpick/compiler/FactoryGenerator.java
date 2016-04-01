@@ -26,7 +26,7 @@ public class FactoryGenerator {
     ClassName className =
         ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className);
     ParameterizedTypeName parameterizedTypeName =
-        ParameterizedTypeName.get(className, ClassName.get(Factory.class));
+        ParameterizedTypeName.get(ClassName.get(Factory.class), className);
 
     // Build class
     TypeSpec.Builder factoryTypeSpec =
@@ -50,6 +50,8 @@ public class FactoryGenerator {
 
   private void emitCreateInstance(TypeSpec.Builder builder) {
     MethodSpec.Builder createInstanceBuilder = MethodSpec.methodBuilder("createInstance")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
         .addParameter(ClassName.get(Injector.class), "injector")
         .returns(
             ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
@@ -57,13 +59,16 @@ public class FactoryGenerator {
     StringBuilder returnStatement = new StringBuilder("return new ");
     returnStatement.append(factoryInjectionTarget.className).append("(");
     int counter = 1;
+    String prefix = "";
 
     for (TypeMirror typeMirror : factoryInjectionTarget.parameters) {
-      String paramName = String.format("param$d", counter);
+      String paramName = "param" + counter++;
       TypeName paramType = TypeName.get(typeMirror);
-      createInstanceBuilder.addStatement("$T $s = injector.getInstance($T.class)", paramType,
+      createInstanceBuilder.addStatement("$T $L = injector.getInstance($T.class)", paramType,
           paramName, paramType);
+      returnStatement.append(prefix);
       returnStatement.append(paramName);
+      prefix = ", ";
     }
 
     returnStatement.append(")");
@@ -74,16 +79,20 @@ public class FactoryGenerator {
 
   private void emitHasSingleton(TypeSpec.Builder builder) {
     MethodSpec.Builder hasSingletonBuilder = MethodSpec.methodBuilder("hasSingletonAnnotation")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)
-        .addStatement("return $b", factoryInjectionTarget.hasSingletonAnnotation);
+        .addStatement("return $L", factoryInjectionTarget.hasSingletonAnnotation);
     builder.addMethod(hasSingletonBuilder.build());
   }
 
   private void emitHasProducesSingleton(TypeSpec.Builder builder) {
     MethodSpec.Builder hasProducesSingletonBuilder =
         MethodSpec.methodBuilder("hasProducesSingletonAnnotation")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
-            .addStatement("return $b", factoryInjectionTarget.hasProducesSingletonAnnotation);
+            .addStatement("return $L", factoryInjectionTarget.hasProducesSingletonAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 }

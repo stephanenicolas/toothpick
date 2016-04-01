@@ -7,4 +7,6 @@ dependencies {
   compile deps.javapoet
 
   testCompile deps.junit
+  testCompile deps.truth
+  testCompile deps.compiletesting
 }

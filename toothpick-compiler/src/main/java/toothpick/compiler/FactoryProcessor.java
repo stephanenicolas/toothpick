@@ -20,7 +20,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -168,8 +168,8 @@ public class FactoryProcessor extends AbstractProcessor {
   private void addParameters(Element element, FactoryInjectionTarget factoryInjectionTarget) {
     ExecutableElement executableElement = (ExecutableElement) element;
 
-    for (TypeParameterElement typeParameterElement : executableElement.getTypeParameters()) {
-      factoryInjectionTarget.parameters.add(typeParameterElement.getGenericElement().asType());
+    for (VariableElement variableElement : executableElement.getParameters()) {
+      factoryInjectionTarget.parameters.add(variableElement.asType());
     }
   }
 
