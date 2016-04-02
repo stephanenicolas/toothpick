@@ -9,6 +9,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
+import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
 public class FactoryRegistryGenerator {
@@ -57,12 +58,26 @@ public class FactoryRegistryGenerator {
         //the runtime package could still be used for running tests..
         .superclass(ClassName.get(AbstractFactoryRegistry.class));
 
+    emitConstructor(factoryRegistryTypeSpec);
     emitGetFactoryMethod(factoryRegistryTypeSpec);
 
     JavaFile javaFile = JavaFile.builder(factoryRegistryInjectionTarget.packageName, factoryRegistryTypeSpec.build())
         .addFileComment("Generated code from Dart. Do not modify!")
         .build();
     return javaFile.toString();
+  }
+  
+  private void emitConstructor(TypeSpec.Builder factoryRegistryTypeSpec) {
+    MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
+        .addModifiers(Modifier.PUBLIC);
+
+    CodeBlock.Builder forEachchildAddFactoryRegistryBlock = CodeBlock.builder();
+    for (String childPackageName : factoryRegistryInjectionTarget.childrenRegistryPackageNameList) {
+      forEachchildAddFactoryRegistryBlock.addStatement("add($L)", ClassName.get(childPackageName, FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME));
+    }
+
+    constructor.addCode(forEachchildAddFactoryRegistryBlock.build());
+    factoryRegistryTypeSpec.addMethod(constructor.build());
   }
 
   private void emitGetFactoryMethod(TypeSpec.Builder factoryRegistryTypeSpec) {
@@ -79,11 +94,11 @@ public class FactoryRegistryGenerator {
 
     for (FactoryInjectionTarget factoryInjectionTarget : factoryRegistryInjectionTarget.factoryInjectionTargetList) {
       switchBlockBuilder.add("case ($S):\n", factoryInjectionTarget.targetClass);
-      switchBlockBuilder.add("return (Factory<T>) new $L$$$$Factory();\n", ClassName.get(factoryInjectionTarget.classPackage,
-          factoryInjectionTarget.className));
+      switchBlockBuilder.addStatement("return (Factory<T>) new $L$$$$Factory()",
+          ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
     }
     switchBlockBuilder.add("default:\n");
-    switchBlockBuilder.add("return getFactoryInChildrenRegistries(clazz);\n");
+    switchBlockBuilder.addStatement("return getFactoryInChildrenRegistries(clazz)");
     switchBlockBuilder.endControlFlow();
     getFactoryMethod.addCode(switchBlockBuilder.build());
     factoryRegistryTypeSpec.addMethod(getFactoryMethod.build());
