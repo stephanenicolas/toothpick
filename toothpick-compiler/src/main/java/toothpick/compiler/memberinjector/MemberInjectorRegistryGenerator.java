@@ -23,6 +23,6 @@ public class MemberInjectorRegistryGenerator {
   }
 
   public String getFqcn() {
-    return memberInjectorInjectionTarget.getFqcn() + MEMBER_INJECTOR_SUFFIX;
+    return "TODO" + MEMBER_INJECTOR_SUFFIX;
   }
 }

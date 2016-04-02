@@ -1,30 +1,19 @@
 package toothpick.compiler.memberinjector;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.lang.model.type.TypeMirror;
-
 public final class MemberInjectorInjectionTarget {
 
-  public final List<TypeMirror> parameters = new ArrayList<>();
-  public final String classPackage;
-  public final String className;
+  public final String targetClassPackage;
+  public final String targetClassName;
   public final String targetClass;
-  public final boolean hasSingletonAnnotation;
-  public final boolean hasProducesSingletonAnnotation;
-  //TODO detect if class or super class has injected members hasInjectedMembers
-  //if so, the MemberInjector has to call inject on the created instance.
+  public final String memberClass;
+  public final String memberName;
+  //TODO identify if we need to call a super class memberInjector, finds its class name.
 
-  public MemberInjectorInjectionTarget(String classPackage, String className, String targetClass, boolean hasSingletonAnnotation,
-      boolean hasProducesSingletonAnnotation) {
-    this.classPackage = classPackage;
-    this.className = className;
+  public MemberInjectorInjectionTarget(String targetClassPackage, String memberClassName, String targetClass, String memberClass, String memberName) {
+    this.targetClassPackage = targetClassPackage;
+    this.targetClassName = memberClassName;
     this.targetClass = targetClass;
-    this.hasSingletonAnnotation = hasSingletonAnnotation;
-    this.hasProducesSingletonAnnotation = hasProducesSingletonAnnotation;
-  }
-
-  public String getFqcn() {
-    return classPackage + "." + className;
+    this.memberClass = memberClass;
+    this.memberName = memberName;
   }
 }

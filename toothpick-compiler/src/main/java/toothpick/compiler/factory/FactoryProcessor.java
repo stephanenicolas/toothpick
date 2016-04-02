@@ -73,7 +73,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
       }
     }
 
-    return true;
+    return false;
   }
 
   private Map<TypeElement, FactoryInjectionTarget> findAndParseTargets(RoundEnvironment roundEnv) {

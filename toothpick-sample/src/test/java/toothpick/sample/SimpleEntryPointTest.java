@@ -24,7 +24,8 @@ public class SimpleEntryPointTest {
   @Mock private Computer mockComputer;
 
   @BeforeClass public static void setUp() throws Exception {
-    MemberInjectorRegistryLocator.addRegistry(new MemberInjectorRegistry());
+    //TODO enable when registries are created and add factories.
+    //MemberInjectorRegistryLocator.addRegistry(new MemberInjectorRegistry());
   }
 
   @Test public void testMultiply() throws Exception {

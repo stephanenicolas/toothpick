@@ -4,23 +4,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -35,7 +36,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  *
  * @see FactoryProcessor
  */
-public class MemberInjectorProcessor extends AbstractProcessor {
+@SupportedAnnotationTypes({ "javax.inject.Inject" }) public class MemberInjectorProcessor extends AbstractProcessor {
 
   private Elements elementUtils;
   private Types typeUtils;
@@ -49,27 +50,17 @@ public class MemberInjectorProcessor extends AbstractProcessor {
     filer = processingEnv.getFiler();
   }
 
-  @Override public Set<String> getSupportedAnnotationTypes() {
-    Set<String> supportTypes = new LinkedHashSet<>();
-    supportTypes.add(Inject.class.getCanonicalName());
-    return supportTypes;
-  }
-
-  @Override public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.latestSupported();
-  }
-
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    Map<TypeElement, MemberInjectorInjectionTarget> targetClassMap = findAndParseTargets(roundEnv);
+    Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = findAndParseTargets(roundEnv);
 
-    for (Map.Entry<TypeElement, MemberInjectorInjectionTarget> entry : targetClassMap.entrySet()) {
+    for (Map.Entry<TypeElement, List<MemberInjectorInjectionTarget>> entry : targetClassMap.entrySet()) {
       TypeElement typeElement = entry.getKey();
-      MemberInjectorInjectionTarget memberInjectorInjectionTarget = entry.getValue();
+      List<MemberInjectorInjectionTarget> memberInjectorInjectionTargetList = entry.getValue();
 
       Writer writer = null;
       // Generate the ExtraInjector
       try {
-        MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorInjectionTarget);
+        MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorInjectionTargetList);
         JavaFileObject jfo = filer.createSourceFile(memberInjectorGenerator.getFqcn(), typeElement);
         writer = jfo.openWriter();
         writer.write(memberInjectorGenerator.brewJava());
@@ -86,14 +77,14 @@ public class MemberInjectorProcessor extends AbstractProcessor {
       }
     }
 
-    return true;
+    return false;
   }
 
-  private Map<TypeElement, MemberInjectorInjectionTarget> findAndParseTargets(RoundEnvironment roundEnv) {
-    Map<TypeElement, MemberInjectorInjectionTarget> targetClassMap = new LinkedHashMap<>();
+  private Map<TypeElement, List<MemberInjectorInjectionTarget>> findAndParseTargets(RoundEnvironment roundEnv) {
+    Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = new LinkedHashMap<>();
 
     for (Element element : roundEnv.getElementsAnnotatedWith(Inject.class)) {
-      if (element.getKind() == ElementKind.CONSTRUCTOR) {
+      if (element.getKind() == ElementKind.FIELD) {
         try {
           parseInject(element, targetClassMap);
         } catch (Exception e) {
@@ -108,32 +99,30 @@ public class MemberInjectorProcessor extends AbstractProcessor {
     return targetClassMap;
   }
 
-  private void parseInject(Element element, Map<TypeElement, MemberInjectorInjectionTarget> targetClassMap) {
+  private void parseInject(Element element, Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify common generated code restrictions.
-    if (!isValidInjectConstructor(element)) {
+    if (!isValidInjectField(element)) {
       return;
     }
 
-    // Another constructor already used for the class.
-    if (targetClassMap.containsKey(enclosingElement)) {
-      throw new IllegalStateException(
-          String.format("@%s class %s must not have more than one " + "annotated constructor.", Inject.class.getSimpleName(),
-              element.getSimpleName()));
+    List<MemberInjectorInjectionTarget> memberInjectorInjectionTargetList = targetClassMap.get(enclosingElement);
+    if (memberInjectorInjectionTargetList == null) {
+      memberInjectorInjectionTargetList = new ArrayList<>();
+      targetClassMap.put(enclosingElement, memberInjectorInjectionTargetList);
     }
-
-    targetClassMap.put(enclosingElement, createInjectionTarget(element));
+    memberInjectorInjectionTargetList.add(createInjectionTarget(element));
   }
 
-  private boolean isValidInjectConstructor(Element element) {
+  private boolean isValidInjectField(Element element) {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify modifiers.
     Set<Modifier> modifiers = element.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(element, "@%s constructors must not be private. (%s)", Inject.class.getSimpleName(), enclosingElement.getQualifiedName());
+      error(element, "@%s fields must not be private. (%s)", Inject.class.getName(), enclosingElement.getQualifiedName());
       valid = false;
     }
 
@@ -151,25 +140,13 @@ public class MemberInjectorProcessor extends AbstractProcessor {
   private MemberInjectorInjectionTarget createInjectionTarget(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
-    final String classPackage = getPackageName(enclosingElement);
-    final String className = getClassName(enclosingElement, classPackage);
+    final String targetClassPackage = getPackageName(enclosingElement);
+    final String targetClassName = getClassName(enclosingElement, targetClassPackage);
     final String targetClass = enclosingElement.getQualifiedName().toString();
-    final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
-    final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
+    final String memberClass = element.asType().toString();
+    final String memberName = element.getSimpleName().toString();
 
-    MemberInjectorInjectionTarget memberInjectorInjectionTarget =
-        new MemberInjectorInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation, hasProducesSingletonAnnotation);
-    addParameters(element, memberInjectorInjectionTarget);
-
-    return memberInjectorInjectionTarget;
-  }
-
-  private void addParameters(Element element, MemberInjectorInjectionTarget memberInjectorInjectionTarget) {
-    ExecutableElement executableElement = (ExecutableElement) element;
-
-    for (TypeParameterElement typeParameterElement : executableElement.getTypeParameters()) {
-      memberInjectorInjectionTarget.parameters.add(typeParameterElement.getGenericElement().asType());
-    }
+    return new MemberInjectorInjectionTarget(targetClassPackage, targetClassName, targetClass, memberClass, memberName);
   }
 
   private String getPackageName(TypeElement type) {
