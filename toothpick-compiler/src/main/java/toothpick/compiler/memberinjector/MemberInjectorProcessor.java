@@ -20,6 +20,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -145,8 +148,69 @@ import static javax.tools.Diagnostic.Kind.ERROR;
     final String memberClassPackage = getPackageName(memberTypeElement);
     final String memberClassName = getClassName(memberTypeElement, memberClassPackage);
     final String memberName = element.getSimpleName().toString();
+    final TypeElement superTypeElementWithInjectedFields = getSuperClassWithInjectedFields(enclosingElement);
+    final String superClassThatNeedsInjectionClassPackage;
+    final String superClassThatNeedsInjectionClassName;
+    if (superTypeElementWithInjectedFields == null) {
+      superClassThatNeedsInjectionClassPackage = null;
+      superClassThatNeedsInjectionClassName = null;
+    } else {
+      superClassThatNeedsInjectionClassPackage = getPackageName(superTypeElementWithInjectedFields);
+      superClassThatNeedsInjectionClassName = getClassName(superTypeElementWithInjectedFields, superClassThatNeedsInjectionClassPackage);
+    }
 
-    return new MemberInjectorInjectionTarget(targetClassPackage, targetClassName, targetClass, memberClassPackage, memberClassName, memberName);
+    MemberInjectorInjectionTarget.Kind kind = getKind(element);
+    final String kindParamPackageName;
+    final String kindParamClassName;
+    if (kind == MemberInjectorInjectionTarget.Kind.INSTANCE) {
+      kindParamPackageName = null;
+      kindParamClassName = null;
+    } else {
+      TypeElement kindParameterTypeElement = getKindParameter(element);
+      kindParamPackageName = getPackageName(kindParameterTypeElement);
+      kindParamClassName = getClassName(kindParameterTypeElement, kindParamPackageName);
+    }
+    return new MemberInjectorInjectionTarget(targetClassPackage, targetClassName, targetClass, memberClassPackage, memberClassName, memberName,
+        superClassThatNeedsInjectionClassPackage, superClassThatNeedsInjectionClassName, kind, kindParamPackageName, kindParamClassName);
+  }
+
+  private MemberInjectorInjectionTarget.Kind getKind(Element element) {
+    TypeMirror elementTypeMirror = element.asType();
+    String elementTypeName = typeUtils.erasure(elementTypeMirror).toString();
+    if ("javax.inject.Provider".equals(elementTypeName)) {
+      return MemberInjectorInjectionTarget.Kind.PROVIDER;
+    } else if ("toothpick.Lazy".equals(elementTypeName)) {
+      return MemberInjectorInjectionTarget.Kind.LAZY;
+    } else if ("java.util.concurrent.Future".equals(elementTypeName)) {
+      return MemberInjectorInjectionTarget.Kind.FUTURE;
+    } else {
+      return MemberInjectorInjectionTarget.Kind.INSTANCE;
+    }
+  }
+
+  private TypeElement getKindParameter(Element element) {
+    TypeMirror elementTypeMirror = element.asType();
+    TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
+    return (TypeElement) typeUtils.asElement(firstParameterTypeMirror);
+  }
+
+
+  private TypeElement getSuperClassWithInjectedFields(TypeElement typeElement) {
+    TypeElement currentTypeElement = typeElement;
+    boolean failedToFindSuperClass = false;
+    do {
+      TypeMirror superClassTypeMirror = currentTypeElement.getSuperclass();
+      failedToFindSuperClass = superClassTypeMirror.getKind() != TypeKind.DECLARED;
+      if (!failedToFindSuperClass) {
+        currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
+        for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
+          if (enclosedElement.getKind() == ElementKind.FIELD && enclosedElement.getAnnotation(Inject.class) != null) {
+            return currentTypeElement;
+          }
+        }
+      }
+    } while (!failedToFindSuperClass && !"java.lang.Object".equals(currentTypeElement.getQualifiedName()));
+    return null;
   }
 
   private String getPackageName(TypeElement type) {

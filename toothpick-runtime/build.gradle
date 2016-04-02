@@ -12,7 +12,7 @@ dependencies {
 compileTestJava {
   doFirst {
     options.compilerArgs = [
-        '-processor', "toothpick.compiler.factory.FactoryProcessor"
+        '-processor', "toothpick.compiler.memberinjector.MemberInjectorProcessor,toothpick.compiler.factory.FactoryProcessor",
     ]
   }
 }

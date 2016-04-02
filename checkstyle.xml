@@ -70,7 +70,10 @@
       <property name="max" value="150"/>
     </module>
     <!--<module name="MethodLength"/>-->
-    <module name="ParameterNumber"/>
+    <module name="ParameterNumber">
+      <!-- TODO Shame !-->
+      <property name="max" value="15"/>
+    </module>
 
 
     <!-- Checks for whitespace                               -->

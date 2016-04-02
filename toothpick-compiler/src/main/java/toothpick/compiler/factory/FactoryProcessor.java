@@ -37,7 +37,6 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
   @Override public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    System.out.println("coucou");
 
     elementUtils = processingEnv.getElementUtils();
     typeUtils = processingEnv.getTypeUtils();
@@ -45,7 +44,6 @@ import static javax.tools.Diagnostic.Kind.ERROR;
   }
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    System.out.println("coucou");
 
     Map<TypeElement, FactoryInjectionTarget> targetClassMap = findAndParseTargets(roundEnv);
 

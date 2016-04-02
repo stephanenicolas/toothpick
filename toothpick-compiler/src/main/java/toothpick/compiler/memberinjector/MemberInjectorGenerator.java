@@ -1,6 +1,7 @@
 package toothpick.compiler.memberinjector;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -30,36 +31,76 @@ public class MemberInjectorGenerator {
     ParameterizedTypeName memberInjectorInterfaceParameterizedTypeName = ParameterizedTypeName.get(ClassName.get(MemberInjector.class), className);
 
     // Build class
-    TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(memberInjectorInjectionTarget.targetClassName + MEMBER_INJECTOR_SUFFIX)
+    TypeSpec.Builder injectorMemberTypeSpec = TypeSpec.classBuilder(memberInjectorInjectionTarget.targetClassName + MEMBER_INJECTOR_SUFFIX)
         .addModifiers(Modifier.PUBLIC)
         .addSuperinterface(memberInjectorInterfaceParameterizedTypeName);
-    emitInjectMethod(factoryTypeSpec, memberInjectorInjectionTargetList);
+    emitSuperMemberInjectorFieldIfNeeded(injectorMemberTypeSpec, memberInjectorInjectionTarget);
+    emitInjectMethod(injectorMemberTypeSpec, memberInjectorInjectionTargetList);
 
-    JavaFile javaFile = JavaFile.builder(memberInjectorInjectionTarget.targetClassPackage, factoryTypeSpec.build())
+    JavaFile javaFile = JavaFile.builder(memberInjectorInjectionTarget.targetClassPackage, injectorMemberTypeSpec.build())
         .addFileComment("Generated code from ToothPick. Do not modify!")
         .build();
     return javaFile.toString();
   }
 
-  private void emitInjectMethod(TypeSpec.Builder builder, List<MemberInjectorInjectionTarget> memberInjectorInjectionTargetList) {
+  private void emitSuperMemberInjectorFieldIfNeeded(TypeSpec.Builder injectorMemberTypeSpec,
+      MemberInjectorInjectionTarget memberInjectorInjectionTarget) {
+    if (memberInjectorInjectionTarget.superClassThatNeedsInjectionClassName != null) {
+      ClassName superTypeThatNeedsInjection = ClassName.get(memberInjectorInjectionTarget.superClassThatNeedsInjectionClassPackage,
+          memberInjectorInjectionTarget.superClassThatNeedsInjectionClassName);
+      ParameterizedTypeName memberInjectorSuperParameterizedTypeName =
+          ParameterizedTypeName.get(ClassName.get(MemberInjector.class), superTypeThatNeedsInjection);
+      FieldSpec.Builder superMemberInjectorField =
+          FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "superMemberInjector", Modifier.PRIVATE)
+              //TODO use proper typing here
+              .initializer("toothpick.registries.memberinjector.MemberInjectorRegistryLocator.getMemberInjector($L.class)",
+                  memberInjectorInjectionTarget.superClassThatNeedsInjectionClassName);
+      injectorMemberTypeSpec.addField(superMemberInjectorField.build());
+    }
+  }
+
+  private void emitInjectMethod(TypeSpec.Builder injectorMemberTypeSpec, List<MemberInjectorInjectionTarget> memberInjectorInjectionTargetList) {
     MemberInjectorInjectionTarget memberInjectorInjectionTarget = memberInjectorInjectionTargetList.get(0);
     MethodSpec.Builder injectBuilder = MethodSpec.methodBuilder("inject")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
-        .addParameter(ClassName.get(memberInjectorInjectionTarget.targetClassPackage, memberInjectorInjectionTarget.targetClassName), "t")
+        .addParameter(ClassName.get(memberInjectorInjectionTarget.targetClassPackage, memberInjectorInjectionTarget.targetClassName), "target")
         .addParameter(ClassName.get(Injector.class), "injector");
 
     for (MemberInjectorInjectionTarget injectorInjectionTarget : memberInjectorInjectionTargetList) {
-      String varName = "" + Character.toLowerCase(injectorInjectionTarget.memberClassName.charAt(0));
-      varName += injectorInjectionTarget.memberClassName.substring(1);
-      StringBuilder assignFieldStatement = new StringBuilder("t.");
-      assignFieldStatement.append(varName)
-          .append(" = injector.getInstance(")
-          .append(ClassName.get(injectorInjectionTarget.memberClassPackage, injectorInjectionTarget.memberClassName))
-          .append(".class)");
+      final String injectorGetMethodName;
+      final ClassName className;
+      switch (injectorInjectionTarget.kind) {
+        case INSTANCE:
+          injectorGetMethodName = " = injector.getInstance(";
+          className = ClassName.get(injectorInjectionTarget.memberClassPackage, injectorInjectionTarget.memberClassName);
+          break;
+        case PROVIDER:
+          injectorGetMethodName = " = injector.getProvider(";
+          className = ClassName.get(injectorInjectionTarget.kindParamPackageName, injectorInjectionTarget.kindParamClassName);
+          break;
+        case LAZY:
+          injectorGetMethodName = " = injector.getLazy(";
+          className = ClassName.get(injectorInjectionTarget.kindParamPackageName, injectorInjectionTarget.kindParamClassName);
+          break;
+        case FUTURE:
+          injectorGetMethodName = " = injector.getFuture(";
+          className = ClassName.get(injectorInjectionTarget.kindParamPackageName, injectorInjectionTarget.kindParamClassName);
+          break;
+        default:
+          throw new IllegalStateException("The kind can't be null.");
+      }
+      StringBuilder assignFieldStatement;
+      assignFieldStatement = new StringBuilder("target.");
+      assignFieldStatement.append(injectorInjectionTarget.memberName).append(injectorGetMethodName).append(className).append(".class)");
       injectBuilder.addStatement(assignFieldStatement.toString());
     }
-    builder.addMethod(injectBuilder.build());
+
+    if (memberInjectorInjectionTarget.superClassThatNeedsInjectionClassName != null) {
+      injectBuilder.addStatement("superMemberInjector.inject(target, injector)");
+    }
+
+    injectorMemberTypeSpec.addMethod(injectBuilder.build());
   }
 
   public String getFqcn() {
