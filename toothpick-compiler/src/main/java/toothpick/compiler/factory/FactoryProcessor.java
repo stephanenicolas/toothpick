@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -31,7 +33,9 @@ import javax.tools.JavaFileObject;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
-@SupportedAnnotationTypes({ "javax.inject.Inject" }) public class FactoryProcessor extends AbstractProcessor {
+@SupportedAnnotationTypes({ "javax.inject.Inject" })
+@SupportedOptions({ "toothpick_registry_package_name.toothpick_registry_children_package_names" }) //
+public class FactoryProcessor extends AbstractProcessor {
 
   private Elements elementUtils;
   private Types typeUtils;
@@ -78,9 +82,20 @@ import static javax.tools.Diagnostic.Kind.ERROR;
       }
     }
 
-    //TODO remove hard coded values with compiler options, the empty collection as well
+    String toothpickRegistryPackageName = processingEnv.getOptions().get("toothpick_registry_package_name");
+    if (toothpickRegistryPackageName == null) {
+      processingEnv.getMessager()
+          .printMessage(Diagnostic.Kind.WARNING, "No option -Atoothpick_registry_package_name was passed to the compiler."
+                  + " No registries are generated. Will fallback on reflection at runtime to find factories.");
+      return false;
+    }
+    String toothpickRegistryChildrenPackageNames = processingEnv.getOptions().get("toothpick_registry_children_package_names");
+    List<String> toothpickRegistryChildrenPackageNameList = Collections.EMPTY_LIST;
+    if (toothpickRegistryChildrenPackageNames != null) {
+      toothpickRegistryChildrenPackageNameList = Arrays.asList(toothpickRegistryChildrenPackageNames.split(":"));
+    }
     FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
-        new FactoryRegistryInjectionTarget(targetClassMap.values(), "toothpick.sample", Collections.EMPTY_LIST);
+        new FactoryRegistryInjectionTarget(targetClassMap.values(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
     Writer writer = null;
     Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
     // Generate the ExtraInjector

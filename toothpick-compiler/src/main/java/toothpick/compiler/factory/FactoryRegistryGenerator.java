@@ -9,7 +9,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
-import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
 public class FactoryRegistryGenerator {
@@ -20,43 +19,14 @@ public class FactoryRegistryGenerator {
     this.factoryRegistryInjectionTarget = factoryRegistryInjectionTarget;
   }
 
-  /*  package toothpick.integration.data;
-
-  import toothpick.Factory;
-  import toothpick.registries.factory.AbstractFactoryRegistry;
-
-  public class FactoryRegistry extends AbstractFactoryRegistry {
-
-    @Override public <T> Factory<T> getFactory(Class<T> clazz) {
-      switch (clazz.getName()) {
-        case "toothpick.integration.data.Bar":
-          return (Factory<T>) new Bar$$Factory();
-        case "toothpick.integration.data.Foo":
-          return (Factory<T>) new Foo$$Factory();
-        case "toothpick.integration.data.FooSingleton":
-          return (Factory<T>) new FooSingleton$$Factory();
-        case "toothpick.integration.data.IFooProvider":
-          return (Factory<T>) new IFooProvider$$Factory();
-        case "toothpick.integration.data.IFooWithBarProvider":
-          return (Factory<T>) new IFooWithBarProvider$$Factory();
-        case "toothpick.integration.data.IFooProviderAnnotatedProvidesSingleton":
-          return (Factory<T>) new IFooProviderAnnotatedProvidesSingleton$$Factory();
-        case "toothpick.integration.data.IFooProviderAnnotatedSingleton":
-          return (Factory<T>) new IFooProviderAnnotatedSingleton$$Factory();
-        default:
-          return getFactoryInChildrenRegistries(clazz);
-      }
-    }
-  }*/
-
   public String brewJava() {
     // Build class
-    TypeSpec.Builder factoryRegistryTypeSpec = TypeSpec.classBuilder(FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME)
-        .addModifiers(Modifier.PUBLIC)
-        //TODO do not use the class but a name, this ties the generator to the AbstractFactoryRegistry
-        //and forces up to put it in the toothpick lib vs runtime lib, which is not desirable
-        //the runtime package could still be used for running tests..
-        .superclass(ClassName.get(AbstractFactoryRegistry.class));
+    TypeSpec.Builder factoryRegistryTypeSpec =
+        TypeSpec.classBuilder(FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME).addModifiers(Modifier.PUBLIC)
+            //TODO do not use the class but a name, this ties the generator to the AbstractFactoryRegistry
+            //and forces up to put it in the toothpick lib vs runtime lib, which is not desirable
+            //the runtime package could still be used for running tests..
+            .superclass(ClassName.get(AbstractFactoryRegistry.class));
 
     emitConstructor(factoryRegistryTypeSpec);
     emitGetFactoryMethod(factoryRegistryTypeSpec);
@@ -66,17 +36,17 @@ public class FactoryRegistryGenerator {
         .build();
     return javaFile.toString();
   }
-  
-  private void emitConstructor(TypeSpec.Builder factoryRegistryTypeSpec) {
-    MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
-        .addModifiers(Modifier.PUBLIC);
 
-    CodeBlock.Builder forEachchildAddFactoryRegistryBlock = CodeBlock.builder();
+  private void emitConstructor(TypeSpec.Builder factoryRegistryTypeSpec) {
+    MethodSpec.Builder constructor = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
+
+    CodeBlock.Builder iterateChildAddFactoryRegistryBlock = CodeBlock.builder();
     for (String childPackageName : factoryRegistryInjectionTarget.childrenRegistryPackageNameList) {
-      forEachchildAddFactoryRegistryBlock.addStatement("add($L)", ClassName.get(childPackageName, FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME));
+      ClassName factoryRegistryClassName = ClassName.get(childPackageName, FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME);
+      iterateChildAddFactoryRegistryBlock.addStatement("add($L)", factoryRegistryClassName);
     }
 
-    constructor.addCode(forEachchildAddFactoryRegistryBlock.build());
+    constructor.addCode(iterateChildAddFactoryRegistryBlock.build());
     factoryRegistryTypeSpec.addMethod(constructor.build());
   }
 
@@ -89,8 +59,7 @@ public class FactoryRegistryGenerator {
         .returns(ParameterizedTypeName.get(ClassName.get(Factory.class), t));
 
     StringBuilder switchStatement = new StringBuilder();
-    CodeBlock.Builder switchBlockBuilder = CodeBlock.builder()
-        .beginControlFlow("switch($L)", "clazz.getName()");
+    CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName()");
 
     for (FactoryInjectionTarget factoryInjectionTarget : factoryRegistryInjectionTarget.factoryInjectionTargetList) {
       switchBlockBuilder.add("case ($S):\n", factoryInjectionTarget.targetClass);
@@ -103,7 +72,6 @@ public class FactoryRegistryGenerator {
     getFactoryMethod.addCode(switchBlockBuilder.build());
     factoryRegistryTypeSpec.addMethod(getFactoryMethod.build());
   }
-
 
   public String getFqcn() {
     return factoryRegistryInjectionTarget.getFqcn();

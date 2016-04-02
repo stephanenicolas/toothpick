@@ -26,6 +26,7 @@ compileJava {
   doFirst {
     options.compilerArgs = [
         '-processor', "toothpick.compiler.memberinjector.MemberInjectorProcessor,toothpick.compiler.factory.FactoryProcessor",
+        '-Atoothpick_registry_package_name=toothpick.sample',
     ]
   }
 }

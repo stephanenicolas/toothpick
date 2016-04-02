@@ -9,7 +9,6 @@ import org.junit.Test;
 import toothpick.Injector;
 import toothpick.ToothPick;
 import toothpick.config.Module;
-import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.FactoryRegistryLocator;
 
 import static org.easymock.EasyMock.expect;
