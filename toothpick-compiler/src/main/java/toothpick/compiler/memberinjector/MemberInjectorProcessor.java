@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +15,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.inject.Inject;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -143,10 +141,12 @@ import static javax.tools.Diagnostic.Kind.ERROR;
     final String targetClassPackage = getPackageName(enclosingElement);
     final String targetClassName = getClassName(enclosingElement, targetClassPackage);
     final String targetClass = enclosingElement.getQualifiedName().toString();
-    final String memberClass = element.asType().toString();
+    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());
+    final String memberClassPackage = getPackageName(memberTypeElement);
+    final String memberClassName = getClassName(memberTypeElement, memberClassPackage);
     final String memberName = element.getSimpleName().toString();
 
-    return new MemberInjectorInjectionTarget(targetClassPackage, targetClassName, targetClass, memberClass, memberName);
+    return new MemberInjectorInjectionTarget(targetClassPackage, targetClassName, targetClass, memberClassPackage, memberClassName, memberName);
   }
 
   private String getPackageName(TypeElement type) {
