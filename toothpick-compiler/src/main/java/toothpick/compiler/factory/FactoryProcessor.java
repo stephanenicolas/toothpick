@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -34,6 +36,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
   private Elements elementUtils;
   private Types typeUtils;
   private Filer filer;
+  private Map<TypeElement, FactoryInjectionTarget> targetClassMap = new LinkedHashMap<>();
 
   @Override public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
@@ -45,7 +48,11 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-    Map<TypeElement, FactoryInjectionTarget> targetClassMap = findAndParseTargets(roundEnv);
+    findAndParseTargets(roundEnv);
+
+    if (!roundEnv.processingOver()) {
+      return false;
+    }
 
     for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : targetClassMap.entrySet()) {
       TypeElement typeElement = entry.getKey();
@@ -71,11 +78,32 @@ import static javax.tools.Diagnostic.Kind.ERROR;
       }
     }
 
+    //TODO remove hard coded values with compiler options, the empty collection as well
+    FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
+        new FactoryRegistryInjectionTarget(targetClassMap.values(), "toothpick.sample", Collections.EMPTY_LIST);
+    Writer writer = null;
+    Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
+    // Generate the ExtraInjector
+    try {
+      FactoryRegistryGenerator factoryRegistryGenerator = new FactoryRegistryGenerator(factoryRegistryInjectionTarget);
+      JavaFileObject jfo = filer.createSourceFile(factoryRegistryGenerator.getFqcn(), allTypes);
+      writer = jfo.openWriter();
+      writer.write(factoryRegistryGenerator.brewJava());
+    } catch (IOException e) {
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+    } finally {
+      if (writer != null) {
+        try {
+          writer.close();
+        } catch (IOException e) {
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+        }
+      }
+    }
     return false;
   }
 
-  private Map<TypeElement, FactoryInjectionTarget> findAndParseTargets(RoundEnvironment roundEnv) {
-    Map<TypeElement, FactoryInjectionTarget> targetClassMap = new LinkedHashMap<>();
+  private void findAndParseTargets(RoundEnvironment roundEnv) {
 
     for (Element element : roundEnv.getElementsAnnotatedWith(Inject.class)) {
       if (element.getKind() == ElementKind.CONSTRUCTOR) {
@@ -89,8 +117,6 @@ import static javax.tools.Diagnostic.Kind.ERROR;
         }
       }
     }
-
-    return targetClassMap;
   }
 
   private void parseInject(Element element, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {

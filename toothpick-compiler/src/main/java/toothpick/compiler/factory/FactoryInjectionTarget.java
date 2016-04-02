@@ -6,6 +6,8 @@ import javax.lang.model.type.TypeMirror;
 
 public final class FactoryInjectionTarget {
 
+  //TODO the injection targets should ideally not know about the annotation processing classes.
+  //as we can't create them for testing
   public final List<TypeMirror> parameters = new ArrayList<>();
   public final String classPackage;
   public final String className;
