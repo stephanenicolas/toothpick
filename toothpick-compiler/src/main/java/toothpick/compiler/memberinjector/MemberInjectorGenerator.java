@@ -10,8 +10,9 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import toothpick.Injector;
 import toothpick.MemberInjector;
+import toothpick.compiler.CodeGenerator;
 
-public class MemberInjectorGenerator {
+public class MemberInjectorGenerator implements CodeGenerator {
 
   private static final String MEMBER_INJECTOR_SUFFIX = "$$MemberInjector";
 

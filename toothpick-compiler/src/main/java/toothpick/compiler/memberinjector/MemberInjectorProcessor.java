@@ -1,21 +1,15 @@
 package toothpick.compiler.memberinjector;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.inject.Inject;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -23,13 +17,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-import javax.tools.JavaFileObject;
 import toothpick.MemberInjector;
+import toothpick.compiler.ToothpickProcessor;
+import toothpick.compiler.factory.FactoryProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
@@ -37,45 +29,18 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  *
  * @see FactoryProcessor
  */
-@SupportedAnnotationTypes({ "javax.inject.Inject" }) public class MemberInjectorProcessor extends AbstractProcessor {
-
-  private Elements elementUtils;
-  private Types typeUtils;
-  private Filer filer;
-
-  @Override public synchronized void init(ProcessingEnvironment processingEnv) {
-    super.init(processingEnv);
-
-    elementUtils = processingEnv.getElementUtils();
-    typeUtils = processingEnv.getTypeUtils();
-    filer = processingEnv.getFiler();
-  }
+@SupportedAnnotationTypes({ "javax.inject.Inject" }) public class MemberInjectorProcessor extends ToothpickProcessor {
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = findAndParseTargets(roundEnv);
 
+    // Generate member injectors
     for (Map.Entry<TypeElement, List<MemberInjectorInjectionTarget>> entry : targetClassMap.entrySet()) {
-      TypeElement typeElement = entry.getKey();
       List<MemberInjectorInjectionTarget> memberInjectorInjectionTargetList = entry.getValue();
-
-      Writer writer = null;
-      // Generate the ExtraInjector
-      try {
-        MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorInjectionTargetList);
-        JavaFileObject jfo = filer.createSourceFile(memberInjectorGenerator.getFqcn(), typeElement);
-        writer = jfo.openWriter();
-        writer.write(memberInjectorGenerator.brewJava());
-      } catch (IOException e) {
-        error(typeElement, "Unable to write MemberInjector for type %s: %s", typeElement, e.getMessage());
-      } finally {
-        if (writer != null) {
-          try {
-            writer.close();
-          } catch (IOException e) {
-            error(typeElement, "Unable to close MemberInjector source file for type %s: %s", typeElement, e.getMessage());
-          }
-        }
-      }
+      MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorInjectionTargetList);
+      TypeElement typeElement = entry.getKey();
+      String fileDescription = String.format("MemberInjector for type %s", typeElement);
+      writeToFile(memberInjectorGenerator, fileDescription, typeElement);
     }
 
     return false;
@@ -211,33 +176,5 @@ import static javax.tools.Diagnostic.Kind.ERROR;
       }
     } while (!failedToFindSuperClass && !"java.lang.Object".equals(currentTypeElement.getQualifiedName()));
     return null;
-  }
-
-  private String getPackageName(TypeElement type) {
-    return elementUtils.getPackageOf(type).getQualifiedName().toString();
-  }
-
-  private static String getClassName(TypeElement type, String packageName) {
-    int packageLen = packageName.length() + 1;
-    return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
-  }
-
-  /**
-   * Returns {@code true} if the an annotation is found on the given element with the given class
-   * name (not fully qualified).
-   */
-  private static boolean hasAnnotationWithName(Element element, String simpleName) {
-    for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
-      final Element annnotationElement = mirror.getAnnotationType().asElement();
-      String annotationName = annnotationElement.getSimpleName().toString();
-      if (simpleName.equals(annotationName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private void error(Element element, String message, Object... args) {
-    processingEnv.getMessager().printMessage(ERROR, String.format(message, args), element);
   }
 }

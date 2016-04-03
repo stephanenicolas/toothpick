@@ -1,23 +1,15 @@
 package toothpick.compiler.factory;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -25,30 +17,15 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import toothpick.compiler.ToothpickProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.tools.Diagnostic.Kind.ERROR;
 
 @SupportedAnnotationTypes({ "javax.inject.Inject" })
 @SupportedOptions({ "toothpick_registry_package_name.toothpick_registry_children_package_names" }) //
-public class FactoryProcessor extends AbstractProcessor {
+public class FactoryProcessor extends ToothpickProcessor {
 
-  private Elements elementUtils;
-  private Types typeUtils;
-  private Filer filer;
   private Map<TypeElement, FactoryInjectionTarget> targetClassMap = new LinkedHashMap<>();
-
-  @Override public synchronized void init(ProcessingEnvironment processingEnv) {
-    super.init(processingEnv);
-
-    elementUtils = processingEnv.getElementUtils();
-    typeUtils = processingEnv.getTypeUtils();
-    filer = processingEnv.getFiler();
-  }
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
@@ -58,63 +35,25 @@ public class FactoryProcessor extends AbstractProcessor {
       return false;
     }
 
+    // Generate Factories
     for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : targetClassMap.entrySet()) {
-      TypeElement typeElement = entry.getKey();
       FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
-
-      Writer writer = null;
-      // Generate the ExtraInjector
-      try {
-        FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
-        JavaFileObject jfo = filer.createSourceFile(factoryGenerator.getFqcn(), typeElement);
-        writer = jfo.openWriter();
-        writer.write(factoryGenerator.brewJava());
-      } catch (IOException e) {
-        error(typeElement, "Unable to write factory for type %s: %s", typeElement, e.getMessage());
-      } finally {
-        if (writer != null) {
-          try {
-            writer.close();
-          } catch (IOException e) {
-            error(typeElement, "Unable to close factory source file for type %s: %s", typeElement, e.getMessage());
-          }
-        }
-      }
+      FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
+      TypeElement typeElement = entry.getKey();
+      String fileDescription = String.format("factory for type %s", typeElement);
+      writeToFile(factoryGenerator, fileDescription, typeElement);
     }
 
-    String toothpickRegistryPackageName = processingEnv.getOptions().get("toothpick_registry_package_name");
-    if (toothpickRegistryPackageName == null) {
-      processingEnv.getMessager()
-          .printMessage(Diagnostic.Kind.WARNING, "No option -Atoothpick_registry_package_name was passed to the compiler."
-                  + " No registries are generated. Will fallback on reflection at runtime to find factories.");
-      return false;
-    }
-    String toothpickRegistryChildrenPackageNames = processingEnv.getOptions().get("toothpick_registry_children_package_names");
-    List<String> toothpickRegistryChildrenPackageNameList = Collections.EMPTY_LIST;
-    if (toothpickRegistryChildrenPackageNames != null) {
-      toothpickRegistryChildrenPackageNameList = Arrays.asList(toothpickRegistryChildrenPackageNames.split(":"));
-    }
-    FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
-        new FactoryRegistryInjectionTarget(targetClassMap.values(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
-    Writer writer = null;
-    Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
-    // Generate the ExtraInjector
-    try {
+    // Generate Registry
+    if (readParameters()) {
+      FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
+          new FactoryRegistryInjectionTarget(targetClassMap.values(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
       FactoryRegistryGenerator factoryRegistryGenerator = new FactoryRegistryGenerator(factoryRegistryInjectionTarget);
-      JavaFileObject jfo = filer.createSourceFile(factoryRegistryGenerator.getFqcn(), allTypes);
-      writer = jfo.openWriter();
-      writer.write(factoryRegistryGenerator.brewJava());
-    } catch (IOException e) {
-      processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-    } finally {
-      if (writer != null) {
-        try {
-          writer.close();
-        } catch (IOException e) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-        }
-      }
+      Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
+      String fileDescription = "factory registry";
+      writeToFile(factoryRegistryGenerator, fileDescription, allTypes);
     }
+
     return false;
   }
 
@@ -127,7 +66,6 @@ public class FactoryProcessor extends AbstractProcessor {
         } catch (Exception e) {
           StringWriter stackTrace = new StringWriter();
           e.printStackTrace(new PrintWriter(stackTrace));
-
           error(element, "Unable to generate factory when parsing @Inject.\n\n%s", stackTrace.toString());
         }
       }
@@ -214,33 +152,5 @@ public class FactoryProcessor extends AbstractProcessor {
     for (VariableElement variableElement : executableElement.getParameters()) {
       factoryInjectionTarget.parameters.add(variableElement.asType());
     }
-  }
-
-  private String getPackageName(TypeElement type) {
-    return elementUtils.getPackageOf(type).getQualifiedName().toString();
-  }
-
-  private static String getClassName(TypeElement type, String packageName) {
-    int packageLen = packageName.length() + 1;
-    return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
-  }
-
-  /**
-   * Returns {@code true} if the an annotation is found on the given element with the given class
-   * name (not fully qualified).
-   */
-  private static boolean hasAnnotationWithName(Element element, String simpleName) {
-    for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
-      final Element annnotationElement = mirror.getAnnotationType().asElement();
-      String annotationName = annnotationElement.getSimpleName().toString();
-      if (simpleName.equals(annotationName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private void error(Element element, String message, Object... args) {
-    processingEnv.getMessager().printMessage(ERROR, String.format(message, args), element);
   }
 }

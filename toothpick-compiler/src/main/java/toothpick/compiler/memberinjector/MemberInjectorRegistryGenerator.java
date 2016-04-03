@@ -1,6 +1,8 @@
 package toothpick.compiler.memberinjector;
 
-public class MemberInjectorRegistryGenerator {
+import toothpick.compiler.CodeGenerator;
+
+public class MemberInjectorRegistryGenerator implements CodeGenerator {
 
   private static final String MEMBER_INJECTOR_SUFFIX = "$$MemberInjector";
 

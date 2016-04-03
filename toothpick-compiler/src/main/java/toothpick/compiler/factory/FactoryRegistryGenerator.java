@@ -9,9 +9,10 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
+import toothpick.compiler.CodeGenerator;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
-public class FactoryRegistryGenerator {
+public class FactoryRegistryGenerator implements CodeGenerator {
 
   private FactoryRegistryInjectionTarget factoryRegistryInjectionTarget;
 

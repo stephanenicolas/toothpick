@@ -10,8 +10,9 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 import toothpick.Factory;
 import toothpick.Injector;
+import toothpick.compiler.CodeGenerator;
 
-public class FactoryGenerator {
+public class FactoryGenerator implements CodeGenerator {
 
   private static final String FACTORY_SUFFIX = "$$Factory";
 
