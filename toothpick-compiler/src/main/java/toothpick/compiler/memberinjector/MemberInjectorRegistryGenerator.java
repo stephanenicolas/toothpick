@@ -24,8 +24,7 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
   public String brewJava() {
     // Build class
     TypeSpec.Builder memberInjectorRegistryTypeSpec =
-        TypeSpec.classBuilder(MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME).addModifiers(
-            Modifier.PUBLIC)
+        TypeSpec.classBuilder(MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME).addModifiers(Modifier.PUBLIC)
             //TODO do not use the class but a name, this ties the generator to the AbstractFactoryRegistry
             //and forces up to put it in the toothpick lib vs runtime lib, which is not desirable
             //the runtime package could still be used for running tests..
@@ -45,7 +44,8 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
 
     CodeBlock.Builder iterateChildAddMemberInjectorRegistryBlock = CodeBlock.builder();
     for (String childPackageName : memberInjectorRegistryInjectionTarget.childrenRegistryPackageNameList) {
-      ClassName memberInjectorRegistryClassName = ClassName.get(childPackageName, MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME);
+      ClassName memberInjectorRegistryClassName =
+          ClassName.get(childPackageName, MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME);
       iterateChildAddMemberInjectorRegistryBlock.addStatement("addChildRegistry($L)", memberInjectorRegistryClassName);
     }
 
@@ -65,8 +65,7 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
 
     for (TypeElement typeElement : memberInjectorRegistryInjectionTarget.memberInjectionTargetList) {
       switchBlockBuilder.add("case ($S):\n", typeElement.getQualifiedName().toString());
-      switchBlockBuilder.addStatement("return (MemberInjector<T>) new $L$$$$MemberInjector()",
-          ClassName.get(typeElement));
+      switchBlockBuilder.addStatement("return (MemberInjector<T>) new $L$$$$MemberInjector()", ClassName.get(typeElement));
     }
     switchBlockBuilder.add("default:\n");
     switchBlockBuilder.addStatement("return getMemberInjectorInChildrenRegistries(clazz)");

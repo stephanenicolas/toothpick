@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import toothpick.ToothPick;
 import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,8 +18,7 @@ public class ComputerTest {
   @TestSubject private Computer computerUnderTest = ToothPick.getOrCreateInjector(null, "Computer").getInstance(Computer.class);
 
   @BeforeClass public static void setUp() throws Exception {
-    //TODO enable when registries are created and add factories.
-    //MemberInjectorRegistryLocator.addRegistry(new MemberInjectorRegistry());
+    MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
     FactoryRegistryLocator.addRegistry(new toothpick.sample.FactoryRegistry());
   }
 

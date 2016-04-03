@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -29,10 +30,18 @@ import static javax.lang.model.element.Modifier.PRIVATE;
  *
  * @see FactoryProcessor
  */
-@SupportedAnnotationTypes({ "javax.inject.Inject" }) public class MemberInjectorProcessor extends ToothpickProcessor {
+@SupportedAnnotationTypes({ "javax.inject.Inject" }) //
+@SupportedOptions({ "toothpick_registry_package_name.toothpick_registry_children_package_names" }) //
+public class MemberInjectorProcessor extends ToothpickProcessor {
+
+  private Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = findAndParseTargets(roundEnv);
+    findAndParseTargets(roundEnv);
+
+    if (!roundEnv.processingOver()) {
+      return false;
+    }
 
     // Generate member injectors
     for (Map.Entry<TypeElement, List<MemberInjectorInjectionTarget>> entry : targetClassMap.entrySet()) {
@@ -56,9 +65,7 @@ import static javax.lang.model.element.Modifier.PRIVATE;
     return false;
   }
 
-  private Map<TypeElement, List<MemberInjectorInjectionTarget>> findAndParseTargets(RoundEnvironment roundEnv) {
-    Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = new LinkedHashMap<>();
-
+  private void findAndParseTargets(RoundEnvironment roundEnv) {
     for (Element element : roundEnv.getElementsAnnotatedWith(Inject.class)) {
       if (element.getKind() == ElementKind.FIELD) {
         try {
@@ -71,8 +78,6 @@ import static javax.lang.model.element.Modifier.PRIVATE;
         }
       }
     }
-
-    return targetClassMap;
   }
 
   private void parseInject(Element element, Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap) {

@@ -10,6 +10,7 @@ import toothpick.Injector;
 import toothpick.ToothPick;
 import toothpick.config.Module;
 import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -24,8 +25,7 @@ public class SimpleEntryPointTest {
   @Mock private Computer mockComputer;
 
   @BeforeClass public static void setUp() throws Exception {
-    //TODO enable when registries are created and add factories.
-    //MemberInjectorRegistryLocator.addRegistry(new MemberInjectorRegistry());
+    MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
     FactoryRegistryLocator.addRegistry(new toothpick.sample.FactoryRegistry());
   }
 
