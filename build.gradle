@@ -23,7 +23,8 @@ subprojects { project ->
   apply plugin: 'jacoco'
   apply plugin: 'com.github.kt3k.coveralls'
   apply plugin: 'checkstyle'
-
+  apply plugin: 'maven'
+  
   checkstyle {
     configFile rootProject.file('checkstyle.xml')
   }
