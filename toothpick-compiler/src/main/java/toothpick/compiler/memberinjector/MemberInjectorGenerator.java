@@ -33,7 +33,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
 
     // Build class
     TypeSpec.Builder injectorMemberTypeSpec = TypeSpec.classBuilder(memberInjectorInjectionTarget.targetClassName + MEMBER_INJECTOR_SUFFIX)
-        .addModifiers(Modifier.PUBLIC)
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addSuperinterface(memberInjectorInterfaceParameterizedTypeName);
     emitSuperMemberInjectorFieldIfNeeded(injectorMemberTypeSpec, memberInjectorInjectionTarget);
     emitInjectMethod(injectorMemberTypeSpec, memberInjectorInjectionTargetList);

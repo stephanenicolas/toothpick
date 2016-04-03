@@ -24,7 +24,8 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
   public String brewJava() {
     // Build class
     TypeSpec.Builder memberInjectorRegistryTypeSpec =
-        TypeSpec.classBuilder(MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME).addModifiers(Modifier.PUBLIC)
+        TypeSpec.classBuilder(MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             //TODO do not use the class but a name, this ties the generator to the AbstractFactoryRegistry
             //and forces up to put it in the toothpick lib vs runtime lib, which is not desirable
             //the runtime package could still be used for running tests..

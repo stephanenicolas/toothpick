@@ -48,7 +48,7 @@ public class FactoryGenerator implements CodeGenerator {
   private void emitCreateInstance(TypeSpec.Builder builder) {
     MethodSpec.Builder createInstanceBuilder = MethodSpec.methodBuilder("createInstance")
         .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addParameter(ClassName.get(Injector.class), "injector")
         .returns(ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
 
