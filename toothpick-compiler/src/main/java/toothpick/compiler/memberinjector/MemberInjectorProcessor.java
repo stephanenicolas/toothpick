@@ -43,6 +43,16 @@ import static javax.lang.model.element.Modifier.PRIVATE;
       writeToFile(memberInjectorGenerator, fileDescription, typeElement);
     }
 
+    // Generate Registry
+    if (readParameters()) {
+      MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget =
+          new MemberInjectorRegistryInjectionTarget(targetClassMap.keySet(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
+      MemberInjectorRegistryGenerator memberInjectorRegistryGenerator = new MemberInjectorRegistryGenerator(memberInjectorRegistryInjectionTarget);
+      Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
+      String fileDescription = "MemberInjector registry";
+      writeToFile(memberInjectorRegistryGenerator, fileDescription, allTypes);
+    }
+
     return false;
   }
 

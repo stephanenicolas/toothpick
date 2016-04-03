@@ -40,7 +40,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
       FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
       TypeElement typeElement = entry.getKey();
-      String fileDescription = String.format("factory for type %s", typeElement);
+      String fileDescription = String.format("Factory for type %s", typeElement);
       writeToFile(factoryGenerator, fileDescription, typeElement);
     }
 
@@ -50,7 +50,7 @@ public class FactoryProcessor extends ToothpickProcessor {
           new FactoryRegistryInjectionTarget(targetClassMap.values(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
       FactoryRegistryGenerator factoryRegistryGenerator = new FactoryRegistryGenerator(factoryRegistryInjectionTarget);
       Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
-      String fileDescription = "factory registry";
+      String fileDescription = "Factory registry";
       writeToFile(factoryRegistryGenerator, fileDescription, allTypes);
     }
 

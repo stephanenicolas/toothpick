@@ -44,7 +44,7 @@ public class FactoryRegistryGenerator implements CodeGenerator {
     CodeBlock.Builder iterateChildAddFactoryRegistryBlock = CodeBlock.builder();
     for (String childPackageName : factoryRegistryInjectionTarget.childrenRegistryPackageNameList) {
       ClassName factoryRegistryClassName = ClassName.get(childPackageName, FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME);
-      iterateChildAddFactoryRegistryBlock.addStatement("add($L)", factoryRegistryClassName);
+      iterateChildAddFactoryRegistryBlock.addStatement("addChildRegistry($L)", factoryRegistryClassName);
     }
 
     constructor.addCode(iterateChildAddFactoryRegistryBlock.build());
@@ -59,7 +59,6 @@ public class FactoryRegistryGenerator implements CodeGenerator {
         .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), t), "clazz")
         .returns(ParameterizedTypeName.get(ClassName.get(Factory.class), t));
 
-    StringBuilder switchStatement = new StringBuilder();
     CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName()");
 
     for (FactoryInjectionTarget factoryInjectionTarget : factoryRegistryInjectionTarget.factoryInjectionTargetList) {

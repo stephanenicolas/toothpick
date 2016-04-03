@@ -34,6 +34,6 @@ public final class MemberInjectorInjectionTarget {
     INSTANCE,
     PROVIDER,
     LAZY,
-    FUTURE;
+    FUTURE
   }
 }
