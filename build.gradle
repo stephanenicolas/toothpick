@@ -24,7 +24,7 @@ subprojects { project ->
   apply plugin: 'com.github.kt3k.coveralls'
   apply plugin: 'checkstyle'
   apply plugin: 'maven'
-  
+
   checkstyle {
     configFile rootProject.file('checkstyle.xml')
   }
@@ -76,10 +76,7 @@ subprojects { project ->
       }
     }
   }
-}
 
-ext {
-  javaVersion = 1.8
 }
 
 ext.deps = [// Common
