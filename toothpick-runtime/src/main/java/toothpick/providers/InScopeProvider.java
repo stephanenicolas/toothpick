@@ -15,7 +15,7 @@ public abstract class InScopeProvider<T> implements Provider<T> {
     this.injector = injector;
   }
 
-  protected InjectorImpl getInjector() {
+  protected final InjectorImpl getInjector() {
     return injector;
   }
 }

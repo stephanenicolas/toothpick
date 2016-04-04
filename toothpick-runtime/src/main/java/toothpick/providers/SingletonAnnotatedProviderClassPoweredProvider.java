@@ -14,7 +14,7 @@ import toothpick.registries.factory.FactoryRegistryLocator;
  *
  * @param <T> the type of the instances provided by this provider.
  */
-public class SingletonAnnotatedProviderClassPoweredProvider<T> extends ReplaceInScopeProvider<T> {
+public final class SingletonAnnotatedProviderClassPoweredProvider<T> extends ReplaceInScopeProvider<T> {
   private Class<? extends Provider<? extends T>> providerClass;
 
   public SingletonAnnotatedProviderClassPoweredProvider(InjectorImpl injector, Class<T> key, Class<? extends Provider<? extends T>> providerClass) {

@@ -21,6 +21,7 @@ import toothpick.compiler.ToothpickProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
 
+//TODO add a @Generated annotation on generated classes, the value is the name of the factory class
 @SupportedAnnotationTypes({ "javax.inject.Inject" })
 @SupportedOptions({ "toothpick_registry_package_name.toothpick_registry_children_package_names" }) //
 public class FactoryProcessor extends ToothpickProcessor {
@@ -60,6 +61,11 @@ public class FactoryProcessor extends ToothpickProcessor {
   private void findAndParseTargets(RoundEnvironment roundEnv) {
 
     for (Element element : roundEnv.getElementsAnnotatedWith(Inject.class)) {
+      //TODO we only process constructors
+      //but we could also process injected fields when they are of a class type,
+      //not an interface. We could also create factories for them, if possible.
+      //that would allow not to have to declare an annotation constructor in the
+      //dependency. We would only use the default constructor.
       if (element.getKind() == ElementKind.CONSTRUCTOR) {
         try {
           parseInject(element, targetClassMap);

@@ -8,7 +8,7 @@ import toothpick.InjectorImpl;
  * It will always us the factory to create new instances of {@code T}.
  * @param <T> the type of the instances provided by this provider.
  */
-public class FactoryPoweredProvider<T> extends InScopeProvider<T> {
+public final class FactoryPoweredProvider<T> extends InScopeProvider<T> {
   private Factory<T> factory;
 
   public FactoryPoweredProvider(InjectorImpl injector, Factory<T> factory) {

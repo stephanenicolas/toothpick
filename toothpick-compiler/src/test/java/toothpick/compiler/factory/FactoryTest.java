@@ -23,7 +23,7 @@ public class FactoryTest {
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Injector;", //
-        "public class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Injector injector) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
@@ -64,7 +64,7 @@ public class FactoryTest {
         "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Injector;", //
-        "public class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
         "    String param1 = injector.getInstance(String.class);", //
@@ -97,7 +97,7 @@ public class FactoryTest {
         "import javax.inject.Inject;", //
         "import javax.inject.Singleton;", //
         "@Singleton", //
-        "public class TestNonEmptyConstructor {", //
+        "public final class TestNonEmptyConstructor {", //
         "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
         "}" //
     ));
@@ -109,7 +109,7 @@ public class FactoryTest {
         "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Injector;", //
-        "public class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
         "    String param1 = injector.getInstance(String.class);", //
@@ -154,7 +154,7 @@ public class FactoryTest {
         "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Injector;", //
-        "public class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
         "    String param1 = injector.getInstance(String.class);", //

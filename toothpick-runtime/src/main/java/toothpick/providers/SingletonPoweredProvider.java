@@ -7,7 +7,7 @@ import javax.inject.Provider;
  * of {@code T}.
  * @param <T> the type of the instances provided by this provider.
  */
-public class SingletonPoweredProvider<T> implements Provider<T> {
+public final class SingletonPoweredProvider<T> implements Provider<T> {
   private T instance;
 
   public SingletonPoweredProvider(T instance) {

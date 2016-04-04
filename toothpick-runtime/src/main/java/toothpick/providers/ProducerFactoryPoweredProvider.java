@@ -9,7 +9,7 @@ import toothpick.InjectorImpl;
  * The producer will always ask the factory to create a provider and ask the provider to create an instance of {@code T}.
  * @param <T> the type of the instances provided by this provider.
  */
-public class ProducerFactoryPoweredProvider<T> extends InScopeProvider<T> {
+public final class ProducerFactoryPoweredProvider<T> extends InScopeProvider<T> {
   private Factory<? extends Provider<T>> providerFactory;
 
   public ProducerFactoryPoweredProvider(InjectorImpl injector, Factory<? extends Provider<T>> providerFactory) {

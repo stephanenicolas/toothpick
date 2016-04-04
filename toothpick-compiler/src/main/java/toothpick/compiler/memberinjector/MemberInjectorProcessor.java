@@ -30,6 +30,7 @@ import static javax.lang.model.element.Modifier.PRIVATE;
  *
  * @see FactoryProcessor
  */
+//TODO add a @Generated annotation on generated classes, the value is the name of the factory class
 @SupportedAnnotationTypes({ "javax.inject.Inject" }) //
 @SupportedOptions({ "toothpick_registry_package_name.toothpick_registry_children_package_names" }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {

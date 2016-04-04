@@ -29,7 +29,7 @@ public class FactoryGenerator implements CodeGenerator {
 
     // Build class
     TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(factoryInjectionTarget.className + FACTORY_SUFFIX)
-        .addModifiers(Modifier.PUBLIC)
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addSuperinterface(parameterizedTypeName);
     emitCreateInstance(factoryTypeSpec);
     emitHasSingleton(factoryTypeSpec);
@@ -48,7 +48,7 @@ public class FactoryGenerator implements CodeGenerator {
   private void emitCreateInstance(TypeSpec.Builder builder) {
     MethodSpec.Builder createInstanceBuilder = MethodSpec.methodBuilder("createInstance")
         .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        .addModifiers(Modifier.PUBLIC)
         .addParameter(ClassName.get(Injector.class), "injector")
         .returns(ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
 

@@ -3,6 +3,7 @@ package toothpick;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,7 +26,7 @@ import static java.lang.String.format;
 /**
  * This class should never be used outside of the toothpick library.
  */
-public class InjectorImpl implements Injector {
+public final class InjectorImpl implements Injector {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   private Injector parent;
@@ -72,6 +73,7 @@ public class InjectorImpl implements Injector {
         }
       }
     }
+    //classes discovered at runtime, not bound by any module
     Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
     T instance = factory.createInstance(this);
     if (factory.hasSingletonAnnotation()) {
