@@ -23,8 +23,16 @@ import static javax.tools.Diagnostic.Kind.WARNING;
  */
 public abstract class ToothpickProcessor extends AbstractProcessor {
 
-  private static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
-  private static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
+  /** The name of the {@link javax.inject.Inject} annotation class that triggers {@code ToothpickProcessor}s. */
+  protected static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
+
+  /** The name annotation processor option to declare in which package a registry should be generated.
+   * If this parameter is not passed, no registry is generated.*/
+  protected static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
+
+  /** The name annotation processor option to declare in which packages reside the registries used by the generated registry, if it is created.
+   * @see #PARAMETER_REGISTRY_PACKAGE_NAME */
+  protected static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
 
   protected Elements elementUtils;
   protected Types typeUtils;
@@ -61,6 +69,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
+  /**
+   * Reads both annotation compilers {@link ToothpickProcessor#PARAMETER_REGISTRY_PACKAGE_NAME} and
+   * {@link ToothpickProcessor#PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES} options from the arguments
+   * passed to the processor.
+   * @return true if toothpickRegistryPackageName is defined, false otherwise.
+   */
   protected boolean readParameters() {
     toothpickRegistryPackageName = processingEnv.getOptions().get(PARAMETER_REGISTRY_PACKAGE_NAME);
     if (toothpickRegistryPackageName == null) {

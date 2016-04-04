@@ -23,6 +23,9 @@ import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static toothpick.compiler.ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME;
+import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES;
+import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
@@ -31,8 +34,8 @@ import static javax.lang.model.element.Modifier.PRIVATE;
  * @see FactoryProcessor
  */
 //TODO add a @Generated annotation on generated classes, the value is the name of the factory class
-@SupportedAnnotationTypes({ "javax.inject.Inject" }) //
-@SupportedOptions({ "toothpick_registry_package_name.toothpick_registry_children_package_names" }) //
+@SupportedAnnotationTypes({ INJECT_ANNOTATION_CLASS_NAME })
+@SupportedOptions({ PARAMETER_REGISTRY_PACKAGE_NAME+"."+PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
   private Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = new LinkedHashMap<>();
