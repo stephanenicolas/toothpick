@@ -11,8 +11,13 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import toothpick.MemberInjector;
 import toothpick.compiler.CodeGenerator;
+import toothpick.registries.MemberInjectorRegistry;
 import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 
+/**
+ * Generates a {@link MemberInjectorRegistry} for a given {@link MemberInjectorRegistryInjectionTarget}.
+ * @see MemberInjectorProcessor for how to generate a registry via annotation processor options.
+ */
 public class MemberInjectorRegistryGenerator implements CodeGenerator {
 
   private MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget;
@@ -75,6 +80,7 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
     memberInjectorRegistryTypeSpec.addMethod(getMemberInjectorMethod.build());
   }
 
+  @Override
   public String getFqcn() {
     return memberInjectorRegistryInjectionTarget.getFqcn();
   }

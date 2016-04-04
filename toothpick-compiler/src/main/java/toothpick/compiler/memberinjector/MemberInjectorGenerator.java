@@ -8,10 +8,18 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.List;
 import javax.lang.model.element.Modifier;
+import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.MemberInjector;
 import toothpick.compiler.CodeGenerator;
+import toothpick.compiler.factory.FactoryInjectionTarget;
 
+/**
+ * Generates a {@link MemberInjector} for a given collection of {@link MemberInjectorInjectionTarget}.
+ * Typically a {@link MemberInjector} is created for a class a soon as it contains
+ * an {@link javax.inject.Inject} annotated field.
+ * TODO also deal with injected methods.
+ */
 public class MemberInjectorGenerator implements CodeGenerator {
 
   private static final String MEMBER_INJECTOR_SUFFIX = "$$MemberInjector";
@@ -104,6 +112,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
     injectorMemberTypeSpec.addMethod(injectBuilder.build());
   }
 
+  @Override
   public String getFqcn() {
     MemberInjectorInjectionTarget firstMemberInjector = memberInjectorInjectionTargetList.get(0);
     return firstMemberInjector.targetClassPackage + "." + firstMemberInjector.targetClassName + MEMBER_INJECTOR_SUFFIX;

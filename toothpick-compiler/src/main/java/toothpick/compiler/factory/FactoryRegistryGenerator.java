@@ -10,8 +10,13 @@ import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
 import toothpick.compiler.CodeGenerator;
+import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
+/**
+ * Generates a {@link FactoryRegistry} for a given {@link FactoryRegistryInjectionTarget}.
+ * @see FactoryProcessor for how to generate a registry via annotation processor options.
+ */
 public class FactoryRegistryGenerator implements CodeGenerator {
 
   private FactoryRegistryInjectionTarget factoryRegistryInjectionTarget;
@@ -74,6 +79,7 @@ public class FactoryRegistryGenerator implements CodeGenerator {
     factoryRegistryTypeSpec.addMethod(getFactoryMethod.build());
   }
 
+  @Override
   public String getFqcn() {
     return factoryRegistryInjectionTarget.getFqcn();
   }

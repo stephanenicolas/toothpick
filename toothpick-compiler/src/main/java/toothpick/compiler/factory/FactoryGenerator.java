@@ -12,6 +12,14 @@ import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.compiler.CodeGenerator;
 
+/**
+ * Generates a {@link Factory} for a given {@link FactoryInjectionTarget}.
+ * Typically a factory is created for a class a soon as it contains
+ * an {@link javax.inject.Inject} annotated constructor.
+ * TODO also generate a factory for a <em>non private & non abstract class</em>
+ * whose instances are injected (i.e. the type of an injected field or of a parameter
+ * of an injected constructor.
+ */
 public class FactoryGenerator implements CodeGenerator {
 
   private static final String FACTORY_SUFFIX = "$$Factory";
@@ -41,6 +49,7 @@ public class FactoryGenerator implements CodeGenerator {
     return javaFile.toString();
   }
 
+  @Override
   public String getFqcn() {
     return factoryInjectionTarget.getFqcn() + FACTORY_SUFFIX;
   }
