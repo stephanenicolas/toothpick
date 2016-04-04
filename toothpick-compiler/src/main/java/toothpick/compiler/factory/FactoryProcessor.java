@@ -20,16 +20,13 @@ import javax.lang.model.type.DeclaredType;
 import toothpick.compiler.ToothpickProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME;
-import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES;
-import static toothpick.compiler.ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME;
 
-//TODO add a @Generated annotation on generated classes, the value is the name of the factory class
-@SupportedAnnotationTypes({ INJECT_ANNOTATION_CLASS_NAME })
-@SupportedOptions({ PARAMETER_REGISTRY_PACKAGE_NAME+"."+PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
+//http://stackoverflow.com/a/2067863/693752
+@SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
+@SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, FactoryInjectionTarget> targetClassMap = new LinkedHashMap<>();
+  private Map<TypeElement, FactoryInjectionTarget> mapTypeElementToFactoryInjectionTarget = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
@@ -40,7 +37,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     // Generate Factories
-    for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : targetClassMap.entrySet()) {
+    for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : mapTypeElementToFactoryInjectionTarget.entrySet()) {
       FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
       FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
       TypeElement typeElement = entry.getKey();
@@ -51,9 +48,10 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Generate Registry
     if (readParameters()) {
       FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
-          new FactoryRegistryInjectionTarget(targetClassMap.values(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
+          new FactoryRegistryInjectionTarget(mapTypeElementToFactoryInjectionTarget.values(), toothpickRegistryPackageName,
+              toothpickRegistryChildrenPackageNameList);
       FactoryRegistryGenerator factoryRegistryGenerator = new FactoryRegistryGenerator(factoryRegistryInjectionTarget);
-      Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
+      Element[] allTypes = mapTypeElementToFactoryInjectionTarget.keySet().toArray(new Element[mapTypeElementToFactoryInjectionTarget.size()]);
       String fileDescription = "Factory registry";
       writeToFile(factoryRegistryGenerator, fileDescription, allTypes);
     }
@@ -71,7 +69,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       //dependency. We would only use the default constructor.
       if (element.getKind() == ElementKind.CONSTRUCTOR) {
         try {
-          parseInject(element, targetClassMap);
+          parseInject(element, mapTypeElementToFactoryInjectionTarget);
         } catch (Exception e) {
           StringWriter stackTrace = new StringWriter();
           e.printStackTrace(new PrintWriter(stackTrace));
@@ -161,5 +159,15 @@ public class FactoryProcessor extends ToothpickProcessor {
     for (VariableElement variableElement : executableElement.getParameters()) {
       factoryInjectionTarget.parameters.add(variableElement.asType());
     }
+  }
+
+  //used for testing only
+  void setToothpickRegistryPackageName(String toothpickRegistryPackageName) {
+    this.toothpickRegistryPackageName = toothpickRegistryPackageName;
+  }
+
+  //used for testing only
+  void setToothpickRegistryChildrenPackageNameList(List<String> toothpickRegistryChildrenPackageNameList) {
+    this.toothpickRegistryChildrenPackageNameList = toothpickRegistryChildrenPackageNameList;
   }
 }

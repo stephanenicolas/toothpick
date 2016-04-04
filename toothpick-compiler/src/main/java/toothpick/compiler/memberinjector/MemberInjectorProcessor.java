@@ -23,9 +23,6 @@ import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static toothpick.compiler.ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME;
-import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES;
-import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
@@ -33,12 +30,12 @@ import static toothpick.compiler.ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_N
  *
  * @see FactoryProcessor
  */
-//TODO add a @Generated annotation on generated classes, the value is the name of the factory class
-@SupportedAnnotationTypes({ INJECT_ANNOTATION_CLASS_NAME })
-@SupportedOptions({ PARAMETER_REGISTRY_PACKAGE_NAME+"."+PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
+//http://stackoverflow.com/a/2067863/693752
+@SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
+@SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, List<MemberInjectorInjectionTarget>> targetClassMap = new LinkedHashMap<>();
+  private Map<TypeElement, List<MemberInjectorInjectionTarget>> mapTypeElementToMemberInjectorTargetList = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     findAndParseTargets(roundEnv);
@@ -48,7 +45,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate member injectors
-    for (Map.Entry<TypeElement, List<MemberInjectorInjectionTarget>> entry : targetClassMap.entrySet()) {
+    for (Map.Entry<TypeElement, List<MemberInjectorInjectionTarget>> entry : mapTypeElementToMemberInjectorTargetList.entrySet()) {
       List<MemberInjectorInjectionTarget> memberInjectorInjectionTargetList = entry.getValue();
       MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorInjectionTargetList);
       TypeElement typeElement = entry.getKey();
@@ -59,9 +56,10 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     // Generate Registry
     if (readParameters()) {
       MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget =
-          new MemberInjectorRegistryInjectionTarget(targetClassMap.keySet(), toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
+          new MemberInjectorRegistryInjectionTarget(mapTypeElementToMemberInjectorTargetList.keySet(), toothpickRegistryPackageName,
+              toothpickRegistryChildrenPackageNameList);
       MemberInjectorRegistryGenerator memberInjectorRegistryGenerator = new MemberInjectorRegistryGenerator(memberInjectorRegistryInjectionTarget);
-      Element[] allTypes = targetClassMap.keySet().toArray(new Element[targetClassMap.size()]);
+      Element[] allTypes = mapTypeElementToMemberInjectorTargetList.keySet().toArray(new Element[mapTypeElementToMemberInjectorTargetList.size()]);
       String fileDescription = "MemberInjector registry";
       writeToFile(memberInjectorRegistryGenerator, fileDescription, allTypes);
     }
@@ -73,7 +71,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     for (Element element : roundEnv.getElementsAnnotatedWith(Inject.class)) {
       if (element.getKind() == ElementKind.FIELD) {
         try {
-          parseInject(element, targetClassMap);
+          parseInject(element, mapTypeElementToMemberInjectorTargetList);
         } catch (Exception e) {
           StringWriter stackTrace = new StringWriter();
           e.printStackTrace(new PrintWriter(stackTrace));
@@ -178,7 +176,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return (TypeElement) typeUtils.asElement(firstParameterTypeMirror);
   }
 
-
   private TypeElement getSuperClassWithInjectedFields(TypeElement typeElement) {
     TypeElement currentTypeElement = typeElement;
     boolean failedToFindSuperClass = false;
@@ -195,5 +192,15 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       }
     } while (!failedToFindSuperClass && !"java.lang.Object".equals(currentTypeElement.getQualifiedName()));
     return null;
+  }
+
+  //used for testing only
+  void setToothpickRegistryPackageName(String toothpickRegistryPackageName) {
+    this.toothpickRegistryPackageName = toothpickRegistryPackageName;
+  }
+
+  //used for testing only
+  void setToothpickRegistryChildrenPackageNameList(List<String> toothpickRegistryChildrenPackageNameList) {
+    this.toothpickRegistryChildrenPackageNameList = toothpickRegistryChildrenPackageNameList;
   }
 }

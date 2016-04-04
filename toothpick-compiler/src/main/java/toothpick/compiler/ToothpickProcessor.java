@@ -19,20 +19,20 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
 /**
- * Created by dmolinero on 4/2/16.
+ * Base processor class.
  */
 public abstract class ToothpickProcessor extends AbstractProcessor {
 
   /** The name of the {@link javax.inject.Inject} annotation class that triggers {@code ToothpickProcessor}s. */
-  protected static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
+  public static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
 
   /** The name annotation processor option to declare in which package a registry should be generated.
    * If this parameter is not passed, no registry is generated.*/
-  protected static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
+  public static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
 
   /** The name annotation processor option to declare in which packages reside the registries used by the generated registry, if it is created.
    * @see #PARAMETER_REGISTRY_PACKAGE_NAME */
-  protected static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
+  public static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
 
   protected Elements elementUtils;
   protected Types typeUtils;
@@ -127,4 +127,5 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected void warning(String message, Object... args) {
     processingEnv.getMessager().printMessage(WARNING, String.format(message, args));
   }
+
 }
