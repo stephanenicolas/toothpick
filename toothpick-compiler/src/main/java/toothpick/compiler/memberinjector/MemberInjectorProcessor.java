@@ -114,26 +114,14 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   private FieldInjectionTarget createInjectionTargetFromField(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
-    final String targetClassPackage = getPackageName(enclosingElement);
-    final String targetClassName = getClassName(enclosingElement, targetClassPackage);
     final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());
-    final String memberClassPackage = getPackageName(memberTypeElement);
-    final String memberClassName = getClassName(memberTypeElement, memberClassPackage);
     final String memberName = element.getSimpleName().toString();
     final TypeElement superTypeElementWithInjectedFields = getSuperClassWithInjectedFields(enclosingElement);
-    final String superClassThatNeedsInjectionClassPackage;
-    final String superClassThatNeedsInjectionClassName;
-    if (superTypeElementWithInjectedFields == null) {
-      superClassThatNeedsInjectionClassPackage = null;
-      superClassThatNeedsInjectionClassName = null;
-    } else {
-      superClassThatNeedsInjectionClassPackage = getPackageName(superTypeElementWithInjectedFields);
-      superClassThatNeedsInjectionClassName = getClassName(superTypeElementWithInjectedFields, superClassThatNeedsInjectionClassPackage);
-    }
 
     FieldInjectionTarget.Kind kind = getKind(element);
-    TypeElement kindParameterTypeElement = null;
-    if (kind == FieldInjectionTarget.Kind.INSTANCE) {
+    TypeElement kindParameterTypeElement;
+    if (kind != FieldInjectionTarget.Kind.INSTANCE) {
+      kindParameterTypeElement = null;
     } else {
       kindParameterTypeElement = getKindParameter(element);
     }

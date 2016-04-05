@@ -95,8 +95,8 @@ public class FactoryTest {
 
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
         "package test;", //
-        "import java.lang.Override;",//
-        "import javax.annotation.Generated;",//
+        "import java.lang.Override;", //
+        "import javax.annotation.Generated;", //
         "import toothpick.Factory;", //
         "import toothpick.Injector;", //
         "", //
