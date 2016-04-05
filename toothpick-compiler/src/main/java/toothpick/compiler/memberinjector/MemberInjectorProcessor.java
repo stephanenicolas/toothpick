@@ -34,7 +34,7 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 @SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, List<MemberInjectorFieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList = new LinkedHashMap<>();
+  private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     findAndParseTargets(roundEnv);
@@ -44,9 +44,9 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate member injectors
-    for (Map.Entry<TypeElement, List<MemberInjectorFieldInjectionTarget>> entry : mapTypeElementToMemberInjectorTargetList.entrySet()) {
-      List<MemberInjectorFieldInjectionTarget> memberInjectorFieldInjectionTargetList = entry.getValue();
-      MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(memberInjectorFieldInjectionTargetList);
+    for (Map.Entry<TypeElement, List<FieldInjectionTarget>> entry : mapTypeElementToMemberInjectorTargetList.entrySet()) {
+      List<FieldInjectionTarget> fieldInjectionTargetList = entry.getValue();
+      MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(fieldInjectionTargetList);
       TypeElement typeElement = entry.getKey();
       String fileDescription = String.format("MemberInjector for type %s", typeElement);
       writeToFile(memberInjectorGenerator, fileDescription, typeElement);
@@ -73,7 +73,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
   }
 
-  private void parseInjectedField(Element element, Map<TypeElement, List<MemberInjectorFieldInjectionTarget>> targetClassMap) {
+  private void parseInjectedField(Element element, Map<TypeElement, List<FieldInjectionTarget>> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -81,12 +81,12 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       return;
     }
 
-    List<MemberInjectorFieldInjectionTarget> memberInjectorFieldInjectionTargetList = targetClassMap.get(enclosingElement);
-    if (memberInjectorFieldInjectionTargetList == null) {
-      memberInjectorFieldInjectionTargetList = new ArrayList<>();
-      targetClassMap.put(enclosingElement, memberInjectorFieldInjectionTargetList);
+    List<FieldInjectionTarget> fieldInjectionTargetList = targetClassMap.get(enclosingElement);
+    if (fieldInjectionTargetList == null) {
+      fieldInjectionTargetList = new ArrayList<>();
+      targetClassMap.put(enclosingElement, fieldInjectionTargetList);
     }
-    memberInjectorFieldInjectionTargetList.add(createInjectionTargetFromField(element));
+    fieldInjectionTargetList.add(createInjectionTargetFromField(element));
   }
 
   private boolean isValidInjectField(Element element) {
@@ -111,7 +111,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return valid;
   }
 
-  private MemberInjectorFieldInjectionTarget createInjectionTargetFromField(Element element) {
+  private FieldInjectionTarget createInjectionTargetFromField(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     final String targetClassPackage = getPackageName(enclosingElement);
@@ -131,32 +131,27 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       superClassThatNeedsInjectionClassName = getClassName(superTypeElementWithInjectedFields, superClassThatNeedsInjectionClassPackage);
     }
 
-    MemberInjectorFieldInjectionTarget.Kind kind = getKind(element);
-    final String kindParamPackageName;
-    final String kindParamClassName;
-    if (kind == MemberInjectorFieldInjectionTarget.Kind.INSTANCE) {
-      kindParamPackageName = null;
-      kindParamClassName = null;
+    FieldInjectionTarget.Kind kind = getKind(element);
+    TypeElement kindParameterTypeElement = null;
+    if (kind == FieldInjectionTarget.Kind.INSTANCE) {
     } else {
-      TypeElement kindParameterTypeElement = getKindParameter(element);
-      kindParamPackageName = getPackageName(kindParameterTypeElement);
-      kindParamClassName = getClassName(kindParameterTypeElement, kindParamPackageName);
+      kindParameterTypeElement = getKindParameter(element);
     }
-    return new MemberInjectorFieldInjectionTarget(targetClassPackage, targetClassName, memberClassPackage, memberClassName, memberName,
-        superClassThatNeedsInjectionClassPackage, superClassThatNeedsInjectionClassName, kind, kindParamPackageName, kindParamClassName);
+    return new FieldInjectionTarget(enclosingElement, memberTypeElement, memberName, superTypeElementWithInjectedFields, kind,
+        kindParameterTypeElement);
   }
 
-  private MemberInjectorFieldInjectionTarget.Kind getKind(Element element) {
+  private FieldInjectionTarget.Kind getKind(Element element) {
     TypeMirror elementTypeMirror = element.asType();
     String elementTypeName = typeUtils.erasure(elementTypeMirror).toString();
     if ("javax.inject.Provider".equals(elementTypeName)) {
-      return MemberInjectorFieldInjectionTarget.Kind.PROVIDER;
+      return FieldInjectionTarget.Kind.PROVIDER;
     } else if ("toothpick.Lazy".equals(elementTypeName)) {
-      return MemberInjectorFieldInjectionTarget.Kind.LAZY;
+      return FieldInjectionTarget.Kind.LAZY;
     } else if ("java.util.concurrent.Future".equals(elementTypeName)) {
-      return MemberInjectorFieldInjectionTarget.Kind.FUTURE;
+      return FieldInjectionTarget.Kind.FUTURE;
     } else {
-      return MemberInjectorFieldInjectionTarget.Kind.INSTANCE;
+      return FieldInjectionTarget.Kind.INSTANCE;
     }
   }
 

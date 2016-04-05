@@ -72,7 +72,7 @@ public class FactoryRegistryGenerator implements CodeGenerator {
     CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName()");
 
     for (FactoryInjectionTarget factoryInjectionTarget : factoryRegistryInjectionTarget.factoryInjectionTargetList) {
-      switchBlockBuilder.add("case ($S):\n", factoryInjectionTarget.targetClass);
+      switchBlockBuilder.add("case ($S.$S):\n", factoryInjectionTarget.classPackage, factoryInjectionTarget.className);
       switchBlockBuilder.addStatement("return (Factory<T>) new $L$$$$Factory()",
           ClassName.get(factoryInjectionTarget.classPackage, factoryInjectionTarget.className));
     }

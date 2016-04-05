@@ -9,6 +9,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -132,7 +133,8 @@ public class FactoryProcessor extends ToothpickProcessor {
     while (!"java.lang.Object".equals(currentTypeElement.getQualifiedName().toString())) {
       List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
       for (Element enclosedElement : enclosedElements) {
-        if (enclosedElement.getAnnotation(Inject.class) != null) {
+        if ((enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) || (enclosedElement.getAnnotation(
+            Inject.class) != null && enclosedElement.getKind() == ElementKind.METHOD)) {
           needsMemberInjection = true;
           break;
         }

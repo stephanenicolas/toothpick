@@ -136,7 +136,7 @@ public class FactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //

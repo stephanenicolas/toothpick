@@ -26,12 +26,17 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   /** The name of the {@link javax.inject.Inject} annotation class that triggers {@code ToothpickProcessor}s. */
   public static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
 
-  /** The name annotation processor option to declare in which package a registry should be generated.
-   * If this parameter is not passed, no registry is generated.*/
+  /**
+   * The name annotation processor option to declare in which package a registry should be generated.
+   * If this parameter is not passed, no registry is generated.
+   */
   public static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
 
-  /** The name annotation processor option to declare in which packages reside the registries used by the generated registry, if it is created.
-   * @see #PARAMETER_REGISTRY_PACKAGE_NAME */
+  /**
+   * The name annotation processor option to declare in which packages reside the registries used by the generated registry, if it is created.
+   *
+   * @see #PARAMETER_REGISTRY_PACKAGE_NAME
+   */
   public static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
 
   protected Elements elementUtils;
@@ -73,12 +78,13 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    * Reads both annotation compilers {@link ToothpickProcessor#PARAMETER_REGISTRY_PACKAGE_NAME} and
    * {@link ToothpickProcessor#PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES} options from the arguments
    * passed to the processor.
+   *
    * @return true if toothpickRegistryPackageName is defined, false otherwise.
    */
   protected boolean readParameters() {
     toothpickRegistryPackageName = processingEnv.getOptions().get(PARAMETER_REGISTRY_PACKAGE_NAME);
     if (toothpickRegistryPackageName == null) {
-     warning("No option -Atoothpick_registry_package_name was passed to the compiler."
+      warning("No option -Atoothpick_registry_package_name was passed to the compiler."
           + " No registries are generated. Will fallback on reflection at runtime to find factories.");
       return false;
     }
@@ -96,7 +102,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return elementUtils.getPackageOf(type).getQualifiedName().toString();
   }
 
-  protected static String getClassName(TypeElement type, String packageName) {
+  protected String getClassName(TypeElement type, String packageName) {
     int packageLen = packageName.length() + 1;
     return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
   }
@@ -105,7 +111,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    * Returns {@code true} if the an annotation is found on the given element with the given class
    * name (not fully qualified).
    */
-  protected static boolean hasAnnotationWithName(Element element, String simpleName) {
+  protected boolean hasAnnotationWithName(Element element, String simpleName) {
     for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
       final Element annnotationElement = mirror.getAnnotationType().asElement();
       String annotationName = annnotationElement.getSimpleName().toString();
@@ -127,5 +133,4 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected void warning(String message, Object... args) {
     processingEnv.getMessager().printMessage(WARNING, String.format(message, args));
   }
-
 }
