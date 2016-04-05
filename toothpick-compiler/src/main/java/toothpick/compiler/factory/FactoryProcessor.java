@@ -1,6 +1,5 @@
 package toothpick.compiler.factory;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,7 +17,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import toothpick.compiler.ToothpickProcessor;
-
+import javax.lang.model.util.ElementFilter;
+import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
@@ -42,7 +42,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
       FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
       TypeElement typeElement = entry.getKey();
-      String fileDescription = String.format("Factory for type %s", typeElement);
+      String fileDescription = format("Factory for type %s", typeElement);
       writeToFile(factoryGenerator, fileDescription, typeElement);
     }
 
@@ -62,25 +62,18 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
 
-    for (Element element : roundEnv.getElementsAnnotatedWith(Inject.class)) {
-      //TODO we only process constructors
-      //but we could also process injected fields when they are of a class type,
-      //not an interface. We could also create factories for them, if possible.
-      //that would allow not to have to declare an annotation constructor in the
-      //dependency. We would only use the default constructor.
-      if (element.getKind() == ElementKind.CONSTRUCTOR) {
-        try {
-          parseInject(element, mapTypeElementToFactoryInjectionTarget);
-        } catch (Exception e) {
-          StringWriter stackTrace = new StringWriter();
-          e.printStackTrace(new PrintWriter(stackTrace));
-          error(element, "Unable to generate factory when parsing @Inject.\n\n%s", stackTrace.toString());
-        }
-      }
+
+    //TODO we only process constructors
+    //but we could also process injected fields when they are of a class type,
+    //not an interface. We could also create factories for them, if possible.
+    //that would allow not to have to declare an annotation constructor in the
+    //dependency. We would only use the default constructor.
+    for (Element element : ElementFilter.constructorsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
+        parseInjectedConstructor(element, mapTypeElementToFactoryInjectionTarget);
     }
   }
 
-  private void parseInject(Element element, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
+  private void parseInjectedConstructor(Element element, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -88,12 +81,9 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
-    // Another constructor already used for the class.
     if (targetClassMap.containsKey(enclosingElement)) {
-      //TODO create a custom exception, not runtime
-      throw new IllegalStateException(
-          String.format("@%s class %s must not have more than one " + "annotated constructor.", Inject.class.getSimpleName(),
-              element.getSimpleName()));
+      // Another constructor already used for the class.
+      error(element, "Class %s cannot have more than one @Inject annotated constructor.", enclosingElement.getQualifiedName());
     }
 
     targetClassMap.put(enclosingElement, createInjectionTarget(element));
