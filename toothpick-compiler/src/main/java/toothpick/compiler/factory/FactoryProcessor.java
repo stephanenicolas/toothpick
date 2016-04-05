@@ -109,17 +109,19 @@ public class FactoryProcessor extends ToothpickProcessor {
     targetClassMap.put(enclosingElement, createConstructorInjectionTargetForConstructor(constructorElement));
   }
 
-  private void parseInjectedField(Element fieldElement, Map<TypeElement, ConstructorInjectionTarget> targetClassMap) {
+  private void parseInjectedField(Element fieldElement, Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
+
     // Verify common generated code restrictions.
     if (!isValidInjectField(fieldElement)) {
       return;
     }
 
-    if (targetClassMap.containsKey(memberTypeElement)) {
+    if (mapTypeElementToConstructorInjectionTarget.containsKey(memberTypeElement)) {
       //the class is already known
       return;
     }
+
 
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
@@ -130,7 +132,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     ConstructorInjectionTarget constructorInjectionTargetForField = createConstructorInjectionTargetForField(fieldElement);
     if (constructorInjectionTargetForField != null) {
-      targetClassMap.put(memberTypeElement, constructorInjectionTargetForField);
+      mapTypeElementToConstructorInjectionTarget.put(memberTypeElement, constructorInjectionTargetForField);
     }
   }
 
@@ -180,9 +182,15 @@ public class FactoryProcessor extends ToothpickProcessor {
     //we just need to deal with the case of the defaul constructor only.
     //multiple constructors are non-decidable states.
     //injected constructors will be handled at some point in the compilation cycle
-    if (constructorElements.size() == 0) {
-      ConstructorInjectionTarget constructorInjectionTarget =
-          new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+    if (constructorElements.size() == 1) {
+      ExecutableElement constructorElement = constructorElements.get(0);
+      if(!constructorElement.getParameters().isEmpty()) {
+        warning("The class %s has no default constructor, we cannot optimistically create a factory for it.", fieldTypeElement.getQualifiedName().toString());
+      }
+      if(constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
+        warning("The class %s has a private default constructor, we cannot optimistically create a factory for it.", fieldTypeElement.getQualifiedName().toString());
+      }
+      ConstructorInjectionTarget constructorInjectionTarget = new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
       return constructorInjectionTarget;
     }
 
@@ -191,7 +199,9 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private boolean isValidInjectFieldType(TypeElement fieldTypeElement) {
     //TODO we probably need more filtering here
-    return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT) && fieldTypeElement.getKind() != ElementKind.INTERFACE;
+    return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
+        && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE)
+        && fieldTypeElement.getKind() != ElementKind.INTERFACE;
   }
 
   private boolean needsMemberInjection(TypeElement enclosingElement) {
