@@ -112,15 +112,12 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private FactoryInjectionTarget createInjectionTargetForConstructor(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
-
-    final String classPackage = getPackageName(enclosingElement);
-    final String className = getClassName(enclosingElement, classPackage);
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
     boolean needsMemberInjection = needsMemberInjection(enclosingElement);
 
     FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(classPackage, className, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
     addParameters(element, factoryInjectionTarget);
 
     return factoryInjectionTarget;
