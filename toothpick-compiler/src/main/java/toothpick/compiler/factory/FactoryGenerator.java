@@ -51,7 +51,7 @@ public class FactoryGenerator implements CodeGenerator {
   }
 
   @Override public String getFqcn() {
-    return factoryInjectionTarget.getFqcn() + FACTORY_SUFFIX;
+    return factoryInjectionTarget.classPackage + factoryInjectionTarget.className + FACTORY_SUFFIX;
   }
 
   private void emitCreateInstance(TypeSpec.Builder builder) {

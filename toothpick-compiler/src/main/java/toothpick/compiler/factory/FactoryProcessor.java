@@ -1,6 +1,5 @@
 package toothpick.compiler.factory;
 
-import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,14 +9,14 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import toothpick.compiler.ToothpickProcessor;
 import javax.lang.model.util.ElementFilter;
+import toothpick.compiler.ToothpickProcessor;
+
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -62,14 +61,13 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
 
-
     //TODO we only process constructors
     //but we could also process injected fields when they are of a class type,
     //not an interface. We could also create factories for them, if possible.
     //that would allow not to have to declare an annotation constructor in the
     //dependency. We would only use the default constructor.
     for (Element element : ElementFilter.constructorsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-        parseInjectedConstructor(element, mapTypeElementToFactoryInjectionTarget);
+      parseInjectedConstructor(element, mapTypeElementToFactoryInjectionTarget);
     }
   }
 
@@ -86,7 +84,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       error(element, "Class %s cannot have more than one @Inject annotated constructor.", enclosingElement.getQualifiedName());
     }
 
-    targetClassMap.put(enclosingElement, createInjectionTarget(element));
+    targetClassMap.put(enclosingElement, createInjectionTargetForConstructor(element));
   }
 
   private boolean isValidInjectConstructor(Element element) {
@@ -111,19 +109,17 @@ public class FactoryProcessor extends ToothpickProcessor {
     return valid;
   }
 
-  private FactoryInjectionTarget createInjectionTarget(Element element) {
+  private FactoryInjectionTarget createInjectionTargetForConstructor(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     final String classPackage = getPackageName(enclosingElement);
     final String className = getClassName(enclosingElement, classPackage);
-    final String targetClass = enclosingElement.getQualifiedName().toString();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
     boolean needsMemberInjection = needsMemberInjection(enclosingElement);
 
     FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(classPackage, className, targetClass, hasSingletonAnnotation, hasProducesSingletonAnnotation,
-            needsMemberInjection);
+        new FactoryInjectionTarget(classPackage, className, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
     addParameters(element, factoryInjectionTarget);
 
     return factoryInjectionTarget;
@@ -150,6 +146,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     ExecutableElement executableElement = (ExecutableElement) element;
 
     for (VariableElement variableElement : executableElement.getParameters()) {
+
       factoryInjectionTarget.parameters.add(variableElement.asType());
     }
   }
