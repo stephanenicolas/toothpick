@@ -132,10 +132,11 @@ public class FactoryProcessor extends ToothpickProcessor {
   private boolean needsMemberInjection(TypeElement enclosingElement) {
     boolean needsMemberInjection = false;
     TypeElement currentTypeElement = enclosingElement;
+    //TODO find a better test
     while (!"java.lang.Object".equals(currentTypeElement.getQualifiedName().toString())) {
       List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
       for (Element enclosedElement : enclosedElements) {
-        if (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) {
+        if (enclosedElement.getAnnotation(Inject.class) != null) {
           needsMemberInjection = true;
           break;
         }
