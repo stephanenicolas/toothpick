@@ -27,7 +27,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 @SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, FactoryInjectionTarget> mapTypeElementToFactoryInjectionTarget = new LinkedHashMap<>();
+  private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToFactoryInjectionTarget = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
@@ -38,9 +38,9 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     // Generate Factories
-    for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : mapTypeElementToFactoryInjectionTarget.entrySet()) {
-      FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
-      FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
+    for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToFactoryInjectionTarget.entrySet()) {
+      ConstructorInjectionTarget constructorInjectionTarget = entry.getValue();
+      FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget);
       TypeElement typeElement = entry.getKey();
       String fileDescription = format("Factory for type %s", typeElement);
       writeToFile(factoryGenerator, fileDescription, typeElement);
@@ -72,7 +72,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
   }
 
-  private void parseInjectedConstructor(Element element, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
+  private void parseInjectedConstructor(Element element, Map<TypeElement, ConstructorInjectionTarget> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -110,17 +110,17 @@ public class FactoryProcessor extends ToothpickProcessor {
     return valid;
   }
 
-  private FactoryInjectionTarget createInjectionTargetForConstructor(Element element) {
+  private ConstructorInjectionTarget createInjectionTargetForConstructor(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
     boolean needsMemberInjection = needsMemberInjection(enclosingElement);
 
-    FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
-    addParameters(element, factoryInjectionTarget);
+    ConstructorInjectionTarget constructorInjectionTarget =
+        new ConstructorInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+    addParameters(element, constructorInjectionTarget);
 
-    return factoryInjectionTarget;
+    return constructorInjectionTarget;
   }
 
   private boolean needsMemberInjection(TypeElement enclosingElement) {
@@ -141,12 +141,12 @@ public class FactoryProcessor extends ToothpickProcessor {
     return needsMemberInjection;
   }
 
-  private void addParameters(Element element, FactoryInjectionTarget factoryInjectionTarget) {
+  private void addParameters(Element element, ConstructorInjectionTarget constructorInjectionTarget) {
     ExecutableElement executableElement = (ExecutableElement) element;
 
     for (VariableElement variableElement : executableElement.getParameters()) {
 
-      factoryInjectionTarget.parameters.add(variableElement.asType());
+      constructorInjectionTarget.parameters.add(variableElement.asType());
     }
   }
 

@@ -6,13 +6,13 @@ public final class FactoryRegistryInjectionTarget {
 
   public static final String FACTORY_REGISTRY_NAME = "FactoryRegistry";
 
-  public Collection<FactoryInjectionTarget> factoryInjectionTargetList;
+  public Collection<ConstructorInjectionTarget> constructorInjectionTargetList;
   public String packageName;
   public Collection<String> childrenRegistryPackageNameList;
 
-  public FactoryRegistryInjectionTarget(Collection<FactoryInjectionTarget> factoryInjectionTargetList, String packageName,
+  public FactoryRegistryInjectionTarget(Collection<ConstructorInjectionTarget> constructorInjectionTargetList, String packageName,
       Collection<String> childrenRegistryPackageNameList) {
-    this.factoryInjectionTargetList = factoryInjectionTargetList;
+    this.constructorInjectionTargetList = constructorInjectionTargetList;
     this.packageName = packageName;
     this.childrenRegistryPackageNameList = childrenRegistryPackageNameList;
   }

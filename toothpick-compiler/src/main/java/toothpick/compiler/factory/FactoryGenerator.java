@@ -15,7 +15,7 @@ import toothpick.Injector;
 import toothpick.compiler.CodeGenerator;
 
 /**
- * Generates a {@link Factory} for a given {@link FactoryInjectionTarget}.
+ * Generates a {@link Factory} for a given {@link ConstructorInjectionTarget}.
  * Typically a factory is created for a class a soon as it contains
  * an {@link javax.inject.Inject} annotated constructor.
  * TODO also generate a factory for a <em>non private & non abstract class</em>
@@ -26,15 +26,15 @@ public class FactoryGenerator implements CodeGenerator {
 
   private static final String FACTORY_SUFFIX = "$$Factory";
 
-  private FactoryInjectionTarget factoryInjectionTarget;
+  private ConstructorInjectionTarget constructorInjectionTarget;
 
-  public FactoryGenerator(FactoryInjectionTarget factoryInjectionTarget) {
-    this.factoryInjectionTarget = factoryInjectionTarget;
+  public FactoryGenerator(ConstructorInjectionTarget constructorInjectionTarget) {
+    this.constructorInjectionTarget = constructorInjectionTarget;
   }
 
   public String brewJava() {
     // Interface to implement
-    ClassName className = ClassName.get(factoryInjectionTarget.builtClass);
+    ClassName className = ClassName.get(constructorInjectionTarget.builtClass);
     ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(Factory.class), className);
 
     // Build class
@@ -51,11 +51,11 @@ public class FactoryGenerator implements CodeGenerator {
   }
 
   @Override public String getFqcn() {
-    return factoryInjectionTarget.builtClass.getQualifiedName().toString() + FACTORY_SUFFIX;
+    return constructorInjectionTarget.builtClass.getQualifiedName().toString() + FACTORY_SUFFIX;
   }
 
   private void emitCreateInstance(TypeSpec.Builder builder) {
-    ClassName className = ClassName.get(factoryInjectionTarget.builtClass);
+    ClassName className = ClassName.get(constructorInjectionTarget.builtClass);
     MethodSpec.Builder createInstanceBuilder = MethodSpec.methodBuilder("createInstance")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
@@ -72,7 +72,7 @@ public class FactoryGenerator implements CodeGenerator {
     int counter = 1;
     String prefix = "";
 
-    for (TypeMirror typeMirror : factoryInjectionTarget.parameters) {
+    for (TypeMirror typeMirror : constructorInjectionTarget.parameters) {
       String paramName = "param" + counter++;
       TypeName paramType = TypeName.get(typeMirror);
       createInstanceBuilder.addStatement("$T $L = injector.getInstance($T.class)", paramType, paramName, paramType);
@@ -83,7 +83,7 @@ public class FactoryGenerator implements CodeGenerator {
 
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
-    if (factoryInjectionTarget.needsMemberInjection) {
+    if (constructorInjectionTarget.needsMemberInjection) {
       StringBuilder injectStatement = new StringBuilder("injector.inject(");
       injectStatement.append(varName);
       injectStatement.append(")");
@@ -101,7 +101,7 @@ public class FactoryGenerator implements CodeGenerator {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", factoryInjectionTarget.hasSingletonAnnotation);
+        .addStatement("return $L", constructorInjectionTarget.hasSingletonAnnotation);
     builder.addMethod(hasSingletonBuilder.build());
   }
 
@@ -110,7 +110,7 @@ public class FactoryGenerator implements CodeGenerator {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", factoryInjectionTarget.hasProducesSingletonAnnotation);
+        .addStatement("return $L", constructorInjectionTarget.hasProducesSingletonAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 }
