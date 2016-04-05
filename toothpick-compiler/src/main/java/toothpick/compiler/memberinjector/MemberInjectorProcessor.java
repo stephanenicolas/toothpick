@@ -120,7 +120,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
     FieldInjectionTarget.Kind kind = getKind(element);
     TypeElement kindParameterTypeElement;
-    if (kind != FieldInjectionTarget.Kind.INSTANCE) {
+    if (kind == FieldInjectionTarget.Kind.INSTANCE) {
       kindParameterTypeElement = null;
     } else {
       kindParameterTypeElement = getKindParameter(element);
