@@ -13,6 +13,7 @@ import javax.lang.model.type.TypeMirror;
 import toothpick.Factory;
 import toothpick.Injector;
 import toothpick.compiler.CodeGenerator;
+import toothpick.compiler.targets.ConstructorInjectionTarget;
 
 /**
  * Generates a {@link Factory} for a given {@link ConstructorInjectionTarget}.

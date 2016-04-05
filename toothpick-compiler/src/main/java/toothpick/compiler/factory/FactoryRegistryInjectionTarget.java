@@ -1,6 +1,7 @@
 package toothpick.compiler.factory;
 
 import java.util.Collection;
+import toothpick.compiler.targets.ConstructorInjectionTarget;
 
 public final class FactoryRegistryInjectionTarget {
 

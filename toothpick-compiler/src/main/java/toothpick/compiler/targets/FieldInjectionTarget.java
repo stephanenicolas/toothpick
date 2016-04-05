@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector;
+package toothpick.compiler.targets;
 
 import javax.lang.model.element.TypeElement;
 

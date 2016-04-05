@@ -12,6 +12,7 @@ import javax.annotation.Generated;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
 import toothpick.compiler.CodeGenerator;
+import toothpick.compiler.targets.ConstructorInjectionTarget;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 

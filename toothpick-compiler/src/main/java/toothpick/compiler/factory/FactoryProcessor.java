@@ -17,6 +17,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.ElementFilter;
 import toothpick.compiler.ToothpickProcessor;
+import toothpick.compiler.targets.ConstructorInjectionTarget;
 
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -27,7 +28,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 @SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToFactoryInjectionTarget = new LinkedHashMap<>();
+  private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
@@ -38,7 +39,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     // Generate Factories
-    for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToFactoryInjectionTarget.entrySet()) {
+    for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
       ConstructorInjectionTarget constructorInjectionTarget = entry.getValue();
       FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget);
       TypeElement typeElement = entry.getKey();
@@ -49,10 +50,11 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Generate Registry
     if (readParameters()) {
       FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
-          new FactoryRegistryInjectionTarget(mapTypeElementToFactoryInjectionTarget.values(), toothpickRegistryPackageName,
+          new FactoryRegistryInjectionTarget(mapTypeElementToConstructorInjectionTarget.values(), toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList);
       FactoryRegistryGenerator factoryRegistryGenerator = new FactoryRegistryGenerator(factoryRegistryInjectionTarget);
-      Element[] allTypes = mapTypeElementToFactoryInjectionTarget.keySet().toArray(new Element[mapTypeElementToFactoryInjectionTarget.size()]);
+      Element[] allTypes =
+          mapTypeElementToConstructorInjectionTarget.keySet().toArray(new Element[mapTypeElementToConstructorInjectionTarget.size()]);
       String fileDescription = "Factory registry";
       writeToFile(factoryRegistryGenerator, fileDescription, allTypes);
     }
@@ -61,14 +63,13 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
-
     //TODO we only process constructors
     //but we could also process injected fields when they are of a class type,
     //not an interface. We could also create factories for them, if possible.
     //that would allow not to have to declare an annotation constructor in the
     //dependency. We would only use the default constructor.
     for (Element element : ElementFilter.constructorsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-      parseInjectedConstructor(element, mapTypeElementToFactoryInjectionTarget);
+      parseInjectedConstructor(element, mapTypeElementToConstructorInjectionTarget);
     }
   }
 

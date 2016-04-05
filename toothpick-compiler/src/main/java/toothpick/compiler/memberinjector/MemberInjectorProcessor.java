@@ -20,6 +20,7 @@ import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
+import toothpick.compiler.targets.FieldInjectionTarget;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
 
@@ -37,7 +38,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    findAndParseTargets(roundEnv);
+    findAndParseTargets(roundEnv, mapTypeElementToMemberInjectorTargetList);
 
     if (!roundEnv.processingOver()) {
       return false;
@@ -66,8 +67,12 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return false;
   }
 
-  private void findAndParseTargets(RoundEnvironment roundEnv) {
+  private void findAndParseTargets(RoundEnvironment roundEnv, Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     //TODO support method injection
+    parseInjectedFields(roundEnv);
+  }
+
+  protected void parseInjectedFields(RoundEnvironment roundEnv) {
     for (Element element : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       parseInjectedField(element, mapTypeElementToMemberInjectorTargetList);
     }
@@ -86,7 +91,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       fieldInjectionTargetList = new ArrayList<>();
       targetClassMap.put(enclosingElement, fieldInjectionTargetList);
     }
-    fieldInjectionTargetList.add(createInjectionTargetFromField(element));
+    fieldInjectionTargetList.add(createFieldInjectionTarget(element));
   }
 
   private boolean isValidInjectField(Element element) {
@@ -111,7 +116,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return valid;
   }
 
-  private FieldInjectionTarget createInjectionTargetFromField(Element element) {
+  private FieldInjectionTarget createFieldInjectionTarget(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());

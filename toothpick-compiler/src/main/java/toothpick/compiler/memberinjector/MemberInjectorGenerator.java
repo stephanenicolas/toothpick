@@ -14,6 +14,7 @@ import toothpick.Injector;
 import toothpick.MemberInjector;
 import toothpick.compiler.CodeGenerator;
 import toothpick.compiler.factory.FactoryProcessor;
+import toothpick.compiler.targets.FieldInjectionTarget;
 
 /**
  * Generates a {@link MemberInjector} for a given collection of {@link FieldInjectionTarget}.
