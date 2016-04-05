@@ -20,6 +20,7 @@ import javax.lang.model.type.DeclaredType;
 import toothpick.compiler.ToothpickProcessor;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
@@ -89,6 +90,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     // Another constructor already used for the class.
     if (targetClassMap.containsKey(enclosingElement)) {
+      //TODO create a custom exception, not runtime
       throw new IllegalStateException(
           String.format("@%s class %s must not have more than one " + "annotated constructor.", Inject.class.getSimpleName(),
               element.getSimpleName()));
@@ -104,15 +106,15 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Verify modifiers.
     Set<Modifier> modifiers = element.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(element, "@%s constructors must not be private. (%s)", Inject.class.getSimpleName(), enclosingElement.getQualifiedName());
+      error(element, "@Inject constructors must not be private in class %s.", enclosingElement.getQualifiedName());
       valid = false;
     }
 
     // Verify parent modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
-    if (parentModifiers.contains(PRIVATE)) {
-      error(element, "@%s class %s must not be private or static.", Inject.class.getSimpleName(), element.getSimpleName());
+    if (!parentModifiers.contains(PUBLIC)) {
+      error(element, "Class %s is private. @Inject constructors are not allowed in non public classes.", enclosingElement.getQualifiedName());
       valid = false;
     }
 
