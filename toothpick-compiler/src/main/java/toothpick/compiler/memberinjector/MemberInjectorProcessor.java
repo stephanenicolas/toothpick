@@ -11,7 +11,6 @@ import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -21,8 +20,6 @@ import toothpick.MemberInjector;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
 import toothpick.compiler.targets.FieldInjectionTarget;
-
-import static javax.lang.model.element.Modifier.PRIVATE;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.

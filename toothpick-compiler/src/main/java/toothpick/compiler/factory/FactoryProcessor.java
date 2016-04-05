@@ -117,7 +117,14 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     if (targetClassMap.containsKey(memberTypeElement)) {
-      //the class is already known, end parsing
+      //the class is already known
+      return;
+    }
+
+    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
+
+    // Verify common generated code restrictions.
+    if (!isValidInjectFieldType(fieldTypeElement)) {
       return;
     }
 
@@ -165,11 +172,6 @@ public class FactoryProcessor extends ToothpickProcessor {
   private ConstructorInjectionTarget createConstructorInjectionTargetForField(Element fieldElement) {
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
-    // Verify common generated code restrictions.
-    if (!isValidInjectFieldType(fieldTypeElement)) {
-      return null;
-    }
-
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
     boolean needsMemberInjection = needsMemberInjection(fieldTypeElement);
@@ -188,6 +190,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private boolean isValidInjectFieldType(TypeElement fieldTypeElement) {
+    //TODO we probably need more filtering here
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT) && fieldTypeElement.getKind() != ElementKind.INTERFACE;
   }
 
