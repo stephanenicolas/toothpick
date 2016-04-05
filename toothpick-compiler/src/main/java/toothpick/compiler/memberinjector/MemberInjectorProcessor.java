@@ -94,28 +94,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     fieldInjectionTargetList.add(createFieldInjectionTarget(element));
   }
 
-  private boolean isValidInjectField(Element element) {
-    boolean valid = true;
-    TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
-
-    // Verify modifiers.
-    Set<Modifier> modifiers = element.getModifiers();
-    if (modifiers.contains(PRIVATE)) {
-      error(element, "@%s fields must not be private. (%s)", Inject.class.getName(), enclosingElement.getQualifiedName());
-      valid = false;
-    }
-
-    // Verify parent modifiers.
-    Set<Modifier> parentModifiers = enclosingElement.getModifiers();
-    //TODO should not be a non static inner class neither
-    if (parentModifiers.contains(PRIVATE)) {
-      error(element, "@%s class %s must not be private or static.", Inject.class.getSimpleName(), element.getSimpleName());
-      valid = false;
-    }
-
-    return valid;
-  }
-
   private FieldInjectionTarget createFieldInjectionTarget(Element element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
