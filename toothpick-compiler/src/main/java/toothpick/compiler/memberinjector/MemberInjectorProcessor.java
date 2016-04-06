@@ -11,7 +11,9 @@ import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -20,6 +22,7 @@ import toothpick.MemberInjector;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
 import toothpick.compiler.targets.FieldInjectionTarget;
+import toothpick.compiler.targets.MethodInjectionTarget;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
@@ -32,20 +35,25 @@ import toothpick.compiler.targets.FieldInjectionTarget;
 @SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList = new LinkedHashMap<>();
+  private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToFieldInjectorTargetList = new LinkedHashMap<>();
+  private Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMethodInjectorTargetList = new LinkedHashMap<>();
+  private Map<TypeElement, TypeElement> mapTypeElementToSuperTypeElementThatNeedsInjection = new LinkedHashMap<>();
 
   @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    findAndParseTargets(roundEnv, mapTypeElementToMemberInjectorTargetList);
+    findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
       return false;
     }
 
     // Generate member injectors
-    for (Map.Entry<TypeElement, List<FieldInjectionTarget>> entry : mapTypeElementToMemberInjectorTargetList.entrySet()) {
+    for (Map.Entry<TypeElement, List<FieldInjectionTarget>> entry : mapTypeElementToFieldInjectorTargetList.entrySet()) {
       List<FieldInjectionTarget> fieldInjectionTargetList = entry.getValue();
-      MemberInjectorGenerator memberInjectorGenerator = new MemberInjectorGenerator(fieldInjectionTargetList);
       TypeElement typeElement = entry.getKey();
+      List<MethodInjectionTarget> methodInjectionTargetList = mapTypeElementToMethodInjectorTargetList.get(typeElement);
+      TypeElement superClassThatNeedsInjection = mapTypeElementToSuperTypeElementThatNeedsInjection.get(typeElement);
+      MemberInjectorGenerator memberInjectorGenerator =
+          new MemberInjectorGenerator(typeElement, superClassThatNeedsInjection, fieldInjectionTargetList, methodInjectionTargetList);
       String fileDescription = String.format("MemberInjector for type %s", typeElement);
       writeToFile(memberInjectorGenerator, fileDescription, typeElement);
     }
@@ -53,10 +61,10 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     // Generate Registry
     if (readParameters()) {
       MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget =
-          new MemberInjectorRegistryInjectionTarget(mapTypeElementToMemberInjectorTargetList.keySet(), toothpickRegistryPackageName,
+          new MemberInjectorRegistryInjectionTarget(mapTypeElementToFieldInjectorTargetList.keySet(), toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList);
       MemberInjectorRegistryGenerator memberInjectorRegistryGenerator = new MemberInjectorRegistryGenerator(memberInjectorRegistryInjectionTarget);
-      Element[] allTypes = mapTypeElementToMemberInjectorTargetList.keySet().toArray(new Element[mapTypeElementToMemberInjectorTargetList.size()]);
+      Element[] allTypes = mapTypeElementToFieldInjectorTargetList.keySet().toArray(new Element[mapTypeElementToFieldInjectorTargetList.size()]);
       String fileDescription = "MemberInjector registry";
       writeToFile(memberInjectorRegistryGenerator, fileDescription, allTypes);
     }
@@ -64,39 +72,69 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return false;
   }
 
-  private void findAndParseTargets(RoundEnvironment roundEnv, Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
-    //TODO support method injection
+  private void findAndParseTargets(RoundEnvironment roundEnv) {
     parseInjectedFields(roundEnv);
+    parseInjectedMethods(roundEnv);
   }
 
   protected void parseInjectedFields(RoundEnvironment roundEnv) {
-    for (Element element : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-      parseInjectedField(element, mapTypeElementToMemberInjectorTargetList);
+    for (VariableElement element : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
+      parseInjectedField(element, mapTypeElementToFieldInjectorTargetList);
     }
   }
 
-  private void parseInjectedField(Element element, Map<TypeElement, List<FieldInjectionTarget>> targetClassMap) {
-    TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+  protected void parseInjectedMethods(RoundEnvironment roundEnv) {
+    for (ExecutableElement element : ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
+      parseInjectedMethod(element, mapTypeElementToMethodInjectorTargetList);
+    }
+  }
+
+  private void parseInjectedField(VariableElement fieldElement,
+      Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
+    TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
 
     // Verify common generated code restrictions.
-    if (!isValidInjectField(element)) {
+    if (!isValidInjectField(fieldElement)) {
       return;
     }
 
-    List<FieldInjectionTarget> fieldInjectionTargetList = targetClassMap.get(enclosingElement);
+    List<FieldInjectionTarget> fieldInjectionTargetList = mapTypeElementToMemberInjectorTargetList.get(enclosingElement);
     if (fieldInjectionTargetList == null) {
       fieldInjectionTargetList = new ArrayList<>();
-      targetClassMap.put(enclosingElement, fieldInjectionTargetList);
+      mapTypeElementToMemberInjectorTargetList.put(enclosingElement, fieldInjectionTargetList);
     }
-    fieldInjectionTargetList.add(createFieldInjectionTarget(element));
+
+    mapTypeToMostDirectSuperTypeThatNeedsInjection(enclosingElement);
+    fieldInjectionTargetList.add(createFieldInjectionTarget(fieldElement));
   }
 
-  private FieldInjectionTarget createFieldInjectionTarget(Element element) {
-    TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+  private void parseInjectedMethod(ExecutableElement methodElement,
+      Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
+    TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
 
+    // Verify common generated code restrictions.
+    if (!isValidInjectMethod(methodElement)) {
+      return;
+    }
+
+    List<MethodInjectionTarget> methodInjectionTargetList = mapTypeElementToMemberInjectorTargetList.get(enclosingElement);
+    if (methodInjectionTargetList == null) {
+      methodInjectionTargetList = new ArrayList<>();
+      mapTypeElementToMemberInjectorTargetList.put(enclosingElement, methodInjectionTargetList);
+    }
+
+    mapTypeToMostDirectSuperTypeThatNeedsInjection(enclosingElement);
+    methodInjectionTargetList.add(createMethodInjectionTarget(methodElement));
+  }
+
+  private void mapTypeToMostDirectSuperTypeThatNeedsInjection(TypeElement enclosingElement) {
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement);
+    mapTypeElementToSuperTypeElementThatNeedsInjection.put(enclosingElement, superClassWithInjectedMembers);
+  }
+
+  private FieldInjectionTarget createFieldInjectionTarget(VariableElement element) {
     final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());
     final String memberName = element.getSimpleName().toString();
-    final TypeElement superTypeElementWithInjectedFields = getSuperClassWithInjectedFields(enclosingElement);
 
     FieldInjectionTarget.Kind kind = getKind(element);
     TypeElement kindParameterTypeElement;
@@ -105,8 +143,19 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     } else {
       kindParameterTypeElement = getKindParameter(element);
     }
-    return new FieldInjectionTarget(enclosingElement, memberTypeElement, memberName, superTypeElementWithInjectedFields, kind,
-        kindParameterTypeElement);
+    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement);
+  }
+
+  private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
+    TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
+
+    final TypeElement returnType = (TypeElement) typeUtils.asElement(methodElement.getReturnType());
+    final String methodName = methodElement.getSimpleName().toString();
+
+    MethodInjectionTarget methodInjectionTarget = new MethodInjectionTarget(enclosingElement, methodName, returnType);
+    methodInjectionTarget.parameters.addAll(addParameters(methodElement));
+
+    return methodInjectionTarget;
   }
 
   private FieldInjectionTarget.Kind getKind(Element element) {
@@ -129,7 +178,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return (TypeElement) typeUtils.asElement(firstParameterTypeMirror);
   }
 
-  private TypeElement getSuperClassWithInjectedFields(TypeElement typeElement) {
+  private TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement) {
     TypeElement currentTypeElement = typeElement;
     boolean couldFindSuperClass = true;
     do {
@@ -140,7 +189,8 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       }
       currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
       for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
-        if (enclosedElement.getKind() == ElementKind.FIELD && enclosedElement.getAnnotation(Inject.class) != null) {
+        if ((enclosedElement.getKind() == ElementKind.FIELD || enclosedElement.getKind() == ElementKind.METHOD)
+            && enclosedElement.getAnnotation(Inject.class) != null) {
           return currentTypeElement;
         }
       }

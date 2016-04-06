@@ -2,6 +2,7 @@ package toothpick.compiler;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,11 +10,13 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -138,14 +141,14 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     processingEnv.getMessager().printMessage(WARNING, String.format(message, args));
   }
 
-  protected boolean isValidInjectField(Element element) {
+  protected boolean isValidInjectField(VariableElement fieldElement) {
     boolean valid = true;
-    TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
+    TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
 
     // Verify modifiers.
-    Set<Modifier> modifiers = element.getModifiers();
+    Set<Modifier> modifiers = fieldElement.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(element, "@%s fields must not be private. (%s)", Inject.class.getName(), enclosingElement.getQualifiedName());
+      error(fieldElement, "@Inject annotated fields must be non private : %s.%s", enclosingElement.getQualifiedName(), fieldElement.getSimpleName());
       valid = false;
     }
 
@@ -153,10 +156,41 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (parentModifiers.contains(PRIVATE)) {
-      error(element, "@%s class %s must not be private or static.", Inject.class.getSimpleName(), element.getSimpleName());
+      error(fieldElement, "@Injected fields in class %s. The class must be non private.", enclosingElement.getSimpleName());
       valid = false;
     }
 
     return valid;
+  }
+
+  protected boolean isValidInjectMethod(Element methodElement) {
+    boolean valid = true;
+    TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
+
+    // Verify modifiers.
+    Set<Modifier> modifiers = methodElement.getModifiers();
+    if (modifiers.contains(PRIVATE)) {
+      error(methodElement, "@Inject annotated methods must not be private : %s.%s", enclosingElement.getQualifiedName(),
+          methodElement.getSimpleName());
+      valid = false;
+    }
+
+    // Verify parent modifiers.
+    Set<Modifier> parentModifiers = enclosingElement.getModifiers();
+    //TODO should not be a non static inner class neither
+    if (parentModifiers.contains(PRIVATE)) {
+      error(methodElement, "@Injected fields in class %s. The class must be non private.", enclosingElement.getSimpleName());
+      valid = false;
+    }
+
+    return valid;
+  }
+
+  protected List<TypeMirror> addParameters(ExecutableElement executableElement) {
+    List<TypeMirror> paramTypes = new ArrayList<>();
+    for (VariableElement variableElement : executableElement.getParameters()) {
+      paramTypes.add(variableElement.asType());
+    }
+    return paramTypes;
   }
 }
