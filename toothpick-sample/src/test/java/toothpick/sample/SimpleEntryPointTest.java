@@ -23,6 +23,7 @@ public class SimpleEntryPointTest {
   @Rule public EasyMockRule mocks = new EasyMockRule(this);
   @TestSubject private SimpleEntryPoint simpleEntryPointUnderTest = new SimpleEntryPoint();
   @Mock private Computer mockComputer;
+  @Mock private Computer2 mockComputer2;
 
   @BeforeClass public static void setUp() throws Exception {
     MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
@@ -32,7 +33,8 @@ public class SimpleEntryPointTest {
   @Test public void testMultiply() throws Exception {
     //GIVEN
     expect(mockComputer.compute()).andReturn(4);
-    replay(mockComputer);
+    expect(mockComputer2.compute()).andReturn(4);
+    replay(mockComputer, mockComputer2);
 
     final Injector injector = ToothPick.getOrCreateInjector(null, "SimpleEntryPoint");
     injector.installOverrideModules(new TestModule());
@@ -41,7 +43,7 @@ public class SimpleEntryPointTest {
     int result = simpleEntryPointUnderTest.multiply();
 
     //THEN
-    assertThat(result, is(12));
+    assertThat(result, is(48));
     verify(mockComputer);
   }
 
