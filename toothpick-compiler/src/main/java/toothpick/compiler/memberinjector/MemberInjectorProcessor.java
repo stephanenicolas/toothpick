@@ -131,19 +131,20 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
   private TypeElement getSuperClassWithInjectedFields(TypeElement typeElement) {
     TypeElement currentTypeElement = typeElement;
-    boolean failedToFindSuperClass = false;
+    boolean couldFindSuperClass = true;
     do {
       TypeMirror superClassTypeMirror = currentTypeElement.getSuperclass();
-      failedToFindSuperClass = superClassTypeMirror.getKind() != TypeKind.DECLARED;
-      if (!failedToFindSuperClass) {
-        currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
-        for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
-          if (enclosedElement.getKind() == ElementKind.FIELD && enclosedElement.getAnnotation(Inject.class) != null) {
-            return currentTypeElement;
-          }
+      couldFindSuperClass = superClassTypeMirror.getKind() == TypeKind.DECLARED;
+      if (!couldFindSuperClass) {
+        return null;
+      }
+      currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
+      for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
+        if (enclosedElement.getKind() == ElementKind.FIELD && enclosedElement.getAnnotation(Inject.class) != null) {
+          return currentTypeElement;
         }
       }
-    } while (!failedToFindSuperClass && !"java.lang.Object".equals(currentTypeElement.getQualifiedName()));
+    } while (couldFindSuperClass);
     return null;
   }
 

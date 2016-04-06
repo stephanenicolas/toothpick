@@ -15,6 +15,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import toothpick.compiler.ToothpickProcessor;
@@ -122,7 +123,6 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
-
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
     // Verify common generated code restrictions.
@@ -184,13 +184,16 @@ public class FactoryProcessor extends ToothpickProcessor {
     //injected constructors will be handled at some point in the compilation cycle
     if (constructorElements.size() == 1) {
       ExecutableElement constructorElement = constructorElements.get(0);
-      if(!constructorElement.getParameters().isEmpty()) {
-        warning("The class %s has no default constructor, we cannot optimistically create a factory for it.", fieldTypeElement.getQualifiedName().toString());
+      if (!constructorElement.getParameters().isEmpty()) {
+        warning("The class %s has no default constructor, we cannot optimistically create a factory for it.",
+            fieldTypeElement.getQualifiedName().toString());
       }
-      if(constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
-        warning("The class %s has a private default constructor, we cannot optimistically create a factory for it.", fieldTypeElement.getQualifiedName().toString());
+      if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
+        warning("The class %s has a private default constructor, we cannot optimistically create a factory for it.",
+            fieldTypeElement.getQualifiedName().toString());
       }
-      ConstructorInjectionTarget constructorInjectionTarget = new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+      ConstructorInjectionTarget constructorInjectionTarget =
+          new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
       return constructorInjectionTarget;
     }
 
@@ -198,34 +201,32 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private boolean isValidInjectFieldType(TypeElement fieldTypeElement) {
-    //TODO we probably need more filtering here
+    //TODO we probably need more filtering here, like to filter out android / java classes.
+    //for those devs should provide a provider.
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
         && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE)
         && fieldTypeElement.getKind() != ElementKind.INTERFACE;
   }
 
   private boolean needsMemberInjection(TypeElement enclosingElement) {
-    boolean needsMemberInjection = false;
     TypeElement currentTypeElement = enclosingElement;
-    //TODO find a better test
-    while (!"java.lang.Object".equals(currentTypeElement.getQualifiedName().toString())) {
+    do {
       List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
       for (Element enclosedElement : enclosedElements) {
         if ((enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) || (enclosedElement.getAnnotation(
             Inject.class) != null && enclosedElement.getKind() == ElementKind.METHOD)) {
-          needsMemberInjection = true;
-          break;
+          return true;
         }
       }
       TypeMirror superclass = currentTypeElement.getSuperclass();
-      if (superclass instanceof DeclaredType) {
+      if (superclass.getKind() == TypeKind.DECLARED) {
         DeclaredType superType = (DeclaredType) superclass;
         currentTypeElement = (TypeElement) superType.asElement();
       } else {
-        return false;
+        currentTypeElement = null;
       }
-    }
-    return needsMemberInjection;
+    } while (currentTypeElement != null);
+    return false;
   }
 
   private void addParameters(Element element, ConstructorInjectionTarget constructorInjectionTarget) {
