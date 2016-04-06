@@ -108,6 +108,8 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     fieldInjectionTargetList.add(createFieldInjectionTarget(fieldElement));
   }
 
+  //TODO take overrides into account. If the method is an override, do not generate a call to it
+  //it will be performed by the super class member injector already.
   private void parseInjectedMethod(ExecutableElement methodElement,
       Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
