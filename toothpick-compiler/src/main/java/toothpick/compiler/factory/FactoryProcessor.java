@@ -112,7 +112,14 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
+    if (!isValidInjectedType(enclosingElement)) {
+      return;
+    }
+
     targetClassMap.put(enclosingElement, createConstructorInjectionTargetForConstructor(constructorElement));
+
+    //optimistic creation of factories for constructor param types
+    parseInjectedParameters(constructorElement, mapTypeElementToConstructorInjectionTarget);
   }
 
   private void parseInjectedField(VariableElement fieldElement,
@@ -132,7 +139,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
     // Verify common generated code restrictions.
-    if (!isValidInjectFieldType(fieldTypeElement)) {
+    if (!isValidInjectedType(fieldTypeElement)) {
       return;
     }
 
@@ -144,29 +151,33 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void parseInjectedMethod(ExecutableElement methodElement,
       Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
-    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(methodElement.asType());
 
     // Verify common generated code restrictions.
     if (!isValidInjectMethod(methodElement)) {
       return;
     }
 
-    if (mapTypeElementToConstructorInjectionTarget.containsKey(memberTypeElement)) {
-      //the class is already known
-      return;
-    }
+    parseInjectedParameters(methodElement, mapTypeElementToConstructorInjectionTarget);
+  }
 
+  private void parseInjectedParameters(ExecutableElement methodElement,
+      Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     for (VariableElement paramElement : methodElement.getParameters()) {
       final TypeElement paramTypeElement = (TypeElement) typeUtils.asElement(paramElement.asType());
+
+      if (mapTypeElementToConstructorInjectionTarget.containsKey(paramTypeElement)) {
+        //the class is already known
+        return;
+      }
+
       // Verify common generated code restrictions.
-      //TODO rename if this method still applies
-      if (!isValidInjectFieldType(paramTypeElement)) {
+      if (!isValidInjectedType(paramTypeElement)) {
         return;
       }
 
       ConstructorInjectionTarget constructorInjectionTargetForField = createConstructorInjectionTargetForVariableElement(paramElement);
       if (constructorInjectionTargetForField != null) {
-        mapTypeElementToConstructorInjectionTarget.put(memberTypeElement, constructorInjectionTargetForField);
+        mapTypeElementToConstructorInjectionTarget.put(paramTypeElement, constructorInjectionTargetForField);
       }
     }
   }
@@ -235,7 +246,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     return null;
   }
 
-  private boolean isValidInjectFieldType(TypeElement fieldTypeElement) {
+  private boolean isValidInjectedType(TypeElement fieldTypeElement) {
     //TODO we probably need more filtering here, like to filter out android / java classes.
     //for those devs should provide a provider.
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
