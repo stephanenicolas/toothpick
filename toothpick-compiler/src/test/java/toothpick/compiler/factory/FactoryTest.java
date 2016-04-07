@@ -189,11 +189,11 @@ public class FactoryTest {
   }
 
   @Test public void testInvalidClassConstructor() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestAbstractClassConstructor", Joiner.on('\n').join(//
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestInvalidClassConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "public abstract class TestAbstractClassConstructor {", //
-        "  @Inject public TestAbstractClassConstructor() {}", //
+        "public abstract class TestInvalidClassConstructor {", //
+        "  @Inject public TestInvalidClassConstructor() {}", //
         "}" //
     ));
 
