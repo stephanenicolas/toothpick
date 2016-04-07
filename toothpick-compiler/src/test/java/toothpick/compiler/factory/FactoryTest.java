@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class FactoryTest {
   @Test public void testEmptyConstructor() {
@@ -296,6 +299,20 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
+  @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedField {", //
+        "  @Inject Foo foo;", //
+        "}", //
+        "  abstract class Foo {}"));
+
+    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
+  }
+
   @Test public void testOptimisticFactoryCreationForInjectedMethod() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
@@ -315,6 +332,20 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
+  @Test public void testOptimisticFactoryCreationForInjectedMethod_shouldWorkButNoFactoryIsProduced_whenTypeIsPrivate() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedMethod {", //
+        "  @Inject void m(Foo foo) {}", //
+        "  private static class Foo {}", //
+        "}"));
+
+    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
+  }
+
   @Test public void testOptimisticFactoryCreationForInjectedConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
         "package test;", //
@@ -332,5 +363,35 @@ public class FactoryTest {
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
+  }
+
+  @Test public void testOptimisticFactoryCreationForInjectedConstructor_shouldWorkButNoFactoryIsProduced_whenTypeIsInterface() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedConstructor {", //
+        "  @Inject void TestOptimisticFactoryCreationForInjectedConstructor(Foo foo) {}", //
+        "}", //
+        "  interface Foo {}"));
+
+    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
+  }
+
+  private void assertThatCompileWithoutErrorButNoFactoryIsNotCreated(JavaFileObject source, String noFactoryPackageName, String noFactoryClass) {
+    try {
+      assert_().about(javaSource())
+          .that(source)
+          .processedWith(ProcessorTestUtilities.factoryProcessors())
+          .compilesWithoutError()
+          .and()
+          .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
+      fail("No optimistic factory should be created for an interface");
+    } catch (AssertionError e) {
+      assertThat(e.getMessage(),
+          containsString(String.format("Did not find a generated file corresponding to %s$$Factory.class in package %s;", noFactoryClass,
+              noFactoryPackageName)));
+    }
   }
 }
