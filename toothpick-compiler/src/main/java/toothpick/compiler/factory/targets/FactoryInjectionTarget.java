@@ -1,4 +1,4 @@
-package toothpick.compiler.targets;
+package toothpick.compiler.factory.targets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import javax.lang.model.type.TypeMirror;
 /**
  * Basically all information to create an object / call a constructor of a class.
  */
-public final class ConstructorInjectionTarget {
+public final class FactoryInjectionTarget {
   public final List<TypeMirror> parameters = new ArrayList<>();
   public final TypeElement builtClass;
   public final boolean hasSingletonAnnotation;
@@ -16,7 +16,7 @@ public final class ConstructorInjectionTarget {
   /** true if the class as @Injected members */
   public final boolean needsMemberInjection;
 
-  public ConstructorInjectionTarget(TypeElement builtClass, boolean hasSingletonAnnotation, boolean hasProducesSingletonAnnotation,
+  public FactoryInjectionTarget(TypeElement builtClass, boolean hasSingletonAnnotation, boolean hasProducesSingletonAnnotation,
       boolean needsMemberInjection) {
     this.builtClass = builtClass;
     this.hasSingletonAnnotation = hasSingletonAnnotation;

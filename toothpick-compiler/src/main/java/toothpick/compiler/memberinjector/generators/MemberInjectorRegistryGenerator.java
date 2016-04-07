@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector;
+package toothpick.compiler.memberinjector.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -11,6 +11,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import toothpick.MemberInjector;
 import toothpick.compiler.CodeGenerator;
+import toothpick.compiler.memberinjector.MemberInjectorProcessor;
+import toothpick.compiler.memberinjector.targets.MemberInjectorRegistryInjectionTarget;
 import toothpick.registries.MemberInjectorRegistry;
 import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 

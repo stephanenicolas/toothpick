@@ -1,4 +1,4 @@
-package toothpick.compiler.factory;
+package toothpick.compiler.factory.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -10,7 +10,9 @@ import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
 import toothpick.compiler.CodeGenerator;
-import toothpick.compiler.targets.ConstructorInjectionTarget;
+import toothpick.compiler.factory.FactoryProcessor;
+import toothpick.compiler.factory.targets.FactoryRegistryInjectionTarget;
+import toothpick.compiler.factory.targets.FactoryInjectionTarget;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
@@ -68,9 +70,9 @@ public class FactoryRegistryGenerator implements CodeGenerator {
 
     CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName()");
 
-    for (ConstructorInjectionTarget constructorInjectionTarget : factoryRegistryInjectionTarget.constructorInjectionTargetList) {
-      switchBlockBuilder.add("case ($S):\n", constructorInjectionTarget.builtClass.getQualifiedName().toString());
-      switchBlockBuilder.addStatement("return (Factory<T>) new $L$$$$Factory()", ClassName.get(constructorInjectionTarget.builtClass));
+    for (FactoryInjectionTarget factoryInjectionTarget : factoryRegistryInjectionTarget.factoryInjectionTargetList) {
+      switchBlockBuilder.add("case ($S):\n", factoryInjectionTarget.builtClass.getQualifiedName().toString());
+      switchBlockBuilder.addStatement("return (Factory<T>) new $L$$$$Factory()", ClassName.get(factoryInjectionTarget.builtClass));
     }
     switchBlockBuilder.add("default:\n");
     switchBlockBuilder.addStatement("return getFactoryInChildrenRegistries(clazz)");

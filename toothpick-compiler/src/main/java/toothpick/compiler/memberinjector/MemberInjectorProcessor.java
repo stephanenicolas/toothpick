@@ -21,8 +21,11 @@ import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
-import toothpick.compiler.targets.FieldInjectionTarget;
-import toothpick.compiler.targets.MethodInjectionTarget;
+import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
+import toothpick.compiler.memberinjector.generators.MemberInjectorRegistryGenerator;
+import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
+import toothpick.compiler.memberinjector.targets.MemberInjectorRegistryInjectionTarget;
+import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.

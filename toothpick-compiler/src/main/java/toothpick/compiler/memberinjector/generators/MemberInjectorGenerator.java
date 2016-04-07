@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector;
+package toothpick.compiler.memberinjector.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -14,8 +14,8 @@ import javax.lang.model.type.TypeMirror;
 import toothpick.Injector;
 import toothpick.MemberInjector;
 import toothpick.compiler.CodeGenerator;
-import toothpick.compiler.targets.FieldInjectionTarget;
-import toothpick.compiler.targets.MethodInjectionTarget;
+import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
+import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
 
 /**
  * Generates a {@link MemberInjector} for a given collection of {@link FieldInjectionTarget}.

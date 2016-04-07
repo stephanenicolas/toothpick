@@ -1,19 +1,18 @@
-package toothpick.compiler.factory;
+package toothpick.compiler.factory.targets;
 
 import java.util.Collection;
-import toothpick.compiler.targets.ConstructorInjectionTarget;
 
 public final class FactoryRegistryInjectionTarget {
 
   public static final String FACTORY_REGISTRY_NAME = "FactoryRegistry";
 
-  public Collection<ConstructorInjectionTarget> constructorInjectionTargetList;
+  public Collection<FactoryInjectionTarget> factoryInjectionTargetList;
   public String packageName;
   public Collection<String> childrenRegistryPackageNameList;
 
-  public FactoryRegistryInjectionTarget(Collection<ConstructorInjectionTarget> constructorInjectionTargetList, String packageName,
+  public FactoryRegistryInjectionTarget(Collection<FactoryInjectionTarget> factoryInjectionTargetList, String packageName,
       Collection<String> childrenRegistryPackageNameList) {
-    this.constructorInjectionTargetList = constructorInjectionTargetList;
+    this.factoryInjectionTargetList = factoryInjectionTargetList;
     this.packageName = packageName;
     this.childrenRegistryPackageNameList = childrenRegistryPackageNameList;
   }
