@@ -81,6 +81,23 @@ public class FactoryTest {
         .withErrorContaining("Class test.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in non public classes.");
   }
 
+  @Test public void test2InjectedConstructors() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestPrivateConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestPrivateConstructor {", //
+        "  @Inject private TestPrivateConstructor() {}", //
+        "  @Inject private TestPrivateConstructor(String s) {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("Class test.TestPrivateConstructor cannot have more than one @Inject annotated constructor.");
+  }
+
   @Test public void testAClassThatNeedsInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
@@ -258,4 +275,48 @@ public class FactoryTest {
         .and()
         .generatesSources(expectedSource);
   }
+
+  @Test public void testOptimisticFactoryCreationForInjectedField() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedField {", //
+        "  @Inject Foo foo;", //
+        "}", //
+        "  class Foo {}"
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Foo$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Injector;", //
+        "", //
+        "public final class Foo$$Factory implements Factory<Foo> {", //
+        "  @Override", //
+        "  public Foo createInstance(Injector injector) {", //
+        "    Foo foo = new Foo();", //
+        "    return foo;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProducesSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
 }
