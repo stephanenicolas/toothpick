@@ -188,6 +188,18 @@ public class FactoryTest {
         .generatesSources(expectedSource);
   }
 
+  @Test public void testInvalidClassConstructor() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestAbstractClassConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public abstract class TestAbstractClassConstructor {", //
+        "  @Inject public TestAbstractClassConstructor() {}", //
+        "}" //
+    ));
+
+    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "TestAbstractClassConstructor");
+  }
+
   @Test public void testSingletonAnnotation() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
@@ -386,12 +398,11 @@ public class FactoryTest {
           .processedWith(ProcessorTestUtilities.factoryProcessors())
           .compilesWithoutError()
           .and()
-          .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
+          .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", noFactoryClass + "$$Factory.class");
       fail("No optimistic factory should be created for an interface");
     } catch (AssertionError e) {
-      assertThat(e.getMessage(),
-          containsString(String.format("Did not find a generated file corresponding to %s$$Factory.class in package %s;", noFactoryClass,
-              noFactoryPackageName)));
+      assertThat(e.getMessage(), containsString(
+          String.format("Did not find a generated file corresponding to %s$$Factory.class in package %s;", noFactoryClass, noFactoryPackageName)));
     }
   }
 }
