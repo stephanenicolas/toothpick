@@ -311,7 +311,7 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedField_shouldFailWhenFieldIsInvalid() {
+  @Test public void testOptimisticFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalid() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -374,6 +374,24 @@ public class FactoryTest {
         "}"));
 
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
+  }
+
+  @Test public void testOptimisticFactoryCreationForInjectedMethod_shouldFail_whenMethodIsInvalid() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedMethod {", //
+        "  @Inject private void m(Foo foo) {}", //
+        "  private static class Foo {}", //
+        "}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("@Inject annotated methods must not be private : test.TestOptimisticFactoryCreationForInjectedMethod.m");
   }
 
   @Test public void testOptimisticFactoryCreationForInjectedConstructor() {
