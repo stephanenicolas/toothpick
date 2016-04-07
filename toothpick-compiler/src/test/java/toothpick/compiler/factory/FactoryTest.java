@@ -311,6 +311,24 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
+  @Test public void testOptimisticFactoryCreationForInjectedField_shouldFailWhenFieldIsInvalid() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedField {", //
+        "  @Inject private Foo foo;", //
+        "}", //
+        "  class Foo {}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("@Inject annotated fields must be non private : test.TestOptimisticFactoryCreationForInjectedField.foo");
+  }
+
   @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
