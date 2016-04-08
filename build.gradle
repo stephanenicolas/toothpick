@@ -63,7 +63,7 @@ task jacocoTestReport << {
 }
 
 tasks.coveralls {
-  dependsOn 'check'
+  dependsOn 'jacocoTestReport'
 }
 
 subprojects { project ->
