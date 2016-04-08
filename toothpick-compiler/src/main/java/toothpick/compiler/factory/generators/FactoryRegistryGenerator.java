@@ -11,8 +11,8 @@ import javax.lang.model.element.Modifier;
 import toothpick.Factory;
 import toothpick.compiler.CodeGenerator;
 import toothpick.compiler.factory.FactoryProcessor;
-import toothpick.compiler.factory.targets.FactoryRegistryInjectionTarget;
 import toothpick.compiler.factory.targets.FactoryInjectionTarget;
+import toothpick.compiler.factory.targets.FactoryRegistryInjectionTarget;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
@@ -53,7 +53,7 @@ public class FactoryRegistryGenerator implements CodeGenerator {
     CodeBlock.Builder iterateChildAddFactoryRegistryBlock = CodeBlock.builder();
     for (String childPackageName : factoryRegistryInjectionTarget.childrenRegistryPackageNameList) {
       ClassName factoryRegistryClassName = ClassName.get(childPackageName, FactoryRegistryInjectionTarget.FACTORY_REGISTRY_NAME);
-      iterateChildAddFactoryRegistryBlock.addStatement("addChildRegistry($L)", factoryRegistryClassName);
+      iterateChildAddFactoryRegistryBlock.addStatement("addChildRegistry(new $L())", factoryRegistryClassName);
     }
 
     constructor.addCode(iterateChildAddFactoryRegistryBlock.build());

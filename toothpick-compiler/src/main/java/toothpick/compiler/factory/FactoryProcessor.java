@@ -53,7 +53,8 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     // Generate Registry
-    if (readProcessorOptions()) {
+    //this allows tests to by pass the option mechanism in processors
+    if (toothpickRegistryPackageName != null || readProcessorOptions()) {
       FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
           new FactoryRegistryInjectionTarget(mapTypeElementToConstructorInjectionTarget.values(), toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList);
