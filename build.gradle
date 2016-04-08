@@ -62,6 +62,10 @@ task jacocoTestReport << {
   }
 }
 
+coveralls {
+  jacocoReportPath = 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+}
+
 tasks.coveralls {
   dependsOn 'jacocoTestReport'
 }
