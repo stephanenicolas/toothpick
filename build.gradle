@@ -85,6 +85,10 @@ ext.deps = [// Common
             // Compiler
             javapoet      : 'com.squareup:javapoet:1.4.0',
 
+            // Android
+            android: 'com.google.android:android:4.1.1.4',
+            supportv4: 'com.google.android:support-v4:r7',
+
             // Test dependencies
             junit         : 'junit:junit:4.12',
             truth         : 'com.google.truth:truth:0.27',

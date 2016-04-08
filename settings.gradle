@@ -2,5 +2,6 @@ include ':toothpick'
 include ':toothpick-runtime'
 include ':toothpick-compiler'
 include ':toothpick-sample'
+include ':smoothie'
 
 rootProject.name = 'toothpick-parent'
