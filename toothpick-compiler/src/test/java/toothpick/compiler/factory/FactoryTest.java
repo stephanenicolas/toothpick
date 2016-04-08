@@ -102,13 +102,55 @@ public class FactoryTest {
         .withErrorContaining("Class test.TestPrivateConstructor cannot have more than one @Inject annotated constructor.");
   }
 
-  @Test public void testAClassThatNeedsInjection() {
+  @Test public void testAClassThatNeedsInjection_withAnInjectedField() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
         "public class TestAClassThatNeedsInjection {", //
         "@Inject String s;", //
         "  @Inject public TestAClassThatNeedsInjection() {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Injector;", //
+        "", //
+        "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  @Override", //
+        "  public TestAClassThatNeedsInjection createInstance(Injector injector) {", //
+        "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
+        "    injector.inject(testAClassThatNeedsInjection);", //
+        "    return testAClassThatNeedsInjection;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProducesSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test public void testAClassThatNeedsInjection_withAnInjectedMethod() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestAClassThatNeedsInjection {", //
+        "  @Inject public TestAClassThatNeedsInjection() {}", //
+        "  @Inject public void m(String s) {}", //
         "}" //
     ));
 
@@ -339,6 +381,38 @@ public class FactoryTest {
         "  @Inject Foo foo;", //
         "}", //
         "  abstract class Foo {}"));
+
+    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
+  }
+
+  @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedField {", //
+        "  @Inject Foo foo;", //
+        "}", //
+        "class Foo {", //
+        " public Foo(String s) {}", //
+        "}"));
+
+    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
+  }
+
+  @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.ProvidesSingleton;", //
+        "@ProvidesSingleton", //
+        "public class TestOptimisticFactoryCreationForInjectedField {", //
+        "  @Inject Foo foo;", //
+        "}", //
+        "class Foo {", //
+        " private Foo() {}", //
+        "}"));
 
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
   }

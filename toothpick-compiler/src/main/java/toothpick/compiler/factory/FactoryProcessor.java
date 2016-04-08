@@ -53,7 +53,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     // Generate Registry
-    if (readParameters()) {
+    if (readProcessorOptions()) {
       FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
           new FactoryRegistryInjectionTarget(mapTypeElementToConstructorInjectionTarget.values(), toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList);
@@ -124,8 +124,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     parseInjectedParameters(constructorElement, mapTypeElementToConstructorInjectionTarget);
   }
 
-  private void parseInjectedField(VariableElement fieldElement,
-      Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
+  private void parseInjectedField(VariableElement fieldElement, Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
     // Verify common generated code restrictions.
@@ -235,10 +234,13 @@ public class FactoryProcessor extends ToothpickProcessor {
       if (!constructorElement.getParameters().isEmpty()) {
         warning("The class %s has no default constructor, we cannot optimistically create a factory for it.",
             fieldTypeElement.getQualifiedName().toString());
+        return null;
       }
+
       if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
         warning("The class %s has a private default constructor, we cannot optimistically create a factory for it.",
             fieldTypeElement.getQualifiedName().toString());
+        return null;
       }
       FactoryInjectionTarget factoryInjectionTarget =
           new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
@@ -252,8 +254,8 @@ public class FactoryProcessor extends ToothpickProcessor {
     //TODO we probably need more filtering here, like to filter out android / java classes.
     //for those devs should provide a provider.
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
-        && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE)
-        && fieldTypeElement.getKind() != ElementKind.INTERFACE;
+        //the previous line also covers && fieldTypeElement.getKind() != ElementKind.INTERFACE;
+        && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE);
   }
 
   private boolean needsMemberInjection(TypeElement enclosingElement) {

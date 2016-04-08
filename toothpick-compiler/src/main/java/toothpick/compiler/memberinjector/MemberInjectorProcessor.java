@@ -62,7 +62,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate Registry
-    if (readParameters()) {
+    if (readProcessorOptions()) {
       MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget =
           new MemberInjectorRegistryInjectionTarget(mapTypeElementToFieldInjectorTargetList.keySet(), toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList);

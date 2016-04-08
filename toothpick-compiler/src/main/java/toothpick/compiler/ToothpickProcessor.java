@@ -88,7 +88,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    *
    * @return true if toothpickRegistryPackageName is defined, false otherwise.
    */
-  protected boolean readParameters() {
+  protected boolean readProcessorOptions() {
     toothpickRegistryPackageName = processingEnv.getOptions().get(PARAMETER_REGISTRY_PACKAGE_NAME);
     if (toothpickRegistryPackageName == null) {
       warning("No option -Atoothpick_registry_package_name was passed to the compiler."
