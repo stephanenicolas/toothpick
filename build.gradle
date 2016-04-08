@@ -62,6 +62,10 @@ task jacocoTestReport << {
   }
 }
 
+tasks.coveralls {
+  dependsOn 'check'
+}
+
 subprojects { project ->
   group = GROUP
   version = VERSION_NAME
@@ -72,7 +76,6 @@ subprojects { project ->
   }
 
   apply plugin: 'jacoco'
-  apply plugin: 'com.github.kt3k.coveralls'
   apply plugin: 'checkstyle'
   apply plugin: 'maven'
 
@@ -87,10 +90,6 @@ subprojects { project ->
     include '**/*.java'
 
     classpath = files()
-  }
-
-  tasks.coveralls {
-    dependsOn 'check'
   }
 
   afterEvaluate {
