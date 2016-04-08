@@ -31,11 +31,12 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
 
   public String brewJava() {
     // Build class
-    TypeSpec.Builder memberInjectorRegistryTypeSpec = TypeSpec.classBuilder(MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME)
-        //TODO do not use the class but a name, this ties the generator to the AbstractFactoryRegistry
-        //and forces up to put it in the toothpick lib vs runtime lib, which is not desirable
-        //the runtime package could still be used for running tests..
-        .superclass(ClassName.get(AbstractMemberInjectorRegistry.class));
+    TypeSpec.Builder memberInjectorRegistryTypeSpec =
+        TypeSpec.classBuilder(MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME).addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            //TODO do not use the class but a name, this ties the generator to the AbstractFactoryRegistry
+            //and forces up to put it in the toothpick lib vs runtime lib, which is not desirable
+            //the runtime package could still be used for running tests..
+            .superclass(ClassName.get(AbstractMemberInjectorRegistry.class));
 
     emitConstructor(memberInjectorRegistryTypeSpec);
     emitGetMemberInjectorMethod(memberInjectorRegistryTypeSpec);
@@ -51,7 +52,7 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
     for (String childPackageName : memberInjectorRegistryInjectionTarget.childrenRegistryPackageNameList) {
       ClassName memberInjectorRegistryClassName =
           ClassName.get(childPackageName, MemberInjectorRegistryInjectionTarget.MEMBER_INJECTOR_REGISTRY_NAME);
-      iterateChildAddMemberInjectorRegistryBlock.addStatement("addChildRegistry($L)", memberInjectorRegistryClassName);
+      iterateChildAddMemberInjectorRegistryBlock.addStatement("addChildRegistry(new $L())", memberInjectorRegistryClassName);
     }
 
     constructor.addCode(iterateChildAddMemberInjectorRegistryBlock.build());

@@ -38,7 +38,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
     this.superClassThatNeedsInjection = superClassThatNeedsInjection;
     this.fieldInjectionTargetList = fieldInjectionTargetList;
     this.methodInjectionTargetList = methodInjectionTargetList;
-    if (fieldInjectionTargetList.isEmpty()) {
+    if (fieldInjectionTargetList == null && methodInjectionTargetList == null) {
       throw new IllegalArgumentException("At least one memberInjectorInjectionTarget is needed.");
     }
   }
@@ -67,7 +67,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
       FieldSpec.Builder superMemberInjectorField =
           FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "superMemberInjector", Modifier.PRIVATE)
               //TODO use proper typing here
-              .initializer("toothpick.registries.memberinjector.MemberInjectorRegistryLocator.getMemberInjector($L.class)",
+              .initializer("$T.getMemberInjector($L.class)", ClassName.get("toothpick.registries.memberinjector", "MemberInjectorRegistryLocator"),
                   superTypeThatNeedsInjection.simpleName());
       injectorMemberTypeSpec.addField(superMemberInjectorField.build());
     }
@@ -108,7 +108,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
       for (TypeMirror typeMirror : methodInjectionTarget.parameters) {
         String paramName = "param" + counter++;
         TypeName paramType = TypeName.get(typeMirror);
-        injectMethodBuilder.addStatement("$T $L = injector.getInstance($T.class)", paramType, paramName, paramType);
+        injectMethodBuilder.addStatement("$T $L = injector.getInstance($L.class)", paramType, paramName, paramType);
         injectedMethodCallStatement.append(prefix);
         injectedMethodCallStatement.append(paramName);
         prefix = ", ";
@@ -128,28 +128,25 @@ public class MemberInjectorGenerator implements CodeGenerator {
       final ClassName className;
       switch (injectorInjectionTarget.kind) {
         case INSTANCE:
-          injectorGetMethodName = " = injector.getInstance(";
+          injectorGetMethodName = "getInstance";
           className = ClassName.get(injectorInjectionTarget.memberClass);
           break;
         case PROVIDER:
-          injectorGetMethodName = " = injector.getProvider(";
+          injectorGetMethodName = "getProvider";
           className = ClassName.get(injectorInjectionTarget.kindParamClass);
           break;
         case LAZY:
-          injectorGetMethodName = " = injector.getLazy(";
+          injectorGetMethodName = "getLazy";
           className = ClassName.get(injectorInjectionTarget.kindParamClass);
           break;
         case FUTURE:
-          injectorGetMethodName = " = injector.getFuture(";
+          injectorGetMethodName = "getFuture";
           className = ClassName.get(injectorInjectionTarget.kindParamClass);
           break;
         default:
           throw new IllegalStateException("The kind can't be null.");
       }
-      StringBuilder assignFieldStatement;
-      assignFieldStatement = new StringBuilder("target.");
-      assignFieldStatement.append(injectorInjectionTarget.memberName).append(injectorGetMethodName).append(className).append(".class)");
-      injectBuilder.addStatement(assignFieldStatement.toString());
+      injectBuilder.addStatement("target.$L = injector.$L($T.class)", injectorInjectionTarget.memberName, injectorGetMethodName, className);
     }
   }
 

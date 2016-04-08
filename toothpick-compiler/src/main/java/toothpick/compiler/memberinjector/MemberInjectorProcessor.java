@@ -1,6 +1,7 @@
 package toothpick.compiler.memberinjector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +51,11 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate member injectors
-    for (Map.Entry<TypeElement, List<FieldInjectionTarget>> entry : mapTypeElementToFieldInjectorTargetList.entrySet()) {
-      List<FieldInjectionTarget> fieldInjectionTargetList = entry.getValue();
-      TypeElement typeElement = entry.getKey();
+    Set<TypeElement> elementWithInjectionSet = new HashSet<>();
+    elementWithInjectionSet.addAll(mapTypeElementToFieldInjectorTargetList.keySet());
+    elementWithInjectionSet.addAll(mapTypeElementToMethodInjectorTargetList.keySet());
+    for (TypeElement typeElement : elementWithInjectionSet) {
+      List<FieldInjectionTarget> fieldInjectionTargetList = mapTypeElementToFieldInjectorTargetList.get(typeElement);
       List<MethodInjectionTarget> methodInjectionTargetList = mapTypeElementToMethodInjectorTargetList.get(typeElement);
       TypeElement superClassThatNeedsInjection = mapTypeElementToSuperTypeElementThatNeedsInjection.get(typeElement);
       MemberInjectorGenerator memberInjectorGenerator =
@@ -62,12 +65,11 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate Registry
-    if (readProcessorOptions()) {
+    if (toothpickRegistryPackageName != null || readProcessorOptions()) {
       MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget =
-          new MemberInjectorRegistryInjectionTarget(mapTypeElementToFieldInjectorTargetList.keySet(), toothpickRegistryPackageName,
-              toothpickRegistryChildrenPackageNameList);
+          new MemberInjectorRegistryInjectionTarget(elementWithInjectionSet, toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
       MemberInjectorRegistryGenerator memberInjectorRegistryGenerator = new MemberInjectorRegistryGenerator(memberInjectorRegistryInjectionTarget);
-      Element[] allTypes = mapTypeElementToFieldInjectorTargetList.keySet().toArray(new Element[mapTypeElementToFieldInjectorTargetList.size()]);
+      Element[] allTypes = elementWithInjectionSet.toArray(new Element[mapTypeElementToFieldInjectorTargetList.size()]);
       String fileDescription = "MemberInjector registry";
       writeToFile(memberInjectorRegistryGenerator, fileDescription, allTypes);
     }
@@ -189,14 +191,13 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     do {
       TypeMirror superClassTypeMirror = currentTypeElement.getSuperclass();
       couldFindSuperClass = superClassTypeMirror.getKind() == TypeKind.DECLARED;
-      if (!couldFindSuperClass) {
-        return null;
-      }
-      currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
-      for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
-        if ((enclosedElement.getKind() == ElementKind.FIELD || enclosedElement.getKind() == ElementKind.METHOD)
-            && enclosedElement.getAnnotation(Inject.class) != null) {
-          return currentTypeElement;
+      if (couldFindSuperClass) {
+        currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
+        for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
+          if ((enclosedElement.getKind() == ElementKind.FIELD || enclosedElement.getKind() == ElementKind.METHOD)
+              && enclosedElement.getAnnotation(Inject.class) != null) {
+            return currentTypeElement;
+          }
         }
       }
     } while (couldFindSuperClass);

@@ -6,6 +6,7 @@ dependencies {
   compile deps.inject
   compile deps.javapoet
 
+  testCompile project(':toothpick-runtime')
   testCompile deps.junit
   testCompile deps.truth
   testCompile deps.compiletesting
