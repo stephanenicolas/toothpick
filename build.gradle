@@ -59,15 +59,9 @@ task jacocoTestReport << {
   }
 }
 
-def javaProjects() {
-  subprojects.findAll { project ->
-    project.plugins.hasPlugin('java')
-  }
-}
-
 coveralls {
   jacocoReportPath = 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
-  sourceDirs = files(javaProjects().sourceSets.main.allSource.srcDirs).files.absolutePath
+  sourceDirs = files(subprojects.collect { subproject -> "${subproject.projectDir}/src/main/java"}).files.absolutePath
 }
 
 tasks.coveralls {
