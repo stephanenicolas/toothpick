@@ -19,3 +19,4 @@ cache:
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
+  - ./config/build-integration-branch.sh 

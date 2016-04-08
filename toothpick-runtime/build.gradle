@@ -11,6 +11,12 @@ dependencies {
   testCompile project(':toothpick-compiler')
 }
 
+test {
+  if ("$System.env.TRAVIS_BRANCH" != "integration-tests") {
+    exclude '**/integration/**'
+  }
+}
+
 compileTestJava {
   doFirst {
     options.compilerArgs = [
