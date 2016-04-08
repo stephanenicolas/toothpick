@@ -16,40 +16,49 @@ repositories {
   jcenter()
 }
 
-task jacocoTestReport(type: JacocoReport) {
-  sourceDirectories = files()
-  classDirectories = files()
-  executionData = files()
+//from https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac
+task jacocoTestReport << {
+  FileCollection executionData = files()
 
-  reports {
-    html.enabled = true
-    xml.enabled = true
-    csv.enabled = false
+  subprojects.findAll { subproject ->
+    subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
+  }.each { subproject ->
+    executionData += subproject.tasks.jacocoTestReport.executionData
   }
 
-  // Work-around to allow us to build list of executionData files in doFirst
-  onlyIf = {
-    true
-  }
+  executionData = files(executionData.findAll {
+    it.exists()
+  })
 
-  /*
-   * Builds list of source dirs, class dirs, and executionData files
-   * when task is run, not at script evaluation time
-   */
-  doFirst {
-    subprojects.findAll { subproject ->
-      subproject.pluginManager.hasPlugin('java')
-    }.each { subproject ->
-      additionalSourceDirs files((Set<File>) subproject.sourceSets.main.allJava.srcDirs)
-      additionalClassDirs ((FileCollection) subproject.sourceSets.main.output)
-      if (subproject.pluginManager.hasPlugin('jacoco')) {
-        executionData subproject.tasks.jacocoTestReport.executionData
+  ant.taskdef(name: 'jacocoReport', classname: 'org.jacoco.ant.ReportTask',
+      classpath: configurations.jacocoAnt.asPath)
+
+  ant.jacocoReport {
+    executiondata {
+      executionData.addToAntBuilder(ant, 'resources')
+    }
+    structure(name: project.name) {
+      subprojects.findAll { subproject ->
+        subproject.pluginManager.hasPlugin('java')
+      }.each { subproject ->
+        group(name: subproject.name) {
+          classfiles {
+            ((FileCollection) subproject.sourceSets.main.output).filter {
+              it.exists()
+            }.addToAntBuilder(ant, 'resources')
+          }
+          sourcefiles {
+            files((Set<File>) subproject.sourceSets.main.allJava.srcDirs).filter {
+              it.exists()
+            }.addToAntBuilder(ant, 'resources')
+          }
+        }
       }
     }
-
-    executionData = files(executionData.findAll {
-      it.exists()
-    })
+    html(destdir: "${buildDir}/reports/jacoco/${name}/html")
+    xml(destfile: "${buildDir}/reports/jacoco/${name}/${name}.xml")
+    // Uncomment for CSV
+    //csv(destfile: "${buildDir}/reports/jacoco/${name}/${name}.csv")
   }
 }
 
