@@ -1,4 +1,5 @@
 #!/bin/bash
 set -ev
 
-git push -f origin integration-tests
+git push -f origin master:integration-tests
+
