@@ -20,10 +20,8 @@ repositories {
 task jacocoTestReport << {
   FileCollection executionData = files()
 
-  subprojects.findAll { subproject ->
-    subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
-  }.each { subproject ->
-    executionData += subproject.tasks.jacocoTestReport.executionData
+  subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
+  }.each { subproject -> executionData += subproject.tasks.jacocoTestReport.executionData
   }
 
   executionData = files(executionData.findAll {
@@ -38,8 +36,7 @@ task jacocoTestReport << {
       executionData.addToAntBuilder(ant, 'resources')
     }
     structure(name: project.name) {
-      subprojects.findAll { subproject ->
-        subproject.pluginManager.hasPlugin('java')
+      subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java')
       }.each { subproject ->
         group(name: subproject.name) {
           classfiles {
@@ -62,8 +59,15 @@ task jacocoTestReport << {
   }
 }
 
+def javaProjects() {
+  subprojects.findAll { project ->
+    project.plugins.hasPlugin('java')
+  }
+}
+
 coveralls {
   jacocoReportPath = 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+  sourceDirs = files(javaProjects().sourceSets.main.allSource.srcDirs).files.absolutePath
 }
 
 tasks.coveralls {
@@ -113,7 +117,6 @@ subprojects { project ->
       }
     }
   }
-
 }
 
 ext.deps = [// Common
@@ -123,8 +126,8 @@ ext.deps = [// Common
             javapoet      : 'com.squareup:javapoet:1.4.0',
 
             // Android
-            android: 'com.google.android:android:4.1.1.4',
-            supportv4: 'com.google.android:support-v4:r7',
+            android       : 'com.google.android:android:4.1.1.4',
+            supportv4     : 'com.google.android:support-v4:r7',
 
             // Test dependencies
             junit         : 'junit:junit:4.12',
