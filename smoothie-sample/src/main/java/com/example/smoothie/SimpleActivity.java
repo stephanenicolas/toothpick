@@ -5,9 +5,12 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.TextView;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
 import toothpick.Injector;
 import toothpick.ToothPick;
@@ -15,24 +18,33 @@ import toothpick.smoothie.module.DefaultActivityModule;
 
 public class SimpleActivity extends Activity {
 
-  @Inject Context context;
   @Inject Application application;
   @Inject AccountManager accountManager;
   @Inject SharedPreferences sharedPreferences;
   @Inject AlarmManager alarmManager;
   @Inject FragmentManager fragmentManager;
   @Inject Activity activity;
+  private Injector injector;
+
+  @Inject ContextNamer contextNamer;
+  @Bind(R.id.title) TextView title;
+  @Bind(R.id.subtitle) TextView subTitle;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Injector appInjector = ToothPick.getInjector(getApplication());
+    injector = ToothPick.getOrCreateInjector(appInjector, this, new DefaultActivityModule(this));
+    injector.inject(this);
     setContentView(R.layout.simple_activity);
-
-    Injector classInjector = ToothPick.getOrCreateInjector(getAppInjector(), SimpleActivity.class, new DefaultActivityModule(this));
-    classInjector.inject(this);
+    ButterKnife.bind(this);
+    title.setText(contextNamer.getApplicationName());
+    subTitle.setText(contextNamer.getActivityName());
   }
 
-  private Injector getAppInjector() {
-    return ToothPick.getOrCreateInjector(null, Application.class);
+  @Override
+  protected void onDestroy() {
+    ToothPick.destroyInjector(this);
+    super.onDestroy();
   }
 }

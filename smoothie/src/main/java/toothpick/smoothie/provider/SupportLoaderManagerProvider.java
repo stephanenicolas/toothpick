@@ -7,9 +7,15 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class SupportLoaderManagerProvider implements Provider<LoaderManager> {
-  @Inject Activity activity;
+  Activity activity;
 
-  @Override public LoaderManager get() {
+  @Inject
+  public SupportLoaderManagerProvider(Activity activity) {
+    this.activity = activity;
+  }
+
+  @Override
+  public LoaderManager get() {
     return ((FragmentActivity) activity).getSupportLoaderManager();
   }
 }

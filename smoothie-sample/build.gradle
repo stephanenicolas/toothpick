@@ -27,18 +27,28 @@ android {
     versionName '1.0.0'
   }
 
-  buildTypes {
-    debug {
-      minifyEnabled true
-    }
-  }
+}
+
+repositories {
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
   compile project(':smoothie')
   compile project(':toothpick-runtime')
   apt project(':toothpick-compiler')
+  apt deps.butterknife_compiler
+  compile deps.butterknife
 
   testCompile deps.junit
+  testCompile deps.easymock
+  testCompile deps.truth
   testCompile deps.robolectric
+}
+
+apt {
+  arguments {
+    'toothpick_registry_package_name' 'com.example.smoothie'
+    'toothpick_registry_children_package_names' 'smoothie'
+  }
 }

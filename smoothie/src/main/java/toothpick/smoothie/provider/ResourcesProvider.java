@@ -1,14 +1,20 @@
 package toothpick.smoothie.provider;
 
-import android.content.Context;
+import android.app.Application;
 import android.content.res.Resources;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class ResourcesProvider implements Provider<Resources> {
-  @Inject Context context;
+  Application application;
 
-  @Override public Resources get() {
-    return context.getResources();
+  @Inject
+  public ResourcesProvider(Application application) {
+    this.application = application;
+  }
+
+  @Override
+  public Resources get() {
+    return application.getResources();
   }
 }

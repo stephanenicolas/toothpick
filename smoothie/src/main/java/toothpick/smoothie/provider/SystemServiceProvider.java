@@ -13,7 +13,8 @@ public class SystemServiceProvider<T> implements Provider<T> {
   }
 
   @SuppressWarnings("unchecked")
-  @Override public T get() {
+  @Override
+  public T get() {
     return (T) context.getSystemService(serviceName);
   }
 }

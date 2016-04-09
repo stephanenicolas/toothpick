@@ -1,14 +1,20 @@
 package toothpick.smoothie.provider;
 
+import android.app.Application;
 import android.content.ContentResolver;
-import android.content.Context;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class ContentResolverProvider implements Provider<ContentResolver> {
-  @Inject Context context;
+  Application application;
 
-  @Override public ContentResolver get() {
-    return context.getContentResolver();
+  @Inject
+  public ContentResolverProvider(Application application) {
+    this.application = application;
+  }
+
+  @Override
+  public ContentResolver get() {
+    return application.getContentResolver();
   }
 }

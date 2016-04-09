@@ -8,7 +8,6 @@ import android.app.DownloadManager;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -50,7 +49,6 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class DefaultApplicationModule extends Module {
   public DefaultApplicationModule(Application application) {
-    bind(Context.class).to(application);
     bind(Application.class).to(application);
     bind(AccountManager.class).toProvider(AccountManagerProvider.class);
     bind(AssetManager.class).toProvider(AssetManagerProvider.class);
@@ -80,5 +78,6 @@ public class DefaultApplicationModule extends Module {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
       bind(DownloadManager.class).toProvider(new SystemServiceProvider<DownloadManager>(application, DOWNLOAD_SERVICE));
     }
+    bind(Application.class).to(application);
   }
 }

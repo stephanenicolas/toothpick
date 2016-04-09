@@ -7,9 +7,15 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class SupportFragmentManagerProvider implements Provider<FragmentManager> {
-  @Inject Activity activity;
+  Activity activity;
 
-  @Override public FragmentManager get() {
+  @Inject
+  public SupportFragmentManagerProvider(Activity activity) {
+    this.activity = activity;
+  }
+
+  @Override
+  public FragmentManager get() {
     return ((FragmentActivity) activity).getSupportFragmentManager();
   }
 }

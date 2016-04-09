@@ -35,7 +35,8 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
 
-  @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+  @Override
+  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
     findAndParseTargets(roundEnv);
 
@@ -222,6 +223,11 @@ public class FactoryProcessor extends ToothpickProcessor {
   private FactoryInjectionTarget createConstructorInjectionTargetForVariableElement(VariableElement fieldElement) {
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
+    //TODO we should have an option to filter those classes
+    String typeElementName = fieldTypeElement.getQualifiedName().toString();
+    if (typeElementName.startsWith("android") || typeElementName.startsWith("java")) {
+      return null;
+    }
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
     boolean needsMemberInjection = needsMemberInjection(fieldTypeElement);
