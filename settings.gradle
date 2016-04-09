@@ -1,6 +1,7 @@
 include ':toothpick'
-include ':toothpick-runtime'
+include ':toothpick-core'
 include ':toothpick-compiler'
+include ':toothpick-runtime'
 include ':toothpick-sample'
 include ':smoothie'
 

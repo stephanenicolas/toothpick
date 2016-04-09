@@ -4,11 +4,13 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-  compile project(':toothpick')
+  compile project(':toothpick-core')
   compile deps.inject
 
   testCompile deps.junit
   testCompile project(':toothpick-compiler')
+  testCompile deps.easymock
+  testCompile deps.powermock
 }
 
 test {
@@ -21,7 +23,7 @@ compileTestJava {
   doFirst {
     options.compilerArgs = [
         '-processor', "toothpick.compiler.memberinjector.MemberInjectorProcessor,toothpick.compiler.factory.FactoryProcessor",
-        '-Atoothpick_registry_package_name=toothpick',
+        '-Atoothpick_registry_package_name=toothpick.test',
     ]
   }
 }
