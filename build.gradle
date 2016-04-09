@@ -128,4 +128,5 @@ ext.deps = [// Common
             truth         : 'com.google.truth:truth:0.27',
             compiletesting: 'com.google.testing.compile:compile-testing:0.7',
             easymock      : 'org.easymock:easymock:3.4',
-            powermock     : 'org.powermock:powermock-easymock-release-full:1.6.4',]
+            powermock     : 'org.powermock:powermock-easymock-release-full:1.6.4',
+            robolectric: 'org.robolectric:robolectric:2.2',]
