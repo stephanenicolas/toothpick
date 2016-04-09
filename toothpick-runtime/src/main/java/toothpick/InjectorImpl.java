@@ -10,13 +10,6 @@ import java.util.concurrent.Future;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
-import toothpick.providers.FactoryPoweredProvider;
-import toothpick.providers.NonAnnotatedProviderClassPoweredProvider;
-import toothpick.providers.NonSingletonAnnotatedClassPoweredProvider;
-import toothpick.providers.ProducesSingletonAnnotatedProviderClassPoweredProvider;
-import toothpick.providers.SingletonAnnotatedClassPoweredProvider;
-import toothpick.providers.SingletonAnnotatedProviderClassPoweredProvider;
-import toothpick.providers.SingletonPoweredProvider;
 import toothpick.registries.factory.FactoryRegistryLocator;
 import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
@@ -48,11 +41,13 @@ public final class InjectorImpl implements Injector {
     this(null, modules);
   }
 
-  @Override public Injector getParent() {
+  @Override
+  public Injector getParent() {
     return parent;
   }
 
-  @Override public <T> void inject(T obj) {
+  @Override
+  public <T> void inject(T obj) {
     MemberInjector<T> memberInjector = MemberInjectorRegistryLocator.getMemberInjector((Class<T>) obj.getClass());
     memberInjector.inject(obj, this);
   }
@@ -61,34 +56,20 @@ public final class InjectorImpl implements Injector {
     return scope;
   }
 
-  @Override public <T> T getInstance(Class<T> clazz) {
-    synchronized (clazz) {
-      Iterator<InjectorImpl> iterator = parentInjectors.iterator();
-      while (iterator.hasNext()) {
-        InjectorImpl parentInjector = iterator.next();
-        T scopedInstance = parentInjector.getScopedInstance(clazz);
-        if (scopedInstance != null) {
-          return scopedInstance;
-        }
-      }
-    }
-    //classes discovered at runtime, not bound by any module
-    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-    T instance = factory.createInstance(this);
-    if (factory.hasSingletonAnnotation()) {
-      //singleton classes discovered dynamically go to root scope.
-      getRootInjector().getScope().put(clazz, new SingletonPoweredProvider(instance));
-    } else {
-      scope.put(clazz, new FactoryPoweredProvider(this, factory));
-    }
-    return instance;
+  @Override
+  public <T> T getInstance(Class<T> clazz) {
+    return getProvider(clazz).get();
   }
 
   private InjectorImpl getRootInjector() {
     return parentInjectors.get(parentInjectors.size() - 1);
   }
 
-  @Override public <T> Provider<T> getProvider(Class<T> clazz) {
+  @Override
+  public <T> Provider<T> getProvider(Class<T> clazz) {
+    if (clazz == null) {
+      throw new IllegalArgumentException("TP can't get an instance of a null class.");
+    }
     synchronized (clazz) {
       Iterator<InjectorImpl> iterator = parentInjectors.iterator();
       while (iterator.hasNext()) {
@@ -99,31 +80,45 @@ public final class InjectorImpl implements Injector {
         }
       }
     }
+    //classes discovered at runtime, not bound by any module
     Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
     T instance = factory.createInstance(this);
     final Provider<T> newProvider;
-    if (factory.hasSingletonAnnotation()) {
-      //singleton classes discovered dynamically go to root scope.
-      newProvider = new SingletonPoweredProvider(instance);
-      getRootInjector().getScope().put(clazz, newProvider);
-    } else {
-      newProvider = new FactoryPoweredProvider(this, factory);
-      scope.put(clazz, newProvider);
+    synchronized (clazz) {
+      if (factory.hasSingletonAnnotation()) {
+        //singleton classes discovered dynamically go to root scope.
+        newProvider = new ProviderImpl<T>(instance);
+        getRootInjector().getScope().put(clazz, newProvider);
+      } else {
+        newProvider = new ProviderImpl(this, factory, false);
+        scope.put(clazz, newProvider);
+      }
     }
     return newProvider;
   }
 
-  @Override public <T> Lazy<T> getLazy(Class<T> clazz) {
+  //TODO explain the change to daniel, we were having some troubles
+  //we could not be using a provider in multi-thread, it has to be
+  //thread safe. The best was a multi DCL.
+  //now all access to the injector scopes are locked on the class
+  //all provider are locked on themselves.
+  //I won't do unit tests, because they are too hard and don't bring much
+  //TODO create a plugin system so that we can inject anything (handler/plugin ?)
+  //Kill the 2 methods below
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz) {
     Provider<T> provider = getProvider(clazz);
-    return new LazyImpl<>(provider);
+    return new ProviderImpl<>(provider, true);
   }
 
-  @Override public <T> Future<T> getFuture(Class<T> clazz) {
+  @Override
+  public <T> Future<T> getFuture(Class<T> clazz) {
     final Provider<T> provider = getProvider(clazz);
     return EXECUTOR_SERVICE.submit(new ProviderCallable<>(provider));
   }
 
-  @Override public void installOverrideModules(Module... modules) {
+  @Override
+  public void installOverrideModules(Module... modules) {
     //we allow multiple calls to this method
     boolean oldHasOverrides = hasOverrides;
     hasOverrides = false;
@@ -134,26 +129,16 @@ public final class InjectorImpl implements Injector {
 
   private void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
-      if (!hasOverrides || !scope.containsKey(binding.getKey())) {
-        scope.put(binding.getKey(), toProvider(binding));
+      if (binding == null) {
+        throw new IllegalStateException("A module can't have a null binding.");
+      }
+      Class key = binding.getKey();
+      synchronized (key) {
+        if (!hasOverrides || !scope.containsKey(key)) {
+          scope.put(key, toProvider(binding));
+        }
       }
     }
-  }
-
-  /**
-   * Obtains the instance of the class {@code clazz} that is scoped in the current scope, if any.
-   * Ancestors are not taken into account.
-   *
-   * @param clazz the class for which to obtain the scoped instance of this injector, if one is scoped.
-   * @param <T> the type of {@code clazz}.
-   * @return the scoped instance of this injector, if one is scoped, {@code Null} otherwise.
-   */
-  private <T> T getScopedInstance(Class<T> clazz) {
-    Provider<T> provider = scope.get(clazz);
-    if (provider == null) {
-      return null;
-    }
-    return provider.get();
   }
 
   /**
@@ -186,34 +171,20 @@ public final class InjectorImpl implements Injector {
     switch (binding.getMode()) {
       case SIMPLE:
         Factory<? extends T> factory = FactoryRegistryLocator.getFactory(binding.getKey());
-        if (factory.hasSingletonAnnotation()) {
-          return new SingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
-        } else {
-          return new NonSingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getKey());
-        }
+        return new ProviderImpl<>(this, factory, false);
       case CLASS:
         Factory<? extends T> factory2 = FactoryRegistryLocator.getFactory(binding.getImplementationClass());
-        if (factory2.hasSingletonAnnotation()) {
-          return new SingletonAnnotatedClassPoweredProvider(this, binding.getKey(), binding.getImplementationClass());
-        } else {
-          return new NonSingletonAnnotatedClassPoweredProvider<>(this, binding.getKey(), binding.getImplementationClass());
-        }
+        return new ProviderImpl<>(this, factory2, false);
       case INSTANCE:
-        return new SingletonPoweredProvider<>(binding.getInstance());
+        return new ProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
-        return binding.getProviderInstance();
+        //to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
+        return new ProviderImpl<>(binding.getProviderInstance(), false);
       case PROVIDER_CLASS:
         Factory<? extends Provider<T>> providerFactory = FactoryRegistryLocator.getFactory(binding.getProviderClass());
-        //TODO pass them the factory !
-        if (providerFactory.hasSingletonAnnotation()) {
-          return new SingletonAnnotatedProviderClassPoweredProvider(this, binding.getKey(), binding.getProviderClass());
-        } else if (providerFactory.hasProducesSingletonAnnotation()) {
-          return new ProducesSingletonAnnotatedProviderClassPoweredProvider<>(this, binding.getKey(), binding.getProviderClass());
-        } else {
-          return new NonAnnotatedProviderClassPoweredProvider<>(this, binding.getKey(), binding.getProviderClass());
-        }
+        return new ProviderImpl<>(this, providerFactory, true);
 
-        //JACOCO:OFF
+      //JACOCO:OFF
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
         //JACOCO:ON
