@@ -1,7 +1,5 @@
 package toothpick;
 
-import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
-
 /**
  * Inject member of an instance of a class.
  * All injected members are gonna be obtained in the scope of the current injector.

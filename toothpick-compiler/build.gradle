@@ -2,11 +2,10 @@ apply plugin: 'java'
 
 
 dependencies {
-  compile project(':toothpick')
+  compile project(':toothpick-generated-core')
   compile deps.inject
   compile deps.javapoet
 
-  testCompile project(':toothpick-core')
   testCompile deps.junit
   testCompile deps.truth
   testCompile deps.compiletesting

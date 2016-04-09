@@ -1,5 +1,5 @@
 include ':toothpick'
-include ':toothpick-core'
+include ':toothpick-generated-core'
 include ':toothpick-compiler'
 include ':toothpick-runtime'
 include ':toothpick-sample'
