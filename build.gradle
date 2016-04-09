@@ -95,7 +95,7 @@ subprojects { project ->
   }
 
   afterEvaluate {
-    if (project.tasks.findByName('check')) {
+    if (project.tasks.findByName('check') && project.pluginManager.hasPlugin('java')) {
       check.dependsOn('checkstyle')
       check.dependsOn('jacocoTestReport')
 

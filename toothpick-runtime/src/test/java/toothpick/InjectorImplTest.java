@@ -1,8 +1,6 @@
 package toothpick;
 
 import org.junit.Test;
-import toothpick.InjectorImpl;
-import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
