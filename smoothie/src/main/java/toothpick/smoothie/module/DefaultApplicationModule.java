@@ -51,6 +51,7 @@ import static android.content.Context.WINDOW_SERVICE;
 public class DefaultApplicationModule extends Module {
   public DefaultApplicationModule(Application application) {
     bind(Context.class).to(application);
+    bind(Application.class).to(application);
     bind(AccountManager.class).toProvider(AccountManagerProvider.class);
     bind(AssetManager.class).toProvider(AssetManagerProvider.class);
     bind(ContentResolver.class).toProvider(ContentResolverProvider.class);

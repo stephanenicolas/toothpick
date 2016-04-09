@@ -36,6 +36,7 @@ android {
 
 dependencies {
   compile project(':smoothie')
+  compile project(':toothpick-runtime')
   apt project(':toothpick-compiler')
 
   testCompile deps.junit
