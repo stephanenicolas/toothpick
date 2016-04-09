@@ -105,6 +105,13 @@ public final class InjectorImpl implements Injector {
   //I won't do unit tests, because they are too hard and don't bring much
   //TODO create a plugin system so that we can inject anything (handler/plugin ?)
   //Kill the 2 methods below
+  //for @Inject Foo<Bar>
+  //generate getProvider(Bar.class, Foo.class) --> Foo becomes a modifier
+  //for @inject @Foo Bar
+  //generate getInstance(Bar.class, Foo.class) --> Foo becomes a modifier (JSR 330)
+  //if Foo is added as extension point to the compiler
+  //and devs can provide their own Injector that knows what to do to create
+  //a Foo<Bar> being passed a Provider<Bar>
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz) {
     Provider<T> provider = getProvider(clazz);

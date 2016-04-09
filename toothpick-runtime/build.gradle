@@ -13,16 +13,9 @@ dependencies {
   testCompile deps.powermock
 }
 
-test {
-  if ("$System.env.TRAVIS_BRANCH" != "integration-tests") {
-    //exclude '**/integration/**'
-  }
-}
-
 compileTestJava {
   doFirst {
     options.compilerArgs = [
-        '-processor', "toothpick.compiler.memberinjector.MemberInjectorProcessor,toothpick.compiler.factory.FactoryProcessor",
         '-Atoothpick_registry_package_name=toothpick.test',
     ]
   }
