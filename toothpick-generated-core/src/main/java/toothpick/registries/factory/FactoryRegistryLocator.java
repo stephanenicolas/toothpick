@@ -33,15 +33,15 @@ public class FactoryRegistryLocator {
   }
 
   private static ReflectionFactoryRegistry fallbackFactoryRegistry = new ReflectionFactoryRegistry();
-  private static List<FactoryRegistry> registries = new ArrayList<>();
+  private static FactoryRegistry registry;
 
-  public static void addRegistry(FactoryRegistry childRegistry) {
-    registries.add(childRegistry);
+  public static void setRootRegistry(FactoryRegistry registry) {
+    FactoryRegistryLocator.registry = registry;
   }
 
   public static <T> Factory<T> getFactory(Class<T> clazz) {
     Factory<T> factory;
-    for (FactoryRegistry registry : registries) {
+    if (registry != null) {
       factory = registry.getFactory(clazz);
       if (factory != null) {
         return factory;

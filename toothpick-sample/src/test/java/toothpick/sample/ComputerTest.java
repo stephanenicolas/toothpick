@@ -19,8 +19,8 @@ public class ComputerTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
-    FactoryRegistryLocator.addRegistry(new toothpick.sample.FactoryRegistry());
+    MemberInjectorRegistryLocator.setRootRegistry(new toothpick.sample.MemberInjectorRegistry());
+    FactoryRegistryLocator.setRootRegistry(new toothpick.sample.FactoryRegistry());
   }
 
   @Test
