@@ -1,4 +1,14 @@
-language: java
+language: android
+
+android:
+  components:
+    # https://github.com/travis-ci/travis-ci/issues/5036
+    - tools
+    - build-tools-23.0.2
+    - android-23
+    - extra-android-m2repository
+  licenses:
+    - android-sdk-license-5be876d5
 
 jdk:
   - oraclejdk7
@@ -16,6 +26,9 @@ sudo: false
 cache:
   directories:
     - $HOME/.m2
+
+script:
+  - ./gradlew clean test -s -d
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
