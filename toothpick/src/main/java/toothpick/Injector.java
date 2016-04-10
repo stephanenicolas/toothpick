@@ -92,4 +92,6 @@ public interface Injector {
    * @param modules an array of modules that define override bindings.
    */
   void installOverrideModules(Module... modules);
+
+  void installModules(Module[] modules);
 }

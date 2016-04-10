@@ -1,27 +1,34 @@
 package com.example.smoothie;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Intent;
+import android.app.AlarmManager;
+import android.app.Application;
+import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
 import toothpick.Injector;
 import toothpick.ToothPick;
 import toothpick.smoothie.module.DefaultActivityModule;
 
-public class SimpleActivity extends Activity {
+public class LessSimpleActivity extends Activity {
 
+  @Inject Application application;
+  @Inject AccountManager accountManager;
+  @Inject SharedPreferences sharedPreferences;
+  @Inject AlarmManager alarmManager;
+  @Inject FragmentManager fragmentManager;
+  @Inject Activity activity;
   private Injector injector;
 
   @Inject ContextNamer contextNamer;
   @Bind(R.id.title) TextView title;
   @Bind(R.id.subtitle) TextView subTitle;
-  @Bind(R.id.hello) Button button;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +40,6 @@ public class SimpleActivity extends Activity {
     ButterKnife.bind(this);
     title.setText(contextNamer.getApplicationName());
     subTitle.setText(contextNamer.getActivityName());
-    button.setText("click me !");
-  }
-
-  @OnClick(R.id.hello)
-  @SuppressWarnings("unused")
-  void startNewActivity() {
-    startActivity(new Intent(this, PersistActivity.class));
   }
 
   @Override

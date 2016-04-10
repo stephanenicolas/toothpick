@@ -2,6 +2,8 @@ package toothpick;
 
 import javax.inject.Provider;
 
+//TODO only the provider created by injector.getProvider need to be thread safe, all others
+//are already accessed with a lock
 public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
   private Injector injector;
   private volatile T instance;

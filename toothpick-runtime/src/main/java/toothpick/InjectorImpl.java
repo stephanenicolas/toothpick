@@ -82,12 +82,11 @@ public final class InjectorImpl implements Injector {
     }
     //classes discovered at runtime, not bound by any module
     Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-    T instance = factory.createInstance(this);
     final Provider<T> newProvider;
     synchronized (clazz) {
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<T>(instance);
+        newProvider = new ProviderImpl<T>(factory.createInstance(this));
         getRootInjector().getScope().put(clazz, newProvider);
       } else {
         newProvider = new ProviderImpl(this, factory, false);
@@ -160,7 +159,8 @@ public final class InjectorImpl implements Injector {
     return scope.get(clazz);
   }
 
-  private void installModules(Module[] modules) {
+  @Override
+  public void installModules(Module[] modules) {
     for (Module module : modules) {
       installModule(module);
     }

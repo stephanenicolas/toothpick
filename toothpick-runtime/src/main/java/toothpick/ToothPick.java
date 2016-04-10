@@ -63,6 +63,7 @@ public final class ToothPick {
       return;
     }
     MAP_KEY_TO_INJECTOR.remove(key);
+    //TODO remove child injectors !
   }
 
   public static void reset() {

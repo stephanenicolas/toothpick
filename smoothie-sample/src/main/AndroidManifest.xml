@@ -20,5 +20,9 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
+    <activity
+        android:name=".PersistActivity"/>
+    <activity
+        android:name=".LessSimpleActivity"/>
   </application>
 </manifest>

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    >
   <TextView
       android:id="@+id/title"
       android:layout_width="match_parent"
@@ -21,24 +22,9 @@
       />
   <Button
       android:id="@+id/hello"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"
+      android:layout_width="160dp"
+      android:layout_height="160dp"
+      android:layout_gravity="center"
       android:layout_margin="10dp"
-      />
-  <ListView
-      android:id="@+id/list_of_things"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      android:layout_margin="10dp"
-      />
-  <TextView
-      android:id="@+id/footer"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      android:textSize="17sp"
-      android:textStyle="italic"
       />
 </LinearLayout>

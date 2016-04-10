@@ -34,10 +34,15 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
 
   /**
-   * The name annotation processor option to declare in which package a registry should be generated.
+   * The name of the annotation processor option to declare in which package a registry should be generated.
    * If this parameter is not passed, no registry is generated.
    */
   public static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
+
+  /**
+   * The name of the annotation processor option to exclude classes from the creation of member injectors & factories.
+   */
+  public static final String PARAMETER_EXCLUDES = "toothpick_excludes";
 
   /**
    * The name annotation processor option to declare in which packages reside the registries used by the generated registry, if it is created.
@@ -52,8 +57,10 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   protected String toothpickRegistryPackageName;
   protected List<String> toothpickRegistryChildrenPackageNameList;
+  protected String toothpickExcludeFilters = "java,android";
 
-  @Override public synchronized void init(ProcessingEnvironment processingEnv) {
+  @Override
+  public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
 
     elementUtils = processingEnv.getElementUtils();
@@ -101,6 +108,8 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     if (toothpickRegistryChildrenPackageNames != null) {
       toothpickRegistryChildrenPackageNameList = Arrays.asList(toothpickRegistryChildrenPackageNames.split(":"));
     }
+
+    toothpickExcludeFilters = processingEnv.getOptions().get(PARAMETER_EXCLUDES);
 
     return true;
   }
@@ -192,5 +201,15 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       paramTypes.add(variableElement.asType());
     }
     return paramTypes;
+  }
+
+  protected boolean isExcludedByFilters(TypeElement fieldTypeElement) {
+    String typeElementName = fieldTypeElement.getQualifiedName().toString();
+    for (String exclude : toothpickExcludeFilters.split(",")) {
+      if (typeElementName.startsWith(exclude.trim())) {
+        return true;
+      }
+    }
+    return false;
   }
 }

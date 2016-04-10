@@ -30,7 +30,11 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
-@SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
+@SupportedOptions({
+    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME
+        ,ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES
+        ,ToothpickProcessor.PARAMETER_EXCLUDES
+}) //
 public class FactoryProcessor extends ToothpickProcessor {
 
   private Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
@@ -223,11 +227,6 @@ public class FactoryProcessor extends ToothpickProcessor {
   private FactoryInjectionTarget createConstructorInjectionTargetForVariableElement(VariableElement fieldElement) {
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
-    //TODO we should have an option to filter those classes
-    String typeElementName = fieldTypeElement.getQualifiedName().toString();
-    if (typeElementName.startsWith("android") || typeElementName.startsWith("java")) {
-      return null;
-    }
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
     boolean needsMemberInjection = needsMemberInjection(fieldTypeElement);
@@ -258,8 +257,8 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private boolean isValidInjectedType(TypeElement fieldTypeElement) {
-    //TODO we probably need more filtering here, like to filter out android / java classes.
-    //for those devs should provide a provider.
+    if (isExcludedByFilters(fieldTypeElement)) return false;
+
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
         //the previous line also covers && fieldTypeElement.getKind() != ElementKind.INTERFACE;
         && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE);

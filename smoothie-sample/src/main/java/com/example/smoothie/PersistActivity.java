@@ -1,21 +1,22 @@
 package com.example.smoothie;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
 import toothpick.Injector;
 import toothpick.ToothPick;
+import toothpick.config.Module;
 import toothpick.smoothie.module.DefaultActivityModule;
 
-public class SimpleActivity extends Activity {
+public class PersistActivity extends Activity {
 
+  public static final String PRESENTER_SCOPE = "PRESENTER_SCOPE";
   private Injector injector;
 
   @Inject ContextNamer contextNamer;
@@ -27,24 +28,32 @@ public class SimpleActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Injector appInjector = ToothPick.getInjector(getApplication());
-    injector = ToothPick.getOrCreateInjector(appInjector, this, new DefaultActivityModule(this));
+    Injector metaInjector = ToothPick.getOrCreateInjector(appInjector, PRESENTER_SCOPE);
+    injector = ToothPick.getOrCreateInjector(metaInjector, this, new DefaultActivityModule(this));
     injector.inject(this);
+    metaInjector.installOverrideModules(new PresenterModule());
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
-    title.setText(contextNamer.getApplicationName());
-    subTitle.setText(contextNamer.getActivityName());
-    button.setText("click me !");
-  }
-
-  @OnClick(R.id.hello)
-  @SuppressWarnings("unused")
-  void startNewActivity() {
-    startActivity(new Intent(this, PersistActivity.class));
+    title.setText("Persist");
+    subTitle.setText(contextNamer.getInstanceCount());
+    button.setVisibility(View.GONE);
   }
 
   @Override
   protected void onDestroy() {
     ToothPick.destroyInjector(this);
     super.onDestroy();
+  }
+
+  @Override
+  public void onBackPressed() {
+    ToothPick.destroyInjector(PRESENTER_SCOPE);
+    super.onBackPressed();
+  }
+
+  private class PresenterModule extends Module {
+    {
+      bind(ContextNamer.class).to(contextNamer);
+    }
   }
 }

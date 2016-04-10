@@ -36,14 +36,19 @@ import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
  */
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
-@SupportedOptions({ ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME + "." + ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES }) //
+@SupportedOptions({
+    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME
+    ,ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES
+    ,ToothpickProcessor.PARAMETER_EXCLUDES
+}) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
   private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToFieldInjectorTargetList = new LinkedHashMap<>();
   private Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMethodInjectorTargetList = new LinkedHashMap<>();
   private Map<TypeElement, TypeElement> mapTypeElementToSuperTypeElementThatNeedsInjection = new LinkedHashMap<>();
 
-  @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+  @Override
+  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
@@ -84,13 +89,17 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
   protected void parseInjectedFields(RoundEnvironment roundEnv) {
     for (VariableElement element : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-      parseInjectedField(element, mapTypeElementToFieldInjectorTargetList);
+      if (!isExcludedByFilters((TypeElement) element.getEnclosingElement())) {
+        parseInjectedField(element, mapTypeElementToFieldInjectorTargetList);
+      }
     }
   }
 
   protected void parseInjectedMethods(RoundEnvironment roundEnv) {
     for (ExecutableElement element : ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-      parseInjectedMethod(element, mapTypeElementToMethodInjectorTargetList);
+      if (!isExcludedByFilters((TypeElement) element.getEnclosingElement())) {
+        parseInjectedMethod(element, mapTypeElementToMethodInjectorTargetList);
+      }
     }
   }
 
