@@ -131,7 +131,7 @@ public final class InjectorImpl extends Injector {
   }
 
   @Override
-  public void installModules(Module[] modules) {
+  public void installModules(Module... modules) {
     for (Module module : modules) {
       installModule(module);
     }

@@ -172,7 +172,7 @@ public abstract class Injector {
    */
   public abstract void installOverrideModules(Module... modules);
 
-  public abstract void installModules(Module[] modules);
+  public abstract void installModules(Module... modules);
 
   @Override
   public String toString() {

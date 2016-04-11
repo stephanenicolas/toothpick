@@ -31,7 +31,7 @@ public class PersistActivity extends Activity {
     Injector metaInjector = ToothPick.getOrCreateInjector(appInjector, PRESENTER_SCOPE);
     injector = ToothPick.getOrCreateInjector(metaInjector, this, new DefaultActivityModule(this));
     injector.inject(this);
-    metaInjector.installOverrideModules(new PresenterModule());
+    metaInjector.installModules(new PresenterModule());
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
     title.setText("Persist");
