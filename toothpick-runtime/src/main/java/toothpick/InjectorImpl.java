@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.registries.factory.FactoryRegistryLocator;
@@ -57,21 +58,40 @@ public final class InjectorImpl extends Injector {
           return parentScopedProvider;
         }
       }
-    }
-    //classes discovered at runtime, not bound by any module
-    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-    final Provider<T> newProvider;
-    synchronized (clazz) {
-      if (factory.hasSingletonAnnotation()) {
-        //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<T>(factory.createInstance(this));
-        getRootInjector().scope.put(clazz, newProvider);
-      } else {
-        newProvider = new ProviderImpl(this, factory, false);
-        scope.put(clazz, newProvider);
+
+      //classes discovered at runtime, not bound by any module or injected previously
+      try {
+        Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
+        return getProviderAndSetInScope(factory, clazz);
+      } catch (RuntimeException e) { // Error getting the factory, try to use reflection
+        return getProviderWithReflectionAndSetInScope(clazz);
       }
     }
+  }
+
+  private <T> Provider<T> getProviderAndSetInScope(Factory<T> factory, Class<T> clazz) {
+    final Provider<T> newProvider = factory.hasSingletonAnnotation() ? new ProviderImpl<>(factory.createInstance(this)) : new ProviderImpl<T>(this, factory, false);
+    setProviderInScope(clazz, newProvider, factory.hasSingletonAnnotation());
     return newProvider;
+  }
+
+  private <T> Provider<T> getProviderWithReflectionAndSetInScope(Class<T> clazz) {
+    // TODO any class called singleton or only javax.inject.Singleton?
+    try {
+      final Provider<T> newProvider = new ProviderImpl<>(clazz.newInstance());
+      setProviderInScope(clazz, newProvider, clazz.isAnnotationPresent(Singleton.class));
+      return newProvider;
+    } catch (InstantiationException | IllegalAccessException e) {
+      throw new RuntimeException("Impossible to get the factory class or falling back on reflection for class " + clazz.getName() + ". Add an inject annotated constructor.");
+    }
+  }
+
+  private <T> void setProviderInScope(Class<T> clazz, Provider<T> provider, boolean isSingleton) {
+    if (isSingleton) {
+      getRootInjector().scope.put(clazz, provider);
+    } else {
+      scope.put(clazz, provider);
+    }
   }
 
   //TODO explain the change to daniel, we were having some troubles

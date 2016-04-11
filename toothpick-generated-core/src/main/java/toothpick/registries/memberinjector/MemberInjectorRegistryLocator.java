@@ -19,15 +19,15 @@ public class MemberInjectorRegistryLocator {
   }
 
   private static ReflectionMemberInjectorRegistry fallbackMemberInjectorRegistry = new ReflectionMemberInjectorRegistry();
-  private static List<MemberInjectorRegistry> registries = new ArrayList<>();
+  private static MemberInjectorRegistry registry;
 
-  public static void addRegistry(MemberInjectorRegistry childRegistry) {
-    registries.add(childRegistry);
+  public static void setRootRegistry(MemberInjectorRegistry registry) {
+    MemberInjectorRegistryLocator.registry = registry;
   }
 
   public static <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
     MemberInjector<T> memberInjector;
-    for (MemberInjectorRegistry registry : registries) {
+    if (registry != null) {
       memberInjector = registry.getMemberInjector(clazz);
       if (memberInjector != null) {
         return memberInjector;
