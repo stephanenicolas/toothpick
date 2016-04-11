@@ -73,7 +73,6 @@ public abstract class Injector {
     childrenInjector.remove(child);
     //make the ex-child a new root.
     child.parentInjectors = new ArrayList<>();
-    child.parentInjectors.add(this);
   }
 
   protected Injector getRootInjector() {

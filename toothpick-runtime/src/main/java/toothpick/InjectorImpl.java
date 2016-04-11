@@ -50,16 +50,16 @@ public final class InjectorImpl extends Injector {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
     synchronized (clazz) {
-      Provider<T> selfScopedProvider = getScopedProvider(clazz);
-      if (selfScopedProvider != null) {
-        return selfScopedProvider;
+      Provider<T> scopedProvider = getScopedProvider(clazz);
+      if (scopedProvider != null) {
+        return scopedProvider;
       }
       Iterator<Injector> iterator = parentInjectors.iterator();
       while (iterator.hasNext()) {
         Injector parentInjector = iterator.next();
-        Provider<T> scopedProvider = parentInjector.getScopedProvider(clazz);
-        if (scopedProvider != null) {
-          return scopedProvider;
+        Provider<T> parentScopedProvider = parentInjector.getScopedProvider(clazz);
+        if (parentScopedProvider != null) {
+          return parentScopedProvider;
         }
       }
     }
