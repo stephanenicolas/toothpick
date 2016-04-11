@@ -29,9 +29,9 @@ public class PersistActivity extends Activity {
     super.onCreate(savedInstanceState);
     Injector appInjector = ToothPick.openInjector(getApplication());
     Injector metaInjector = ToothPick.openInjector(PRESENTER_SCOPE);
-    appInjector.addChildInjector(metaInjector);
+    appInjector.addChild(metaInjector);
     injector = ToothPick.openInjector(this);
-    metaInjector.addChildInjector(injector);
+    metaInjector.addChild(injector);
     injector.installModules(new DefaultActivityModule(this));
     injector.inject(this);
     metaInjector.installModules(new PresenterModule());

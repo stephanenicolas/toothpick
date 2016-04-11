@@ -43,7 +43,7 @@ public final class ToothPick {
 
     Injector parentInjector = injector.getParentInjector();
     if (parentInjector != null) {
-      parentInjector.removeChildInjector(injector);
+      parentInjector.removeChild(injector);
     }
   }
 

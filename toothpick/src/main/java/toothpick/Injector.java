@@ -34,7 +34,7 @@ public abstract class Injector {
     return parentInjector;
   }
 
-  public Collection<Injector> getChildrenInjector() {
+  public Collection<Injector> getChildren() {
     return childrenInjector;
   }
 
@@ -42,7 +42,7 @@ public abstract class Injector {
     return name;
   }
 
-  public void addChildInjector(Injector child) {
+  public void addChild(Injector child) {
     if (child == null) {
       throw new IllegalArgumentException("Child must be non null.");
     }
@@ -58,7 +58,7 @@ public abstract class Injector {
     child.parentInjectors.addAll(parentInjectors);
   }
 
-  public void removeChildInjector(Injector child) {
+  public void removeChild(Injector child) {
     if (child == null) {
       throw new IllegalArgumentException("Child must be non null.");
     }
@@ -72,6 +72,11 @@ public abstract class Injector {
     child.parentInjectors = new ArrayList<>();
   }
 
+  /**
+   * @return the root injector of this injector.
+   * The root injector is the injector itself if the injector has no parent.
+   * Otherwise, if it has parents, it is the highest parent in the hierarchy of parents.
+   */
   protected Injector getRootInjector() {
     if (parentInjectors.isEmpty()) {
       return this;

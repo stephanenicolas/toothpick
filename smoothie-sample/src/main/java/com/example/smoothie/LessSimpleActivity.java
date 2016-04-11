@@ -36,7 +36,7 @@ public class LessSimpleActivity extends Activity {
     Injector appInjector = ToothPick.openInjector(getApplication());
     injector = ToothPick.openInjector(this);
     injector.installModules(new DefaultActivityModule(this));
-    appInjector.addChildInjector(injector);
+    appInjector.addChild(injector);
     injector.inject(this);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);

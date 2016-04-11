@@ -45,7 +45,7 @@ public class ToothPickTest extends ToothPickBaseTest {
 
     //WHEN
     Injector injector = ToothPick.openInjector("bar");
-    injectorParent.addChildInjector(injector);
+    injectorParent.addChild(injector);
 
     //THEN
     assertThat(injector, notNullValue());
@@ -100,7 +100,7 @@ public class ToothPickTest extends ToothPickBaseTest {
 
     //WHEN
     Injector injector = ToothPick.openInjector("foo");
-    injectorParent.addChildInjector(injector);
+    injectorParent.addChild(injector);
     Injector injector2 = ToothPick.openInjector("foo");
 
     //THEN

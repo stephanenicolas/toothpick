@@ -30,7 +30,7 @@ public class ScopingTest extends ToothPickBaseTest {
     });
     final Foo foo2 = new Foo();
     Injector injector = new InjectorImpl("");
-    injectorParent.addChildInjector(injector);
+    injectorParent.addChild(injector);
     injector.installModules(new Module() {
       {
         bind(Foo.class).to(foo2);
@@ -56,7 +56,7 @@ public class ScopingTest extends ToothPickBaseTest {
       }
     });
     Injector injector = new InjectorImpl("");
-    injectorParent.addChildInjector(injector);
+    injectorParent.addChild(injector);
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);
@@ -72,7 +72,7 @@ public class ScopingTest extends ToothPickBaseTest {
     //GIVEN
     Injector injectorParent = new InjectorImpl("");
     Injector injector = new InjectorImpl("");
-    injectorParent.addChildInjector(injector);
+    injectorParent.addChild(injector);
 
     //WHEN
     FooSingleton instance = injector.getInstance(FooSingleton.class);
