@@ -17,9 +17,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class InjectionAndInheritanceTest extends ToothPickBaseTest {
 
-  @Test public void inject_shouldInjectInheritedFields_whenParentDefinesInjectAnnotatedFields() throws Exception {
+  @Test
+  public void inject_shouldInjectInheritedFields_whenParentDefinesInjectAnnotatedFields() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
     FooChildWithInjectedFields foo = new FooChildWithInjectedFields();
 
     //WHEN
@@ -32,9 +33,10 @@ public class InjectionAndInheritanceTest extends ToothPickBaseTest {
     assertThat(foo.bar, isA(Bar.class));
   }
 
-  @Test public void inject_shouldInjectInheritedFields_whenGrandParentDefinesInjectAnnotatedFieldsButNotParent() throws Exception {
+  @Test
+  public void inject_shouldInjectInheritedFields_whenGrandParentDefinesInjectAnnotatedFieldsButNotParent() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
     FooGrandChildWithInjectedFields foo = new FooGrandChildWithInjectedFields();
 
     //WHEN

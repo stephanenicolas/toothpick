@@ -21,9 +21,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
 
-  @Test public void createdInstance_shouldBeInjected_whenBindingToAClassWithInjectFields() throws Exception {
+  @Test
+  public void createdInstance_shouldBeInjected_whenBindingToAClassWithInjectFields() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).to(Foo.class);
       }
@@ -37,12 +38,14 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
     assertThat(foo.bar, isA(Bar.class));
   }
 
-  @Test public void createdInstance_shouldNotBeInjected_whenBindingToAProvider() throws Exception {
+  @Test
+  public void createdInstance_shouldNotBeInjected_whenBindingToAProvider() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).toProvider(new Provider<Foo>() {
-          @Override public Foo get() {
+          @Override
+          public Foo get() {
             return new Foo();
           }
         });
@@ -56,9 +59,10 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
     assertThat(foo.bar, nullValue());
   }
 
-  @Test public void createdInstance_shouldNotBeInjected_whenBindingToAProviderClass() throws Exception {
+  @Test
+  public void createdInstance_shouldNotBeInjected_whenBindingToAProviderClass() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).toProvider(FooProvider.class);
       }
@@ -71,9 +75,10 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
     assertThat(foo.bar, nullValue());
   }
 
-  @Test public void createdProvider_shouldBeInjected_whenBindingToAProviderClassThatHasInjectedFields() throws Exception {
+  @Test
+  public void createdProvider_shouldBeInjected_whenBindingToAProviderClassThatHasInjectedFields() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).toProvider(FooProvider.class);
       }

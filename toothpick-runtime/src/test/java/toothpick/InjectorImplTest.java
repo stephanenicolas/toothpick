@@ -12,7 +12,7 @@ import static org.junit.Assert.fail;
 
 public class InjectorImplTest extends ToothPickBaseTest {
 
-  @Test(expected = IllegalStateException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void toProvider_shoudThrowException_whenBindingIsNull() throws Exception {
     //GIVEN
     Module module = new Module();

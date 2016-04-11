@@ -17,9 +17,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class SimpleInstanceCreationWithoutModuleTest extends ToothPickBaseTest {
 
-  @Test public void testSimpleInjection() throws Exception {
+  @Test
+  public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);
@@ -28,9 +29,10 @@ public class SimpleInstanceCreationWithoutModuleTest extends ToothPickBaseTest {
     assertThat(instance, notNullValue());
   }
 
-  @Test public void testSimpleInjectionIsNotProducingSingleton() throws Exception {
+  @Test
+  public void testSimpleInjectionIsNotProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);

@@ -21,9 +21,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class InjectionOfProviderTest extends ToothPickBaseTest {
 
-  @Test public void testSimpleInjection_shouldReturnAProviderOfInstances_whenInjectedClassIsNotAnnotatedWithSingleton() throws Exception {
+  @Test
+  public void testSimpleInjection_shouldReturnAProviderOfInstances_whenInjectedClassIsNotAnnotatedWithSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
     FooWithProvider fooWithProvider = new FooWithProvider();
 
     //WHEN
@@ -39,9 +40,10 @@ public class InjectionOfProviderTest extends ToothPickBaseTest {
     assertThat(bar1, not(sameInstance(bar2)));
   }
 
-  @Test public void testSimpleInjection_shouldReturnAProviderOfSingleton_whenInjectedClassIsAnnotatedWithSingleton() throws Exception {
+  @Test
+  public void testSimpleInjection_shouldReturnAProviderOfSingleton_whenInjectedClassIsAnnotatedWithSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
     FooWithProviderOfSingleton fooWithProviderOfSingleton = new FooWithProviderOfSingleton();
 
     //WHEN

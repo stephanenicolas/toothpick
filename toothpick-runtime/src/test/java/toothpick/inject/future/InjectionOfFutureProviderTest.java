@@ -18,9 +18,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class InjectionOfFutureProviderTest extends ToothPickBaseTest {
 
-  @Test public void testSimpleInjection() throws Exception {
+  @Test
+  public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
     FooWithFuture fooWithFuture = new FooWithFuture();
 
     //WHEN

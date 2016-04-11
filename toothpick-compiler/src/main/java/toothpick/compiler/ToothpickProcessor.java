@@ -161,7 +161,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       valid = false;
     }
 
-    // Verify parent modifiers.
+    // Verify parentInjector modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (parentModifiers.contains(PRIVATE)) {
@@ -184,7 +184,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       valid = false;
     }
 
-    // Verify parent modifiers.
+    // Verify parentInjector modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (parentModifiers.contains(PRIVATE)) {
