@@ -16,9 +16,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class SingletonCreationWithoutModuleTest extends ToothPickBaseTest {
 
-  @Test public void testIsProducingSingleton() throws Exception {
+  @Test
+  public void testIsProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
 
     //WHEN
     FooSingleton instance = injector.getInstance(FooSingleton.class);

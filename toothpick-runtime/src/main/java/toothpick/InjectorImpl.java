@@ -1,9 +1,7 @@
 package toothpick;
 
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -18,32 +16,17 @@ import static java.lang.String.format;
 /**
  * This class should never be used outside of the toothpick library.
  */
-public final class InjectorImpl implements Injector {
+public final class InjectorImpl extends Injector {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
-  private IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
-  private Injector parent;
-  //parentInjectors, sorted from this the root injector
-  private final List<InjectorImpl> parentInjectors;
   private boolean hasOverrides;
 
-  public InjectorImpl(Injector parent, Module... modules) {
-    this.parent = parent;
-    if (parent == null) {
-      parentInjectors = new ArrayList<>();
-    } else {
-      parentInjectors = new ArrayList<>(((InjectorImpl) parent).parentInjectors);
-    }
-    parentInjectors.add(0, this);
+  public InjectorImpl(Object name, Module... modules) {
+    this(null, name, modules);
+  }
+
+  public InjectorImpl(Injector parentInjector, Object name, Module... modules) {
+    super(parentInjector, name);
     installModules(modules);
-  }
-
-  public InjectorImpl(Module... modules) {
-    this(null, modules);
-  }
-
-  @Override
-  public Injector getParent() {
-    return parent;
   }
 
   @Override
@@ -61,19 +44,19 @@ public final class InjectorImpl implements Injector {
     return getProvider(clazz).get();
   }
 
-  private InjectorImpl getRootInjector() {
-    return parentInjectors.get(parentInjectors.size() - 1);
-  }
-
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
     synchronized (clazz) {
-      Iterator<InjectorImpl> iterator = parentInjectors.iterator();
+      Provider<T> selfScopedProvider = getScopedProvider(clazz);
+      if (selfScopedProvider != null) {
+        return selfScopedProvider;
+      }
+      Iterator<Injector> iterator = parentInjectors.iterator();
       while (iterator.hasNext()) {
-        InjectorImpl parentInjector = iterator.next();
+        Injector parentInjector = iterator.next();
         Provider<T> scopedProvider = parentInjector.getScopedProvider(clazz);
         if (scopedProvider != null) {
           return scopedProvider;
@@ -87,7 +70,7 @@ public final class InjectorImpl implements Injector {
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
         newProvider = new ProviderImpl<T>(factory.createInstance(this));
-        getRootInjector().getScope().put(clazz, newProvider);
+        getRootInjector().scope.put(clazz, newProvider);
       } else {
         newProvider = new ProviderImpl(this, factory, false);
         scope.put(clazz, newProvider);
@@ -145,18 +128,6 @@ public final class InjectorImpl implements Injector {
         }
       }
     }
-  }
-
-  /**
-   * Obtains the provider of the class {@code clazz} that is scoped in the current scope, if any.
-   * Ancestors are not taken into account.
-   *
-   * @param clazz the class for which to obtain the scoped provider of this injector, if one is scoped.
-   * @param <T> the type of {@code clazz}.
-   * @return the scoped provider of this injector, if one is scoped, {@code Null} otherwise.
-   */
-  private <T> Provider<T> getScopedProvider(Class<T> clazz) {
-    return scope.get(clazz);
   }
 
   @Override

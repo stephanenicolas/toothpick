@@ -18,9 +18,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
 
-  @Test public void testSimpleInjection() throws Exception {
+  @Test
+  public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl();
+    Injector injector = new InjectorImpl("");
     FooWithLazy fooWithLazy = new FooWithLazy();
 
     //WHEN

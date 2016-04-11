@@ -34,7 +34,7 @@ public final class ToothPick {
       if (injector != null) {
         throw new IllegalStateException(format("An injector for key %s already exists: %s", key, injector));
       }
-      injector = new InjectorImpl(parent, modules);
+      injector = new InjectorImpl(parent, key, modules);
       MAP_KEY_TO_INJECTOR.put(key, injector);
     }
     return injector;
@@ -62,8 +62,16 @@ public final class ToothPick {
     if (injector == null) {
       return;
     }
+
     MAP_KEY_TO_INJECTOR.remove(key);
-    //TODO remove child injectors !
+    for (Injector childInjector : injector.childrenInjector) {
+      MAP_KEY_TO_INJECTOR.remove(childInjector.getName());
+    }
+
+    Injector parentInjector = injector.getParentInjector();
+    if (parentInjector != null) {
+      parentInjector.removeChildInjector(injector);
+    }
   }
 
   public static void reset() {

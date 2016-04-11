@@ -42,9 +42,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class AllBindingsTest extends ToothPickBaseTest {
 
-  @Test public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {
+  @Test
+  public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(Foo.class);
       }
@@ -61,9 +62,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(foo.bar, isA(Bar.class));
   }
 
-  @Test public void simpleBinding_shouldCreateInjectedSingletons_whenSingleton() throws Exception {
+  @Test
+  public void simpleBinding_shouldCreateInjectedSingletons_whenSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(FooSingleton.class);
       }
@@ -80,10 +82,11 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(foo.bar, isA(Bar.class));
   }
 
-  @Test public void singletonBinding_shouldCreateNonInjectedSingleton() throws Exception {
+  @Test
+  public void singletonBinding_shouldCreateNonInjectedSingleton() throws Exception {
     //GIVEN
     final Foo instance = new Foo();
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).to(instance);
       }
@@ -100,9 +103,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(foo.bar, nullValue());
   }
 
-  @Test public void bindToClass_shouldCreateInjectedInstances_whenBoundClassNotAnnotatedSingleton() throws Exception {
+  @Test
+  public void bindToClass_shouldCreateInjectedInstances_whenBoundClassNotAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFoo.class).to(Foo.class);
       }
@@ -123,9 +127,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(((Foo) foo2).bar, isA(Bar.class));
   }
 
-  @Test public void bindToClass_shouldCreateInjectedSingletons_whenBoundClassAnnotatedSingleton() throws Exception {
+  @Test
+  public void bindToClass_shouldCreateInjectedSingletons_whenBoundClassAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFooSingleton.class).to(FooSingleton.class);
       }
@@ -145,11 +150,12 @@ public class AllBindingsTest extends ToothPickBaseTest {
   //this test is a bit akward as we want to demonstrate that singleton providers
   //must take in charge injection by themselves. Toothpick only injects stuff in things
   //it creates.
-  @Test public void bindToProviderInstance_shouldCreateNonInjectedInstances() throws Exception {
+  @Test
+  public void bindToProviderInstance_shouldCreateNonInjectedInstances() throws Exception {
     //GIVEN
     final Provider<IFoo> providerInstance = new IFooProvider();
 
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFoo.class).toProvider(providerInstance);
       }
@@ -167,9 +173,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(((IFooProvider) providerInstance).bar, nullValue());
   }
 
-  @Test public void bindToProviderClass_shouldCreateNonInjectedInstances_whenProviderClassIsNotAnnotated() throws Exception {
+  @Test
+  public void bindToProviderClass_shouldCreateNonInjectedInstances_whenProviderClassIsNotAnnotated() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFoo.class).toProvider(IFooProvider.class);
       }
@@ -188,9 +195,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
 
   //we use a provider that would need to be injected and pass the injected dependence
   //to the produced object, so it's easy to test.
-  @Test public void bindToProviderClass_shouldCreateInjectedProvider() throws Exception {
+  @Test
+  public void bindToProviderClass_shouldCreateInjectedProvider() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFoo.class).toProvider(IFooWithBarProvider.class);
       }
@@ -207,10 +215,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(((Foo) foo2).bar, notNullValue());
   }
 
-  @Test public void bindToProviderClass_shouldCreateNonInjectedInstancesWithProviderSingleton_whenProviderClassIsAnnotatedSingleton()
-      throws Exception {
+  @Test
+  public void bindToProviderClass_shouldCreateNonInjectedInstancesWithProviderSingleton_whenProviderClassIsAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedSingleton.class);
       }
@@ -227,9 +235,10 @@ public class AllBindingsTest extends ToothPickBaseTest {
     assertThat(((Foo) foo2).bar, nullValue());
   }
 
-  @Test public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
+  @Test
+  public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new Module() {
+    Injector injector = new InjectorImpl("", new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedProvidesSingleton.class);
       }

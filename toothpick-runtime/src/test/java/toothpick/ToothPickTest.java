@@ -14,7 +14,8 @@ import static org.junit.Assert.fail;
 
 public class ToothPickTest extends ToothPickBaseTest {
 
-  @Test public void getInjector_shouldReturnNull_whenNoInjectorByThisKeyWasCreated() throws Exception {
+  @Test
+  public void getInjector_shouldReturnNull_whenNoInjectorByThisKeyWasCreated() throws Exception {
     //GIVEN
 
     //WHEN
@@ -24,7 +25,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(injector, nullValue());
   }
 
-  @Test public void getInjector_shouldReturnAnInjector_whenThisInjectorByThisKeyWasCreated() throws Exception {
+  @Test
+  public void getInjector_shouldReturnAnInjector_whenThisInjectorByThisKeyWasCreated() throws Exception {
     //GIVEN
     Injector injector = ToothPick.createInjector(this);
 
@@ -36,7 +38,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(injector, sameInstance(injector2));
   }
 
-  @Test public void createInjector_shouldReturnAnInjectorWithAParent_whenThisInjectorByThisKeyWasCreatedWithAParent() throws Exception {
+  @Test
+  public void createInjector_shouldReturnAnInjectorWithAParent_whenThisInjectorByThisKeyWasCreatedWithAParent() throws Exception {
     //GIVEN
     Injector injectorParent = ToothPick.createInjector("foo");
 
@@ -45,11 +48,11 @@ public class ToothPickTest extends ToothPickBaseTest {
 
     //THEN
     assertThat(injector, notNullValue());
-    assertThat(injector.getParent(), sameInstance(injectorParent));
+    assertThat(injector.getParentInjector(), sameInstance(injectorParent));
   }
 
-  @Test(expected = IllegalStateException.class) public void createInjector_shouldFail_whenAnInjectorHasAlreadyBeenCreatedByThisName()
-      throws Exception {
+  @Test(expected = IllegalStateException.class)
+  public void createInjector_shouldFail_whenAnInjectorHasAlreadyBeenCreatedByThisName() throws Exception {
     //GIVEN
     Injector injector = ToothPick.createInjector("foo");
 
@@ -60,7 +63,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     fail("should not allow to create 2 injectors by the same key.");
   }
 
-  @Test public void reset_shouldClear_WhenSomeInjectorsWereCreated() throws Exception {
+  @Test
+  public void reset_shouldClear_WhenSomeInjectorsWereCreated() throws Exception {
     //GIVEN
     ToothPick.createInjector("foo");
     ToothPick.createInjector("bar");
@@ -75,7 +79,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(injector1AfterReset, nullValue());
   }
 
-  @Test public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasCreated() throws Exception {
+  @Test
+  public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasCreated() throws Exception {
     //GIVEN
     ToothPick.createInjector("foo");
 
@@ -87,7 +92,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(injectorAfterReset, nullValue());
   }
 
-  @Test public void getOrCreateInjector_shouldReturnAnInjector_WhenOneWasCreatedWithSameKey() throws Exception {
+  @Test
+  public void getOrCreateInjector_shouldReturnAnInjector_WhenOneWasCreatedWithSameKey() throws Exception {
     //GIVEN
     Injector injector = ToothPick.createInjector("foo");
 
@@ -98,7 +104,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(injector, sameInstance(injector2));
   }
 
-  @Test public void getOrCreateInjector_shouldReturnANewInjectorInjector_WhenOneWasNotCreatedWithSameKey() throws Exception {
+  @Test
+  public void getOrCreateInjector_shouldReturnANewInjectorInjector_WhenOneWasNotCreatedWithSameKey() throws Exception {
     //GIVEN
     Injector injectorParent = ToothPick.createInjector("bar");
 
@@ -109,10 +116,11 @@ public class ToothPickTest extends ToothPickBaseTest {
     //THEN
     assertThat(injector, notNullValue());
     assertThat(injector2, sameInstance(injector));
-    assertThat(injector.getParent(), sameInstance(injectorParent));
+    assertThat(injector.getParentInjector(), sameInstance(injectorParent));
   }
 
-  @Test public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasNotCreated() throws Exception {
+  @Test
+  public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasNotCreated() throws Exception {
     //GIVEN
 
     //WHEN
@@ -123,7 +131,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(injectorAfterReset, nullValue());
   }
 
-  @Test public void constructor_shouldBePrivate() throws Exception {
+  @Test
+  public void constructor_shouldBePrivate() throws Exception {
     //GIVEN
 
     //WHEN
@@ -134,7 +143,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(constructor.isAccessible(), is(false));
   }
 
-  @Test(expected = InvocationTargetException.class) public void constructor_shouldThrowException_whenCalled() throws Exception {
+  @Test(expected = InvocationTargetException.class)
+  public void constructor_shouldThrowException_whenCalled() throws Exception {
     //GIVEN
 
     //WHEN
@@ -146,7 +156,8 @@ public class ToothPickTest extends ToothPickBaseTest {
     fail("default constructor should not be invokable even via reflection");
   }
 
-  @After public void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     ToothPick.reset();
   }
 }

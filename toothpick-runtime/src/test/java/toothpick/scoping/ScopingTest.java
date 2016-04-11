@@ -18,16 +18,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class ScopingTest extends ToothPickBaseTest {
 
-  @Test public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
+  @Test
+  public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Injector injectorParent = new InjectorImpl(new Module() {
+    Injector injectorParent = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).to(foo1);
       }
     });
     final Foo foo2 = new Foo();
-    Injector injector = new InjectorImpl(injectorParent, new Module() {
+    Injector injector = new InjectorImpl(injectorParent, "", new Module() {
       {
         bind(Foo.class).to(foo2);
       }
@@ -41,15 +42,16 @@ public class ScopingTest extends ToothPickBaseTest {
     assertThat(foo2, not(sameInstance(foo1)));
   }
 
-  @Test public void childInjector_shouldReturnInstancesInParentScope_whenParentHasKeyInHisScope() throws Exception {
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScope_whenParentHasKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Injector injectorParent = new InjectorImpl(new Module() {
+    Injector injectorParent = new InjectorImpl("", new Module() {
       {
         bind(Foo.class).to(foo1);
       }
     });
-    Injector injector = new InjectorImpl(injectorParent);
+    Injector injector = new InjectorImpl(injectorParent, "");
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);
@@ -60,10 +62,11 @@ public class ScopingTest extends ToothPickBaseTest {
     assertThat(foo1, sameInstance(instance2));
   }
 
-  @Test public void singletonDiscoveredDynamically_shouldGoInRootScope() throws Exception {
+  @Test
+  public void singletonDiscoveredDynamically_shouldGoInRootScope() throws Exception {
     //GIVEN
-    Injector injectorParent = new InjectorImpl();
-    Injector injector = new InjectorImpl(injectorParent);
+    Injector injectorParent = new InjectorImpl("");
+    Injector injector = new InjectorImpl(injectorParent, "");
 
     //WHEN
     FooSingleton instance = injector.getInstance(FooSingleton.class);
