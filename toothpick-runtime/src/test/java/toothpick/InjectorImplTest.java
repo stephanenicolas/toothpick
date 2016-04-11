@@ -33,7 +33,7 @@ public class InjectorImplTest extends ToothPickBaseTest {
     //GIVEN
     Foo testFoo = new Foo();
     InjectorImpl injector = new InjectorImpl(new ProdModule());
-    injector.installOverrideModules(new TestModule(testFoo));
+    injector.installTestModules(new TestModule(testFoo));
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);
@@ -46,7 +46,7 @@ public class InjectorImplTest extends ToothPickBaseTest {
   public void installOverrideModules_shoudNotInstallOverrideBindings_whenCalledWithoutTestModules() {
     //GIVEN
     InjectorImpl injector = new InjectorImpl(new ProdModule());
-    injector.installOverrideModules();
+    injector.installTestModules();
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);
@@ -61,8 +61,8 @@ public class InjectorImplTest extends ToothPickBaseTest {
     Foo testFoo = new Foo();
     Foo testFoo2 = new Foo();
     InjectorImpl injector = new InjectorImpl(new ProdModule());
-    injector.installOverrideModules(new TestModule(testFoo));
-    injector.installOverrideModules(new TestModule(testFoo2));
+    injector.installTestModules(new TestModule(testFoo));
+    injector.installTestModules(new TestModule(testFoo2));
 
     //WHEN
     Foo instance = injector.getInstance(Foo.class);
@@ -76,7 +76,7 @@ public class InjectorImplTest extends ToothPickBaseTest {
     //GIVEN
     Foo testFoo = new Foo();
     InjectorImpl injector = new InjectorImpl(new ProdModule2());
-    injector.installOverrideModules(new TestModule(testFoo));
+    injector.installTestModules(new TestModule(testFoo));
 
     //WHEN
     Foo fooInstance = injector.getInstance(Foo.class);

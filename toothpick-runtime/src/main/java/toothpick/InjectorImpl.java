@@ -18,7 +18,7 @@ import static java.lang.String.format;
  */
 public final class InjectorImpl extends Injector {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
-  private boolean hasOverrides;
+  private boolean hasTestModules;
 
   public InjectorImpl(Object name, Module... modules) {
     this(null, name, modules);
@@ -107,13 +107,20 @@ public final class InjectorImpl extends Injector {
   }
 
   @Override
-  public void installOverrideModules(Module... modules) {
+  public void installTestModules(Module... modules) {
     //we allow multiple calls to this method
-    boolean oldHasOverrides = hasOverrides;
-    hasOverrides = false;
+    boolean oldHasTestModules = hasTestModules;
+    hasTestModules = false;
     installModules(modules);
     boolean doOverrideModulesExist = modules != null;
-    hasOverrides = oldHasOverrides || doOverrideModulesExist;
+    hasTestModules = oldHasTestModules || doOverrideModulesExist;
+  }
+
+  @Override
+  public void installModules(Module... modules) {
+    for (Module module : modules) {
+      installModule(module);
+    }
   }
 
   private void installModule(Module module) {
@@ -123,17 +130,10 @@ public final class InjectorImpl extends Injector {
       }
       Class key = binding.getKey();
       synchronized (key) {
-        if (!hasOverrides || !scope.containsKey(key)) {
+        if (!hasTestModules || !scope.containsKey(key)) {
           scope.put(key, toProvider(binding));
         }
       }
-    }
-  }
-
-  @Override
-  public void installModules(Module... modules) {
-    for (Module module : modules) {
-      installModule(module);
     }
   }
 

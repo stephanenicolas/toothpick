@@ -164,14 +164,20 @@ public abstract class Injector {
   public abstract <T> Future<T> getFuture(Class<T> clazz);
 
   /**
-   * Allows to define override module. These method should only be used for testing.
+   * Allows to define test modules. These method should only be used for testing.
    * DO NOT USE IT IN PRODUCTION.
-   * Override modules will have preseance over other modules, allowing to define stubs/fake/mocks.
-   *
-   * @param modules an array of modules that define override bindings.
+   * Test modules have precedence over other normal modules, allowing to define stubs/fake/mocks.
+   * All bindings defined in a test module cannot be overridden by a future call to {@link #installModules(Module...)}.
+   * But they can still be overridden by a future call to  {@link #installTestModules(Module...)}.
+   * @param modules an array of modules that define test bindings.
    */
-  public abstract void installOverrideModules(Module... modules);
+  public abstract void installTestModules(Module... modules);
 
+  /**
+   * Allows to define modules.
+   * @param modules an array of modules that define bindings.
+   * @See #installTestModules
+   */
   public abstract void installModules(Module... modules);
 
   @Override

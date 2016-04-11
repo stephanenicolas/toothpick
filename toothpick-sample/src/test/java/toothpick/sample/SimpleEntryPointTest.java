@@ -37,7 +37,7 @@ public class SimpleEntryPointTest {
     replay(mockComputer, mockComputer2);
 
     final Injector injector = ToothPick.getOrCreateInjector(null, "SimpleEntryPoint");
-    injector.installOverrideModules(new TestModule());
+    injector.installTestModules(new TestModule());
 
     //WHEN
     int result = simpleEntryPointUnderTest.multiply();
