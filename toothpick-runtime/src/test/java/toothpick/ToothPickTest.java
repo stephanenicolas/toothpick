@@ -6,8 +6,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
@@ -15,23 +15,23 @@ import static org.junit.Assert.fail;
 public class ToothPickTest extends ToothPickBaseTest {
 
   @Test
-  public void getInjector_shouldReturnNull_whenNoInjectorByThisKeyWasCreated() throws Exception {
+  public void getInjector_shouldNotReturnNull_whenNoInjectorByThisKeyWasCreated() throws Exception {
     //GIVEN
 
     //WHEN
-    Injector injector = ToothPick.getInjector(this);
+    Injector injector = ToothPick.openInjector(this);
 
     //THEN
-    assertThat(injector, nullValue());
+    assertThat(injector, notNullValue());
   }
 
   @Test
   public void getInjector_shouldReturnAnInjector_whenThisInjectorByThisKeyWasCreated() throws Exception {
     //GIVEN
-    Injector injector = ToothPick.createInjector(this);
+    Injector injector = ToothPick.openInjector(this);
 
     //WHEN
-    Injector injector2 = ToothPick.getInjector(this);
+    Injector injector2 = ToothPick.openInjector(this);
 
     //THEN
     assertThat(injector, notNullValue());
@@ -41,64 +41,53 @@ public class ToothPickTest extends ToothPickBaseTest {
   @Test
   public void createInjector_shouldReturnAnInjectorWithAParent_whenThisInjectorByThisKeyWasCreatedWithAParent() throws Exception {
     //GIVEN
-    Injector injectorParent = ToothPick.createInjector("foo");
+    Injector injectorParent = ToothPick.openInjector("foo");
 
     //WHEN
-    Injector injector = ToothPick.createInjector(injectorParent, "bar");
+    Injector injector = ToothPick.openInjector("bar");
+    injectorParent.addChildInjector(injector);
 
     //THEN
     assertThat(injector, notNullValue());
     assertThat(injector.getParentInjector(), sameInstance(injectorParent));
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void createInjector_shouldFail_whenAnInjectorHasAlreadyBeenCreatedByThisName() throws Exception {
-    //GIVEN
-    Injector injector = ToothPick.createInjector("foo");
-
-    //WHEN
-    Injector injector2 = ToothPick.createInjector("foo");
-
-    //THEN
-    fail("should not allow to create 2 injectors by the same key.");
-  }
-
   @Test
   public void reset_shouldClear_WhenSomeInjectorsWereCreated() throws Exception {
     //GIVEN
-    ToothPick.createInjector("foo");
-    ToothPick.createInjector("bar");
+    Injector injector0 = ToothPick.openInjector("foo");
+    Injector injector1 = ToothPick.openInjector("bar");
 
     //WHEN
     ToothPick.reset();
-    Injector injector0AfterReset = ToothPick.getInjector("foo");
-    Injector injector1AfterReset = ToothPick.getInjector("bar");
+    Injector injector0AfterReset = ToothPick.openInjector("foo");
+    Injector injector1AfterReset = ToothPick.openInjector("bar");
 
     //THEN
-    assertThat(injector0AfterReset, nullValue());
-    assertThat(injector1AfterReset, nullValue());
+    assertThat(injector0AfterReset, not(sameInstance(injector0)));
+    assertThat(injector1AfterReset, not(sameInstance(injector1)));
   }
 
   @Test
   public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasCreated() throws Exception {
     //GIVEN
-    ToothPick.createInjector("foo");
+    Injector injector = ToothPick.openInjector("foo");
 
     //WHEN
-    ToothPick.destroyInjector("foo");
-    Injector injectorAfterReset = ToothPick.getInjector("foo");
+    ToothPick.closeInjector("foo");
+    Injector injectorAfterReset = ToothPick.openInjector("foo");
 
     //THEN
-    assertThat(injectorAfterReset, nullValue());
+    assertThat(injectorAfterReset, not(sameInstance(injector)));
   }
 
   @Test
-  public void getOrCreateInjector_shouldReturnAnInjector_WhenOneWasCreatedWithSameKey() throws Exception {
+  public void getOrCreateInjector_shouldReturnSameInjector_WhenOneWasCreatedWithSameKey() throws Exception {
     //GIVEN
-    Injector injector = ToothPick.createInjector("foo");
+    Injector injector = ToothPick.openInjector("foo");
 
     //WHEN
-    Injector injector2 = ToothPick.getOrCreateInjector(null, "foo");
+    Injector injector2 = ToothPick.openInjector("foo");
 
     //THEN
     assertThat(injector, sameInstance(injector2));
@@ -107,11 +96,12 @@ public class ToothPickTest extends ToothPickBaseTest {
   @Test
   public void getOrCreateInjector_shouldReturnANewInjectorInjector_WhenOneWasNotCreatedWithSameKey() throws Exception {
     //GIVEN
-    Injector injectorParent = ToothPick.createInjector("bar");
+    Injector injectorParent = ToothPick.openInjector("bar");
 
     //WHEN
-    Injector injector = ToothPick.getOrCreateInjector(injectorParent, "foo");
-    Injector injector2 = ToothPick.getOrCreateInjector(injectorParent, "foo");
+    Injector injector = ToothPick.openInjector("foo");
+    injectorParent.addChildInjector(injector);
+    Injector injector2 = ToothPick.openInjector("foo");
 
     //THEN
     assertThat(injector, notNullValue());
@@ -120,15 +110,13 @@ public class ToothPickTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasNotCreated() throws Exception {
+  public void destroyInjector_shouldNotFail_WhenThisInjectorsWasNotCreated() throws Exception {
     //GIVEN
 
     //WHEN
-    ToothPick.destroyInjector("foo");
-    Injector injectorAfterReset = ToothPick.getInjector("foo");
+    ToothPick.closeInjector("foo");
 
     //THEN
-    assertThat(injectorAfterReset, nullValue());
   }
 
   @Test

@@ -33,8 +33,10 @@ public class LessSimpleActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Injector appInjector = ToothPick.getInjector(getApplication());
-    injector = ToothPick.getOrCreateInjector(appInjector, this, new DefaultActivityModule(this));
+    Injector appInjector = ToothPick.openInjector(getApplication());
+    injector = ToothPick.openInjector(this);
+    injector.installModules(new DefaultActivityModule(this));
+    appInjector.addChildInjector(injector);
     injector.inject(this);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
@@ -44,7 +46,7 @@ public class LessSimpleActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.destroyInjector(this);
+    ToothPick.closeInjector(this);
     super.onDestroy();
   }
 }

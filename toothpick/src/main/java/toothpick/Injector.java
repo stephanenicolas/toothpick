@@ -23,11 +23,8 @@ public abstract class Injector {
   protected IdentityHashMap<Class, Provider> scope = new IdentityHashMap<>();
   protected Object name;
 
-  public Injector(Injector parentInjector, Object name) {
+  public Injector(Object name) {
     this.name = name;
-    if (parentInjector != null) {
-      parentInjector.addChildInjector(this);
-    }
   }
 
   /**
@@ -169,12 +166,14 @@ public abstract class Injector {
    * Test modules have precedence over other normal modules, allowing to define stubs/fake/mocks.
    * All bindings defined in a test module cannot be overridden by a future call to {@link #installModules(Module...)}.
    * But they can still be overridden by a future call to  {@link #installTestModules(Module...)}.
+   *
    * @param modules an array of modules that define test bindings.
    */
   public abstract void installTestModules(Module... modules);
 
   /**
    * Allows to define modules.
+   *
    * @param modules an array of modules that define bindings.
    * @See #installTestModules
    */

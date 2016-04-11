@@ -25,18 +25,20 @@ public class SimpleEntryPointTest {
   @Mock private Computer mockComputer;
   @Mock private Computer2 mockComputer2;
 
-  @BeforeClass public static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
     FactoryRegistryLocator.addRegistry(new toothpick.sample.FactoryRegistry());
   }
 
-  @Test public void testMultiply() throws Exception {
+  @Test
+  public void testMultiply() throws Exception {
     //GIVEN
     expect(mockComputer.compute()).andReturn(4);
     expect(mockComputer2.compute()).andReturn(4);
     replay(mockComputer, mockComputer2);
 
-    final Injector injector = ToothPick.getOrCreateInjector(null, "SimpleEntryPoint");
+    final Injector injector = ToothPick.openInjector("SimpleEntryPoint");
     injector.installTestModules(new TestModule());
 
     //WHEN

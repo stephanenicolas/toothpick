@@ -27,9 +27,12 @@ public class PersistActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Injector appInjector = ToothPick.getInjector(getApplication());
-    Injector metaInjector = ToothPick.getOrCreateInjector(appInjector, PRESENTER_SCOPE);
-    injector = ToothPick.getOrCreateInjector(metaInjector, this, new DefaultActivityModule(this));
+    Injector appInjector = ToothPick.openInjector(getApplication());
+    Injector metaInjector = ToothPick.openInjector(PRESENTER_SCOPE);
+    appInjector.addChildInjector(metaInjector);
+    injector = ToothPick.openInjector(this);
+    metaInjector.addChildInjector(injector);
+    injector.installModules(new DefaultActivityModule(this));
     injector.inject(this);
     metaInjector.installModules(new PresenterModule());
     setContentView(R.layout.simple_activity);
@@ -41,13 +44,13 @@ public class PersistActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.destroyInjector(this);
+    ToothPick.closeInjector(this);
     super.onDestroy();
   }
 
   @Override
   public void onBackPressed() {
-    ToothPick.destroyInjector(PRESENTER_SCOPE);
+    ToothPick.closeInjector(PRESENTER_SCOPE);
     super.onBackPressed();
   }
 

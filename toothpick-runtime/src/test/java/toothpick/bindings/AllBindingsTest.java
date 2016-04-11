@@ -45,7 +45,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(Foo.class);
       }
@@ -65,7 +66,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void simpleBinding_shouldCreateInjectedSingletons_whenSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(FooSingleton.class);
       }
@@ -86,7 +88,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   public void singletonBinding_shouldCreateNonInjectedSingleton() throws Exception {
     //GIVEN
     final Foo instance = new Foo();
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(Foo.class).to(instance);
       }
@@ -106,7 +109,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToClass_shouldCreateInjectedInstances_whenBoundClassNotAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFoo.class).to(Foo.class);
       }
@@ -130,7 +134,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToClass_shouldCreateInjectedSingletons_whenBoundClassAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFooSingleton.class).to(FooSingleton.class);
       }
@@ -155,7 +160,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
     //GIVEN
     final Provider<IFoo> providerInstance = new IFooProvider();
 
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(providerInstance);
       }
@@ -176,7 +182,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateNonInjectedInstances_whenProviderClassIsNotAnnotated() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProvider.class);
       }
@@ -198,7 +205,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateInjectedProvider() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooWithBarProvider.class);
       }
@@ -218,7 +226,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateNonInjectedInstancesWithProviderSingleton_whenProviderClassIsAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedSingleton.class);
       }
@@ -238,7 +247,8 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedProvidesSingleton.class);
       }

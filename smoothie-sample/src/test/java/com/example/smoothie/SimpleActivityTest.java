@@ -1,6 +1,5 @@
 package com.example.smoothie;
 
-import android.app.Application;
 import com.example.smoothie.deps.ContextNamer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,10 +7,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
+import toothpick.Injector;
 import toothpick.ToothPick;
 import toothpick.config.Module;
-import toothpick.smoothie.module.DefaultActivityModule;
-import toothpick.smoothie.module.DefaultApplicationModule;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.easymock.EasyMock.createMock;
@@ -31,10 +29,8 @@ public class SimpleActivityTest {
     expect(mockContextNamer.getActivityName()).andReturn("bar");
     ActivityController<SimpleActivity> controllerSimpleActivity = Robolectric.buildActivity(SimpleActivity.class);
     SimpleActivity activity = controllerSimpleActivity.get();
-    ToothPick.createInjector(activity,
-        new DefaultApplicationModule(Robolectric.application),
-        new DefaultActivityModule(activity),
-        new TestModule(mockContextNamer));
+    Injector injector = ToothPick.openInjector(activity);
+    injector.installTestModules(new TestModule(mockContextNamer));
     replay(mockContextNamer);
 
     //WHEN

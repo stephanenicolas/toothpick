@@ -15,14 +15,16 @@ import static org.junit.Assert.assertThat;
 public class ComputerTest {
 
   @Rule public EasyMockRule mocks = new EasyMockRule(this);
-  @TestSubject private Computer computerUnderTest = ToothPick.getOrCreateInjector(null, "Computer").getInstance(Computer.class);
+  @TestSubject private Computer computerUnderTest = ToothPick.openInjector("Computer").getInstance(Computer.class);
 
-  @BeforeClass public static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
     FactoryRegistryLocator.addRegistry(new toothpick.sample.FactoryRegistry());
   }
 
-  @Test public void testMultiply() throws Exception {
+  @Test
+  public void testMultiply() throws Exception {
     //GIVEN
 
     //WHEN

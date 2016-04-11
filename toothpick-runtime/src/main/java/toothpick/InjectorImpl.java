@@ -20,13 +20,8 @@ public final class InjectorImpl extends Injector {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private boolean hasTestModules;
 
-  public InjectorImpl(Object name, Module... modules) {
-    this(null, name, modules);
-  }
-
-  public InjectorImpl(Injector parentInjector, Object name, Module... modules) {
-    super(parentInjector, name);
-    installModules(modules);
+  public InjectorImpl(Object name) {
+    super(name);
   }
 
   @Override

@@ -24,7 +24,8 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
   @Test
   public void createdInstance_shouldBeInjected_whenBindingToAClassWithInjectFields() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(Foo.class).to(Foo.class);
       }
@@ -41,7 +42,8 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
   @Test
   public void createdInstance_shouldNotBeInjected_whenBindingToAProvider() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(Foo.class).toProvider(new Provider<Foo>() {
           @Override
@@ -62,7 +64,8 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
   @Test
   public void createdInstance_shouldNotBeInjected_whenBindingToAProviderClass() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(Foo.class).toProvider(FooProvider.class);
       }
@@ -78,7 +81,8 @@ public class CreatedInstancesAreInjectedWhenNeeded extends ToothPickBaseTest {
   @Test
   public void createdProvider_shouldBeInjected_whenBindingToAProviderClassThatHasInjectedFields() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("", new Module() {
+    Injector injector = new InjectorImpl("");
+    injector.installModules(new Module() {
       {
         bind(Foo.class).toProvider(FooProvider.class);
       }
