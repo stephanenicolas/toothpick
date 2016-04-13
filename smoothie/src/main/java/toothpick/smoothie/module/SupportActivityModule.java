@@ -8,8 +8,8 @@ import toothpick.config.Module;
 import toothpick.smoothie.provider.SupportFragmentManagerProvider;
 import toothpick.smoothie.provider.SupportLoaderManagerProvider;
 
-public class DefaultSupportActivityModule extends Module {
-  public DefaultSupportActivityModule(FragmentActivity activity) {
+public class SupportActivityModule extends Module {
+  public SupportActivityModule(FragmentActivity activity) {
     bind(Activity.class).to(activity);
     bind(FragmentManager.class).toProvider(SupportFragmentManagerProvider.class);
     bind(LoaderManager.class).toProvider(SupportLoaderManagerProvider.class);

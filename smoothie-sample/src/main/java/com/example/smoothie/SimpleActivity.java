@@ -12,7 +12,7 @@ import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
 import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.smoothie.module.DefaultActivityModule;
+import toothpick.smoothie.module.ActivityModule;
 
 public class SimpleActivity extends Activity {
 
@@ -27,7 +27,7 @@ public class SimpleActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     scope = ToothPick.openScopes(getApplication(), this);
-    scope.installModules(new DefaultActivityModule(this));
+    scope.installModules(new ActivityModule(this));
     ToothPick.inject(this, scope);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);

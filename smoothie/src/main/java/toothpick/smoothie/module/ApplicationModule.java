@@ -47,8 +47,8 @@ import static android.content.Context.TELEPHONY_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 
-public class DefaultApplicationModule extends Module {
-  public DefaultApplicationModule(Application application) {
+public class ApplicationModule extends Module {
+  public ApplicationModule(Application application) {
     bind(Application.class).to(application);
     bind(AccountManager.class).toProvider(AccountManagerProvider.class);
     bind(AssetManager.class).toProvider(AssetManagerProvider.class);
