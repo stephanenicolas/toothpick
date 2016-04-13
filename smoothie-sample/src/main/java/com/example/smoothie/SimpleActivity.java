@@ -26,10 +26,8 @@ public class SimpleActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Scope appScope = ToothPick.openScope(getApplication());
-    scope = ToothPick.openScope(this);
+    scope = ToothPick.openScopes(getApplication(), this);
     scope.installModules(new DefaultActivityModule(this));
-    appScope.addChild(scope);
     ToothPick.inject(this, scope);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);

@@ -28,14 +28,10 @@ public class PersistActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    Scope appScope = ToothPick.openScope(getApplication());
-    Scope metaScope = ToothPick.openScope(PRESENTER_SCOPE);
-    appScope.addChild(metaScope);
-    scope = ToothPick.openScope(this);
-    metaScope.addChild(scope);
+    scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new DefaultActivityModule(this));
     ToothPick.inject(this, scope);
-    metaScope.installModules(new PresenterModule());
+    ToothPick.openScope(PRESENTER_SCOPE).installModules(new PresenterModule());
 
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);

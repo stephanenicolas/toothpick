@@ -17,6 +17,24 @@ public final class ToothPick {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
   }
 
+  public static Scope openScopes(Object... names) {
+    if (names == null) {
+      throw new IllegalArgumentException("null scopes can't be open.");
+    }
+
+    Scope previousScope = null;
+    Scope lastScope = null;
+    for (Object name : names) {
+      previousScope = lastScope;
+      lastScope = openScope(name);
+      if (previousScope != null) {
+        previousScope.addChild(lastScope);
+      }
+    }
+
+    return lastScope;
+  }
+
   public static Scope openScope(Object name) {
     Scope scope = MAP_KEY_TO_INJECTOR.get(name);
     if (scope == null) {
