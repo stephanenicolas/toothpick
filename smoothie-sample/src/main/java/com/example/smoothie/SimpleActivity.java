@@ -26,6 +26,9 @@ public class SimpleActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    //Smoothie.openApplicationScope(getApplication(), <modules...>) no need to include application module
+    //.openActivityScope(this, <modules...>) no need to include activity module
+    //.inject(this) // all DSL scope state can inject
     Injector appInjector = ToothPick.openInjector(getApplication());
     injector = ToothPick.openInjector(this);
     injector.installModules(new DefaultActivityModule(this));
