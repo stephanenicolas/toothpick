@@ -13,7 +13,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class FactoryTest {
-  @Test public void testEmptyConstructor() {
+  @Test
+  public void testEmptyConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -53,7 +54,8 @@ public class FactoryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testPrivateConstructor() {
+  @Test
+  public void testPrivateConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestPrivateConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -69,7 +71,8 @@ public class FactoryTest {
         .withErrorContaining("@Inject constructors must not be private in class test.TestPrivateConstructor");
   }
 
-  @Test public void testInjectedConstructorInPrivateClass() {
+  @Test
+  public void testInjectedConstructorInPrivateClass() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestConstructorInPrivateClass", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -85,7 +88,8 @@ public class FactoryTest {
         .withErrorContaining("Class test.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in non public classes.");
   }
 
-  @Test public void test2InjectedConstructors() {
+  @Test
+  public void test2InjectedConstructors() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestPrivateConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -102,7 +106,8 @@ public class FactoryTest {
         .withErrorContaining("Class test.TestPrivateConstructor cannot have more than one @Inject annotated constructor.");
   }
 
-  @Test public void testAClassThatNeedsInjection_withAnInjectedField() {
+  @Test
+  public void testAClassThatNeedsInjection_withAnInjectedField() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -122,7 +127,7 @@ public class FactoryTest {
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Injector injector) {", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    injector.inject(testAClassThatNeedsInjection);", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, injector);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -138,13 +143,14 @@ public class FactoryTest {
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);
   }
 
-  @Test public void testAClassThatNeedsInjection_withAnInjectedMethod() {
+  @Test
+  public void testAClassThatNeedsInjection_withAnInjectedMethod() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -164,7 +170,7 @@ public class FactoryTest {
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Injector injector) {", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    injector.inject(testAClassThatNeedsInjection);", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, injector);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -180,13 +186,14 @@ public class FactoryTest {
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);
   }
 
-  @Test public void testNonEmptyConstructor() {
+  @Test
+  public void testNonEmptyConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -230,7 +237,8 @@ public class FactoryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testInvalidClassConstructor() {
+  @Test
+  public void testInvalidClassConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestInvalidClassConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -242,7 +250,8 @@ public class FactoryTest {
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "TestAbstractClassConstructor");
   }
 
-  @Test public void testSingletonAnnotation() {
+  @Test
+  public void testSingletonAnnotation() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -288,7 +297,8 @@ public class FactoryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testProducesSingletonAnnotation() {
+  @Test
+  public void testProducesSingletonAnnotation() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -334,7 +344,8 @@ public class FactoryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedField() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedField() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -353,7 +364,8 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalid() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalid() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -371,7 +383,8 @@ public class FactoryTest {
         .withErrorContaining("@Inject annotated fields must be non private : test.TestOptimisticFactoryCreationForInjectedField.foo");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -385,7 +398,8 @@ public class FactoryTest {
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -401,7 +415,8 @@ public class FactoryTest {
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -417,7 +432,8 @@ public class FactoryTest {
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedMethod() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedMethod() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -436,7 +452,8 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedMethod_shouldWorkButNoFactoryIsProduced_whenTypeIsPrivate() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedMethod_shouldWorkButNoFactoryIsProduced_whenTypeIsPrivate() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -450,7 +467,8 @@ public class FactoryTest {
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedMethod_shouldFail_whenMethodIsInvalid() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedMethod_shouldFail_whenMethodIsInvalid() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -468,7 +486,8 @@ public class FactoryTest {
         .withErrorContaining("@Inject annotated methods must not be private : test.TestOptimisticFactoryCreationForInjectedMethod.m");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedConstructor() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -487,7 +506,8 @@ public class FactoryTest {
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
   }
 
-  @Test public void testOptimisticFactoryCreationForInjectedConstructor_shouldWorkButNoFactoryIsProduced_whenTypeIsInterface() {
+  @Test
+  public void testOptimisticFactoryCreationForInjectedConstructor_shouldWorkButNoFactoryIsProduced_whenTypeIsInterface() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
