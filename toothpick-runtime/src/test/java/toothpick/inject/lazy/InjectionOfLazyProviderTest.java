@@ -1,9 +1,10 @@
 package toothpick.inject.lazy;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
 import toothpick.Lazy;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
+import toothpick.ToothPick;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.Bar;
 import toothpick.data.FooWithLazy;
@@ -21,11 +22,11 @@ public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     FooWithLazy fooWithLazy = new FooWithLazy();
 
     //WHEN
-    injector.inject(fooWithLazy);
+    ToothPick.inject(fooWithLazy, scope);
 
     //THEN
     assertThat(fooWithLazy.bar, notNullValue());

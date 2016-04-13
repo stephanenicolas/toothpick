@@ -2,10 +2,10 @@ package toothpick;
 
 import javax.inject.Provider;
 
-//TODO only the provider created by injector.getProvider need to be thread safe, all others
+//TODO only the provider created by scope.getProvider need to be thread safe, all others
 //are already accessed with a lock
 public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
-  private Injector injector;
+  private Scope scope;
   private volatile T instance;
   private Factory<T> factory;
   private volatile Provider<T> providerInstance;
@@ -21,8 +21,8 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     this.isLazy = isLazy;
   }
 
-  public ProviderImpl(Injector injector, Factory<?> factory, boolean isProviderFactory) {
-    this.injector = injector;
+  public ProviderImpl(Scope scope, Factory<?> factory, boolean isProviderFactory) {
+    this.scope = scope;
     if (isProviderFactory) {
       this.providerFactory = (Factory<Provider<T>>) factory;
     } else {
@@ -53,12 +53,12 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     }
     if (factory != null) {
       if (!factory.hasSingletonAnnotation()) {
-        return factory.createInstance(injector);
+        return factory.createInstance(scope);
       }
       //DCL
       if (instance == null) {
         synchronized (this) {
-          instance = factory.createInstance(injector);
+          instance = factory.createInstance(scope);
         }
       }
       return instance;
@@ -68,7 +68,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
         //DCL
         if (instance == null) {
           synchronized (this) {
-            instance = providerFactory.createInstance(injector).get();
+            instance = providerFactory.createInstance(scope).get();
           }
         }
         return instance;
@@ -77,7 +77,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
         if (providerInstance == null) {
           //DCL
           synchronized (this) {
-            providerInstance = providerFactory.createInstance(injector);
+            providerInstance = providerFactory.createInstance(scope);
           }
         }
         //to ensure the wrapped provider doesn't have to deal
@@ -86,7 +86,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
           return providerInstance.get();
         }
       }
-      Provider<T> provider = providerFactory.createInstance(injector);
+      Provider<T> provider = providerFactory.createInstance(scope);
       //to ensure the wrapped provider doesn't have to deal
       //with concurrency
       synchronized (this) {

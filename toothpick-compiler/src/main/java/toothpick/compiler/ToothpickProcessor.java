@@ -40,7 +40,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
 
   /**
-   * The name of the annotation processor option to exclude classes from the creation of member injectors & factories.
+   * The name of the annotation processor option to exclude classes from the creation of member scopes & factories.
    */
   public static final String PARAMETER_EXCLUDES = "toothpick_excludes";
 
@@ -161,7 +161,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       valid = false;
     }
 
-    // Verify parentInjector modifiers.
+    // Verify parentScope modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (parentModifiers.contains(PRIVATE)) {
@@ -184,7 +184,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       valid = false;
     }
 
-    // Verify parentInjector modifiers.
+    // Verify parentScope modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (parentModifiers.contains(PRIVATE)) {

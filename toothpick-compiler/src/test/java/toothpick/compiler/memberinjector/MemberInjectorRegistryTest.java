@@ -11,7 +11,8 @@ import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
 public class MemberInjectorRegistryTest {
-  @Test public void testASimpleRegistry() {
+  @Test
+  public void testASimpleRegistry() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestASimpleRegistry", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -49,7 +50,8 @@ public class MemberInjectorRegistryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testARegistry_withDependencies() {
+  @Test
+  public void testARegistry_withDependencies() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestARegistry", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //

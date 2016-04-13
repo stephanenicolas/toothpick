@@ -10,7 +10,8 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static toothpick.compiler.memberinjector.ProcessorTestUtilities.memberInjectorProcessors;
 
 public class FieldMemberInjectorTest {
-  @Test public void testSimpleFieldInjection() {
+  @Test
+  public void testSimpleFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -25,13 +26,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getInstance(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -44,7 +45,103 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testProviderFieldInjection() {
+  @Test
+  public void testNamedFieldInjection_whenUsingNamed() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Named;", //
+        "public class TestFieldInjection {", //
+        "  @Inject @Named(\"bar\") Foo foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
+        "  @Override", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class, \"bar\");", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testNamedFieldInjection_whenUsingAnnotation() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Named;", //
+        "public class TestFieldInjection {", //
+        "  @Inject @Bar Foo foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}", //
+        "@interface Bar {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
+        "  @Override", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class, \"Bar\");", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testNamedFieldInjection_shouldFail_whenUsingMoreThan2Annotation() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Named;", //
+        "public class TestFieldInjection {", //
+        "  @Inject @Bar @Qurtz Foo foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}", //
+        "@interface Bar {}", //
+        "@interface Qurtz {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Only one additional annotation is allowed to name injections. Either use at @Named or any other annotation.");
+  }
+
+  @Test
+  public void testProviderFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -60,13 +157,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getProvider(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getProvider(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -79,7 +176,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testLazyFieldInjection() {
+  @Test
+  public void testLazyFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -95,13 +193,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getLazy(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getLazy(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -114,7 +212,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testFutureFieldInjection() {
+  @Test
+  public void testFutureFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -130,13 +229,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getFuture(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getFuture(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -149,7 +248,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
+  @Test
+  public void testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -165,14 +265,14 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getInstance(Foo.class);", //
-        "    target.foo2 = injector.getInstance(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class);", //
+        "    target.foo2 = scope.getInstance(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -185,7 +285,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testFieldInjection_shouldFail_whenFieldIsPrivate() {
+  @Test
+  public void testFieldInjection_shouldFail_whenFieldIsPrivate() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -203,7 +304,8 @@ public class FieldMemberInjectorTest {
         .withErrorContaining("@Inject annotated fields must be non private : test.TestFieldInjection.foo");
   }
 
-  @Test public void testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
+  @Test
+  public void testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestMemberInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -220,18 +322,16 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
-        "import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestMemberInjection$$MemberInjector implements MemberInjector<TestMemberInjection> {", //
-        "  private MemberInjector<TestMemberInjectionParent> superMemberInjector "
-            + "= MemberInjectorRegistryLocator.getMemberInjector(TestMemberInjectionParent.class);",
+        "  private MemberInjector<TestMemberInjectionParent> superMemberInjector " + "= new test.TestMemberInjectionParent$$MemberInjector();",
         //
         "  @Override", //
-        "  public void inject(TestMemberInjection target, Injector injector) {", //
-        "    target.foo = injector.getInstance(Foo.class);", //
-        "    superMemberInjector.inject(target, injector);", //
+        "  public void inject(TestMemberInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class);", //
+        "    superMemberInjector.inject(target, scope);", //
         "  }", //
         "}" //
     ));

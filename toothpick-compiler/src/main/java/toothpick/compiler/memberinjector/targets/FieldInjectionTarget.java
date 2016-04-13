@@ -8,12 +8,14 @@ public final class FieldInjectionTarget {
   public final String memberName;
   public final Kind kind;
   public final TypeElement kindParamClass;
+  public final Object name;
 
-  public FieldInjectionTarget(TypeElement memberClass, String memberName, Kind kind, TypeElement kindParamClass) {
+  public FieldInjectionTarget(TypeElement memberClass, String memberName, Kind kind, TypeElement kindParamClass, Object name) {
     this.memberClass = memberClass;
     this.memberName = memberName;
     this.kind = kind;
     this.kindParamClass = kindParamClass;
+    this.name = name;
   }
 
   public enum Kind {

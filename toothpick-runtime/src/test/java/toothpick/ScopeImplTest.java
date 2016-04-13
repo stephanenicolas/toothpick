@@ -10,17 +10,17 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class InjectorImplTest extends ToothPickBaseTest {
+public class ScopeImplTest extends ToothPickBaseTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void toProvider_shoudThrowException_whenBindingIsNull() throws Exception {
     //GIVEN
     Module module = new Module();
     module.getBindingSet().add(null);
-    InjectorImpl injector = new InjectorImpl(module);
+    ScopeImpl scope = new ScopeImpl(module);
 
     //WHEN
-    injector.getInstance(null);
+    scope.getInstance(null);
 
     //THEN
     fail("Should not allow null bindings");
@@ -32,11 +32,11 @@ public class InjectorImplTest extends ToothPickBaseTest {
   public void installOverrideModules_shoudInstallOverrideBindings_whenCalledOnce() {
     //GIVEN
     Foo testFoo = new Foo();
-    InjectorImpl injector = new InjectorImpl(new ProdModule());
-    injector.installTestModules(new TestModule(testFoo));
+    ScopeImpl scope = new ScopeImpl(new ProdModule());
+    scope.installTestModules(new TestModule(testFoo));
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, sameInstance(testFoo));
@@ -45,11 +45,11 @@ public class InjectorImplTest extends ToothPickBaseTest {
   @Test
   public void installOverrideModules_shoudNotInstallOverrideBindings_whenCalledWithoutTestModules() {
     //GIVEN
-    InjectorImpl injector = new InjectorImpl(new ProdModule());
-    injector.installTestModules();
+    ScopeImpl scope = new ScopeImpl(new ProdModule());
+    scope.installTestModules();
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());
@@ -60,12 +60,12 @@ public class InjectorImplTest extends ToothPickBaseTest {
     //GIVEN
     Foo testFoo = new Foo();
     Foo testFoo2 = new Foo();
-    InjectorImpl injector = new InjectorImpl(new ProdModule());
-    injector.installTestModules(new TestModule(testFoo));
-    injector.installTestModules(new TestModule(testFoo2));
+    ScopeImpl scope = new ScopeImpl(new ProdModule());
+    scope.installTestModules(new TestModule(testFoo));
+    scope.installTestModules(new TestModule(testFoo2));
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, sameInstance(testFoo2));
@@ -75,12 +75,12 @@ public class InjectorImplTest extends ToothPickBaseTest {
   public void installOverrideModules_shoudNotOverrideOtherBindings() {
     //GIVEN
     Foo testFoo = new Foo();
-    InjectorImpl injector = new InjectorImpl(new ProdModule2());
-    injector.installTestModules(new TestModule(testFoo));
+    ScopeImpl scope = new ScopeImpl(new ProdModule2());
+    scope.installTestModules(new TestModule(testFoo));
 
     //WHEN
-    Foo fooInstance = injector.getInstance(Foo.class);
-    Bar barInstance = injector.getInstance(Bar.class);
+    Foo fooInstance = scope.getInstance(Foo.class);
+    Bar barInstance = scope.getInstance(Bar.class);
 
     //THEN
     assertThat(fooInstance, sameInstance(testFoo));

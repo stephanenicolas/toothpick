@@ -7,7 +7,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
-import toothpick.Injector;
+import toothpick.Scope;
 import toothpick.ToothPick;
 import toothpick.config.Module;
 
@@ -29,8 +29,8 @@ public class SimpleActivityTest {
     expect(mockContextNamer.getActivityName()).andReturn("bar");
     ActivityController<SimpleActivity> controllerSimpleActivity = Robolectric.buildActivity(SimpleActivity.class);
     SimpleActivity activity = controllerSimpleActivity.get();
-    Injector injector = ToothPick.openInjector(activity);
-    injector.installTestModules(new TestModule(mockContextNamer));
+    Scope scope = ToothPick.openScope(activity);
+    scope.installTestModules(new TestModule(mockContextNamer));
     replay(mockContextNamer);
 
     //WHEN

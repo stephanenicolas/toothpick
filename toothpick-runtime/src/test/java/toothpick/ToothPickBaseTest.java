@@ -8,8 +8,9 @@ public class ToothPickBaseTest {
   protected ToothPickBaseTest() {
   }
 
-  @BeforeClass public static void setUp() throws Exception {
-    MemberInjectorRegistryLocator.addRegistry(new toothpick.test.MemberInjectorRegistry());
-    FactoryRegistryLocator.addRegistry(new toothpick.test.FactoryRegistry());
+  @BeforeClass
+  public static void setUp() throws Exception {
+    MemberInjectorRegistryLocator.setRootRegistry(new toothpick.test.MemberInjectorRegistry());
+    FactoryRegistryLocator.setRootRegistry(new toothpick.test.FactoryRegistry());
   }
 }

@@ -6,7 +6,7 @@ import org.easymock.TestSubject;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import toothpick.Injector;
+import toothpick.Scope;
 import toothpick.ToothPick;
 import toothpick.config.Module;
 import toothpick.registries.factory.FactoryRegistryLocator;
@@ -27,8 +27,8 @@ public class SimpleEntryPointTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    MemberInjectorRegistryLocator.addRegistry(new toothpick.sample.MemberInjectorRegistry());
-    FactoryRegistryLocator.addRegistry(new toothpick.sample.FactoryRegistry());
+    MemberInjectorRegistryLocator.setRootRegistry(new toothpick.sample.MemberInjectorRegistry());
+    FactoryRegistryLocator.setRootRegistry(new toothpick.sample.FactoryRegistry());
   }
 
   @Test
@@ -38,8 +38,8 @@ public class SimpleEntryPointTest {
     expect(mockComputer2.compute()).andReturn(4);
     replay(mockComputer, mockComputer2);
 
-    final Injector injector = ToothPick.openInjector("SimpleEntryPoint");
-    injector.installTestModules(new TestModule());
+    final Scope scope = ToothPick.openScope("SimpleEntryPoint");
+    scope.installTestModules(new TestModule());
 
     //WHEN
     int result = simpleEntryPointUnderTest.multiply();

@@ -7,6 +7,7 @@ import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Foo;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -16,7 +17,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Creates a instance in the simplest possible way
   * with a module that binds a single class.
  */
-public class SimpleInstanceCreationWithModuleTest extends ToothPickBaseTest {
+public class NamedInstanceCreation extends ToothPickBaseTest {
+
+  static Foo namedFooInstance = new Foo();
 
   @Test
   public void testSimpleInjection() throws Exception {
@@ -25,10 +28,10 @@ public class SimpleInstanceCreationWithModuleTest extends ToothPickBaseTest {
     scope.installModules(new SimpleModule());
 
     //WHEN
-    Foo instance = scope.getInstance(Foo.class);
+    Foo namedInstance = scope.getInstance(Foo.class, "bar");
 
     //THEN
-    assertThat(instance, notNullValue());
+    assertThat(namedInstance, is(namedFooInstance));
   }
 
   @Test
@@ -38,17 +41,21 @@ public class SimpleInstanceCreationWithModuleTest extends ToothPickBaseTest {
     scope.installModules(new SimpleModule());
 
     //WHEN
-    Foo instance = scope.getInstance(Foo.class);
-    Foo instance2 = scope.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class, "bar");
+    Foo instance2 = scope.getInstance(Foo.class, "bar");
+    Foo instance3 = scope.getInstance(Foo.class);
 
     //THEN
-    assertThat(instance, notNullValue());
-    assertThat(instance2, notNullValue());
-    assertThat(instance, not(sameInstance(instance2)));
+    assertThat(instance, is(namedFooInstance));
+    assertThat(instance2, is(namedFooInstance));
+    assertThat(instance3, notNullValue());
+    assertThat(instance, sameInstance(instance2));
+    assertThat(instance, not(sameInstance(instance3)));
   }
 
   private static class SimpleModule extends Module {
     public SimpleModule() {
+      bind(Foo.class).withName("bar").to(namedFooInstance);
       bind(Foo.class).to(Foo.class);
     }
   }

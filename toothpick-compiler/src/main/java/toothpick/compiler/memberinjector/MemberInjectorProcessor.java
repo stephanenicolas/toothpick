@@ -10,6 +10,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -54,7 +56,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       return false;
     }
 
-    // Generate member injectors
+    // Generate member scopes
     Set<TypeElement> elementWithInjectionSet = new HashSet<>();
     elementWithInjectionSet.addAll(mapTypeElementToFieldInjectorTargetList.keySet());
     elementWithInjectionSet.addAll(mapTypeElementToMethodInjectorTargetList.keySet());
@@ -122,7 +124,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   }
 
   //TODO take overrides into account. If the method is an override, do not generate a call to it
-  //it will be performed by the super class member injector already.
+  //it will be performed by the super class member scope already.
   private void parseInjectedMethod(ExecutableElement methodElement,
       Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
@@ -158,7 +160,34 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     } else {
       kindParameterTypeElement = getKindParameter(element);
     }
-    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement);
+
+    Object name = findName(element);
+
+    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
+  }
+
+  private Object findName(VariableElement element) {
+    Object name = null;
+    if (element.getAnnotationMirrors().size() > 2) {
+      error(element, "Only one additional annotation is allowed to name injections. Either use at @Named or any other annotation.");
+    }
+
+    if (element.getAnnotationMirrors().size() >= 1) {
+      for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
+        TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+        if ("javax.inject.Named".equals(annotationTypeElement.getQualifiedName().toString())) {
+          for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues()
+              .entrySet()) {
+            if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {
+              name = annotationParamEntry.getValue().toString().replaceAll("\"", "");
+            }
+          }
+        } else if (!"javax.inject.Inject".equals(annotationTypeElement.getQualifiedName().toString())) {
+          name = annotationTypeElement.getSimpleName().toString();
+        }
+      }
+    }
+    return name;
   }
 
   private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
