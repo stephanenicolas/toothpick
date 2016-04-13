@@ -133,12 +133,27 @@ public abstract class Scope {
    * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain an instance in the scope of this scope.
-   * @param name the name of this instance.
+   * @param name the name of this instance. TODO should we duplicate to allow only annotations and strings ? see bindings
    * @param <T> the type of {@code clazz}.
    * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
    * @see toothpick.config.Binding
    */
   public abstract <T> T getInstance(Class<T> clazz, Object name);
+
+  /**
+   * Returns a named {@code Provider} of {@code clazz} if one is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
+   * to the clazz will be used to create one.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
+   * will be scoped in the root scope of the current scope.
+   *
+   * @param clazz the class for which to obtain a provider in the scope of this scope.
+   * @param name the name of this instance. TODO should we duplicate to allow only annotations and strings ? see bindings
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped provider or a new one using the factory associated to {@code clazz}.
+   */
+  public abstract <T> Provider<T> getProvider(Class<T> clazz, Object name);
 
   /**
    * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
