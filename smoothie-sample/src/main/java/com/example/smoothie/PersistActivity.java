@@ -48,6 +48,8 @@ public class PersistActivity extends Activity {
 
   @Override
   public void onBackPressed() {
+    //when we leave the presenter flow,
+    //we close its scope
     ToothPick.closeScope(PRESENTER_SCOPE);
     super.onBackPressed();
   }
