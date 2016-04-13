@@ -27,6 +27,13 @@ public class PersistActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    //Smoothie.openApplicationScope(getApplication(), <modules...>) no need to include application module
+    //.openPresenterScope(<modules...>) no need to include activity module
+    //.openActivityScope(this, <modules...>) no need to include activity module
+    //.inject(this) // all DSL scope state can inject
+    //.parentScope() // all DSL scope state can provide a parent or root
+    //.add(contextNamer); // all DSL scope state can add
+
     Injector appInjector = ToothPick.openInjector(getApplication());
     Injector metaInjector = ToothPick.openInjector(PRESENTER_SCOPE);
     appInjector.addChild(metaInjector);
