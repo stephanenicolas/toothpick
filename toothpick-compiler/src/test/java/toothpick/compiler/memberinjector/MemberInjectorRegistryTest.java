@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector;
+package toothpick.compiler.memberscope;
 
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
@@ -11,7 +11,8 @@ import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
 public class MemberInjectorRegistryTest {
-  @Test public void testASimpleRegistry() {
+  @Test
+  public void testASimpleRegistry() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestASimpleRegistry", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -24,7 +25,7 @@ public class MemberInjectorRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
-        "import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;", //
+        "import toothpick.registries.memberscope.AbstractMemberInjectorRegistry;", //
         "", //
         "public final class MemberInjectorRegistry extends AbstractMemberInjectorRegistry {", //
         "  public MemberInjectorRegistry() {", //
@@ -43,13 +44,14 @@ public class MemberInjectorRegistryTest {
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(toothpick.compiler.memberinjector.ProcessorTestUtilities.memberInjectorProcessors("toothpick", Collections.EMPTY_LIST))
+        .processedWith(toothpick.compiler.memberscope.ProcessorTestUtilities.memberInjectorProcessors("toothpick", Collections.EMPTY_LIST))
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);
   }
 
-  @Test public void testARegistry_withDependencies() {
+  @Test
+  public void testARegistry_withDependencies() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestARegistry", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -62,7 +64,7 @@ public class MemberInjectorRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
-        "import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;", //
+        "import toothpick.registries.memberscope.AbstractMemberInjectorRegistry;", //
         "", //
         "public final class MemberInjectorRegistry extends AbstractMemberInjectorRegistry {", //
         "  public MemberInjectorRegistry() {", //
@@ -84,7 +86,7 @@ public class MemberInjectorRegistryTest {
     assert_().about(javaSource())
         .that(source)
         .processedWith(
-            toothpick.compiler.memberinjector.ProcessorTestUtilities.memberInjectorProcessors("toothpick", Arrays.asList("toothpick", "toothpick")))
+            toothpick.compiler.memberscope.ProcessorTestUtilities.memberInjectorProcessors("toothpick", Arrays.asList("toothpick", "toothpick")))
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);

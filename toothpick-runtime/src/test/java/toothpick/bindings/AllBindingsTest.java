@@ -2,8 +2,8 @@ package toothpick.bindings;
 
 import javax.inject.Provider;
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
@@ -45,16 +45,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(Foo.class);
       }
     });
 
     //WHEN
-    Foo foo = injector.getInstance(Foo.class);
-    Foo foo2 = injector.getInstance(Foo.class);
+    Foo foo = scope.getInstance(Foo.class);
+    Foo foo2 = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -66,16 +66,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void simpleBinding_shouldCreateInjectedSingletons_whenSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(FooSingleton.class);
       }
     });
 
     //WHEN
-    FooSingleton foo = injector.getInstance(FooSingleton.class);
-    FooSingleton foo2 = injector.getInstance(FooSingleton.class);
+    FooSingleton foo = scope.getInstance(FooSingleton.class);
+    FooSingleton foo2 = scope.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -88,16 +88,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   public void singletonBinding_shouldCreateNonInjectedSingleton() throws Exception {
     //GIVEN
     final Foo instance = new Foo();
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(Foo.class).to(instance);
       }
     });
 
     //WHEN
-    Foo foo = injector.getInstance(Foo.class);
-    Foo foo2 = injector.getInstance(Foo.class);
+    Foo foo = scope.getInstance(Foo.class);
+    Foo foo2 = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -109,16 +109,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToClass_shouldCreateInjectedInstances_whenBoundClassNotAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFoo.class).to(Foo.class);
       }
     });
 
     //WHEN
-    IFoo foo = injector.getInstance(IFoo.class);
-    IFoo foo2 = injector.getInstance(IFoo.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -134,16 +134,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToClass_shouldCreateInjectedSingletons_whenBoundClassAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFooSingleton.class).to(FooSingleton.class);
       }
     });
 
     //WHEN
-    FooSingleton foo = injector.getInstance(FooSingleton.class);
-    FooSingleton foo2 = injector.getInstance(FooSingleton.class);
+    FooSingleton foo = scope.getInstance(FooSingleton.class);
+    FooSingleton foo2 = scope.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -160,16 +160,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
     //GIVEN
     final Provider<IFoo> providerInstance = new IFooProvider();
 
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(providerInstance);
       }
     });
 
     //WHEN
-    IFoo foo = injector.getInstance(IFoo.class);
-    IFoo foo2 = injector.getInstance(IFoo.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -182,16 +182,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateNonInjectedInstances_whenProviderClassIsNotAnnotated() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProvider.class);
       }
     });
 
     //WHEN
-    IFoo foo = injector.getInstance(IFoo.class);
-    IFoo foo2 = injector.getInstance(IFoo.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -205,16 +205,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateInjectedProvider() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooWithBarProvider.class);
       }
     });
 
     //WHEN
-    IFoo foo = injector.getInstance(IFoo.class);
-    IFoo foo2 = injector.getInstance(IFoo.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -226,16 +226,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateNonInjectedInstancesWithProviderSingleton_whenProviderClassIsAnnotatedSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedSingleton.class);
       }
     });
 
     //WHEN
-    IFoo foo = injector.getInstance(IFoo.class);
-    IFoo foo2 = injector.getInstance(IFoo.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());
@@ -247,16 +247,16 @@ public class AllBindingsTest extends ToothPickBaseTest {
   @Test
   public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedProvidesSingleton.class);
       }
     });
 
     //WHEN
-    IFoo foo = injector.getInstance(IFoo.class);
-    IFoo foo2 = injector.getInstance(IFoo.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
     //THEN
     assertThat(foo, notNullValue());

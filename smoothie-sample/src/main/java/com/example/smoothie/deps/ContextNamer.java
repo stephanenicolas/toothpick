@@ -13,11 +13,6 @@ public class ContextNamer {
 
   public ContextNamer() {
     countInstances++;
-    try {
-      throw new RuntimeException();
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-    }
   }
 
   public String getApplicationName() {

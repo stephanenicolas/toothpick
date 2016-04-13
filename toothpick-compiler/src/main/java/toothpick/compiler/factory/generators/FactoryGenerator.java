@@ -9,7 +9,7 @@ import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 import toothpick.Factory;
-import toothpick.Injector;
+import toothpick.Scope;
 import toothpick.compiler.CodeGenerator;
 import toothpick.compiler.factory.targets.FactoryInjectionTarget;
 
@@ -56,7 +56,7 @@ public class FactoryGenerator implements CodeGenerator {
     MethodSpec.Builder createInstanceBuilder = MethodSpec.methodBuilder("createInstance")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
-        .addParameter(ClassName.get(Injector.class), "injector")
+        .addParameter(ClassName.get(Scope.class), "scope")
         .returns(className);
 
     StringBuilder localVarStatement = new StringBuilder("");
@@ -72,7 +72,7 @@ public class FactoryGenerator implements CodeGenerator {
     for (TypeMirror typeMirror : factoryInjectionTarget.parameters) {
       String paramName = "param" + counter++;
       TypeName paramType = TypeName.get(typeMirror);
-      createInstanceBuilder.addStatement("$T $L = injector.getInstance($T.class)", paramType, paramName, paramType);
+      createInstanceBuilder.addStatement("$T $L = scope.getInstance($T.class)", paramType, paramName, paramType);
       localVarStatement.append(prefix);
       localVarStatement.append(paramName);
       prefix = ", ";
@@ -81,7 +81,7 @@ public class FactoryGenerator implements CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (factoryInjectionTarget.needsMemberInjection) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, injector)", className, varName);
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)", className, varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);
 

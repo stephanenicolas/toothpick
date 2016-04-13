@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector;
+package toothpick.compiler.memberscope;
 
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
-import static toothpick.compiler.memberinjector.ProcessorTestUtilities.memberInjectorProcessors;
+import static toothpick.compiler.memberscope.ProcessorTestUtilities.memberInjectorProcessors;
 
 public class FieldMemberInjectorTest {
   @Test
@@ -26,13 +26,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getInstance(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -62,13 +62,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getProvider(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getProvider(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -98,13 +98,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getLazy(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getLazy(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -134,13 +134,13 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getFuture(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getFuture(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -170,14 +170,14 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
         "  @Override", //
-        "  public void inject(TestFieldInjection target, Injector injector) {", //
-        "    target.foo = injector.getInstance(Foo.class);", //
-        "    target.foo2 = injector.getInstance(Foo.class);", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class);", //
+        "    target.foo2 = scope.getInstance(Foo.class);", //
         "  }", //
         "}" //
     ));
@@ -227,16 +227,16 @@ public class FieldMemberInjectorTest {
         "package test;", //
         "", //
         "import java.lang.Override;", //
-        "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestMemberInjection$$MemberInjector implements MemberInjector<TestMemberInjection> {", //
         "  private MemberInjector<TestMemberInjectionParent> superMemberInjector " + "= new test.TestMemberInjectionParent$$MemberInjector();",
         //
         "  @Override", //
-        "  public void inject(TestMemberInjection target, Injector injector) {", //
-        "    target.foo = injector.getInstance(Foo.class);", //
-        "    superMemberInjector.inject(target, injector);", //
+        "  public void inject(TestMemberInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class);", //
+        "    superMemberInjector.inject(target, scope);", //
         "  }", //
         "}" //
     ));

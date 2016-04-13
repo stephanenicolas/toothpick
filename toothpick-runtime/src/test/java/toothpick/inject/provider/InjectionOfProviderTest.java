@@ -2,8 +2,9 @@ package toothpick.inject.provider;
 
 import javax.inject.Provider;
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
+import toothpick.ToothPick;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.Bar;
 import toothpick.data.FooSingleton;
@@ -24,11 +25,11 @@ public class InjectionOfProviderTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjection_shouldReturnAProviderOfInstances_whenInjectedClassIsNotAnnotatedWithSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     FooWithProvider fooWithProvider = new FooWithProvider();
 
     //WHEN
-    injector.inject(fooWithProvider);
+    ToothPick.inject(fooWithProvider, scope);
 
     //THEN
     assertThat(fooWithProvider.bar, notNullValue());
@@ -43,11 +44,11 @@ public class InjectionOfProviderTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjection_shouldReturnAProviderOfSingleton_whenInjectedClassIsAnnotatedWithSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     FooWithProviderOfSingleton fooWithProviderOfSingleton = new FooWithProviderOfSingleton();
 
     //WHEN
-    injector.inject(fooWithProviderOfSingleton);
+    ToothPick.inject(fooWithProviderOfSingleton, scope);
 
     //THEN
     assertThat(fooWithProviderOfSingleton.fooSingletonProvider, notNullValue());

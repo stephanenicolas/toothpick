@@ -1,8 +1,9 @@
 package toothpick.inject;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
+import toothpick.ToothPick;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.Bar;
 import toothpick.data.FooChildWithInjectedFields;
@@ -20,11 +21,11 @@ public class InjectionAndInheritanceTest extends ToothPickBaseTest {
   @Test
   public void inject_shouldInjectInheritedFields_whenParentDefinesInjectAnnotatedFields() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     FooChildWithInjectedFields foo = new FooChildWithInjectedFields();
 
     //WHEN
-    injector.inject(foo);
+    ToothPick.inject(foo, scope);
 
     //THEN
     assertThat(foo.bar2, notNullValue());
@@ -36,11 +37,11 @@ public class InjectionAndInheritanceTest extends ToothPickBaseTest {
   @Test
   public void inject_shouldInjectInheritedFields_whenGrandParentDefinesInjectAnnotatedFieldsButNotParent() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     FooGrandChildWithInjectedFields foo = new FooGrandChildWithInjectedFields();
 
     //WHEN
-    injector.inject(foo);
+    ToothPick.inject(foo, scope);
 
     //THEN
     assertThat(foo.bar2, notNullValue());

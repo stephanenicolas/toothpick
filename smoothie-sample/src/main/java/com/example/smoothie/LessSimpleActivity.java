@@ -12,7 +12,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
-import toothpick.Injector;
+import toothpick.Scope;
 import toothpick.ToothPick;
 import toothpick.smoothie.module.DefaultActivityModule;
 
@@ -24,7 +24,7 @@ public class LessSimpleActivity extends Activity {
   @Inject AlarmManager alarmManager;
   @Inject FragmentManager fragmentManager;
   @Inject Activity activity;
-  private Injector injector;
+  private Scope scope;
 
   @Inject ContextNamer contextNamer;
   @Bind(R.id.title) TextView title;
@@ -33,11 +33,11 @@ public class LessSimpleActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Injector appInjector = ToothPick.openInjector(getApplication());
-    injector = ToothPick.openInjector(this);
-    injector.installModules(new DefaultActivityModule(this));
-    appInjector.addChild(injector);
-    injector.inject(this);
+    Scope appScope = ToothPick.openScope(getApplication());
+    scope = ToothPick.openScope(this);
+    scope.installModules(new DefaultActivityModule(this));
+    appScope.addChild(scope);
+    ToothPick.inject(this, scope);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
     title.setText(contextNamer.getApplicationName());
@@ -46,7 +46,7 @@ public class LessSimpleActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.closeInjector(this);
+    ToothPick.closeScope(this);
     super.onDestroy();
   }
 }

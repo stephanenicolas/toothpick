@@ -27,11 +27,11 @@ public class FactoryTest {
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
-        "import toothpick.Injector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
-        "  public TestEmptyConstructor createInstance(Injector injector) {", //
+        "  public TestEmptyConstructor createInstance(Scope scope) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
         "    return testEmptyConstructor;", //
         "  }", //
@@ -121,13 +121,13 @@ public class FactoryTest {
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
-        "import toothpick.Injector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
         "  @Override", //
-        "  public TestAClassThatNeedsInjection createInstance(Injector injector) {", //
+        "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, injector);", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -164,13 +164,13 @@ public class FactoryTest {
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
-        "import toothpick.Injector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
         "  @Override", //
-        "  public TestAClassThatNeedsInjection createInstance(Injector injector) {", //
+        "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, injector);", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -208,13 +208,13 @@ public class FactoryTest {
         "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.Factory;", //
-        "import toothpick.Injector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
-        "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
-        "    String param1 = injector.getInstance(String.class);", //
-        "    Integer param2 = injector.getInstance(Integer.class);", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    String param1 = scope.getInstance(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
         "    return testNonEmptyConstructor;", //
         "  }", //
@@ -268,13 +268,13 @@ public class FactoryTest {
         "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.Factory;", //
-        "import toothpick.Injector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
-        "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
-        "    String param1 = injector.getInstance(String.class);", //
-        "    Integer param2 = injector.getInstance(Integer.class);", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    String param1 = scope.getInstance(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
         "    return testNonEmptyConstructor;", //
         "  }", //
@@ -315,13 +315,13 @@ public class FactoryTest {
         "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.Factory;", //
-        "import toothpick.Injector;", //
+        "import toothpick.Scope;", //
         "", //
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
-        "  public TestNonEmptyConstructor createInstance(Injector injector) {", //
-        "    String param1 = injector.getInstance(String.class);", //
-        "    Integer param2 = injector.getInstance(Integer.class);", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    String param1 = scope.getInstance(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
         "    return testNonEmptyConstructor;", //
         "  }", //

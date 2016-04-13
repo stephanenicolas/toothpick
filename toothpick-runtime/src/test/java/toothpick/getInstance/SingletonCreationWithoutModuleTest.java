@@ -1,8 +1,8 @@
 package toothpick.getInstance;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.FooSingleton;
 
@@ -19,11 +19,11 @@ public class SingletonCreationWithoutModuleTest extends ToothPickBaseTest {
   @Test
   public void testIsProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
 
     //WHEN
-    FooSingleton instance = injector.getInstance(FooSingleton.class);
-    FooSingleton instance2 = injector.getInstance(FooSingleton.class);
+    FooSingleton instance = scope.getInstance(FooSingleton.class);
+    FooSingleton instance2 = scope.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(instance, notNullValue());

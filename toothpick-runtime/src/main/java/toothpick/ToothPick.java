@@ -4,50 +4,55 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Main class to access toothpick features.
- * It allows to create / retrieve injectors.
+ * It allows to create / retrieve scopes.
  */
 public final class ToothPick {
 
   //http://stackoverflow.com/a/29421697/693752
   //it should really be final, if not volatile
-  private static final ConcurrentHashMap<Object, Injector> MAP_KEY_TO_INJECTOR = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_INJECTOR = new ConcurrentHashMap<>();
+  private static Injector injector = new InjectorImpl();
 
   private ToothPick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
   }
 
-  public static Injector openInjector(Object key) {
-    Injector injector = MAP_KEY_TO_INJECTOR.get(key);
-    if (injector == null) {
+  public static Scope openScope(Object name) {
+    Scope scope = MAP_KEY_TO_INJECTOR.get(name);
+    if (scope == null) {
       synchronized (MAP_KEY_TO_INJECTOR) {
-        injector = MAP_KEY_TO_INJECTOR.get(key);
-        if (injector == null) {
-          injector = new InjectorImpl(key);
-          MAP_KEY_TO_INJECTOR.put(key, injector);
+        scope = MAP_KEY_TO_INJECTOR.get(name);
+        if (scope == null) {
+          scope = new ScopeImpl(name);
+          MAP_KEY_TO_INJECTOR.put(name, scope);
         }
       }
     }
-    return injector;
+    return scope;
   }
 
-  public static void closeInjector(Object key) {
-    Injector injector = openInjector(key);
-    if (injector == null) {
+  public static void closeScope(Object key) {
+    Scope scope = openScope(key);
+    if (scope == null) {
       return;
     }
 
     MAP_KEY_TO_INJECTOR.remove(key);
-    for (Injector childInjector : injector.childrenInjector) {
-      MAP_KEY_TO_INJECTOR.remove(childInjector.getName());
+    for (Scope childScope : scope.childrenScopes) {
+      MAP_KEY_TO_INJECTOR.remove(scope.getName());
     }
 
-    Injector parentInjector = injector.getParentInjector();
-    if (parentInjector != null) {
-      parentInjector.removeChild(injector);
+    Scope parentScope = scope.getParentScope();
+    if (parentScope != null) {
+      parentScope.removeChild(scope);
     }
   }
 
   public static void reset() {
     MAP_KEY_TO_INJECTOR.clear();
+  }
+
+  public static void inject(Object obj, Scope scope) {
+    injector.inject(obj, scope);
   }
 }

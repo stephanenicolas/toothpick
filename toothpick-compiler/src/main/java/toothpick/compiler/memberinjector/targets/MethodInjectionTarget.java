@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector.targets;
+package toothpick.compiler.memberscope.targets;
 
 import java.util.ArrayList;
 import java.util.List;

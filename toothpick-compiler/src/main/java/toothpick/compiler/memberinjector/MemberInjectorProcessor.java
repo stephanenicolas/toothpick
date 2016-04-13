@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector;
+package toothpick.compiler.memberscope;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,11 +22,11 @@ import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
-import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
-import toothpick.compiler.memberinjector.generators.MemberInjectorRegistryGenerator;
-import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
-import toothpick.compiler.memberinjector.targets.MemberInjectorRegistryInjectionTarget;
-import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
+import toothpick.compiler.memberscope.generators.MemberInjectorGenerator;
+import toothpick.compiler.memberscope.generators.MemberInjectorRegistryGenerator;
+import toothpick.compiler.memberscope.targets.FieldInjectionTarget;
+import toothpick.compiler.memberscope.targets.MemberInjectorRegistryInjectionTarget;
+import toothpick.compiler.memberscope.targets.MethodInjectionTarget;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
@@ -54,7 +54,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       return false;
     }
 
-    // Generate member injectors
+    // Generate member scopes
     Set<TypeElement> elementWithInjectionSet = new HashSet<>();
     elementWithInjectionSet.addAll(mapTypeElementToFieldInjectorTargetList.keySet());
     elementWithInjectionSet.addAll(mapTypeElementToMethodInjectorTargetList.keySet());
@@ -122,7 +122,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   }
 
   //TODO take overrides into account. If the method is an override, do not generate a call to it
-  //it will be performed by the super class member injector already.
+  //it will be performed by the super class member scope already.
   private void parseInjectedMethod(ExecutableElement methodElement,
       Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();

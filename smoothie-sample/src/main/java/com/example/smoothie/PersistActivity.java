@@ -9,7 +9,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
-import toothpick.Injector;
+import toothpick.Scope;
 import toothpick.ToothPick;
 import toothpick.config.Module;
 import toothpick.smoothie.module.DefaultActivityModule;
@@ -17,7 +17,7 @@ import toothpick.smoothie.module.DefaultActivityModule;
 public class PersistActivity extends Activity {
 
   public static final String PRESENTER_SCOPE = "PRESENTER_SCOPE";
-  private Injector injector;
+  private Scope scope;
 
   @Inject ContextNamer contextNamer;
   @Bind(R.id.title) TextView title;
@@ -27,14 +27,16 @@ public class PersistActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Injector appInjector = ToothPick.openInjector(getApplication());
-    Injector metaInjector = ToothPick.openInjector(PRESENTER_SCOPE);
-    appInjector.addChild(metaInjector);
-    injector = ToothPick.openInjector(this);
-    metaInjector.addChild(injector);
-    injector.installModules(new DefaultActivityModule(this));
-    injector.inject(this);
-    metaInjector.installModules(new PresenterModule());
+
+    Scope appScope = ToothPick.openScope(getApplication());
+    Scope metaScope = ToothPick.openScope(PRESENTER_SCOPE);
+    appScope.addChild(metaScope);
+    scope = ToothPick.openScope(this);
+    metaScope.addChild(scope);
+    scope.installModules(new DefaultActivityModule(this));
+    ToothPick.inject(this, scope);
+    metaScope.installModules(new PresenterModule());
+
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
     title.setText("Persist");
@@ -44,13 +46,13 @@ public class PersistActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.closeInjector(this);
+    ToothPick.closeScope(this);
     super.onDestroy();
   }
 
   @Override
   public void onBackPressed() {
-    ToothPick.closeInjector(PRESENTER_SCOPE);
+    ToothPick.closeScope(PRESENTER_SCOPE);
     super.onBackPressed();
   }
 

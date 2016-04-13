@@ -1,8 +1,9 @@
 package toothpick.inject;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
+import toothpick.ToothPick;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
@@ -20,11 +21,11 @@ public class InjectionWithoutModuleTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     Foo foo = new Foo();
 
     //WHEN
-    injector.inject(foo);
+    ToothPick.inject(foo, scope);
 
     //THEN
     assertThat(foo.bar, notNullValue());

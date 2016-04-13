@@ -15,106 +15,106 @@ import static org.junit.Assert.fail;
 public class ToothPickTest extends ToothPickBaseTest {
 
   @Test
-  public void getInjector_shouldNotReturnNull_whenNoInjectorByThisKeyWasCreated() throws Exception {
+  public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() throws Exception {
     //GIVEN
 
     //WHEN
-    Injector injector = ToothPick.openInjector(this);
+    Scope scope = ToothPick.openScope(this);
 
     //THEN
-    assertThat(injector, notNullValue());
+    assertThat(scope, notNullValue());
   }
 
   @Test
-  public void getInjector_shouldReturnAnInjector_whenThisInjectorByThisKeyWasCreated() throws Exception {
+  public void getScope_shouldReturnAnScope_whenThisScopeByThisKeyWasCreated() throws Exception {
     //GIVEN
-    Injector injector = ToothPick.openInjector(this);
+    Scope scope = ToothPick.openScope(this);
 
     //WHEN
-    Injector injector2 = ToothPick.openInjector(this);
+    Scope scope2 = ToothPick.openScope(this);
 
     //THEN
-    assertThat(injector, notNullValue());
-    assertThat(injector, sameInstance(injector2));
+    assertThat(scope, notNullValue());
+    assertThat(scope, sameInstance(scope2));
   }
 
   @Test
-  public void createInjector_shouldReturnAnInjectorWithAParent_whenThisInjectorByThisKeyWasCreatedWithAParent() throws Exception {
+  public void createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() throws Exception {
     //GIVEN
-    Injector injectorParent = ToothPick.openInjector("foo");
+    Scope scopeParent = ToothPick.openScope("foo");
 
     //WHEN
-    Injector injector = ToothPick.openInjector("bar");
-    injectorParent.addChild(injector);
+    Scope scope = ToothPick.openScope("bar");
+    scopeParent.addChild(scope);
 
     //THEN
-    assertThat(injector, notNullValue());
-    assertThat(injector.getParentInjector(), sameInstance(injectorParent));
+    assertThat(scope, notNullValue());
+    assertThat(scope.getParentScope(), sameInstance(scopeParent));
   }
 
   @Test
-  public void reset_shouldClear_WhenSomeInjectorsWereCreated() throws Exception {
+  public void reset_shouldClear_WhenSomeScopesWereCreated() throws Exception {
     //GIVEN
-    Injector injector0 = ToothPick.openInjector("foo");
-    Injector injector1 = ToothPick.openInjector("bar");
+    Scope scope0 = ToothPick.openScope("foo");
+    Scope scope1 = ToothPick.openScope("bar");
 
     //WHEN
     ToothPick.reset();
-    Injector injector0AfterReset = ToothPick.openInjector("foo");
-    Injector injector1AfterReset = ToothPick.openInjector("bar");
+    Scope scope0AfterReset = ToothPick.openScope("foo");
+    Scope scope1AfterReset = ToothPick.openScope("bar");
 
     //THEN
-    assertThat(injector0AfterReset, not(sameInstance(injector0)));
-    assertThat(injector1AfterReset, not(sameInstance(injector1)));
+    assertThat(scope0AfterReset, not(sameInstance(scope0)));
+    assertThat(scope1AfterReset, not(sameInstance(scope1)));
   }
 
   @Test
-  public void destroyInjector_shouldClearThisInjector_WhenThisInjectorsWasCreated() throws Exception {
+  public void destroyScope_shouldClearThisScope_WhenThisScopesWasCreated() throws Exception {
     //GIVEN
-    Injector injector = ToothPick.openInjector("foo");
+    Scope scope = ToothPick.openScope("foo");
 
     //WHEN
-    ToothPick.closeInjector("foo");
-    Injector injectorAfterReset = ToothPick.openInjector("foo");
+    ToothPick.closeScope("foo");
+    Scope scopeAfterReset = ToothPick.openScope("foo");
 
     //THEN
-    assertThat(injectorAfterReset, not(sameInstance(injector)));
+    assertThat(scopeAfterReset, not(sameInstance(scope)));
   }
 
   @Test
-  public void getOrCreateInjector_shouldReturnSameInjector_WhenOneWasCreatedWithSameKey() throws Exception {
+  public void getOrCreateScope_shouldReturnSameScope_WhenOneWasCreatedWithSameKey() throws Exception {
     //GIVEN
-    Injector injector = ToothPick.openInjector("foo");
+    Scope scope = ToothPick.openScope("foo");
 
     //WHEN
-    Injector injector2 = ToothPick.openInjector("foo");
+    Scope scope2 = ToothPick.openScope("foo");
 
     //THEN
-    assertThat(injector, sameInstance(injector2));
+    assertThat(scope, sameInstance(scope2));
   }
 
   @Test
-  public void getOrCreateInjector_shouldReturnANewInjectorInjector_WhenOneWasNotCreatedWithSameKey() throws Exception {
+  public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() throws Exception {
     //GIVEN
-    Injector injectorParent = ToothPick.openInjector("bar");
+    Scope scopeParent = ToothPick.openScope("bar");
 
     //WHEN
-    Injector injector = ToothPick.openInjector("foo");
-    injectorParent.addChild(injector);
-    Injector injector2 = ToothPick.openInjector("foo");
+    Scope scope = ToothPick.openScope("foo");
+    scopeParent.addChild(scope);
+    Scope scope2 = ToothPick.openScope("foo");
 
     //THEN
-    assertThat(injector, notNullValue());
-    assertThat(injector2, sameInstance(injector));
-    assertThat(injector.getParentInjector(), sameInstance(injectorParent));
+    assertThat(scope, notNullValue());
+    assertThat(scope2, sameInstance(scope));
+    assertThat(scope.getParentScope(), sameInstance(scopeParent));
   }
 
   @Test
-  public void destroyInjector_shouldNotFail_WhenThisInjectorsWasNotCreated() throws Exception {
+  public void destroyScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
     //GIVEN
 
     //WHEN
-    ToothPick.closeInjector("foo");
+    ToothPick.closeScope("foo");
 
     //THEN
   }

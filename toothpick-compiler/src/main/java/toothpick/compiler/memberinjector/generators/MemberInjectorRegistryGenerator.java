@@ -1,4 +1,4 @@
-package toothpick.compiler.memberinjector.generators;
+package toothpick.compiler.memberscope.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -11,10 +11,10 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import toothpick.MemberInjector;
 import toothpick.compiler.CodeGenerator;
-import toothpick.compiler.memberinjector.MemberInjectorProcessor;
-import toothpick.compiler.memberinjector.targets.MemberInjectorRegistryInjectionTarget;
+import toothpick.compiler.memberscope.MemberInjectorProcessor;
+import toothpick.compiler.memberscope.targets.MemberInjectorRegistryInjectionTarget;
 import toothpick.registries.MemberInjectorRegistry;
-import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
+import toothpick.registries.memberscope.AbstractMemberInjectorRegistry;
 
 /**
  * Generates a {@link MemberInjectorRegistry} for a given {@link MemberInjectorRegistryInjectionTarget}.
@@ -80,7 +80,8 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
     memberInjectorRegistryTypeSpec.addMethod(getMemberInjectorMethod.build());
   }
 
-  @Override public String getFqcn() {
+  @Override
+  public String getFqcn() {
     return memberInjectorRegistryInjectionTarget.getFqcn();
   }
 }

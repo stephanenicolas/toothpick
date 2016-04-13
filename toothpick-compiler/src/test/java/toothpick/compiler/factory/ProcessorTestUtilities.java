@@ -3,7 +3,7 @@ package toothpick.compiler.factory;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.processing.Processor;
-import toothpick.compiler.memberinjector.MemberInjectorProcessor;
+import toothpick.compiler.memberscope.MemberInjectorProcessor;
 
 final class ProcessorTestUtilities {
   private ProcessorTestUtilities() {

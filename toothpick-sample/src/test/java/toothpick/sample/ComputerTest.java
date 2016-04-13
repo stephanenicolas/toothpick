@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import toothpick.ToothPick;
 import toothpick.registries.factory.FactoryRegistryLocator;
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
+import toothpick.registries.memberscope.MemberInjectorRegistryLocator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class ComputerTest {
 
   @Rule public EasyMockRule mocks = new EasyMockRule(this);
-  @TestSubject private Computer computerUnderTest = ToothPick.openInjector("Computer").getInstance(Computer.class);
+  @TestSubject private Computer computerUnderTest = ToothPick.openScope("Computer").getInstance(Computer.class);
 
   @BeforeClass
   public static void setUp() throws Exception {

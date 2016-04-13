@@ -2,8 +2,9 @@ package toothpick.inject.future;
 
 import java.util.concurrent.Future;
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
+import toothpick.ToothPick;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.Bar;
 import toothpick.data.FooWithFuture;
@@ -21,11 +22,11 @@ public class InjectionOfFutureProviderTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
     FooWithFuture fooWithFuture = new FooWithFuture();
 
     //WHEN
-    injector.inject(fooWithFuture);
+    ToothPick.inject(fooWithFuture, scope);
 
     //THEN
     assertThat(fooWithFuture.bar, notNullValue());
