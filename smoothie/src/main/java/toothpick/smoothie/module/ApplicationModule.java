@@ -47,8 +47,8 @@ import static android.content.Context.TELEPHONY_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 
-public class DefaultApplicationModule extends Module {
-  public DefaultApplicationModule(Application application) {
+public class ApplicationModule extends Module {
+  public ApplicationModule(Application application) {
     bind(Application.class).to(application);
     bind(AccountManager.class).toProvider(AccountManagerProvider.class);
     bind(AssetManager.class).toProvider(AssetManagerProvider.class);
@@ -61,23 +61,27 @@ public class DefaultApplicationModule extends Module {
 
   // TODO check min sdk and refactor
   private void bindSystemServices(Application application) {
-    bind(LocationManager.class).toProvider(new SystemServiceProvider<LocationManager>(application, LOCATION_SERVICE));
-    bind(WindowManager.class).toProvider(new SystemServiceProvider<WindowManager>(application, WINDOW_SERVICE));
-    bind(ActivityManager.class).toProvider(new SystemServiceProvider<ActivityManager>(application, ACTIVITY_SERVICE));
-    bind(PowerManager.class).toProvider(new SystemServiceProvider<PowerManager>(application, POWER_SERVICE));
-    bind(AlarmManager.class).toProvider(new SystemServiceProvider<AlarmManager>(application, ALARM_SERVICE));
-    bind(NotificationManager.class).toProvider(new SystemServiceProvider<NotificationManager>(application, NOTIFICATION_SERVICE));
-    bind(KeyguardManager.class).toProvider(new SystemServiceProvider<KeyguardManager>(application, KEYGUARD_SERVICE));
-    bind(Vibrator.class).toProvider(new SystemServiceProvider<Vibrator>(application, VIBRATOR_SERVICE));
-    bind(ConnectivityManager.class).toProvider(new SystemServiceProvider<ConnectivityManager>(application, CONNECTIVITY_SERVICE));
-    bind(WifiManager.class).toProvider(new SystemServiceProvider<WifiManager>(application, WINDOW_SERVICE));
-    bind(InputMethodManager.class).toProvider(new SystemServiceProvider<InputMethodManager>(application, INPUT_METHOD_SERVICE));
-    bind(SensorManager.class).toProvider(new SystemServiceProvider<SensorManager>(application, SENSOR_SERVICE));
-    bind(TelephonyManager.class).toProvider(new SystemServiceProvider<TelephonyManager>(application, TELEPHONY_SERVICE));
-    bind(AudioManager.class).toProvider(new SystemServiceProvider<AudioManager>(application, AUDIO_SERVICE));
+    bindSystemService(application, LocationManager.class, LOCATION_SERVICE);
+    bindSystemService(application, WindowManager.class, WINDOW_SERVICE);
+    bindSystemService(application, ActivityManager.class, ACTIVITY_SERVICE);
+    bindSystemService(application, PowerManager.class, POWER_SERVICE);
+    bindSystemService(application, AlarmManager.class, ALARM_SERVICE);
+    bindSystemService(application, NotificationManager.class, NOTIFICATION_SERVICE);
+    bindSystemService(application, KeyguardManager.class, KEYGUARD_SERVICE);
+    bindSystemService(application, Vibrator.class, VIBRATOR_SERVICE);
+    bindSystemService(application, ConnectivityManager.class, CONNECTIVITY_SERVICE);
+    bindSystemService(application, WifiManager.class, WINDOW_SERVICE);
+    bindSystemService(application, InputMethodManager.class, INPUT_METHOD_SERVICE);
+    bindSystemService(application, SensorManager.class, SENSOR_SERVICE);
+    bindSystemService(application, TelephonyManager.class, TELEPHONY_SERVICE);
+    bindSystemService(application, AudioManager.class, AUDIO_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      bind(DownloadManager.class).toProvider(new SystemServiceProvider<DownloadManager>(application, DOWNLOAD_SERVICE));
+      bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
     }
     bind(Application.class).to(application);
+  }
+
+  private <T> void bindSystemService(Application application, Class<T> serviceClass, String serviceName) {
+    bind(serviceClass).toProvider(new SystemServiceProvider<T>(application, serviceName));
   }
 }

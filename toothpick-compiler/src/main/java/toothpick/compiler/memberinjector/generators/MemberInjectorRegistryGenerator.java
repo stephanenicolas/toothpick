@@ -80,7 +80,8 @@ public class MemberInjectorRegistryGenerator implements CodeGenerator {
     memberInjectorRegistryTypeSpec.addMethod(getMemberInjectorMethod.build());
   }
 
-  @Override public String getFqcn() {
+  @Override
+  public String getFqcn() {
     return memberInjectorRegistryInjectionTarget.getFqcn();
   }
 }

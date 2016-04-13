@@ -18,11 +18,11 @@ public class ReflectionMemberInjectorRegistry extends AbstractMemberInjectorRegi
       Class<MemberInjector<T>> memberInjectorClass = (Class<MemberInjector<T>>) Class.forName(clazz.getName() + "$$MemberInjector");
       return memberInjectorClass.newInstance();
     } catch (ClassNotFoundException e) {
-      throw new RuntimeException("Impossible to get the member injector class for class " + clazz.getName() + ". Add an inject annotated field.");
+      throw new RuntimeException("Impossible to get the member scope class for class " + clazz.getName() + ". Add an inject annotated field.");
     } catch (InstantiationException e) {
-      throw new RuntimeException("This should not happen. Impossible to create member injector for class " + clazz.getName());
+      throw new RuntimeException("This should not happen. Impossible to create member scope for class " + clazz.getName());
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("This should not happen. Impossible to access member injector constructor for class " + clazz.getName());
+      throw new RuntimeException("This should not happen. Impossible to access member scope constructor for class " + clazz.getName());
     }
   }
 }

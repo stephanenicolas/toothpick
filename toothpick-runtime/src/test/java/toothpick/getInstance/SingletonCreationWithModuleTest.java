@@ -1,8 +1,8 @@
 package toothpick.getInstance;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.FooSingleton;
@@ -17,13 +17,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class SingletonCreationWithModuleTest extends ToothPickBaseTest {
 
-  @Test public void testIsProducingSingleton() throws Exception {
+  @Test
+  public void testIsProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl(new SimpleModule());
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new SimpleModule());
 
     //WHEN
-    FooSingleton instance = injector.getInstance(FooSingleton.class);
-    FooSingleton instance2 = injector.getInstance(FooSingleton.class);
+    FooSingleton instance = scope.getInstance(FooSingleton.class);
+    FooSingleton instance2 = scope.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(instance, notNullValue());

@@ -1,5 +1,6 @@
 package toothpick.config;
 
+import java.lang.annotation.Annotation;
 import javax.inject.Provider;
 
 public class Binding<T> {
@@ -9,10 +10,21 @@ public class Binding<T> {
   private T instance;
   private Provider<T> providerInstance;
   private Class<? extends Provider<T>> providerClass;
+  private Object name;
 
   public Binding(Class<T> key) {
     this.key = key;
     mode = Mode.SIMPLE;
+  }
+
+  public Binding<T> withName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  public <A extends Annotation> Binding<T> withName(Class<A> name) {
+    this.name = name;
+    return this;
   }
 
   public <IMPL extends T> void to(Class<IMPL> implClass) {
@@ -57,6 +69,10 @@ public class Binding<T> {
 
   public Class<? extends Provider<T>> getProviderClass() {
     return providerClass;
+  }
+
+  public Object getName() {
+    return name;
   }
 
   public enum Mode {

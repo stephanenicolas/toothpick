@@ -1,8 +1,8 @@
 package toothpick.getInstance;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.Foo;
 
@@ -20,10 +20,10 @@ public class SimpleInstanceCreationWithoutModuleTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjection() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());
@@ -32,11 +32,11 @@ public class SimpleInstanceCreationWithoutModuleTest extends ToothPickBaseTest {
   @Test
   public void testSimpleInjectionIsNotProducingSingleton() throws Exception {
     //GIVEN
-    Injector injector = new InjectorImpl("");
+    Scope scope = new ScopeImpl("");
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
-    Foo instance2 = injector.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
+    Foo instance2 = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, notNullValue());

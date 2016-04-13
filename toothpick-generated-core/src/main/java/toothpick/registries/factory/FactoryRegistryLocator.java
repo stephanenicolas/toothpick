@@ -1,7 +1,5 @@
 package toothpick.registries.factory;
 
-import java.util.ArrayList;
-import java.util.List;
 import toothpick.Factory;
 import toothpick.registries.FactoryRegistry;
 

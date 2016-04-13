@@ -22,10 +22,10 @@ public interface Factory<T> {
    * constructor. There must be one and only annotated constructor.
    * If T has {@link Inject} annotated fields, then the new instance will be injected after creation.
    *
-   * @param injector the scope/injector in which to look for all dependencies of the instance T.
+   * @param scope the scope in which to look for all dependencies of the instance T.
    * @return a new instance of T, injected if needed.
    */
-  T createInstance(Injector injector);
+  T createInstance(Scope scope);
 
   /**
    * Signals that the class is annotated with {@link Singleton}.

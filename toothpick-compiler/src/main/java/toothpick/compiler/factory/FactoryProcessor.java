@@ -199,7 +199,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       valid = false;
     }
 
-    // Verify parentInjector modifiers.
+    // Verify parentScope modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     //TODO should not be a non static inner class neither
     if (!parentModifiers.contains(PUBLIC)) {

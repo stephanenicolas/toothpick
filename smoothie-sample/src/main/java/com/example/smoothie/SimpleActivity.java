@@ -10,13 +10,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
-import toothpick.Injector;
+import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.smoothie.module.DefaultActivityModule;
+import toothpick.smoothie.module.ActivityModule;
 
 public class SimpleActivity extends Activity {
 
-  private Injector injector;
+  private Scope scope;
 
   @Inject ContextNamer contextNamer;
   @Bind(R.id.title) TextView title;
@@ -29,11 +29,9 @@ public class SimpleActivity extends Activity {
     //Smoothie.openApplicationScope(getApplication(), <modules...>) no need to include application module
     //.openActivityScope(this, <modules...>) no need to include activity module
     //.inject(this) // all DSL scope state can inject
-    Injector appInjector = ToothPick.openInjector(getApplication());
-    injector = ToothPick.openInjector(this);
-    injector.installModules(new DefaultActivityModule(this));
-    appInjector.addChild(injector);
-    injector.inject(this);
+    scope = ToothPick.openScopes(getApplication(), this);
+    scope.installModules(new ActivityModule(this));
+    ToothPick.inject(this, scope);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
     title.setText(contextNamer.getApplicationName());
@@ -49,7 +47,7 @@ public class SimpleActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.closeInjector(this);
+    ToothPick.closeScope(this);
     super.onDestroy();
   }
 }

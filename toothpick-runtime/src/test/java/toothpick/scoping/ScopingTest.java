@@ -1,8 +1,8 @@
 package toothpick.scoping;
 
 import org.junit.Test;
-import toothpick.Injector;
-import toothpick.InjectorImpl;
+import toothpick.Scope;
+import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Foo;
@@ -22,23 +22,23 @@ public class ScopingTest extends ToothPickBaseTest {
   public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Injector injectorParent = new InjectorImpl("");
-    injectorParent.installModules(new Module() {
+    Scope scopeParent = new ScopeImpl("");
+    scopeParent.installModules(new Module() {
       {
         bind(Foo.class).to(foo1);
       }
     });
     final Foo foo2 = new Foo();
-    Injector injector = new InjectorImpl("");
-    injectorParent.addChild(injector);
-    injector.installModules(new Module() {
+    Scope scope = new ScopeImpl("");
+    scopeParent.addChild(scope);
+    scope.installModules(new Module() {
       {
         bind(Foo.class).to(foo2);
       }
     });
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(foo2, sameInstance(instance));
@@ -49,18 +49,18 @@ public class ScopingTest extends ToothPickBaseTest {
   public void childInjector_shouldReturnInstancesInParentScope_whenParentHasKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Injector injectorParent = new InjectorImpl("");
-    injectorParent.installModules(new Module() {
+    Scope scopeParent = new ScopeImpl("");
+    scopeParent.installModules(new Module() {
       {
         bind(Foo.class).to(foo1);
       }
     });
-    Injector injector = new InjectorImpl("");
-    injectorParent.addChild(injector);
+    Scope scope = new ScopeImpl("");
+    scopeParent.addChild(scope);
 
     //WHEN
-    Foo instance = injector.getInstance(Foo.class);
-    Foo instance2 = injectorParent.getInstance(Foo.class);
+    Foo instance = scope.getInstance(Foo.class);
+    Foo instance2 = scopeParent.getInstance(Foo.class);
 
     //THEN
     assertThat(foo1, sameInstance(instance));
@@ -70,13 +70,13 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void singletonDiscoveredDynamically_shouldGoInRootScope() throws Exception {
     //GIVEN
-    Injector injectorParent = new InjectorImpl("");
-    Injector injector = new InjectorImpl("");
-    injectorParent.addChild(injector);
+    Scope scopeParent = new ScopeImpl("");
+    Scope scope = new ScopeImpl("");
+    scopeParent.addChild(scope);
 
     //WHEN
-    FooSingleton instance = injector.getInstance(FooSingleton.class);
-    FooSingleton instance2 = injectorParent.getInstance(FooSingleton.class);
+    FooSingleton instance = scope.getInstance(FooSingleton.class);
+    FooSingleton instance2 = scopeParent.getInstance(FooSingleton.class);
 
     //THEN
     assertThat(instance, sameInstance(instance2));

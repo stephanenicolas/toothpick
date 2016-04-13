@@ -1,7 +1,5 @@
 package toothpick.registries.memberinjector;
 
-import java.util.ArrayList;
-import java.util.List;
 import toothpick.MemberInjector;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.MemberInjectorRegistry;
