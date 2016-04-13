@@ -67,8 +67,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
       FieldSpec.Builder superMemberInjectorField =
           FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "superMemberInjector", Modifier.PRIVATE)
               //TODO use proper typing here
-              .initializer("$T.getMemberInjector($L.class)", ClassName.get("toothpick.registries.memberinjector", "MemberInjectorRegistryLocator"),
-                  superTypeThatNeedsInjection.simpleName());
+              .initializer("new $L$$$$MemberInjector()", superTypeThatNeedsInjection);
       injectorMemberTypeSpec.addField(superMemberInjectorField.build());
     }
   }
@@ -150,7 +149,8 @@ public class MemberInjectorGenerator implements CodeGenerator {
     }
   }
 
-  @Override public String getFqcn() {
+  @Override
+  public String getFqcn() {
     return targetClass.getQualifiedName().toString() + MEMBER_INJECTOR_SUFFIX;
   }
 }
