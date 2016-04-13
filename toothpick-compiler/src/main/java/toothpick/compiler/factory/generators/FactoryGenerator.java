@@ -46,7 +46,8 @@ public class FactoryGenerator implements CodeGenerator {
     return javaFile.toString();
   }
 
-  @Override public String getFqcn() {
+  @Override
+  public String getFqcn() {
     return factoryInjectionTarget.builtClass.getQualifiedName().toString() + FACTORY_SUFFIX;
   }
 
@@ -80,14 +81,9 @@ public class FactoryGenerator implements CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (factoryInjectionTarget.needsMemberInjection) {
-      StringBuilder injectStatement = new StringBuilder("injector.inject(");
-      injectStatement.append(varName);
-      injectStatement.append(")");
-      createInstanceBuilder.addStatement(injectStatement.toString());
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, injector)", className, varName);
     }
-    StringBuilder returnStatement = new StringBuilder("return ");
-    returnStatement.append(varName);
-    createInstanceBuilder.addStatement(returnStatement.toString());
+    createInstanceBuilder.addStatement("return $L", varName);
 
     builder.addMethod(createInstanceBuilder.build());
   }

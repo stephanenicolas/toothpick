@@ -10,7 +10,8 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static toothpick.compiler.memberinjector.ProcessorTestUtilities.memberInjectorProcessors;
 
 public class FieldMemberInjectorTest {
-  @Test public void testSimpleFieldInjection() {
+  @Test
+  public void testSimpleFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -44,7 +45,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testProviderFieldInjection() {
+  @Test
+  public void testProviderFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -79,7 +81,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testLazyFieldInjection() {
+  @Test
+  public void testLazyFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -114,7 +117,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testFutureFieldInjection() {
+  @Test
+  public void testFutureFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -149,7 +153,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
+  @Test
+  public void testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -185,7 +190,8 @@ public class FieldMemberInjectorTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testFieldInjection_shouldFail_whenFieldIsPrivate() {
+  @Test
+  public void testFieldInjection_shouldFail_whenFieldIsPrivate() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -203,7 +209,8 @@ public class FieldMemberInjectorTest {
         .withErrorContaining("@Inject annotated fields must be non private : test.TestFieldInjection.foo");
   }
 
-  @Test public void testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
+  @Test
+  public void testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestMemberInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -222,11 +229,9 @@ public class FieldMemberInjectorTest {
         "import java.lang.Override;", //
         "import toothpick.Injector;", //
         "import toothpick.MemberInjector;", //
-        "import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;", //
         "", //
         "public final class TestMemberInjection$$MemberInjector implements MemberInjector<TestMemberInjection> {", //
-        "  private MemberInjector<TestMemberInjectionParent> superMemberInjector "
-            + "= MemberInjectorRegistryLocator.getMemberInjector(TestMemberInjectionParent.class);",
+        "  private MemberInjector<TestMemberInjectionParent> superMemberInjector " + "= new test.TestMemberInjectionParent$$MemberInjector();",
         //
         "  @Override", //
         "  public void inject(TestMemberInjection target, Injector injector) {", //
