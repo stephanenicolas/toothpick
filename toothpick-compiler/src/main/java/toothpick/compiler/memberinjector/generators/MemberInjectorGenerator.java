@@ -144,10 +144,6 @@ public class MemberInjectorGenerator implements CodeGenerator {
           scopeGetMethodName = "getLazy";
           className = ClassName.get(memberInjectionTarget.kindParamClass);
           break;
-        case FUTURE:
-          scopeGetMethodName = "getFuture";
-          className = ClassName.get(memberInjectionTarget.kindParamClass);
-          break;
         default:
           throw new IllegalStateException("The kind can't be null.");
       }
