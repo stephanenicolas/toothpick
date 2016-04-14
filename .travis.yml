@@ -7,8 +7,6 @@ android:
     - build-tools-23.0.2
     - android-23
     - extra-android-m2repository
-  licenses:
-    - android-sdk-license-5be876d5
 
 jdk:
   - oraclejdk7
@@ -28,7 +26,7 @@ cache:
     - $HOME/.m2
 
 script:
-  - ./gradlew clean test -s -d
+  - ./gradlew clean test
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
