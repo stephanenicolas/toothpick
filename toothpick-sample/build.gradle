@@ -7,7 +7,7 @@ dependencies {
   compile deps.inject
   compile project(':toothpick-compiler')
 
-  testCompile deps.junit
+  testCompile project(':toothpick-testing')
   testCompile deps.easymock
 }
 
@@ -24,9 +24,7 @@ afterEvaluate {
 
 compileJava {
   doFirst {
-    options.compilerArgs = [
-        '-Atoothpick_registry_package_name=toothpick.sample',
-    ]
+    options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.sample',]
   }
 }
 
