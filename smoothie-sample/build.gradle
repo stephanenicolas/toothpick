@@ -26,7 +26,6 @@ android {
     versionCode 1
     versionName '1.0.0'
   }
-
 }
 
 repositories {
@@ -40,7 +39,7 @@ dependencies {
   apt deps.butterknife_compiler
   compile deps.butterknife
 
-  testCompile deps.junit
+  testCompile project(':toothpick-testing')
   testCompile deps.easymock
   testCompile deps.truth
   testCompile deps.robolectric
