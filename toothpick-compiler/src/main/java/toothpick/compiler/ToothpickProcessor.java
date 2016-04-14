@@ -68,8 +68,9 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     filer = processingEnv.getFiler();
   }
 
-  protected void writeToFile(CodeGenerator codeGenerator, String fileDescription, Element... originatingElements) {
+  protected boolean writeToFile(CodeGenerator codeGenerator, String fileDescription, Element... originatingElements) {
     Writer writer = null;
+    boolean success = true;
 
     try {
       JavaFileObject jfo = filer.createSourceFile(codeGenerator.getFqcn(), originatingElements);
@@ -77,15 +78,19 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       writer.write(codeGenerator.brewJava());
     } catch (IOException e) {
       error("Error writing %s file: %s", fileDescription, e.getMessage());
+      success = false;
     } finally {
       if (writer != null) {
         try {
           writer.close();
         } catch (IOException e) {
           error("Error closing %s file: %s", fileDescription, e.getMessage());
+          success = false;
         }
       }
     }
+
+    return success;
   }
 
   /**
