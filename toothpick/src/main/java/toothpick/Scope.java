@@ -171,6 +171,22 @@ public abstract class Scope {
   public abstract <T> Lazy<T> getLazy(Class<T> clazz);
 
   /**
+   * Returns a named {@code Lazy} of {@code clazz} if one provider is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
+   * to the clazz will be used to create one.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
+   * will be scoped in the root scope of the current scope.
+   *
+   * @param clazz the class for which to obtain a lazy in the scope of this scope.
+   * @param <T> the type of {@code clazz}.
+   * @param name the name of this instance. TODO should we duplicate to allow only annotations and strings ? see bindings
+   * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   * @see #getProvider(Class)
+   */
+  public abstract <T> Lazy<T> getLazy(Class<T> clazz, Object name);
+
+  /**
    * Returns a {@code Future} of {@code clazz} if one provider is scoped in the current
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.

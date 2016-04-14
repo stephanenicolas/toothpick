@@ -251,6 +251,43 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void testNamedLazyFieldInjection() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestFieldInjection {", //
+        "  @Inject @Bar Lazy<Foo> foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}", //
+        "@interface Bar {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
+        "  @Override", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getLazy(Foo.class, \"Bar\");", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testFutureFieldInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //

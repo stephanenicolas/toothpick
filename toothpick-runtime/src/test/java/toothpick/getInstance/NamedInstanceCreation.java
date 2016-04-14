@@ -2,6 +2,7 @@ package toothpick.getInstance;
 
 import javax.inject.Provider;
 import org.junit.Test;
+import toothpick.Lazy;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
@@ -71,6 +72,24 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
     assertThat(provider3.get(), notNullValue());
     assertThat(provider, sameInstance(provider2));
     assertThat(provider, not(sameInstance(provider3)));
+  }
+
+  @Test
+  public void testNamedLazyInjection_shouldNotBeConfusedWithUnNamedInjection() throws Exception {
+    //GIVEN
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new SimpleModule());
+
+    //WHEN
+    Lazy<Foo> lazy = scope.getLazy(Foo.class, "bar");
+    Lazy<Foo> lazy2 = scope.getLazy(Foo.class, "bar");
+    Lazy<Foo> lazy3 = scope.getLazy(Foo.class);
+
+    //THEN
+    assertThat(lazy.get(), is(namedFooInstance));
+    assertThat(lazy2.get(), is(namedFooInstance));
+    assertThat(lazy3.get(), notNullValue());
+    assertThat(lazy.get(), not(sameInstance(lazy3.get())));
   }
 
   private static class SimpleModule extends Module {

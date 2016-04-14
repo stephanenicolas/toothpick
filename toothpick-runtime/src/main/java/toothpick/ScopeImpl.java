@@ -84,24 +84,15 @@ public class ScopeImpl extends Scope {
     return provider;
   }
 
-  //TODO explain the change to daniel, we were having some troubles
-  //we could not be using a provider in multi-thread, it has to be
-  //thread safe. The best was a multi DCL.
-  //now all access to the scope scopes are locked on the class
-  //all provider are locked on themselves.
-  //I won't do unit tests, because they are too hard and don't bring much
-  //TODO create a plugin system so that we can inject anything (handler/plugin ?)
-  //Kill the 2 methods below
-  //for @Inject Foo<Bar>
-  //generate getProvider(Bar.class, Foo.class) --> Foo becomes a modifier
-  //for @inject @Foo Bar
-  //generate getInstance(Bar.class, Foo.class) --> Foo becomes a modifier (JSR 330)
-  //if Foo is added as extension point to the compiler
-  //and devs can provide their own Injector that knows what to do to create
-  //a Foo<Bar> being passed a Provider<Bar>
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz) {
     Provider<T> provider = getProvider(clazz);
+    return new ProviderImpl<>(provider, true);
+  }
+
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz, Object name) {
+    Provider<T> provider = getProvider(clazz, name);
     return new ProviderImpl<>(provider, true);
   }
 
