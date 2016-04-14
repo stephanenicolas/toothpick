@@ -1,5 +1,6 @@
 package toothpick.getInstance;
 
+import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
@@ -22,7 +23,7 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
   static Foo namedFooInstance = new Foo();
 
   @Test
-  public void testSimpleInjection() throws Exception {
+  public void testNamedInjection() throws Exception {
     //GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(new SimpleModule());
@@ -35,7 +36,7 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
   }
 
   @Test
-  public void testSimpleInjectionIsNotProducingSingleton() throws Exception {
+  public void testNamedInjection_shouldNotBeConfusedWithUnNamedInjection() throws Exception {
     //GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(new SimpleModule());
@@ -51,6 +52,25 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
     assertThat(instance3, notNullValue());
     assertThat(instance, sameInstance(instance2));
     assertThat(instance, not(sameInstance(instance3)));
+  }
+
+  @Test
+  public void testNamedProviderInjection_shouldNotBeConfusedWithUnNamedInjection() throws Exception {
+    //GIVEN
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new SimpleModule());
+
+    //WHEN
+    Provider<Foo> provider = scope.getProvider(Foo.class, "bar");
+    Provider<Foo> provider2 = scope.getProvider(Foo.class, "bar");
+    Provider<Foo> provider3 = scope.getProvider(Foo.class);
+
+    //THEN
+    assertThat(provider.get(), is(namedFooInstance));
+    assertThat(provider2.get(), is(namedFooInstance));
+    assertThat(provider3.get(), notNullValue());
+    assertThat(provider, sameInstance(provider2));
+    assertThat(provider, not(sameInstance(provider3)));
   }
 
   private static class SimpleModule extends Module {

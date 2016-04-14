@@ -124,11 +124,11 @@ public class MemberInjectorGenerator implements CodeGenerator {
     }
     for (FieldInjectionTarget memberInjectionTarget : fieldInjectionTargetList) {
       final String scopeGetMethodName;
-      final String bindingName;
+      final String injectionName;
       if (memberInjectionTarget.name == null) {
-        bindingName = "";
+        injectionName = "";
       } else {
-        bindingName = ", \"" + memberInjectionTarget.name.toString() + "\"";
+        injectionName = ", \"" + memberInjectionTarget.name.toString() + "\"";
       }
       final ClassName className;
       switch (memberInjectionTarget.kind) {
@@ -151,7 +151,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
         default:
           throw new IllegalStateException("The kind can't be null.");
       }
-      injectBuilder.addStatement("target.$L = scope.$L($T.class$L)", memberInjectionTarget.memberName, scopeGetMethodName, className, bindingName);
+      injectBuilder.addStatement("target.$L = scope.$L($T.class$L)", memberInjectionTarget.memberName, scopeGetMethodName, className, injectionName);
     }
   }
 

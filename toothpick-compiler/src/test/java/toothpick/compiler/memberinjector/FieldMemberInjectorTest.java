@@ -119,6 +119,44 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void testNamedProviderFieldInjection_whenUsingAnnotation() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Named;", //
+        "import javax.inject.Provider;", //
+        "public class TestFieldInjection {", //
+        "  @Inject @Bar Provider<Foo> foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}", //
+        "@interface Bar {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
+        "  @Override", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getProvider(Foo.class, \"Bar\");", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testNamedFieldInjection_shouldFail_whenUsingMoreThan2Annotation() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //

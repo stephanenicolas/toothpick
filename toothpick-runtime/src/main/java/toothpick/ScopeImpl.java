@@ -32,19 +32,6 @@ public class ScopeImpl extends Scope {
   }
 
   @Override
-  public <T> T getInstance(Class<T> clazz, Object name) {
-    Map<Object, Provider> mapNameToProviders = mapClassesToMapOfNameToProviders.get(clazz);
-    if (mapNameToProviders == null) {
-      throw new RuntimeException(format("No named providers for name : %s", name));
-    }
-    Provider<T> provider = (Provider<T>) mapNameToProviders.get(name);
-    if (provider == null) {
-      throw new RuntimeException(format("No named provider for name : %s", name));
-    }
-    return provider.get();
-  }
-
-  @Override
   public <T> Provider<T> getProvider(Class<T> clazz) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
@@ -77,6 +64,24 @@ public class ScopeImpl extends Scope {
       }
     }
     return newProvider;
+  }
+
+  @Override
+  public <T> T getInstance(Class<T> clazz, Object name) {
+    return getProvider(clazz, name).get();
+  }
+
+  @Override
+  public <T> Provider<T> getProvider(Class<T> clazz, Object name) {
+    Map<Object, Provider> mapNameToProviders = mapClassesToMapOfNameToProviders.get(clazz);
+    if (mapNameToProviders == null) {
+      throw new RuntimeException(format("No named providers for class : %s", clazz));
+    }
+    Provider<T> provider = (Provider<T>) mapNameToProviders.get(name);
+    if (provider == null) {
+      throw new RuntimeException(format("No named provider for name : %s", name));
+    }
+    return provider;
   }
 
   //TODO explain the change to daniel, we were having some troubles
