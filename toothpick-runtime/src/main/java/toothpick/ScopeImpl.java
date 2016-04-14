@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
@@ -103,12 +102,6 @@ public class ScopeImpl extends Scope {
   public <T> Lazy<T> getLazy(Class<T> clazz) {
     Provider<T> provider = getProvider(clazz);
     return new ProviderImpl<>(provider, true);
-  }
-
-  @Override
-  public <T> Future<T> getFuture(Class<T> clazz) {
-    final Provider<T> provider = getProvider(clazz);
-    return EXECUTOR_SERVICE.submit(new ProviderCallable<>(provider));
   }
 
   @Override

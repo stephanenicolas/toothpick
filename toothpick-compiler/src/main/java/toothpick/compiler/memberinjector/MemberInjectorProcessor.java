@@ -209,8 +209,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       return FieldInjectionTarget.Kind.PROVIDER;
     } else if ("toothpick.Lazy".equals(elementTypeName)) {
       return FieldInjectionTarget.Kind.LAZY;
-    } else if ("java.util.concurrent.Future".equals(elementTypeName)) {
-      return FieldInjectionTarget.Kind.FUTURE;
     } else {
       return FieldInjectionTarget.Kind.INSTANCE;
     }

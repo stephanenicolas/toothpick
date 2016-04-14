@@ -22,6 +22,5 @@ public final class FieldInjectionTarget {
     INSTANCE,
     PROVIDER,
     LAZY,
-    FUTURE
   }
 }

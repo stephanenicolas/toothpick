@@ -6,7 +6,6 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import javax.inject.Provider;
 import toothpick.config.Module;
 
@@ -169,23 +168,6 @@ public abstract class Scope {
    * @see #getProvider(Class)
    */
   public abstract <T> Lazy<T> getLazy(Class<T> clazz);
-
-  /**
-   * Returns a {@code Future} of {@code clazz} if one provider is scoped in the current
-   * scope, or its ancestors. If there is no such provider, the factory associated
-   * to the clazz will be used to create one.
-   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
-   * will be scoped in the root scope of the current scope.
-   *
-   * All future are executed on a background thread pool. TODO make this configurable.
-   *
-   * @param clazz the class for which to obtain a future in the scope of this scope.
-   * @param <T> the type of {@code clazz}.
-   * @return a scoped future or a new one using the factory associated to {@code clazz}.
-   * @see #getProvider(Class)
-   */
-  public abstract <T> Future<T> getFuture(Class<T> clazz);
 
   /**
    * Allows to define test modules. These method should only be used for testing.

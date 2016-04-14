@@ -251,42 +251,6 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
-  public void testFutureFieldInjection() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import java.util.concurrent.Future;", //
-        "public class TestFieldInjection {", //
-        "  @Inject Future<Foo> foo;", //
-        "  public TestFieldInjection() {}", //
-        "}", //
-        "class Foo {}" //
-    ));
-
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection$$MemberInjector", Joiner.on('\n').join(//
-        "package test;", //
-        "", //
-        "import java.lang.Override;", //
-        "import toothpick.MemberInjector;", //
-        "import toothpick.Scope;", //
-        "", //
-        "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
-        "  @Override", //
-        "  public void inject(TestFieldInjection target, Scope scope) {", //
-        "    target.foo = scope.getFuture(Foo.class);", //
-        "  }", //
-        "}" //
-    ));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(memberInjectorProcessors())
-        .compilesWithoutError()
-        .and()
-        .generatesSources(expectedSource);
-  }
-
-  @Test
   public void testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
