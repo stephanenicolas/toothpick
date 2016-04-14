@@ -25,10 +25,11 @@ import toothpick.MemberInjector;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
-import toothpick.compiler.memberinjector.generators.MemberInjectorRegistryGenerator;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
-import toothpick.compiler.memberinjector.targets.MemberInjectorRegistryInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
+import toothpick.compiler.registry.generators.RegistryGenerator;
+import toothpick.compiler.registry.targets.RegistryInjectionTarget;
+import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 
 /**
  * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
@@ -60,6 +61,8 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     Set<TypeElement> elementWithInjectionSet = new HashSet<>();
     elementWithInjectionSet.addAll(mapTypeElementToFieldInjectorTargetList.keySet());
     elementWithInjectionSet.addAll(mapTypeElementToMethodInjectorTargetList.keySet());
+    List<TypeElement> elementsWithMemberInjectorCreated = new ArrayList<>();
+
     for (TypeElement typeElement : elementWithInjectionSet) {
       List<FieldInjectionTarget> fieldInjectionTargetList = mapTypeElementToFieldInjectorTargetList.get(typeElement);
       List<MethodInjectionTarget> methodInjectionTargetList = mapTypeElementToMethodInjectorTargetList.get(typeElement);
@@ -67,17 +70,23 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       MemberInjectorGenerator memberInjectorGenerator =
           new MemberInjectorGenerator(typeElement, superClassThatNeedsInjection, fieldInjectionTargetList, methodInjectionTargetList);
       String fileDescription = String.format("MemberInjector for type %s", typeElement);
-      writeToFile(memberInjectorGenerator, fileDescription, typeElement);
+      boolean success = writeToFile(memberInjectorGenerator, fileDescription, typeElement);
+      if (success) {
+        elementsWithMemberInjectorCreated.add(typeElement);
+      }
     }
 
     // Generate Registry
+    //this allows tests to by pass the option mechanism in processors
     if (toothpickRegistryPackageName != null || readProcessorOptions()) {
-      MemberInjectorRegistryInjectionTarget memberInjectorRegistryInjectionTarget =
-          new MemberInjectorRegistryInjectionTarget(elementWithInjectionSet, toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList);
-      MemberInjectorRegistryGenerator memberInjectorRegistryGenerator = new MemberInjectorRegistryGenerator(memberInjectorRegistryInjectionTarget);
-      Element[] allTypes = elementWithInjectionSet.toArray(new Element[mapTypeElementToFieldInjectorTargetList.size()]);
+      RegistryInjectionTarget registryInjectionTarget = new RegistryInjectionTarget(MemberInjector.class,
+          AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
+          toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
+      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
+
       String fileDescription = "MemberInjector registry";
-      writeToFile(memberInjectorRegistryGenerator, fileDescription, allTypes);
+      Element[] allTypes = elementsWithMemberInjectorCreated.toArray(new Element[elementsWithMemberInjectorCreated.size()]);
+      writeToFile(registryGenerator, fileDescription, allTypes);
     }
 
     return false;

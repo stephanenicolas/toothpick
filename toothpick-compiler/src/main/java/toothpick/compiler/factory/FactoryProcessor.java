@@ -1,5 +1,6 @@
 package toothpick.compiler.factory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,13 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import toothpick.Factory;
 import toothpick.compiler.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
-import toothpick.compiler.factory.generators.FactoryRegistryGenerator;
 import toothpick.compiler.factory.targets.FactoryInjectionTarget;
-import toothpick.compiler.factory.targets.FactoryRegistryInjectionTarget;
+import toothpick.compiler.registry.generators.RegistryGenerator;
+import toothpick.compiler.registry.targets.RegistryInjectionTarget;
+import toothpick.registries.factory.AbstractFactoryRegistry;
 
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -48,25 +51,30 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     // Generate Factories
+    List<TypeElement> elementsWithFactoryCreated = new ArrayList<>();
+
     for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
       FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
       FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
       TypeElement typeElement = entry.getKey();
       String fileDescription = format("Factory for type %s", typeElement);
-      writeToFile(factoryGenerator, fileDescription, typeElement);
+      boolean success = writeToFile(factoryGenerator, fileDescription, typeElement);
+      if (success) {
+        elementsWithFactoryCreated.add(typeElement);
+      }
     }
 
     // Generate Registry
     //this allows tests to by pass the option mechanism in processors
     if (toothpickRegistryPackageName != null || readProcessorOptions()) {
-      FactoryRegistryInjectionTarget factoryRegistryInjectionTarget =
-          new FactoryRegistryInjectionTarget(mapTypeElementToConstructorInjectionTarget.values(), toothpickRegistryPackageName,
-              toothpickRegistryChildrenPackageNameList);
-      FactoryRegistryGenerator factoryRegistryGenerator = new FactoryRegistryGenerator(factoryRegistryInjectionTarget);
-      Element[] allTypes =
-          mapTypeElementToConstructorInjectionTarget.keySet().toArray(new Element[mapTypeElementToConstructorInjectionTarget.size()]);
+      RegistryInjectionTarget registryInjectionTarget = new RegistryInjectionTarget(Factory.class,
+          AbstractFactoryRegistry.class, toothpickRegistryPackageName,
+          toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
+      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
+
       String fileDescription = "Factory registry";
-      writeToFile(factoryRegistryGenerator, fileDescription, allTypes);
+      Element[] allTypes = elementsWithFactoryCreated.toArray(new Element[elementsWithFactoryCreated.size()]);
+      writeToFile(registryGenerator, fileDescription, allTypes);
     }
 
     return false;
