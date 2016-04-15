@@ -3,6 +3,7 @@ package toothpick.sample;
 import org.easymock.EasyMockRule;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +30,11 @@ public class SimpleEntryPointTest {
   public static void setUp() throws Exception {
     MemberInjectorRegistryLocator.setRootRegistry(new toothpick.sample.MemberInjectorRegistry());
     FactoryRegistryLocator.setRootRegistry(new toothpick.sample.FactoryRegistry());
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    ToothPick.reset();
   }
 
   @Test
