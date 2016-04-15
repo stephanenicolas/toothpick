@@ -35,7 +35,6 @@ public class LessSimpleActivity extends Activity {
     super.onCreate(savedInstanceState);
     scope = ToothPick.openScopes(getApplication(), this);
     scope.installModules(new ActivityModule(this));
-    scope.installModules(new ActivityModule(this));
     ToothPick.inject(this, scope);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);

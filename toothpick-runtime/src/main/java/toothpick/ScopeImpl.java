@@ -1,9 +1,6 @@
 package toothpick;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Provider;
@@ -21,10 +18,6 @@ public class ScopeImpl extends Scope {
     super(name);
   }
 
-  public IdentityHashMap<Class, Provider> getScope() {
-    return mapClassesToProviders;
-  }
-
   @Override
   public <T> T getInstance(Class<T> clazz) {
     return getProvider(clazz).get();
@@ -32,37 +25,7 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz) {
-    if (clazz == null) {
-      throw new IllegalArgumentException("TP can't get an instance of a null class.");
-    }
-    synchronized (clazz) {
-      Provider<T> scopedProvider = getScopedProvider(clazz);
-      if (scopedProvider != null) {
-        return scopedProvider;
-      }
-      Iterator<Scope> iterator = parentScopes.iterator();
-      while (iterator.hasNext()) {
-        Scope parentScope = iterator.next();
-        Provider<T> parentScopedProvider = parentScope.getScopedProvider(clazz);
-        if (parentScopedProvider != null) {
-          return parentScopedProvider;
-        }
-      }
-    }
-    //classes discovered at runtime, not bound by any module
-    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-    final Provider<T> newProvider;
-    synchronized (clazz) {
-      if (factory.hasSingletonAnnotation()) {
-        //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<T>(factory.createInstance(this));
-        getRootScope().mapClassesToProviders.put(clazz, newProvider);
-      } else {
-        newProvider = new ProviderImpl(this, factory, false);
-        installUnNamedProvider(clazz, newProvider);
-      }
-    }
-    return newProvider;
+    return getProvider(clazz, null);
   }
 
   @Override
@@ -72,15 +35,36 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz, Object name) {
-    Map<Object, Provider> mapNameToProviders = mapClassesToMapOfNameToProviders.get(clazz);
-    if (mapNameToProviders == null) {
-      throw new RuntimeException(format("No named providers for class : %s", clazz));
+    if (clazz == null) {
+      throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
-    Provider<T> provider = (Provider<T>) mapNameToProviders.get(name);
-    if (provider == null) {
-      throw new RuntimeException(format("No named provider for name : %s", name));
+    synchronized (clazz) {
+      Provider<T> scopedProvider = getScopedProvider(clazz, name);
+      if (scopedProvider != null) {
+        return scopedProvider;
+      }
+      Iterator<Scope> iterator = parentScopes.iterator();
+      while (iterator.hasNext()) {
+        Scope parentScope = iterator.next();
+        Provider<T> parentScopedProvider = parentScope.getScopedProvider(clazz, name);
+        if (parentScopedProvider != null) {
+          return parentScopedProvider;
+        }
+      }
+
+      //classes discovered at runtime, not bound by any module
+      Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
+      final Provider<T> newProvider;
+      if (factory.hasSingletonAnnotation()) {
+        //singleton classes discovered dynamically go to root scope.
+        newProvider = new ProviderImpl<>(factory.createInstance(this));
+        getRootScope().installProvider(clazz, name, newProvider);
+      } else {
+        newProvider = new ProviderImpl(this, factory, false);
+        installProvider(clazz, name, newProvider);
+      }
+      return newProvider;
     }
-    return provider;
   }
 
   //TODO explain the change to daniel, we were having some troubles
@@ -129,30 +113,13 @@ public class ScopeImpl extends Scope {
 
       Class key = binding.getKey();
       synchronized (key) {
-        if (!hasTestModules || !mapClassesToProviders.containsKey(key)) {
-          Object bindingName = binding.getName();
+        Object bindingName = binding.getName();
+        if (!hasTestModules || getScopedProvider(key, bindingName) == null) {
           Provider provider = toProvider(binding);
-          if (bindingName == null) {
-            installUnNamedProvider(key, provider);
-          } else {
-            installNamedProvider(key, bindingName, provider);
-          }
+          installProvider(key, bindingName, provider);
         }
       }
     }
-  }
-
-  private void installUnNamedProvider(Class key, Provider provider) {
-    mapClassesToProviders.put(key, provider);
-  }
-
-  private void installNamedProvider(Class key, Object bindingName, Provider provider) {
-    Map<Object, Provider> mapNameToProviders = mapClassesToMapOfNameToProviders.get(key);
-    if (mapNameToProviders == null) {
-      mapNameToProviders = new HashMap<>();
-      mapClassesToMapOfNameToProviders.put(key, mapNameToProviders);
-    }
-    mapNameToProviders.put(bindingName, provider);
   }
 
   //do not change the return type to Provider<? extends T>.

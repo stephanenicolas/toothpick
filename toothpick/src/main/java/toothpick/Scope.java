@@ -2,6 +2,7 @@ package toothpick;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,8 +19,7 @@ public abstract class Scope {
   protected Scope parentScope;
   protected Collection<Scope> childrenScopes = new ArrayList<>();
   protected List<Scope> parentScopes = new ArrayList<>();
-  protected IdentityHashMap<Class, Provider> mapClassesToProviders = new IdentityHashMap<>();
-  protected IdentityHashMap<Class, Map<Object, Provider>> mapClassesToMapOfNameToProviders = new IdentityHashMap<>();
+  protected IdentityHashMap<Class, AllProviders> mapClassesToAllProviders = new IdentityHashMap<>();
   protected Object name;
 
   public Scope(Object name) {
@@ -84,15 +84,61 @@ public abstract class Scope {
   }
 
   /**
-   * Obtains the provider of the class {@code clazz} that is scoped in the current scope, if any.
+   * Obtains the provider of the class {@code clazz} and name {@code bindingName}
+   * that is scoped in the current scope, if any.
    * Ancestors are not taken into account.
    *
    * @param clazz the class for which to obtain the scoped provider of this scope, if one is scoped.
+   * @param bindingName the name, possibly {@code null}, for which to obtain the scoped provider of this scope, if one is scoped.
    * @param <T> the type of {@code clazz}.
-   * @return the scoped provider of this scope, if one is scoped, {@code Null} otherwise.
+   * @return the scoped provider of this scope for class {@code clazz} and {@code bindingName},
+   * if one is scoped, {@code null} otherwise.
    */
-  protected <T> Provider<T> getScopedProvider(Class<T> clazz) {
-    return mapClassesToProviders.get(clazz);
+  protected <T> Provider<T> getScopedProvider(Class<T> clazz, Object bindingName) {
+    synchronized (clazz) {
+      AllProviders allProviders = mapClassesToAllProviders.get(clazz);
+      if (allProviders == null) {
+        return null;
+      }
+      if (bindingName == null) {
+        return allProviders.unNamedProvider;
+      }
+
+      Map<Object, Provider> mapNameToProvider = (Map<Object, Provider>) allProviders.getMapNameToProvider();
+      if (mapNameToProvider == null) {
+        return null;
+      }
+      Provider<T> provider = (Provider<T>) mapNameToProvider.get(bindingName);
+      return provider;
+    }
+  }
+
+  /**
+   * Install the provider of the class {@code clazz} and name {@code bindingName}
+   * in the current scope.
+   *
+   * @param clazz the class for which to install the scoped provider of this scope.
+   * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
+   * @param <T> the type of {@code clazz}.
+   */
+  protected <T, U extends T> void installProvider(Class<T> clazz, Object bindingName, Provider<U> provider) {
+    synchronized (clazz) {
+      AllProviders allProviders = mapClassesToAllProviders.get(clazz);
+      if (allProviders == null) {
+        allProviders = new AllProviders();
+        mapClassesToAllProviders.put(clazz, allProviders);
+      }
+      if (bindingName == null) {
+        allProviders.setUnNamedProvider(provider);
+      } else {
+        Map<Object, Provider> mapNameToProvider = allProviders.getMapNameToProvider();
+        if (mapNameToProvider == null) {
+          mapNameToProvider = new HashMap<>();
+          allProviders.setMapNameToProvider(mapNameToProvider);
+        }
+        mapNameToProvider.put(bindingName, provider);
+      }
+    }
   }
 
   /**
@@ -202,7 +248,7 @@ public abstract class Scope {
     builder.append('\n');
 
     builder.append('[');
-    for (Class aClass : mapClassesToProviders.keySet()) {
+    for (Class aClass : mapClassesToAllProviders.keySet()) {
       builder.append(aClass.getName());
       builder.append(',');
     }
@@ -229,5 +275,31 @@ public abstract class Scope {
     }
 
     return builder.toString();
+  }
+
+  protected static class AllProviders<T> {
+    private Provider<? extends T> unNamedProvider;
+    private Map<Object, Provider<? extends T>> mapNameToProvider;
+
+    public AllProviders() {
+      this(null, null);
+    }
+
+    public AllProviders(Provider<? extends T> unNamedProvider, Map<Object, Provider<? extends T>> mapNameToProvider) {
+      this.unNamedProvider = unNamedProvider;
+      this.mapNameToProvider = mapNameToProvider;
+    }
+
+    public Map<Object, Provider<? extends T>> getMapNameToProvider() {
+      return mapNameToProvider;
+    }
+
+    public void setMapNameToProvider(Map<Object, Provider<? extends T>> mapNameToProvider) {
+      this.mapNameToProvider = mapNameToProvider;
+    }
+
+    public <U extends T> void setUnNamedProvider(Provider<U> unNamedProvider) {
+      this.unNamedProvider = unNamedProvider;
+    }
   }
 }
