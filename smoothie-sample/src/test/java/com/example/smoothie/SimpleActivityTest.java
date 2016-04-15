@@ -1,6 +1,7 @@
 package com.example.smoothie;
 
 import com.example.smoothie.deps.ContextNamer;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -20,6 +21,11 @@ import static org.easymock.EasyMock.verify;
 @RunWith(RobolectricTestRunner.class) //
 @Config(manifest = "src/main/AndroidManifest.xml")
 public class SimpleActivityTest {
+
+  @After
+  public void tearDown() throws Exception {
+    ToothPick.reset();
+  }
 
   @Test
   public void verifyInjectionAtOnCreate() {

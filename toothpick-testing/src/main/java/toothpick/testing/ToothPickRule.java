@@ -40,7 +40,11 @@ public class ToothPickRule implements TestRule {
 
   @Override
   public Statement apply(Statement base, Description description) {
-    return base;
+    try {
+      return base;
+    } finally {
+      ToothPick.reset();
+    }
   }
 
   public ToothPickTestModule getTestModule() {
