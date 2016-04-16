@@ -112,7 +112,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     boolean isSingleInjectedConstructor = true;
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(enclosingElement.getEnclosedElements());
     for (ExecutableElement constructorElementInClass : constructorElements) {
-      if (constructorElement.getAnnotation(Inject.class) != null && !constructorElement.equals(constructorElementInClass)) {
+      if (constructorElementInClass.getAnnotation(Inject.class) != null && !constructorElement.equals(constructorElementInClass)) {
         isSingleInjectedConstructor = false;
       }
     }

@@ -107,6 +107,48 @@ public class FactoryTest {
   }
 
   @Test
+  public void test2Constructors_butOnlyOneIsInjected() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.Test2Constructors", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class Test2Constructors {", //
+        "  @Inject public Test2Constructors() {}", //
+        "  public Test2Constructors(String s) {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Test2Constructors$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class Test2Constructors$$Factory implements Factory<Test2Constructors> {", //
+        "  @Override", //
+        "  public Test2Constructors createInstance(Scope scope) {", //
+        "    Test2Constructors test2Constructors = new Test2Constructors();", //
+        "    return test2Constructors;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProducesSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testAClassThatNeedsInjection_withAnInjectedField() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
