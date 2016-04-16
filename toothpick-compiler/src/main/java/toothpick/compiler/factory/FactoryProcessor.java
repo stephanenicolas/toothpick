@@ -67,9 +67,9 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Generate Registry
     //this allows tests to by pass the option mechanism in processors
     if (toothpickRegistryPackageName != null || readProcessorOptions()) {
-      RegistryInjectionTarget registryInjectionTarget = new RegistryInjectionTarget(Factory.class,
-          AbstractFactoryRegistry.class, toothpickRegistryPackageName,
-          toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
+      RegistryInjectionTarget registryInjectionTarget =
+          new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
+              toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
       RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
 
       String fileDescription = "Factory registry";
@@ -142,7 +142,8 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     if (!(rawFieldTypeElement instanceof TypeElement)) {
       TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
-      error(fieldElement, "Field $s#$s is of type $s which is not supported by Toothpick.", enclosingElement.getQualifiedName(), fieldElement.getSimpleName(), rawFieldTypeElement);
+      error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
+          fieldElement.getSimpleName(), rawFieldTypeElement);
       return;
     }
 
