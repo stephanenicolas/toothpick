@@ -138,22 +138,12 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void parseInjectedField(VariableElement fieldElement, Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
-    Element rawFieldTypeElement = typeUtils.asElement(fieldElement.asType());
-
-    if (!(rawFieldTypeElement instanceof TypeElement)) {
-      TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
-      error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
-          fieldElement.getSimpleName(), rawFieldTypeElement);
-      return;
-    }
-
-    final TypeElement fieldTypeElement = (TypeElement) rawFieldTypeElement;
-
     // Verify common generated code restrictions.
     if (!isValidInjectField(fieldElement)) {
       return;
     }
 
+    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
     if (mapTypeElementToConstructorInjectionTarget.containsKey(fieldTypeElement)) {
       //the class is already known
       return;
