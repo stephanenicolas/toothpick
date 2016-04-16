@@ -62,6 +62,6 @@ public class MethodMemberInjectorTest {
         .that(source)
         .processedWith(memberInjectorProcessors())
         .failsToCompile()
-        .withErrorContaining("@Inject annotated methods must not be private : test.TestMethodInjection.m");
+        .withErrorContaining("@Inject annotated methods must not be private : test.TestMethodInjection#m");
   }
 }

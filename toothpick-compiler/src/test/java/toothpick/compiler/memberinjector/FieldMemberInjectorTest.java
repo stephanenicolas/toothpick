@@ -303,7 +303,7 @@ public class FieldMemberInjectorTest {
         .that(source)
         .processedWith(memberInjectorProcessors())
         .failsToCompile()
-        .withErrorContaining("@Inject annotated fields must be non private : test.TestFieldInjection.foo");
+        .withErrorContaining("@Inject annotated fields must be non private : test.TestFieldInjection#foo");
   }
 
   @Test

@@ -162,7 +162,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     // Verify modifiers.
     Set<Modifier> modifiers = fieldElement.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(fieldElement, "@Inject annotated fields must be non private : %s.%s", enclosingElement.getQualifiedName(), fieldElement.getSimpleName());
+      error(fieldElement, "@Inject annotated fields must be non private : %s#%s", enclosingElement.getQualifiedName(), fieldElement.getSimpleName());
       valid = false;
     }
 
@@ -184,7 +184,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     // Verify modifiers.
     Set<Modifier> modifiers = methodElement.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(methodElement, "@Inject annotated methods must not be private : %s.%s", enclosingElement.getQualifiedName(),
+      error(methodElement, "@Inject annotated methods must not be private : %s#%s", enclosingElement.getQualifiedName(),
           methodElement.getSimpleName());
       valid = false;
     }

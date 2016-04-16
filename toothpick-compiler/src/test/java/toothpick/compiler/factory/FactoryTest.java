@@ -422,7 +422,7 @@ public class FactoryTest {
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryProcessors())
         .failsToCompile()
-        .withErrorContaining("@Inject annotated fields must be non private : test.TestOptimisticFactoryCreationForInjectedField.foo");
+        .withErrorContaining("@Inject annotated fields must be non private : test.TestOptimisticFactoryCreationForInjectedField#foo");
   }
 
   @Test
@@ -525,7 +525,7 @@ public class FactoryTest {
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryProcessors())
         .failsToCompile()
-        .withErrorContaining("@Inject annotated methods must not be private : test.TestOptimisticFactoryCreationForInjectedMethod.m");
+        .withErrorContaining("@Inject annotated methods must not be private : test.TestOptimisticFactoryCreationForInjectedMethod#m");
   }
 
   @Test
