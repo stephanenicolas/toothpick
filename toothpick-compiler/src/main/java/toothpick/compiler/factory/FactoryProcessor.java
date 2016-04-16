@@ -138,19 +138,25 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void parseInjectedField(VariableElement fieldElement, Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
-    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
+    Element rawFieldTypeElement = typeUtils.asElement(fieldElement.asType());
+
+    if (!(rawFieldTypeElement instanceof TypeElement)) {
+      TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
+      error(fieldElement, "Field $s#$s is of type $s which is not supported by Toothpick.", enclosingElement.getQualifiedName(), fieldElement.getSimpleName(), rawFieldTypeElement);
+      return;
+    }
+
+    final TypeElement fieldTypeElement = (TypeElement) rawFieldTypeElement;
 
     // Verify common generated code restrictions.
     if (!isValidInjectField(fieldElement)) {
       return;
     }
 
-    if (mapTypeElementToConstructorInjectionTarget.containsKey(memberTypeElement)) {
+    if (mapTypeElementToConstructorInjectionTarget.containsKey(fieldTypeElement)) {
       //the class is already known
       return;
     }
-
-    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
     // Verify common generated code restrictions.
     if (!isValidInjectedType(fieldTypeElement)) {
@@ -159,7 +165,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     FactoryInjectionTarget factoryInjectionTargetForField = createConstructorInjectionTargetForVariableElement(fieldElement);
     if (factoryInjectionTargetForField != null) {
-      mapTypeElementToConstructorInjectionTarget.put(memberTypeElement, factoryInjectionTargetForField);
+      mapTypeElementToConstructorInjectionTarget.put(fieldTypeElement, factoryInjectionTargetForField);
     }
   }
 
