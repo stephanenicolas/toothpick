@@ -152,7 +152,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   }
 
   private void mapTypeToMostDirectSuperTypeThatNeedsInjection(TypeElement enclosingElement) {
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, true);
     mapTypeElementToSuperTypeElementThatNeedsInjection.put(enclosingElement, superClassWithInjectedMembers);
   }
 

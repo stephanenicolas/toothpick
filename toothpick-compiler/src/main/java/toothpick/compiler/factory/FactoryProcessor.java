@@ -10,14 +10,10 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
 import toothpick.compiler.ToothpickProcessor;
@@ -219,7 +215,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     FactoryInjectionTarget factoryInjectionTarget =
         new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
@@ -233,7 +229,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(fieldTypeElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(fieldTypeElement, false);
 
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(fieldTypeElement.getEnclosedElements());
     //we just need to deal with the case of the defaul constructor only.
@@ -266,27 +262,6 @@ public class FactoryProcessor extends ToothpickProcessor {
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
         //the previous line also covers && fieldTypeElement.getKind() != ElementKind.INTERFACE;
         && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE);
-  }
-
-  private boolean needsMemberInjection(TypeElement typeElement) {
-    TypeElement currentTypeElement = typeElement;
-    do {
-      List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
-      for (Element enclosedElement : enclosedElements) {
-        if ((enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) || (enclosedElement.getAnnotation(
-            Inject.class) != null && enclosedElement.getKind() == ElementKind.METHOD)) {
-          return true;
-        }
-      }
-      TypeMirror superclass = currentTypeElement.getSuperclass();
-      if (superclass.getKind() == TypeKind.DECLARED) {
-        DeclaredType superType = (DeclaredType) superclass;
-        currentTypeElement = (TypeElement) superType.asElement();
-      } else {
-        currentTypeElement = null;
-      }
-    } while (currentTypeElement != null);
-    return false;
   }
 
   //used for testing only

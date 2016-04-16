@@ -230,22 +230,26 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return false;
   }
 
-  protected TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement) {
+  public TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement, boolean onlyParents) {
     TypeElement currentTypeElement = typeElement;
-    boolean couldFindSuperClass = true;
     do {
-      TypeMirror superClassTypeMirror = currentTypeElement.getSuperclass();
-      couldFindSuperClass = superClassTypeMirror.getKind() == TypeKind.DECLARED;
-      if (couldFindSuperClass) {
-        currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
-        for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
-          if ((enclosedElement.getKind() == ElementKind.FIELD || enclosedElement.getKind() == ElementKind.METHOD)
-              && enclosedElement.getAnnotation(Inject.class) != null) {
+      if (currentTypeElement != typeElement || !onlyParents) {
+        List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
+        for (Element enclosedElement : enclosedElements) {
+          if ((enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD)
+              || (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.METHOD)) {
             return currentTypeElement;
           }
         }
       }
-    } while (couldFindSuperClass);
+      TypeMirror superclass = currentTypeElement.getSuperclass();
+      if (superclass.getKind() == TypeKind.DECLARED) {
+        DeclaredType superType = (DeclaredType) superclass;
+        currentTypeElement = (TypeElement) superType.asElement();
+      } else {
+        currentTypeElement = null;
+      }
+    } while (currentTypeElement != null);
     return null;
   }
 }
