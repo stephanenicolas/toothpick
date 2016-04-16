@@ -36,9 +36,10 @@ public class FactoryGenerator implements CodeGenerator {
     ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(Factory.class), className);
 
     // Build class
-    TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(CodeGeneratorUtil.getGeneratedSimpleClassName(factoryInjectionTarget.builtClass) + FACTORY_SUFFIX)
-        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addSuperinterface(parameterizedTypeName);
+    TypeSpec.Builder factoryTypeSpec =
+        TypeSpec.classBuilder(CodeGeneratorUtil.getGeneratedSimpleClassName(factoryInjectionTarget.builtClass) + FACTORY_SUFFIX)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addSuperinterface(parameterizedTypeName);
     emitCreateInstance(factoryTypeSpec);
     emitHasSingleton(factoryTypeSpec);
     emitHasProducesSingleton(factoryTypeSpec);
@@ -83,7 +84,8 @@ public class FactoryGenerator implements CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (factoryInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)", CodeGeneratorUtil.getGeneratedFQNClassName(factoryInjectionTarget.superClassThatNeedsMemberInjection), varName);
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)",
+          CodeGeneratorUtil.getGeneratedFQNClassName(factoryInjectionTarget.superClassThatNeedsMemberInjection), varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);
 

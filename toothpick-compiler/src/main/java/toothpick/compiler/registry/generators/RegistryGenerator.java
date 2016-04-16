@@ -70,7 +70,8 @@ public class RegistryGenerator implements CodeGenerator {
     for (TypeElement injectionTarget : registryInjectionTarget.injectionTargetList) {
       switchBlockBuilder.add("case ($S):\n", injectionTarget.getQualifiedName().toString());
       String typeSimpleName = registryInjectionTarget.type.getSimpleName();
-      switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, CodeGeneratorUtil.getGeneratedFQNClassName(injectionTarget), typeSimpleName);
+      switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, CodeGeneratorUtil.getGeneratedFQNClassName(injectionTarget),
+          typeSimpleName);
     }
 
     switchBlockBuilder.add("default:\n");

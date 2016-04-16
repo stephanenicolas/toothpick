@@ -5,7 +5,6 @@ targetCompatibility = 1.7
 
 dependencies {
   compile project(':toothpick')
-  compile deps.inject
 
   testCompile deps.junit
 }
