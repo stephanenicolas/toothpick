@@ -10,12 +10,16 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -224,5 +228,24 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     }
     return false;
+  }
+
+  protected TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement) {
+    TypeElement currentTypeElement = typeElement;
+    boolean couldFindSuperClass = true;
+    do {
+      TypeMirror superClassTypeMirror = currentTypeElement.getSuperclass();
+      couldFindSuperClass = superClassTypeMirror.getKind() == TypeKind.DECLARED;
+      if (couldFindSuperClass) {
+        currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
+        for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
+          if ((enclosedElement.getKind() == ElementKind.FIELD || enclosedElement.getKind() == ElementKind.METHOD)
+              && enclosedElement.getAnnotation(Inject.class) != null) {
+            return currentTypeElement;
+          }
+        }
+      }
+    } while (couldFindSuperClass);
+    return null;
   }
 }

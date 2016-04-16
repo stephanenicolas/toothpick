@@ -82,8 +82,8 @@ public class FactoryGenerator implements CodeGenerator {
 
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
-    if (factoryInjectionTarget.needsMemberInjection) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)", CodeGeneratorUtil.getGeneratedFQNClassName(factoryInjectionTarget.builtClass), varName);
+    if (factoryInjectionTarget.superClassThatNeedsMemberInjection != null) {
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)", CodeGeneratorUtil.getGeneratedFQNClassName(factoryInjectionTarget.superClassThatNeedsMemberInjection), varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);
 

@@ -219,10 +219,10 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
-    boolean needsMemberInjection = needsMemberInjection(enclosingElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement);
 
     FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
     factoryInjectionTarget.parameters.addAll(addParameters(constructorElement));
 
     return factoryInjectionTarget;
@@ -233,7 +233,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
-    boolean needsMemberInjection = needsMemberInjection(fieldTypeElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(fieldTypeElement);
 
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(fieldTypeElement.getEnclosedElements());
     //we just need to deal with the case of the defaul constructor only.
@@ -253,7 +253,7 @@ public class FactoryProcessor extends ToothpickProcessor {
         return null;
       }
       FactoryInjectionTarget factoryInjectionTarget =
-          new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+          new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
       return factoryInjectionTarget;
     }
 
@@ -268,8 +268,8 @@ public class FactoryProcessor extends ToothpickProcessor {
         && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE);
   }
 
-  private boolean needsMemberInjection(TypeElement enclosingElement) {
-    TypeElement currentTypeElement = enclosingElement;
+  private boolean needsMemberInjection(TypeElement typeElement) {
+    TypeElement currentTypeElement = typeElement;
     do {
       List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
       for (Element enclosedElement : enclosedElements) {
