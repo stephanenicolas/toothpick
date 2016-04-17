@@ -169,11 +169,10 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
 
-    Element rawFieldTypeElement = typeUtils.asElement(fieldElement.asType());
-
-    if (!(rawFieldTypeElement instanceof TypeElement)) {
+    TypeMirror fieldType = fieldElement.asType();
+    if (fieldType.getKind() != TypeKind.DECLARED) {
       error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
-          fieldElement.getSimpleName(), rawFieldTypeElement);
+          fieldElement.getSimpleName(), fieldType);
       return false;
     }
 
