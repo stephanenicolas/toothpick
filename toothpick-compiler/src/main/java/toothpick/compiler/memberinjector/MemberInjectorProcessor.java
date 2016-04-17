@@ -199,6 +199,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     return name;
   }
 
+  //http://stackoverflow.com/a/36678792/693752
   private boolean isAnnotationPresent(TypeElement annotationTypeElement, String annotationName) {
     for (AnnotationMirror annotationOfAnnotationTypeMirror : annotationTypeElement.getAnnotationMirrors()) {
       TypeElement annotationOfAnnotationTypeElement = (TypeElement) annotationOfAnnotationTypeMirror.getAnnotationType().asElement();
