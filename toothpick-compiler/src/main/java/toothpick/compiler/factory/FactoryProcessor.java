@@ -102,6 +102,8 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
   }
 
+  //TODO LOL it's not recursive !!! We don't recursively crawl the injection tree
+
   private boolean isSingleInjectedConstructor(Element constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
 
