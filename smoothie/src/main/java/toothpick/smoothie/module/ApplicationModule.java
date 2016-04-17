@@ -1,6 +1,7 @@
 package toothpick.smoothie.module;
 
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -9,6 +10,8 @@ import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.hardware.SensorManager;
@@ -57,6 +60,17 @@ public class ApplicationModule extends Module {
     bind(Resources.class).toProvider(ResourcesProvider.class);
     bind(SharedPreferences.class).toProvider(SharedPreferencesProvider.class);
     bindSystemServices(application);
+    bindPackageInfo(application);
+  }
+
+  private void bindPackageInfo(Application application) {
+    final PackageInfo packageInfo;
+    try {
+      packageInfo = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
+      bind(PackageInfo.class).to(packageInfo);
+    } catch (PackageManager.NameNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   // TODO check min sdk and refactor
@@ -76,9 +90,13 @@ public class ApplicationModule extends Module {
     bindSystemService(application, TelephonyManager.class, TELEPHONY_SERVICE);
     bindSystemService(application, AudioManager.class, AUDIO_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
+      bindForGingerBreadAndAbove(application);
     }
-    bind(Application.class).to(application);
+  }
+
+  @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+  private void bindForGingerBreadAndAbove(Application application) {
+    bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
   }
 
   private <T> void bindSystemService(Application application, Class<T> serviceClass, String serviceName) {
