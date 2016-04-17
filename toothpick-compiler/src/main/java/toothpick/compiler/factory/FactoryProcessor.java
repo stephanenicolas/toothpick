@@ -238,16 +238,17 @@ public class FactoryProcessor extends ToothpickProcessor {
     if (constructorElements.size() == 1) {
       ExecutableElement constructorElement = constructorElements.get(0);
       if (!constructorElement.getParameters().isEmpty()) {
-        warning("The class %s has no default constructor, we cannot optimistically create a factory for it.",
+        warning("The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
             fieldTypeElement.getQualifiedName().toString());
         return null;
       }
 
       if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
-        warning("The class %s has a private default constructor, we cannot optimistically create a factory for it.",
+        warning("The class %s has a private default constructor, toothpick can't optimistically create a factory for it.",
             fieldTypeElement.getQualifiedName().toString());
         return null;
       }
+
       FactoryInjectionTarget factoryInjectionTarget =
           new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
       return factoryInjectionTarget;

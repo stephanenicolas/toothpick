@@ -15,12 +15,17 @@ apply plugin: 'org.inferred.processors'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+configurations {
+  optional
+  compile.extendsFrom optional
+}
+
 dependencies {
   compile project(':toothpick')
   processor  project(':toothpick-compiler')
   compile deps.inject
   compile deps.android
-  compile deps.supportv4
+  optional deps.supportv4
 
   testCompile deps.junit
 }
