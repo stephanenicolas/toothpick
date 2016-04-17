@@ -10,17 +10,13 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
-import toothpick.compiler.ToothpickProcessor;
+import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.FactoryProcessor;
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
@@ -156,80 +152,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     mapTypeElementToSuperTypeElementThatNeedsInjection.put(enclosingElement, superClassWithInjectedMembers);
   }
 
-  private FieldInjectionTarget createFieldInjectionTarget(VariableElement element) {
-    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());
-    final String memberName = element.getSimpleName().toString();
-
-    FieldInjectionTarget.Kind kind = getKind(element);
-    TypeElement kindParameterTypeElement;
-    if (kind == FieldInjectionTarget.Kind.INSTANCE) {
-      kindParameterTypeElement = null;
-    } else {
-      kindParameterTypeElement = getKindParameter(element);
-    }
-
-    Object name = findQualifierName(element);
-
-    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
-  }
-
-  /**
-   * Lookup both {@link javax.inject.Qualifier} and {@link javax.inject.Named}
-   * to provide the name of an injection.
-   *
-   * @param element the element for which a qualifier is to be found.
-   * @return the name of this element or null if it has no qualifier annotations.
-   */
-  private String findQualifierName(VariableElement element) {
-    String name = null;
-    if (element.getAnnotationMirrors().isEmpty()) {
-      return name;
-    }
-
-    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-      TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-      if (isSameType(annotationTypeElement, "javax.inject.Named")) {
-        checkIfAlreadyHasName(element, name);
-        name = getValueOfAnnotation(annotationMirror);
-      } else if (isAnnotationPresent(annotationTypeElement, "javax.inject.Qualifier")) {
-        checkIfAlreadyHasName(element, name);
-        name = annotationTypeElement.getQualifiedName().toString();
-      }
-    }
-    return name;
-  }
-
-  //http://stackoverflow.com/a/36678792/693752
-  private boolean isAnnotationPresent(TypeElement annotationTypeElement, String annotationName) {
-    for (AnnotationMirror annotationOfAnnotationTypeMirror : annotationTypeElement.getAnnotationMirrors()) {
-      TypeElement annotationOfAnnotationTypeElement = (TypeElement) annotationOfAnnotationTypeMirror.getAnnotationType().asElement();
-      if (isSameType(annotationOfAnnotationTypeElement, annotationName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isSameType(TypeElement annotationTypeElement, String annotationTypeName) {
-    return typeUtils.isSameType(annotationTypeElement.asType(), elementUtils.getTypeElement(annotationTypeName).asType());
-  }
-
-  private void checkIfAlreadyHasName(VariableElement element, Object name) {
-    if (name != null) {
-      error(element, "Only one javax.inject.Qualifier annotation is allowed to name injections.");
-    }
-  }
-
-  private String getValueOfAnnotation(AnnotationMirror annotationMirror) {
-    String result = null;
-    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues().entrySet()) {
-      if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {
-        result = annotationParamEntry.getValue().toString().replaceAll("\"", "");
-      }
-    }
-    return result;
-  }
-
   private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
 
@@ -237,27 +159,9 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     final String methodName = methodElement.getSimpleName().toString();
 
     MethodInjectionTarget methodInjectionTarget = new MethodInjectionTarget(enclosingElement, methodName, returnType);
-    methodInjectionTarget.parameters.addAll(addParameters(methodElement));
+    methodInjectionTarget.parameters.addAll(getParamInjectionTargetList(methodElement));
 
     return methodInjectionTarget;
-  }
-
-  private FieldInjectionTarget.Kind getKind(Element element) {
-    TypeMirror elementTypeMirror = element.asType();
-    String elementTypeName = typeUtils.erasure(elementTypeMirror).toString();
-    if ("javax.inject.Provider".equals(elementTypeName)) {
-      return FieldInjectionTarget.Kind.PROVIDER;
-    } else if ("toothpick.Lazy".equals(elementTypeName)) {
-      return FieldInjectionTarget.Kind.LAZY;
-    } else {
-      return FieldInjectionTarget.Kind.INSTANCE;
-    }
-  }
-
-  private TypeElement getKindParameter(Element element) {
-    TypeMirror elementTypeMirror = element.asType();
-    TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
-    return (TypeElement) typeUtils.asElement(firstParameterTypeMirror);
   }
 
   //used for testing only

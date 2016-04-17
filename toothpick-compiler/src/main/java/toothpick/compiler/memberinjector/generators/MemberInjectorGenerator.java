@@ -1,6 +1,7 @@
 package toothpick.compiler.memberinjector.generators;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -10,11 +11,10 @@ import com.squareup.javapoet.TypeSpec;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import toothpick.MemberInjector;
 import toothpick.Scope;
-import toothpick.compiler.CodeGenerator;
-import toothpick.compiler.CodeGeneratorUtil;
+import toothpick.compiler.common.generators.CodeGenerator;
+import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
 
@@ -24,7 +24,7 @@ import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
  * an {@link javax.inject.Inject} annotated field.
  * TODO also deal with injected methods.
  */
-public class MemberInjectorGenerator implements CodeGenerator {
+public class MemberInjectorGenerator extends CodeGenerator {
 
   private static final String MEMBER_INJECTOR_SUFFIX = "$$MemberInjector";
 
@@ -50,9 +50,10 @@ public class MemberInjectorGenerator implements CodeGenerator {
     ParameterizedTypeName memberInjectorInterfaceParameterizedTypeName = ParameterizedTypeName.get(ClassName.get(MemberInjector.class), className);
 
     // Build class
-    TypeSpec.Builder scopeMemberTypeSpec = TypeSpec.classBuilder(CodeGeneratorUtil.getGeneratedSimpleClassName(targetClass) + MEMBER_INJECTOR_SUFFIX)
+    TypeSpec.Builder scopeMemberTypeSpec = TypeSpec.classBuilder(getGeneratedSimpleClassName(targetClass) + MEMBER_INJECTOR_SUFFIX)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addSuperinterface(memberInjectorInterfaceParameterizedTypeName); emitSuperMemberInjectorFieldIfNeeded(scopeMemberTypeSpec);
+        .addSuperinterface(memberInjectorInterfaceParameterizedTypeName);
+    emitSuperMemberInjectorFieldIfNeeded(scopeMemberTypeSpec);
     emitInjectMethod(scopeMemberTypeSpec, fieldInjectionTargetList, methodInjectionTargetList);
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), scopeMemberTypeSpec.build()).build();
@@ -104,10 +105,13 @@ public class MemberInjectorGenerator implements CodeGenerator {
       injectedMethodCallStatement.append("(");
       String prefix = "";
 
-      for (TypeMirror typeMirror : methodInjectionTarget.parameters) {
+      for (ParamInjectionTarget paramInjectionTarget : methodInjectionTarget.parameters) {
+        CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget);
         String paramName = "param" + counter++;
-        TypeName paramType = TypeName.get(typeMirror);
-        injectMethodBuilder.addStatement("$T $L = scope.getInstance($L.class)", paramType, paramName, paramType);
+        TypeName paramType = TypeName.get(paramInjectionTarget.memberClass.asType());
+        injectMethodBuilder.addCode("$T $L = scope.", paramType, paramName);
+        injectMethodBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
+        injectMethodBuilder.addCode(";\n");
         injectedMethodCallStatement.append(prefix);
         injectedMethodCallStatement.append(paramName);
         prefix = ", ";
@@ -123,37 +127,15 @@ public class MemberInjectorGenerator implements CodeGenerator {
       return;
     }
     for (FieldInjectionTarget memberInjectionTarget : fieldInjectionTargetList) {
-      final String scopeGetMethodName;
-      final String injectionName;
-      if (memberInjectionTarget.name == null) {
-        injectionName = "";
-      } else {
-        injectionName = ", \"" + memberInjectionTarget.name.toString() + "\"";
-      }
-      final ClassName className;
-      switch (memberInjectionTarget.kind) {
-        case INSTANCE:
-          scopeGetMethodName = "getInstance";
-          className = ClassName.get(memberInjectionTarget.memberClass);
-          break;
-        case PROVIDER:
-          scopeGetMethodName = "getProvider";
-          className = ClassName.get(memberInjectionTarget.kindParamClass);
-          break;
-        case LAZY:
-          scopeGetMethodName = "getLazy";
-          className = ClassName.get(memberInjectionTarget.kindParamClass);
-          break;
-        default:
-          throw new IllegalStateException("The kind can't be null.");
-      }
-      injectBuilder.addStatement("target.$L = scope.$L($T.class$L)", memberInjectionTarget.memberName, scopeGetMethodName, className, injectionName);
+      CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(memberInjectionTarget);
+      injectBuilder.addCode("target.$L = scope.", memberInjectionTarget.memberName);
+      injectBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
+      injectBuilder.addCode(";\n");
     }
   }
 
   @Override
   public String getFqcn() {
-    return CodeGeneratorUtil.getGeneratedFQNClassName(targetClass) + MEMBER_INJECTOR_SUFFIX;
-
+    return getGeneratedFQNClassName(targetClass) + MEMBER_INJECTOR_SUFFIX;
   }
 }

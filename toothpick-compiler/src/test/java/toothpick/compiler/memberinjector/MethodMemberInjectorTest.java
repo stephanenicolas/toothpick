@@ -32,7 +32,7 @@ public class MethodMemberInjectorTest {
         "public final class TestMethodInjection$$MemberInjector implements MemberInjector<TestMethodInjection> {", //
         "  @Override", //
         "  public void inject(TestMethodInjection target, Scope scope) {", //
-        "    Foo param1 = scope.getInstance(test.Foo.class);", //
+        "    Foo param1 = scope.getInstance(Foo.class);", //
         "    target.m(param1);", //
         "  }", //
         "}" //

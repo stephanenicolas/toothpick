@@ -16,9 +16,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
-import toothpick.compiler.ToothpickProcessor;
+import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
-import toothpick.compiler.factory.targets.FactoryInjectionTarget;
+import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
 import toothpick.compiler.registry.generators.RegistryGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.factory.AbstractFactoryRegistry;
@@ -35,7 +35,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
+  private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -49,9 +49,9 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Generate Factories
     List<TypeElement> elementsWithFactoryCreated = new ArrayList<>();
 
-    for (Map.Entry<TypeElement, FactoryInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
-      FactoryInjectionTarget factoryInjectionTarget = entry.getValue();
-      FactoryGenerator factoryGenerator = new FactoryGenerator(factoryInjectionTarget);
+    for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
+      ConstructorInjectionTarget constructorInjectionTarget = entry.getValue();
+      FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget);
       TypeElement typeElement = entry.getKey();
       String fileDescription = format("Factory for type %s", typeElement);
       boolean success = writeToFile(factoryGenerator, fileDescription, typeElement);
@@ -115,7 +115,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     return isSingleInjectedConstructor;
   }
 
-  private void parseInjectedConstructor(ExecutableElement constructorElement, Map<TypeElement, FactoryInjectionTarget> targetClassMap) {
+  private void parseInjectedConstructor(ExecutableElement constructorElement, Map<TypeElement, ConstructorInjectionTarget> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -127,13 +127,14 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
-    targetClassMap.put(enclosingElement, createConstructorInjectionTargetForConstructor(constructorElement));
+    targetClassMap.put(enclosingElement, createConstructorInjectionTarget(constructorElement));
 
     //optimistic creation of factories for constructor param types
     parseInjectedParameters(constructorElement, mapTypeElementToConstructorInjectionTarget);
   }
 
-  private void parseInjectedField(VariableElement fieldElement, Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
+  private void parseInjectedField(VariableElement fieldElement,
+      Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     // Verify common generated code restrictions.
     if (!isValidInjectField(fieldElement)) {
       return;
@@ -150,14 +151,14 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
-    FactoryInjectionTarget factoryInjectionTargetForField = createConstructorInjectionTargetForVariableElement(fieldElement);
-    if (factoryInjectionTargetForField != null) {
-      mapTypeElementToConstructorInjectionTarget.put(fieldTypeElement, factoryInjectionTargetForField);
+    ConstructorInjectionTarget constructorInjectionTarget = createConstructorInjectionTarget(fieldElement);
+    if (constructorInjectionTarget != null) {
+      mapTypeElementToConstructorInjectionTarget.put(fieldTypeElement, constructorInjectionTarget);
     }
   }
 
   private void parseInjectedMethod(ExecutableElement methodElement,
-      Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
+      Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
 
     // Verify common generated code restrictions.
     if (!isValidInjectMethod(methodElement)) {
@@ -168,7 +169,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void parseInjectedParameters(ExecutableElement methodElement,
-      Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
+      Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     for (VariableElement paramElement : methodElement.getParameters()) {
       final TypeElement paramTypeElement = (TypeElement) typeUtils.asElement(paramElement.asType());
 
@@ -182,9 +183,9 @@ public class FactoryProcessor extends ToothpickProcessor {
         return;
       }
 
-      FactoryInjectionTarget factoryInjectionTargetForField = createConstructorInjectionTargetForVariableElement(paramElement);
-      if (factoryInjectionTargetForField != null) {
-        mapTypeElementToConstructorInjectionTarget.put(paramTypeElement, factoryInjectionTargetForField);
+      ConstructorInjectionTarget constructorInjectionTarget = createConstructorInjectionTarget(paramElement);
+      if (constructorInjectionTarget != null) {
+        mapTypeElementToConstructorInjectionTarget.put(paramTypeElement, constructorInjectionTarget);
       }
     }
   }
@@ -211,20 +212,20 @@ public class FactoryProcessor extends ToothpickProcessor {
     return valid;
   }
 
-  private FactoryInjectionTarget createConstructorInjectionTargetForConstructor(ExecutableElement constructorElement) {
+  private ConstructorInjectionTarget createConstructorInjectionTarget(ExecutableElement constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
-    FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
-    factoryInjectionTarget.parameters.addAll(addParameters(constructorElement));
+    ConstructorInjectionTarget constructorInjectionTarget =
+        new ConstructorInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+    constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
 
-    return factoryInjectionTarget;
+    return constructorInjectionTarget;
   }
 
-  private FactoryInjectionTarget createConstructorInjectionTargetForVariableElement(VariableElement fieldElement) {
+  private ConstructorInjectionTarget createConstructorInjectionTarget(VariableElement fieldElement) {
     final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
@@ -249,9 +250,9 @@ public class FactoryProcessor extends ToothpickProcessor {
         return null;
       }
 
-      FactoryInjectionTarget factoryInjectionTarget =
-          new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
-      return factoryInjectionTarget;
+      ConstructorInjectionTarget constructorInjectionTarget =
+          new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+      return constructorInjectionTarget;
     }
 
     return null;
