@@ -2,6 +2,7 @@ package toothpick.config;
 
 import java.lang.annotation.Annotation;
 import javax.inject.Provider;
+import javax.inject.Qualifier;
 
 public class Binding<T> {
   private Class<T> key;
@@ -10,7 +11,7 @@ public class Binding<T> {
   private T instance;
   private Provider<T> providerInstance;
   private Class<? extends Provider<T>> providerClass;
-  private Object name;
+  private String name;
 
   public Binding(Class<T> key) {
     this.key = key;
@@ -22,8 +23,13 @@ public class Binding<T> {
     return this;
   }
 
-  public <A extends Annotation> Binding<T> withName(Class<A> name) {
-    this.name = name;
+  public <A extends Annotation> Binding<T> withName(Class<A> annotationClassWithQualifierAnnotation) {
+    if (!annotationClassWithQualifierAnnotation.isAnnotationPresent(Qualifier.class)) {
+      throw new IllegalArgumentException(
+          String.format("Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
+              annotationClassWithQualifierAnnotation));
+    }
+    this.name = annotationClassWithQualifierAnnotation.getClass().getName();
     return this;
   }
 
@@ -71,7 +77,7 @@ public class Binding<T> {
     return providerClass;
   }
 
-  public Object getName() {
+  public String getName() {
     return name;
   }
 

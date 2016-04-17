@@ -2,7 +2,6 @@ package toothpick.compiler.memberinjector;
 
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
-import javax.inject.Qualifier;
 import javax.tools.JavaFileObject;
 import org.junit.Test;
 
@@ -157,7 +156,6 @@ public class FieldMemberInjectorTest {
         .and()
         .generatesSources(expectedSource);
   }
-
 
   @Test
   public void testNamedProviderFieldInjection_whenUsingQualifierAnnotation() {

@@ -111,7 +111,7 @@ public abstract class Scope {
         return allProviders.unNamedProvider;
       }
 
-      Map<Object, Provider> mapNameToProvider = (Map<Object, Provider>) allProviders.getMapNameToProvider();
+      Map<String, Provider> mapNameToProvider = (Map<String, Provider>) allProviders.getMapNameToProvider();
       if (mapNameToProvider == null) {
         return null;
       }
@@ -128,7 +128,7 @@ public abstract class Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  protected <T, U extends T> void installProvider(Class<T> clazz, Object bindingName, Provider<U> provider) {
+  protected <T, U extends T> void installProvider(Class<T> clazz, String bindingName, Provider<U> provider) {
     synchronized (clazz) {
       AllProviders allProviders = mapClassesToAllProviders.get(clazz);
       if (allProviders == null) {
@@ -138,7 +138,7 @@ public abstract class Scope {
       if (bindingName == null) {
         allProviders.setUnNamedProvider(provider);
       } else {
-        Map<Object, Provider> mapNameToProvider = allProviders.getMapNameToProvider();
+        Map<String, Provider> mapNameToProvider = allProviders.getMapNameToProvider();
         if (mapNameToProvider == null) {
           mapNameToProvider = new HashMap<>();
           allProviders.setMapNameToProvider(mapNameToProvider);
@@ -185,12 +185,12 @@ public abstract class Scope {
    * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain an instance in the scope of this scope.
-   * @param name the name of this instance. TODO should we duplicate to allow only annotations and strings ? see bindings
+   * @param name the name of this instance.
    * @param <T> the type of {@code clazz}.
    * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
    * @see toothpick.config.Binding
    */
-  public abstract <T> T getInstance(Class<T> clazz, Object name);
+  public abstract <T> T getInstance(Class<T> clazz, String name);
 
   /**
    * Returns a named {@code Provider} of {@code clazz} if one is scoped in the current
@@ -201,11 +201,11 @@ public abstract class Scope {
    * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain a provider in the scope of this scope.
-   * @param name the name of this instance. TODO should we duplicate to allow only annotations and strings ? see bindings
+   * @param name the name of this instance.
    * @param <T> the type of {@code clazz}.
    * @return a scoped provider or a new one using the factory associated to {@code clazz}.
    */
-  public abstract <T> Provider<T> getProvider(Class<T> clazz, Object name);
+  public abstract <T> Provider<T> getProvider(Class<T> clazz, String name);
 
   /**
    * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
@@ -221,6 +221,22 @@ public abstract class Scope {
    * @see #getProvider(Class)
    */
   public abstract <T> Lazy<T> getLazy(Class<T> clazz);
+
+  /**
+   * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
+   * to the clazz will be used to create one.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
+   * will be scoped in the root scope of the current scope.
+   *
+   * @param clazz the class for which to obtain a lazy in the scope of this scope.
+   * @param name the name of this instance.
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   * @see #getProvider(Class)
+   */
+  public abstract <T> Lazy<T> getLazy(Class<T> clazz, String name);
 
   /**
    * Allows to define test modules. These method should only be used for testing.
@@ -286,22 +302,13 @@ public abstract class Scope {
 
   protected static class AllProviders<T> {
     private Provider<? extends T> unNamedProvider;
-    private Map<Object, Provider<? extends T>> mapNameToProvider;
+    private Map<String, Provider<? extends T>> mapNameToProvider;
 
-    public AllProviders() {
-      this(null, null);
-    }
-
-    public AllProviders(Provider<? extends T> unNamedProvider, Map<Object, Provider<? extends T>> mapNameToProvider) {
-      this.unNamedProvider = unNamedProvider;
-      this.mapNameToProvider = mapNameToProvider;
-    }
-
-    public Map<Object, Provider<? extends T>> getMapNameToProvider() {
+    public Map<String, Provider<? extends T>> getMapNameToProvider() {
       return mapNameToProvider;
     }
 
-    public void setMapNameToProvider(Map<Object, Provider<? extends T>> mapNameToProvider) {
+    public void setMapNameToProvider(Map<String, Provider<? extends T>> mapNameToProvider) {
       this.mapNameToProvider = mapNameToProvider;
     }
 

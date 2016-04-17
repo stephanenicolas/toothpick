@@ -188,12 +188,9 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
     for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-      System.out.println("annotation detected" + annotationTypeElement);
       if (isSameType(annotationTypeElement, "javax.inject.Named")) {
-        System.out.println("named detected" + annotationTypeElement);
         checkIfAlreadyHasName(element, name);
         name = getValueOfAnnotation(annotationMirror);
-        System.out.println("name detected" + name);
       } else if (isAnnotationPresent(annotationTypeElement, "javax.inject.Qualifier")) {
         checkIfAlreadyHasName(element, name);
         name = annotationTypeElement.getQualifiedName().toString();
