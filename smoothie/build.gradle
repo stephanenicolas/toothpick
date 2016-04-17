@@ -33,7 +33,7 @@ dependencies {
 compileJava {
   doFirst {
     options.compilerArgs = [
-        '-Atoothpick_registry_package_name=smoothie',
+        '-Atoothpick_registry_package_name=toothpick.smoothie',
     ]
   }
 }
