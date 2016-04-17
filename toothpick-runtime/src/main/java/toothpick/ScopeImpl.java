@@ -31,12 +31,17 @@ public class ScopeImpl extends Scope {
   }
 
   @Override
-  public <T> T getInstance(Class<T> clazz, Object name) {
+  public <T> Lazy<T> getLazy(Class<T> clazz) {
+    return getLazy(clazz, null);
+  }
+
+  @Override
+  public <T> T getInstance(Class<T> clazz, String name) {
     return getProvider(clazz, name).get();
   }
 
   @Override
-  public <T> Provider<T> getProvider(Class<T> clazz, Object name) {
+  public <T> Provider<T> getProvider(Class<T> clazz, String name) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
@@ -69,24 +74,9 @@ public class ScopeImpl extends Scope {
     }
   }
 
-  //TODO explain the change to daniel, we were having some troubles
-  //we could not be using a provider in multi-thread, it has to be
-  //thread safe. The best was a multi DCL.
-  //now all access to the scope scopes are locked on the class
-  //all provider are locked on themselves.
-  //I won't do unit tests, because they are too hard and don't bring much
-  //TODO create a plugin system so that we can inject anything (handler/plugin ?)
-  //Kill the 2 methods below
-  //for @Inject Foo<Bar>
-  //generate getProvider(Bar.class, Foo.class) --> Foo becomes a modifier
-  //for @inject @Foo Bar
-  //generate getInstance(Bar.class, Foo.class) --> Foo becomes a modifier (JSR 330)
-  //if Foo is added as extension point to the compiler
-  //and devs can provide their own Injector that knows what to do to create
-  //a Foo<Bar> being passed a Provider<Bar>
   @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz) {
-    Provider<T> provider = getProvider(clazz);
+  public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
+    Provider<T> provider = getProvider(clazz, name);
     return new ProviderImpl<>(provider, true);
   }
 
@@ -115,7 +105,7 @@ public class ScopeImpl extends Scope {
 
       Class key = binding.getKey();
       synchronized (key) {
-        Object bindingName = binding.getName();
+        String bindingName = binding.getName();
         if (!hasTestModules || getScopedProvider(key, bindingName) == null) {
           Provider provider = toProvider(binding);
           installProvider(key, bindingName, provider);

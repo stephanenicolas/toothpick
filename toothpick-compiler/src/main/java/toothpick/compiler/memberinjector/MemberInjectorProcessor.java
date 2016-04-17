@@ -168,33 +168,66 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       kindParameterTypeElement = getKindParameter(element);
     }
 
-    Object name = findName(element);
+    Object name = findQualifierName(element);
 
     return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
   }
 
-  private Object findName(VariableElement element) {
-    Object name = null;
-    if (element.getAnnotationMirrors().size() > 2) {
-      error(element, "Only one additional annotation is allowed to name injections. Either use at @Named or any other annotation.");
+  /**
+   * Lookup both {@link javax.inject.Qualifier} and {@link javax.inject.Named}
+   * to provide the name of an injection.
+   *
+   * @param element the element for which a qualifier is to be found.
+   * @return the name of this element or null if it has no qualifier annotations.
+   */
+  private String findQualifierName(VariableElement element) {
+    String name = null;
+    if (element.getAnnotationMirrors().isEmpty()) {
+      return name;
     }
 
-    if (element.getAnnotationMirrors().size() >= 1) {
-      for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-        TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-        if ("javax.inject.Named".equals(annotationTypeElement.getQualifiedName().toString())) {
-          for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues()
-              .entrySet()) {
-            if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {
-              name = annotationParamEntry.getValue().toString().replaceAll("\"", "");
-            }
-          }
-        } else if (!"javax.inject.Inject".equals(annotationTypeElement.getQualifiedName().toString())) {
-          name = annotationTypeElement.getSimpleName().toString();
-        }
+    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
+      TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+      if (isSameType(annotationTypeElement, "javax.inject.Named")) {
+        checkIfAlreadyHasName(element, name);
+        name = getValueOfAnnotation(annotationMirror);
+      } else if (isAnnotationPresent(annotationTypeElement, "javax.inject.Qualifier")) {
+        checkIfAlreadyHasName(element, name);
+        name = annotationTypeElement.getQualifiedName().toString();
       }
     }
     return name;
+  }
+
+  //http://stackoverflow.com/a/36678792/693752
+  private boolean isAnnotationPresent(TypeElement annotationTypeElement, String annotationName) {
+    for (AnnotationMirror annotationOfAnnotationTypeMirror : annotationTypeElement.getAnnotationMirrors()) {
+      TypeElement annotationOfAnnotationTypeElement = (TypeElement) annotationOfAnnotationTypeMirror.getAnnotationType().asElement();
+      if (isSameType(annotationOfAnnotationTypeElement, annotationName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isSameType(TypeElement annotationTypeElement, String annotationTypeName) {
+    return typeUtils.isSameType(annotationTypeElement.asType(), elementUtils.getTypeElement(annotationTypeName).asType());
+  }
+
+  private void checkIfAlreadyHasName(VariableElement element, Object name) {
+    if (name != null) {
+      error(element, "Only one javax.inject.Qualifier annotation is allowed to name injections.");
+    }
+  }
+
+  private String getValueOfAnnotation(AnnotationMirror annotationMirror) {
+    String result = null;
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues().entrySet()) {
+      if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {
+        result = annotationParamEntry.getValue().toString().replaceAll("\"", "");
+      }
+    }
+    return result;
   }
 
   private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
