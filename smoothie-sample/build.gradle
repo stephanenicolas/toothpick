@@ -48,6 +48,6 @@ dependencies {
 apt {
   arguments {
     'toothpick_registry_package_name' 'com.example.smoothie'
-    'toothpick_registry_children_package_names' 'smoothie'
+    'toothpick_registry_children_package_names' 'toothpick.smoothie'
   }
 }
