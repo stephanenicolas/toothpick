@@ -113,9 +113,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     String toothpickRegistryChildrenPackageNames = processingEnv.getOptions().get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
-    toothpickRegistryChildrenPackageNameList = Collections.EMPTY_LIST;
+    toothpickRegistryChildrenPackageNameList = new ArrayList<>();
     if (toothpickRegistryChildrenPackageNames != null) {
-      toothpickRegistryChildrenPackageNameList = Arrays.asList(toothpickRegistryChildrenPackageNames.split(":"));
+      String[] registryPackageNames = toothpickRegistryChildrenPackageNames.split(":");
+      for (String registryPackageName : registryPackageNames) {
+        toothpickRegistryChildrenPackageNameList.add(registryPackageName.trim());
+      }
     }
 
     toothpickExcludeFilters = processingEnv.getOptions().get(PARAMETER_EXCLUDES);
