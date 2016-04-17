@@ -9,8 +9,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import toothpick.compiler.CodeGenerator;
-import toothpick.compiler.CodeGeneratorUtil;
+import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.MemberInjectorRegistry;
@@ -20,7 +19,7 @@ import toothpick.registries.MemberInjectorRegistry;
  *
  * @see {@link FactoryRegistry} and {@link MemberInjectorRegistry} for Registry types.
  */
-public class RegistryGenerator implements CodeGenerator {
+public class RegistryGenerator extends CodeGenerator {
 
   private RegistryInjectionTarget registryInjectionTarget;
 
@@ -70,8 +69,7 @@ public class RegistryGenerator implements CodeGenerator {
     for (TypeElement injectionTarget : registryInjectionTarget.injectionTargetList) {
       switchBlockBuilder.add("case ($S):\n", injectionTarget.getQualifiedName().toString());
       String typeSimpleName = registryInjectionTarget.type.getSimpleName();
-      switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, CodeGeneratorUtil.getGeneratedFQNClassName(injectionTarget),
-          typeSimpleName);
+      switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, getGeneratedFQNClassName(injectionTarget), typeSimpleName);
     }
 
     switchBlockBuilder.add("default:\n");
