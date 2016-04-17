@@ -175,12 +175,12 @@ public class FactoryProcessor extends ToothpickProcessor {
 
       if (mapTypeElementToConstructorInjectionTarget.containsKey(paramTypeElement)) {
         //the class is already known
-        return;
+        continue;
       }
 
       // Verify common generated code restrictions.
       if (!isValidInjectedType(paramTypeElement)) {
-        return;
+        continue;
       }
 
       ConstructorInjectionTarget constructorInjectionTarget = createConstructorInjectionTarget(paramElement);
