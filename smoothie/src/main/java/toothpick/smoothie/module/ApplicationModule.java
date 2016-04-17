@@ -1,6 +1,7 @@
 package toothpick.smoothie.module;
 
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -89,9 +90,13 @@ public class ApplicationModule extends Module {
     bindSystemService(application, TelephonyManager.class, TELEPHONY_SERVICE);
     bindSystemService(application, AudioManager.class, AUDIO_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
+      bindForGingerBreadAndAbove(application);
     }
-    bind(Application.class).to(application);
+  }
+
+  @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+  private void bindForGingerBreadAndAbove(Application application) {
+    bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
   }
 
   private <T> void bindSystemService(Application application, Class<T> serviceClass, String serviceName) {
