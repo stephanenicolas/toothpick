@@ -3,19 +3,21 @@ package toothpick.compiler;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -109,9 +111,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     String toothpickRegistryChildrenPackageNames = processingEnv.getOptions().get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
-    toothpickRegistryChildrenPackageNameList = Collections.EMPTY_LIST;
+    toothpickRegistryChildrenPackageNameList = new ArrayList<>();
     if (toothpickRegistryChildrenPackageNames != null) {
-      toothpickRegistryChildrenPackageNameList = Arrays.asList(toothpickRegistryChildrenPackageNames.split(":"));
+      String[] registryPackageNames = toothpickRegistryChildrenPackageNames.split(":");
+      for (String registryPackageName : registryPackageNames) {
+        toothpickRegistryChildrenPackageNameList.add(registryPackageName.trim());
+      }
     }
 
     toothpickExcludeFilters = processingEnv.getOptions().get(PARAMETER_EXCLUDES);
@@ -159,10 +164,18 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
 
+    Element rawFieldTypeElement = typeUtils.asElement(fieldElement.asType());
+
+    if (!(rawFieldTypeElement instanceof TypeElement)) {
+      error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
+          fieldElement.getSimpleName(), rawFieldTypeElement);
+      return false;
+    }
+
     // Verify modifiers.
     Set<Modifier> modifiers = fieldElement.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(fieldElement, "@Inject annotated fields must be non private : %s.%s", enclosingElement.getQualifiedName(), fieldElement.getSimpleName());
+      error(fieldElement, "@Inject annotated fields must be non private : %s#%s", enclosingElement.getQualifiedName(), fieldElement.getSimpleName());
       valid = false;
     }
 
@@ -184,7 +197,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     // Verify modifiers.
     Set<Modifier> modifiers = methodElement.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(methodElement, "@Inject annotated methods must not be private : %s.%s", enclosingElement.getQualifiedName(),
+      error(methodElement, "@Inject annotated methods must not be private : %s#%s", enclosingElement.getQualifiedName(),
           methodElement.getSimpleName());
       valid = false;
     }
@@ -216,5 +229,28 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     }
     return false;
+  }
+
+  public TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement, boolean onlyParents) {
+    TypeElement currentTypeElement = typeElement;
+    do {
+      if (currentTypeElement != typeElement || !onlyParents) {
+        List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
+        for (Element enclosedElement : enclosedElements) {
+          if ((enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD)
+              || (enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.METHOD)) {
+            return currentTypeElement;
+          }
+        }
+      }
+      TypeMirror superclass = currentTypeElement.getSuperclass();
+      if (superclass.getKind() == TypeKind.DECLARED) {
+        DeclaredType superType = (DeclaredType) superclass;
+        currentTypeElement = (TypeElement) superType.asElement();
+      } else {
+        currentTypeElement = null;
+      }
+    } while (currentTypeElement != null);
+    return null;
   }
 }

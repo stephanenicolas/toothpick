@@ -11,6 +11,7 @@ import javax.lang.model.type.TypeMirror;
 import toothpick.Factory;
 import toothpick.Scope;
 import toothpick.compiler.CodeGenerator;
+import toothpick.compiler.CodeGeneratorUtil;
 import toothpick.compiler.factory.targets.FactoryInjectionTarget;
 
 /**
@@ -35,9 +36,10 @@ public class FactoryGenerator implements CodeGenerator {
     ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(Factory.class), className);
 
     // Build class
-    TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(className.simpleName() + FACTORY_SUFFIX)
-        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addSuperinterface(parameterizedTypeName);
+    TypeSpec.Builder factoryTypeSpec =
+        TypeSpec.classBuilder(CodeGeneratorUtil.getGeneratedSimpleClassName(factoryInjectionTarget.builtClass) + FACTORY_SUFFIX)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addSuperinterface(parameterizedTypeName);
     emitCreateInstance(factoryTypeSpec);
     emitHasSingleton(factoryTypeSpec);
     emitHasProducesSingleton(factoryTypeSpec);
@@ -48,7 +50,7 @@ public class FactoryGenerator implements CodeGenerator {
 
   @Override
   public String getFqcn() {
-    return factoryInjectionTarget.builtClass.getQualifiedName().toString() + FACTORY_SUFFIX;
+    return CodeGeneratorUtil.getGeneratedFQNClassName(factoryInjectionTarget.builtClass) + FACTORY_SUFFIX;
   }
 
   private void emitCreateInstance(TypeSpec.Builder builder) {
@@ -60,12 +62,13 @@ public class FactoryGenerator implements CodeGenerator {
         .returns(className);
 
     StringBuilder localVarStatement = new StringBuilder("");
-    localVarStatement.append(className.simpleName()).append(" ");
+    String simpleClassName = CodeGeneratorUtil.getSimpleClassName(className);
+    localVarStatement.append(simpleClassName).append(" ");
     String varName = "" + Character.toLowerCase(className.simpleName().charAt(0));
     varName += className.simpleName().substring(1);
     localVarStatement.append(varName).append(" = ");
     localVarStatement.append("new ");
-    localVarStatement.append(className.simpleName()).append("(");
+    localVarStatement.append(simpleClassName).append("(");
     int counter = 1;
     String prefix = "";
 
@@ -80,8 +83,9 @@ public class FactoryGenerator implements CodeGenerator {
 
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
-    if (factoryInjectionTarget.needsMemberInjection) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)", className, varName);
+    if (factoryInjectionTarget.superClassThatNeedsMemberInjection != null) {
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)",
+          CodeGeneratorUtil.getGeneratedFQNClassName(factoryInjectionTarget.superClassThatNeedsMemberInjection), varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);
 

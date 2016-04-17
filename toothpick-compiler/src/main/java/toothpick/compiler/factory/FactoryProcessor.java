@@ -10,14 +10,10 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
 import toothpick.compiler.ToothpickProcessor;
@@ -67,9 +63,9 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Generate Registry
     //this allows tests to by pass the option mechanism in processors
     if (toothpickRegistryPackageName != null || readProcessorOptions()) {
-      RegistryInjectionTarget registryInjectionTarget = new RegistryInjectionTarget(Factory.class,
-          AbstractFactoryRegistry.class, toothpickRegistryPackageName,
-          toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
+      RegistryInjectionTarget registryInjectionTarget =
+          new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
+              toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
       RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
 
       String fileDescription = "Factory registry";
@@ -112,7 +108,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     boolean isSingleInjectedConstructor = true;
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(enclosingElement.getEnclosedElements());
     for (ExecutableElement constructorElementInClass : constructorElements) {
-      if (constructorElement.getAnnotation(Inject.class) != null && !constructorElement.equals(constructorElementInClass)) {
+      if (constructorElementInClass.getAnnotation(Inject.class) != null && !constructorElement.equals(constructorElementInClass)) {
         isSingleInjectedConstructor = false;
       }
     }
@@ -138,19 +134,16 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void parseInjectedField(VariableElement fieldElement, Map<TypeElement, FactoryInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
-    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
-
     // Verify common generated code restrictions.
     if (!isValidInjectField(fieldElement)) {
       return;
     }
 
-    if (mapTypeElementToConstructorInjectionTarget.containsKey(memberTypeElement)) {
+    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
+    if (mapTypeElementToConstructorInjectionTarget.containsKey(fieldTypeElement)) {
       //the class is already known
       return;
     }
-
-    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
 
     // Verify common generated code restrictions.
     if (!isValidInjectedType(fieldTypeElement)) {
@@ -159,7 +152,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     FactoryInjectionTarget factoryInjectionTargetForField = createConstructorInjectionTargetForVariableElement(fieldElement);
     if (factoryInjectionTargetForField != null) {
-      mapTypeElementToConstructorInjectionTarget.put(memberTypeElement, factoryInjectionTargetForField);
+      mapTypeElementToConstructorInjectionTarget.put(fieldTypeElement, factoryInjectionTargetForField);
     }
   }
 
@@ -222,10 +215,10 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final boolean hasSingletonAnnotation = hasAnnotationWithName(enclosingElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(enclosingElement, "ProvidesSingleton");
-    boolean needsMemberInjection = needsMemberInjection(enclosingElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     FactoryInjectionTarget factoryInjectionTarget =
-        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+        new FactoryInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
     factoryInjectionTarget.parameters.addAll(addParameters(constructorElement));
 
     return factoryInjectionTarget;
@@ -236,7 +229,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
     final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
-    boolean needsMemberInjection = needsMemberInjection(fieldTypeElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(fieldTypeElement, false);
 
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(fieldTypeElement.getEnclosedElements());
     //we just need to deal with the case of the defaul constructor only.
@@ -245,18 +238,19 @@ public class FactoryProcessor extends ToothpickProcessor {
     if (constructorElements.size() == 1) {
       ExecutableElement constructorElement = constructorElements.get(0);
       if (!constructorElement.getParameters().isEmpty()) {
-        warning("The class %s has no default constructor, we cannot optimistically create a factory for it.",
+        warning("The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
             fieldTypeElement.getQualifiedName().toString());
         return null;
       }
 
       if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
-        warning("The class %s has a private default constructor, we cannot optimistically create a factory for it.",
+        warning("The class %s has a private default constructor, toothpick can't optimistically create a factory for it.",
             fieldTypeElement.getQualifiedName().toString());
         return null;
       }
+
       FactoryInjectionTarget factoryInjectionTarget =
-          new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, needsMemberInjection);
+          new FactoryInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
       return factoryInjectionTarget;
     }
 
@@ -269,27 +263,6 @@ public class FactoryProcessor extends ToothpickProcessor {
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
         //the previous line also covers && fieldTypeElement.getKind() != ElementKind.INTERFACE;
         && !fieldTypeElement.getModifiers().contains(Modifier.PRIVATE);
-  }
-
-  private boolean needsMemberInjection(TypeElement enclosingElement) {
-    TypeElement currentTypeElement = enclosingElement;
-    do {
-      List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
-      for (Element enclosedElement : enclosedElements) {
-        if ((enclosedElement.getAnnotation(Inject.class) != null && enclosedElement.getKind() == ElementKind.FIELD) || (enclosedElement.getAnnotation(
-            Inject.class) != null && enclosedElement.getKind() == ElementKind.METHOD)) {
-          return true;
-        }
-      }
-      TypeMirror superclass = currentTypeElement.getSuperclass();
-      if (superclass.getKind() == TypeKind.DECLARED) {
-        DeclaredType superType = (DeclaredType) superclass;
-        currentTypeElement = (TypeElement) superType.asElement();
-      } else {
-        currentTypeElement = null;
-      }
-    } while (currentTypeElement != null);
-    return false;
   }
 
   //used for testing only

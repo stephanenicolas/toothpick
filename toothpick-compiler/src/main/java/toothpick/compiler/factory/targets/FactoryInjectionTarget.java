@@ -14,13 +14,13 @@ public final class FactoryInjectionTarget {
   public final boolean hasSingletonAnnotation;
   public final boolean hasProducesSingletonAnnotation;
   /** true if the class as @Injected members */
-  public final boolean needsMemberInjection;
+  public final TypeElement superClassThatNeedsMemberInjection;
 
   public FactoryInjectionTarget(TypeElement builtClass, boolean hasSingletonAnnotation, boolean hasProducesSingletonAnnotation,
-      boolean needsMemberInjection) {
+      TypeElement superClassThatNeedsMemberInjection) {
     this.builtClass = builtClass;
     this.hasSingletonAnnotation = hasSingletonAnnotation;
     this.hasProducesSingletonAnnotation = hasProducesSingletonAnnotation;
-    this.needsMemberInjection = needsMemberInjection;
+    this.superClassThatNeedsMemberInjection = superClassThatNeedsMemberInjection;
   }
 }

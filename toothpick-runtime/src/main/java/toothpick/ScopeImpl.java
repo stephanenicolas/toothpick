@@ -16,6 +16,8 @@ public class ScopeImpl extends Scope {
 
   public ScopeImpl(Object name) {
     super(name);
+    //it's always possible to get access to the scope that contains an injected object.
+    installProvider(Scope.class, null, new ProviderImpl<>(this));
   }
 
   @Override

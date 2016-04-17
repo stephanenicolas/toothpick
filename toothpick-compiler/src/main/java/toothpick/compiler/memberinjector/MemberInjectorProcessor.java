@@ -13,12 +13,10 @@ import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
@@ -79,9 +77,9 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     // Generate Registry
     //this allows tests to by pass the option mechanism in processors
     if (toothpickRegistryPackageName != null || readProcessorOptions()) {
-      RegistryInjectionTarget registryInjectionTarget = new RegistryInjectionTarget(MemberInjector.class,
-          AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
-          toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
+      RegistryInjectionTarget registryInjectionTarget =
+          new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
+              toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
       RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
 
       String fileDescription = "MemberInjector registry";
@@ -154,7 +152,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   }
 
   private void mapTypeToMostDirectSuperTypeThatNeedsInjection(TypeElement enclosingElement) {
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement);
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, true);
     mapTypeElementToSuperTypeElementThatNeedsInjection.put(enclosingElement, superClassWithInjectedMembers);
   }
 
@@ -227,25 +225,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     TypeMirror elementTypeMirror = element.asType();
     TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
     return (TypeElement) typeUtils.asElement(firstParameterTypeMirror);
-  }
-
-  private TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement) {
-    TypeElement currentTypeElement = typeElement;
-    boolean couldFindSuperClass = true;
-    do {
-      TypeMirror superClassTypeMirror = currentTypeElement.getSuperclass();
-      couldFindSuperClass = superClassTypeMirror.getKind() == TypeKind.DECLARED;
-      if (couldFindSuperClass) {
-        currentTypeElement = (TypeElement) ((DeclaredType) superClassTypeMirror).asElement();
-        for (Element enclosedElement : currentTypeElement.getEnclosedElements()) {
-          if ((enclosedElement.getKind() == ElementKind.FIELD || enclosedElement.getKind() == ElementKind.METHOD)
-              && enclosedElement.getAnnotation(Inject.class) != null) {
-            return currentTypeElement;
-          }
-        }
-      }
-    } while (couldFindSuperClass);
-    return null;
   }
 
   //used for testing only

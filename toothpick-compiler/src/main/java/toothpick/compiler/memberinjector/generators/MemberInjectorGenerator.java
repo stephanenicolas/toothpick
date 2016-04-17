@@ -14,6 +14,7 @@ import javax.lang.model.type.TypeMirror;
 import toothpick.MemberInjector;
 import toothpick.Scope;
 import toothpick.compiler.CodeGenerator;
+import toothpick.compiler.CodeGeneratorUtil;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
 
@@ -49,10 +50,9 @@ public class MemberInjectorGenerator implements CodeGenerator {
     ParameterizedTypeName memberInjectorInterfaceParameterizedTypeName = ParameterizedTypeName.get(ClassName.get(MemberInjector.class), className);
 
     // Build class
-    TypeSpec.Builder scopeMemberTypeSpec = TypeSpec.classBuilder(className.simpleName() + MEMBER_INJECTOR_SUFFIX)
+    TypeSpec.Builder scopeMemberTypeSpec = TypeSpec.classBuilder(CodeGeneratorUtil.getGeneratedSimpleClassName(targetClass) + MEMBER_INJECTOR_SUFFIX)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addSuperinterface(memberInjectorInterfaceParameterizedTypeName);
-    emitSuperMemberInjectorFieldIfNeeded(scopeMemberTypeSpec);
+        .addSuperinterface(memberInjectorInterfaceParameterizedTypeName); emitSuperMemberInjectorFieldIfNeeded(scopeMemberTypeSpec);
     emitInjectMethod(scopeMemberTypeSpec, fieldInjectionTargetList, methodInjectionTargetList);
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), scopeMemberTypeSpec.build()).build();
@@ -153,6 +153,7 @@ public class MemberInjectorGenerator implements CodeGenerator {
 
   @Override
   public String getFqcn() {
-    return targetClass.getQualifiedName().toString() + MEMBER_INJECTOR_SUFFIX;
+    return CodeGeneratorUtil.getGeneratedFQNClassName(targetClass) + MEMBER_INJECTOR_SUFFIX;
+
   }
 }
