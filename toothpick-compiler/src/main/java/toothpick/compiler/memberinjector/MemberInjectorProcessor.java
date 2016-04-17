@@ -1,6 +1,5 @@
 package toothpick.compiler.memberinjector;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -181,36 +180,40 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
    * @param element the element for which a qualifier is to be found.
    * @return the name of this element or null if it has no qualifier annotations.
    */
-  private Object findQualifierName(VariableElement element) {
-    Object name = null;
+  private String findQualifierName(VariableElement element) {
+    String name = null;
     if (element.getAnnotationMirrors().isEmpty()) {
       return name;
     }
 
     for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-      System.out.println("annotation detected " + annotationTypeElement.getQualifiedName());
-      String qualifierAnnotationName = null;
-      for (AnnotationMirror annotationOfAnnotationTypeMirror : annotationTypeElement.getAnnotationMirrors()) {
-        TypeElement annotationOfAnnotationTypeElement = (TypeElement) annotationOfAnnotationTypeMirror.getAnnotationType().asElement();      System.out.println("annotation detected " + annotationTypeElement.getQualifiedName());
-        System.out.println("annotation of annotation detected " + annotationOfAnnotationTypeElement.getQualifiedName());
-        if (typeUtils.isSameType(annotationOfAnnotationTypeElement.asType(), elementUtils.getTypeElement("javax.inject.Qualifier").asType())) {
-          qualifierAnnotationName = annotationTypeElement.getQualifiedName().toString();
-        }
-      }
-
-      System.out.println("qualifier " + qualifierAnnotationName);
-      if (typeUtils.isSameType(annotationTypeElement.asType(), elementUtils.getTypeElement("javax.inject.Named").asType())) {
-        System.out.println("Named detected " + annotationTypeElement.getQualifiedName());
+      System.out.println("annotation detected" + annotationTypeElement);
+      if (isSameType(annotationTypeElement, "javax.inject.Named")) {
+        System.out.println("named detected" + annotationTypeElement);
         checkIfAlreadyHasName(element, name);
         name = getValueOfAnnotation(annotationMirror);
-      } else if (qualifierAnnotationName != null) {
-        System.out.println("Qualifier detected " + annotationTypeElement.getQualifiedName());
+        System.out.println("name detected" + name);
+      } else if (isAnnotationPresent(annotationTypeElement, "javax.inject.Qualifier")) {
         checkIfAlreadyHasName(element, name);
-        name = qualifierAnnotationName;
+        name = annotationTypeElement.getQualifiedName().toString();
       }
     }
     return name;
+  }
+
+  private boolean isAnnotationPresent(TypeElement annotationTypeElement, String annotationName) {
+    for (AnnotationMirror annotationOfAnnotationTypeMirror : annotationTypeElement.getAnnotationMirrors()) {
+      TypeElement annotationOfAnnotationTypeElement = (TypeElement) annotationOfAnnotationTypeMirror.getAnnotationType().asElement();
+      if (isSameType(annotationOfAnnotationTypeElement, annotationName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isSameType(TypeElement annotationTypeElement, String annotationTypeName) {
+    return typeUtils.isSameType(annotationTypeElement.asType(), elementUtils.getTypeElement(annotationTypeName).asType());
   }
 
   private void checkIfAlreadyHasName(VariableElement element, Object name) {
@@ -219,14 +222,14 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
   }
 
-  private Object getValueOfAnnotation(AnnotationMirror annotationMirror) {
-    String value = null;
+  private String getValueOfAnnotation(AnnotationMirror annotationMirror) {
+    String result = null;
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues().entrySet()) {
       if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {
-        value = annotationParamEntry.getValue().toString().replaceAll("\"", "");
+        result = annotationParamEntry.getValue().toString().replaceAll("\"", "");
       }
     }
-    return value;
+    return result;
   }
 
   private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
