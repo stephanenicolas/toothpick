@@ -233,28 +233,34 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(fieldTypeElement, false);
 
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(fieldTypeElement.getEnclosedElements());
-    //we just need to deal with the case of the defaul constructor only.
-    //multiple constructors are non-decidable states.
+    //we just need to deal with the case of the default constructor only.
+    //like Guice, we will call it by default in the optimistic factory
     //injected constructors will be handled at some point in the compilation cycle
-    if (constructorElements.size() == 1) {
-      ExecutableElement constructorElement = constructorElements.get(0);
-      if (!constructorElement.getParameters().isEmpty()) {
-        warning("The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
-            fieldTypeElement.getQualifiedName().toString());
+
+    //if there is an injected constructor, it will be caught later, just leave
+    for (ExecutableElement constructorElement : constructorElements) {
+      if (constructorElement.getAnnotation(Inject.class) != null) {
         return null;
       }
-
-      if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
-        warning("The class %s has a private default constructor, toothpick can't optimistically create a factory for it.",
-            fieldTypeElement.getQualifiedName().toString());
-        return null;
-      }
-
-      ConstructorInjectionTarget constructorInjectionTarget =
-          new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
-      return constructorInjectionTarget;
     }
 
+    //search for default constructor
+    for (ExecutableElement constructorElement : constructorElements) {
+      if (constructorElement.getParameters().isEmpty()) {
+        if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
+          warning("The class %s has a private default constructor, toothpick can't optimistically create a factory for it.",
+              fieldTypeElement.getQualifiedName().toString());
+          return null;
+        }
+
+        ConstructorInjectionTarget constructorInjectionTarget =
+            new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+        return constructorInjectionTarget;
+      }
+    }
+
+    warning("The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
+        fieldTypeElement.getQualifiedName().toString());
     return null;
   }
 
