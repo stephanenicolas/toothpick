@@ -14,10 +14,14 @@ import static java.lang.String.format;
 public class ScopeImpl extends Scope {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private boolean hasTestModules;
-  private Stack<Class<?>> cycleDetectionStack = new Stack<>();
+  private Stack<Class<?>> cycleDetectionStack;
+  private static final boolean DETECT_CYCLE = false;
 
   public ScopeImpl(Object name) {
     super(name);
+    if(DETECT_CYCLE) {
+      cycleDetectionStack = new Stack<>();
+    }
     //it's always possible to get access to the scope that contains an injected object.
     installProvider(Scope.class, null, new ProviderImpl<>(this));
   }
@@ -61,32 +65,34 @@ public class ScopeImpl extends Scope {
         }
       }
 
-      if(cycleDetectionStack.contains(clazz)) {
-        cycleDetectionStack.push(clazz);
-        StringBuilder builder = new StringBuilder("A cycle was detected:\n");
-        String arrow = "\\--> ";
-        int level = 0;
-        final String indentString = "  ";
-        boolean foundClassInStack = false;
-        for (Class<?> classInStack : cycleDetectionStack) {
-          if(!foundClassInStack) {
-            foundClassInStack = (classInStack == clazz);
-          }
-          if(foundClassInStack) {
-            for (int indent = 0; indent < level; indent++) {
-              builder.append(indentString);
+      if(DETECT_CYCLE) {
+        if (cycleDetectionStack.contains(clazz)) {
+          cycleDetectionStack.push(clazz);
+          StringBuilder builder = new StringBuilder("A cycle was detected:\n");
+          String arrow = "\\--> ";
+          int level = 0;
+          final String indentString = "  ";
+          boolean foundClassInStack = false;
+          for (Class<?> classInStack : cycleDetectionStack) {
+            if (!foundClassInStack) {
+              foundClassInStack = (classInStack == clazz);
             }
-            builder.append(arrow);
-            builder.append(classInStack.getName());
-            builder.append("\n");
-            level++;
+            if (foundClassInStack) {
+              for (int indent = 0; indent < level; indent++) {
+                builder.append(indentString);
+              }
+              builder.append(arrow);
+              builder.append(classInStack.getName());
+              builder.append("\n");
+              level++;
+            }
           }
+
+          throw new RuntimeException(builder.toString());
         }
 
-        throw new RuntimeException(builder.toString());
+        cycleDetectionStack.push(clazz);
       }
-
-      cycleDetectionStack.push(clazz);
 
       //classes discovered at runtime, not bound by any module
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
@@ -99,7 +105,9 @@ public class ScopeImpl extends Scope {
         newProvider = new ProviderImpl(this, factory, false);
         installProvider(clazz, name, newProvider);
       }
-      cycleDetectionStack.pop();
+      if(DETECT_CYCLE) {
+        cycleDetectionStack.pop();
+      }
       return newProvider;
     }
   }
