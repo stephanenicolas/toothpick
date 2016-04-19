@@ -213,6 +213,26 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return valid;
   }
 
+  protected List<ParamInjectionTarget> getParamInjectionTargetList(ExecutableElement executableElement) {
+    List<ParamInjectionTarget> paramInjectionTargetList = new ArrayList<>();
+    for (VariableElement variableElement : executableElement.getParameters()) {
+      paramInjectionTargetList.add(createFieldOrParamInjectionTarget(variableElement));
+    }
+    return paramInjectionTargetList;
+  }
+
+  protected FieldInjectionTarget createFieldOrParamInjectionTarget(VariableElement variableElement) {
+    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(variableElement.asType());
+    final String memberName = variableElement.getSimpleName().toString();
+
+    ParamInjectionTarget.Kind kind = getKind(variableElement);
+    TypeElement kindParameterTypeElement = getInjectedType(variableElement);
+
+    String name = findQualifierName(variableElement);
+
+    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
+  }
+
   /**
    * Retrieves the type of a field or param. The type can be the type of the parameter
    * in the java way (e.g. {@code B b}, type is {@code B}); but it can also be the type of
@@ -232,14 +252,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return fieldType;
   }
 
-  protected List<ParamInjectionTarget> getParamInjectionTargetList(ExecutableElement executableElement) {
-    List<ParamInjectionTarget> paramInjectionTargetList = new ArrayList<>();
-    for (VariableElement variableElement : executableElement.getParameters()) {
-      paramInjectionTargetList.add(createFieldOrParamInjectionTarget(variableElement));
-    }
-    return paramInjectionTargetList;
-  }
-
   protected boolean isExcludedByFilters(TypeElement fieldTypeElement) {
     String typeElementName = fieldTypeElement.getQualifiedName().toString();
     //TODO optimize.
@@ -252,7 +264,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return false;
   }
 
-  public TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement, boolean onlyParents) {
+  protected TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement, boolean onlyParents) {
     TypeElement currentTypeElement = typeElement;
     do {
       if (currentTypeElement != typeElement || !onlyParents) {
@@ -273,23 +285,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     } while (currentTypeElement != null);
     return null;
-  }
-
-  protected FieldInjectionTarget createFieldOrParamInjectionTarget(VariableElement element) {
-    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());
-    final String memberName = element.getSimpleName().toString();
-
-    ParamInjectionTarget.Kind kind = getKind(element);
-    TypeElement kindParameterTypeElement;
-    if (kind == FieldInjectionTarget.Kind.INSTANCE) {
-      kindParameterTypeElement = null;
-    } else {
-      kindParameterTypeElement = getKindParameter(element);
-    }
-
-    String name = findQualifierName(element);
-
-    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
   }
 
   /**
