@@ -53,7 +53,11 @@ public abstract class Scope {
       throw new IllegalArgumentException("Child must be non null.");
     }
 
-    if (child.parentScope != null && child.parentScope != this) {
+    if(child.parentScope == this) {
+      return;
+    }
+
+    if (child.parentScope != null) {
       throw new IllegalStateException(format("Injector %s already has a parent: %s", child, child.parentScope));
     }
 
