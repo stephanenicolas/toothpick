@@ -22,7 +22,7 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return getProvider(clazz).get();
+    return getInstance(clazz, null);
   }
 
   @Override
@@ -64,7 +64,7 @@ public class ScopeImpl extends Scope {
       final Provider<T> newProvider;
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<>(factory.createInstance(this));
+        newProvider = new ProviderImpl<>(this, factory, false);
         getRootScope().installProvider(clazz, name, newProvider);
       } else {
         newProvider = new ProviderImpl(this, factory, false);
