@@ -42,9 +42,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-    if (toothpickRegistryPackageName == null) {
-      readProcessorOptions();
-    }
+    readProcessorOptions();
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
@@ -67,7 +65,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     // Generate Registry
     //this allows tests to by pass the option mechanism in processors
-    if (toothpickRegistryPackageName != null || readProcessorOptions()) {
+    if (toothpickRegistryPackageName != null) {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);

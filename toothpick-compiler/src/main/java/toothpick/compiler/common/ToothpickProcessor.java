@@ -76,6 +76,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     filer = processingEnv.getFiler();
   }
 
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.latestSupported();
+  }
+
   protected boolean writeToFile(CodeGenerator codeGenerator, String fileDescription, Element... originatingElements) {
     Writer writer = null;
     boolean success = true;
@@ -105,38 +110,37 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    * Reads both annotation compilers {@link ToothpickProcessor#PARAMETER_REGISTRY_PACKAGE_NAME} and
    * {@link ToothpickProcessor#PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES} options from the arguments
    * passed to the processor.
-   *
-   * @return true if toothpickRegistryPackageName is defined, false otherwise.
    */
-  protected boolean readProcessorOptions() {
+  protected void readProcessorOptions() {
     Map<String, String> options = processingEnv.getOptions();
-    toothpickRegistryPackageName = options.get(PARAMETER_REGISTRY_PACKAGE_NAME);
+
+    //we read options only if it's not defined. Allows tests to bypass options.
     if (toothpickRegistryPackageName == null) {
-      warning("No option -Atoothpick_registry_package_name was passed to the compiler."
-          + " No registries are generated. Will fallback on reflection at runtime to find factories.");
-      return false;
+      toothpickRegistryPackageName = options.get(PARAMETER_REGISTRY_PACKAGE_NAME);
+    }
+    if (toothpickRegistryPackageName == null) {
+      warning("No option -A%s to the compiler." + " No registries will be generated.", PARAMETER_REGISTRY_PACKAGE_NAME);
     }
 
-    String toothpickRegistryChildrenPackageNames = options.get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
-    toothpickRegistryChildrenPackageNameList = new ArrayList<>();
-    if (toothpickRegistryChildrenPackageNames != null) {
-      String[] registryPackageNames = toothpickRegistryChildrenPackageNames.split(":");
-      for (String registryPackageName : registryPackageNames) {
-        toothpickRegistryChildrenPackageNameList.add(registryPackageName.trim());
+    //we read options only if it's not defined. Allows tests to bypass options.
+    if (toothpickRegistryChildrenPackageNameList == null) {
+      toothpickRegistryChildrenPackageNameList = new ArrayList<>();
+      String toothpickRegistryChildrenPackageNames = options.get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
+      if (toothpickRegistryChildrenPackageNames != null) {
+        String[] registryPackageNames = toothpickRegistryChildrenPackageNames.split(":");
+        for (String registryPackageName : registryPackageNames) {
+          toothpickRegistryChildrenPackageNameList.add(registryPackageName.trim());
+        }
       }
+    }
+    if (toothpickRegistryChildrenPackageNameList == null) {
+      warning("No option -A%s was passed to the compiler." + " No sub registries will be used.", PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
     }
 
     //getOrDefault could be used here, but it's ony available on jdk 7.
     if (options.containsKey(PARAMETER_EXCLUDES)) {
       toothpickExcludeFilters = options.get(PARAMETER_EXCLUDES);
     }
-
-    return true;
-  }
-
-  @Override
-  public SourceVersion getSupportedSourceVersion() {
-    return SourceVersion.latest();
   }
 
   protected String getPackageName(TypeElement type) {

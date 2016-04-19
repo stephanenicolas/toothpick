@@ -46,6 +46,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    readProcessorOptions();
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
@@ -72,8 +73,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate Registry
-    //this allows tests to by pass the option mechanism in processors
-    if (toothpickRegistryPackageName != null || readProcessorOptions()) {
+    if (toothpickRegistryPackageName != null) {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
