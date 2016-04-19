@@ -30,7 +30,8 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES,
+    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
+    ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES
 }) //
 public class FactoryProcessor extends ToothpickProcessor {
@@ -40,6 +41,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
+    readProcessorOptions();
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
@@ -62,7 +64,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     // Generate Registry
     //this allows tests to by pass the option mechanism in processors
-    if (toothpickRegistryPackageName != null || readProcessorOptions()) {
+    if (toothpickRegistryPackageName != null) {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);

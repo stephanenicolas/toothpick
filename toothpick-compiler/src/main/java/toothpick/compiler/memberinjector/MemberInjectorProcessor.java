@@ -34,7 +34,8 @@ import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES,
+    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
+    ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES
 }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
@@ -45,6 +46,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    readProcessorOptions();
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
@@ -71,8 +73,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     // Generate Registry
-    //this allows tests to by pass the option mechanism in processors
-    if (toothpickRegistryPackageName != null || readProcessorOptions()) {
+    if (toothpickRegistryPackageName != null) {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
