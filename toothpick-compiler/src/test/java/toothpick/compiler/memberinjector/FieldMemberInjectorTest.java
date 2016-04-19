@@ -454,8 +454,8 @@ public class FieldMemberInjectorTest {
         //
         "  @Override", //
         "  public void inject(TestMemberInjection target, Scope scope) {", //
-        "    target.foo = scope.getInstance(Foo.class);", //
         "    superMemberInjector.inject(target, scope);", //
+        "    target.foo = scope.getInstance(Foo.class);", //
         "  }", //
         "}" //
     ));
