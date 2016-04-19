@@ -82,12 +82,12 @@ public class MemberInjectorGenerator extends CodeGenerator {
         .addParameter(ClassName.get(targetClass), "target")
         .addParameter(ClassName.get(Scope.class), "scope");
 
-    emitInjectFields(fieldInjectionTargetList, injectMethodBuilder);
-    emitInjectMethods(methodInjectionTargetList, injectMethodBuilder);
-
     if (superClassThatNeedsInjection != null) {
       injectMethodBuilder.addStatement("superMemberInjector.inject(target, scope)");
     }
+    emitInjectFields(fieldInjectionTargetList, injectMethodBuilder);
+    emitInjectMethods(methodInjectionTargetList, injectMethodBuilder);
+
 
     scopeMemberTypeSpec.addMethod(injectMethodBuilder.build());
   }

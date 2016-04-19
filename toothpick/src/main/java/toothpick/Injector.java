@@ -13,4 +13,6 @@ public interface Injector {
    * @param <T> the type of {@code clazz}.
    */
   <T> void inject(T obj, Scope scope);
+
+  <T> void inject(Class<T> clazz, T obj, Scope scope);
 }

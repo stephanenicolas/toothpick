@@ -73,4 +73,8 @@ public final class ToothPick {
   public static void inject(Object obj, Scope scope) {
     injector.inject(obj, scope);
   }
+
+  public static <T> void inject(Class<T> clazz, T obj, Scope scope) {
+    injector.inject(clazz, obj, scope);
+  }
 }

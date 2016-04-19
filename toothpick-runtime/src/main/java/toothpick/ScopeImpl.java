@@ -1,6 +1,7 @@
 package toothpick;
 
 import java.util.Iterator;
+import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Provider;
@@ -13,6 +14,7 @@ import static java.lang.String.format;
 public class ScopeImpl extends Scope {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private boolean hasTestModules;
+  private Stack<Class<?>> cycleDetectionStack = new Stack<>();
 
   public ScopeImpl(Object name) {
     super(name);
@@ -22,7 +24,7 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return getProvider(clazz).get();
+    return getInstance(clazz, null);
   }
 
   @Override
@@ -59,17 +61,45 @@ public class ScopeImpl extends Scope {
         }
       }
 
+      if(cycleDetectionStack.contains(clazz)) {
+        cycleDetectionStack.push(clazz);
+        StringBuilder builder = new StringBuilder("A cycle was detected:\n");
+        String arrow = "\\--> ";
+        int level = 0;
+        final String indentString = "  ";
+        boolean foundClassInStack = false;
+        for (Class<?> classInStack : cycleDetectionStack) {
+          if(!foundClassInStack) {
+            foundClassInStack = (classInStack == clazz);
+          }
+          if(foundClassInStack) {
+            for (int indent = 0; indent < level; indent++) {
+              builder.append(indentString);
+            }
+            builder.append(arrow);
+            builder.append(classInStack.getName());
+            builder.append("\n");
+            level++;
+          }
+        }
+
+        throw new RuntimeException(builder.toString());
+      }
+
+      cycleDetectionStack.push(clazz);
+
       //classes discovered at runtime, not bound by any module
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
       final Provider<T> newProvider;
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<>(factory.createInstance(this));
+        newProvider = new ProviderImpl<>(this, factory, false);
         getRootScope().installProvider(clazz, name, newProvider);
       } else {
         newProvider = new ProviderImpl(this, factory, false);
         installProvider(clazz, name, newProvider);
       }
+      cycleDetectionStack.pop();
       return newProvider;
     }
   }

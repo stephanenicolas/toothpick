@@ -10,6 +10,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.inject.Inject;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -124,9 +125,14 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     }
 
-    toothpickExcludeFilters = processingEnv.getOptions().get(PARAMETER_EXCLUDES);
+    toothpickExcludeFilters = processingEnv.getOptions().getOrDefault(PARAMETER_EXCLUDES, toothpickExcludeFilters);
 
     return true;
+  }
+
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.latest();
   }
 
   protected String getPackageName(TypeElement type) {
@@ -168,9 +174,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected boolean isValidInjectField(VariableElement fieldElement) {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
+    final TypeElement fieldType = getType(fieldElement);
 
-    TypeMirror fieldType = fieldElement.asType();
-    if (fieldType.getKind() != TypeKind.DECLARED) {
+    if (fieldType.getKind() != ElementKind.CLASS //
+        && fieldType.getKind() != ElementKind.INTERFACE //
+        && fieldType.getKind() != ElementKind.ENUM) {
       error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
           fieldElement.getSimpleName(), fieldType);
       return false;
@@ -192,6 +200,16 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     return valid;
+  }
+
+  protected TypeElement getType(VariableElement fieldElement) {
+    final TypeElement fieldType;
+    if (getKind(fieldElement) == ParamInjectionTarget.Kind.INSTANCE) {
+      fieldType = (TypeElement) typeUtils.asElement(fieldElement.asType());
+    } else {
+      fieldType = getKindParameter(fieldElement);
+    }
+    return fieldType;
   }
 
   protected boolean isValidInjectMethod(Element methodElement) {
@@ -227,6 +245,8 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   protected boolean isExcludedByFilters(TypeElement fieldTypeElement) {
     String typeElementName = fieldTypeElement.getQualifiedName().toString();
+    //TODO optimize.
+    //TODO allow regex ?
     for (String exclude : toothpickExcludeFilters.split(",")) {
       if (typeElementName.startsWith(exclude.trim())) {
         return true;
@@ -312,8 +332,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return false;
   }
 
-  private boolean isSameType(TypeElement annotationTypeElement, String annotationTypeName) {
-    return typeUtils.isSameType(annotationTypeElement.asType(), elementUtils.getTypeElement(annotationTypeName).asType());
+  private boolean isSameType(TypeElement typeElement, String typeName) {
+    return typeUtils.isSameType(typeElement.asType(), elementUtils.getTypeElement(typeName).asType());
+  }
+
+  private boolean isSameType(TypeMirror typeMirror, String typeName) {
+    return typeUtils.isSameType(typeMirror, elementUtils.getTypeElement(typeName).asType());
   }
 
   private void checkIfAlreadyHasName(VariableElement element, Object name) {

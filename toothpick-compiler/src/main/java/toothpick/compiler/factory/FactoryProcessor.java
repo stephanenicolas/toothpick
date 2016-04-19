@@ -30,9 +30,11 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES,
+    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
+    ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES
 }) //
+
 public class FactoryProcessor extends ToothpickProcessor {
 
   private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
@@ -40,6 +42,9 @@ public class FactoryProcessor extends ToothpickProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
+    if (toothpickRegistryPackageName == null) {
+      readProcessorOptions();
+    }
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
@@ -95,10 +100,33 @@ public class FactoryProcessor extends ToothpickProcessor {
     //dependency. We would only use the default constructor.
     for (VariableElement fieldElement : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       parseInjectedField(fieldElement, mapTypeElementToConstructorInjectionTarget);
+      parseClassWithInjectedMembers(fieldElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
     }
     //we do the same for all arguments of all methods
     for (ExecutableElement methodElement : ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       parseInjectedMethod(methodElement, mapTypeElementToConstructorInjectionTarget);
+      parseClassWithInjectedMembers(methodElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
+    }
+
+    //TODO add singleton and produces singleton
+  }
+
+  private void parseClassWithInjectedMembers(Element enclosingElement,
+      Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
+    final TypeElement typeElement = (TypeElement) typeUtils.asElement(enclosingElement.asType());
+    if (mapTypeElementToConstructorInjectionTarget.containsKey(typeElement)) {
+      //the class is already known
+      return;
+    }
+
+    // Verify common generated code restrictions.
+    if (!isValidInjectedType(typeElement)) {
+      return;
+    }
+
+    ConstructorInjectionTarget constructorInjectionTarget = createConstructorInjectionTarget(typeElement);
+    if (constructorInjectionTarget != null) {
+      mapTypeElementToConstructorInjectionTarget.put(typeElement, constructorInjectionTarget);
     }
   }
 
@@ -140,7 +168,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
-    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
+    final TypeElement fieldTypeElement = getType(fieldElement);
     if (mapTypeElementToConstructorInjectionTarget.containsKey(fieldTypeElement)) {
       //the class is already known
       return;
@@ -171,7 +199,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   private void parseInjectedParameters(ExecutableElement methodElement,
       Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     for (VariableElement paramElement : methodElement.getParameters()) {
-      final TypeElement paramTypeElement = (TypeElement) typeUtils.asElement(paramElement.asType());
+      final TypeElement paramTypeElement = getType(paramElement);
 
       if (mapTypeElementToConstructorInjectionTarget.containsKey(paramTypeElement)) {
         //the class is already known
@@ -225,14 +253,12 @@ public class FactoryProcessor extends ToothpickProcessor {
     return constructorInjectionTarget;
   }
 
-  private ConstructorInjectionTarget createConstructorInjectionTarget(VariableElement fieldElement) {
-    final TypeElement fieldTypeElement = (TypeElement) typeUtils.asElement(fieldElement.asType());
+  private ConstructorInjectionTarget createConstructorInjectionTarget(TypeElement typeElement) {
+    final boolean hasSingletonAnnotation = hasAnnotationWithName(typeElement, "Singleton");
+    final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(typeElement, "ProvidesSingleton");
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(typeElement, false);
 
-    final boolean hasSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "Singleton");
-    final boolean hasProducesSingletonAnnotation = hasAnnotationWithName(fieldTypeElement, "ProvidesSingleton");
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(fieldTypeElement, false);
-
-    List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(fieldTypeElement.getEnclosedElements());
+    List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
     //we just need to deal with the case of the default constructor only.
     //like Guice, we will call it by default in the optimistic factory
     //injected constructors will be handled at some point in the compilation cycle
@@ -249,23 +275,30 @@ public class FactoryProcessor extends ToothpickProcessor {
       if (constructorElement.getParameters().isEmpty()) {
         if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
           warning("The class %s has a private default constructor, toothpick can't optimistically create a factory for it.",
-              fieldTypeElement.getQualifiedName().toString());
+              typeElement.getQualifiedName().toString());
           return null;
         }
 
         ConstructorInjectionTarget constructorInjectionTarget =
-            new ConstructorInjectionTarget(fieldTypeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+            new ConstructorInjectionTarget(typeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
         return constructorInjectionTarget;
       }
     }
 
     warning("The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
-        fieldTypeElement.getQualifiedName().toString());
+        typeElement.getQualifiedName().toString());
     return null;
   }
 
+  private ConstructorInjectionTarget createConstructorInjectionTarget(VariableElement fieldElement) {
+    final TypeElement fieldTypeElement = getType(fieldElement);
+    return createConstructorInjectionTarget(fieldTypeElement);
+  }
+
   private boolean isValidInjectedType(TypeElement fieldTypeElement) {
+    System.out.println(fieldTypeElement.getQualifiedName().toString() + " isValid ?");
     if (isExcludedByFilters(fieldTypeElement)) return false;
+    System.out.println(fieldTypeElement.getQualifiedName().toString() + " isValid");
 
     return !fieldTypeElement.getModifiers().contains(Modifier.ABSTRACT)
         //the previous line also covers && fieldTypeElement.getKind() != ElementKind.INTERFACE;

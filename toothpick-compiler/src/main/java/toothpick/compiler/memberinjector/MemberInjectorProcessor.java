@@ -34,7 +34,8 @@ import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES,
+    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME,//
+    ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES
 }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
