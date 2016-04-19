@@ -124,7 +124,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     }
 
-    toothpickExcludeFilters = processingEnv.getOptions().get(PARAMETER_EXCLUDES);
+    toothpickExcludeFilters = processingEnv.getOptions().getOrDefault(PARAMETER_EXCLUDES, toothpickExcludeFilters);
 
     return true;
   }
@@ -227,6 +227,8 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   protected boolean isExcludedByFilters(TypeElement fieldTypeElement) {
     String typeElementName = fieldTypeElement.getQualifiedName().toString();
+    //TODO optimize.
+    //TODO allow regex ?
     for (String exclude : toothpickExcludeFilters.split(",")) {
       if (typeElementName.startsWith(exclude.trim())) {
         return true;
@@ -312,8 +314,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return false;
   }
 
-  private boolean isSameType(TypeElement annotationTypeElement, String annotationTypeName) {
-    return typeUtils.isSameType(annotationTypeElement.asType(), elementUtils.getTypeElement(annotationTypeName).asType());
+  private boolean isSameType(TypeElement typeElement, String typeName) {
+    return typeUtils.isSameType(typeElement.asType(), elementUtils.getTypeElement(typeName).asType());
+  }
+
+  private boolean isSameType(TypeMirror typeMirror, String typeName) {
+    return typeUtils.isSameType(typeMirror, elementUtils.getTypeElement(typeName).asType());
   }
 
   private void checkIfAlreadyHasName(VariableElement element, Object name) {
