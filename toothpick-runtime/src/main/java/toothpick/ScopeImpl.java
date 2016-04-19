@@ -2,8 +2,6 @@ package toothpick;
 
 import java.util.Iterator;
 import java.util.Stack;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
@@ -12,14 +10,13 @@ import toothpick.registries.factory.FactoryRegistryLocator;
 import static java.lang.String.format;
 
 public class ScopeImpl extends Scope {
-  public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private boolean hasTestModules;
   private Stack<Class<?>> cycleDetectionStack;
   private static final boolean DETECT_CYCLE = false;
 
   public ScopeImpl(Object name) {
     super(name);
-    if(DETECT_CYCLE) {
+    if (DETECT_CYCLE) {
       cycleDetectionStack = new Stack<>();
     }
     //it's always possible to get access to the scope that contains an injected object.
@@ -65,7 +62,7 @@ public class ScopeImpl extends Scope {
         }
       }
 
-      if(DETECT_CYCLE) {
+      if (DETECT_CYCLE) {
         if (cycleDetectionStack.contains(clazz)) {
           cycleDetectionStack.push(clazz);
           StringBuilder builder = new StringBuilder("A cycle was detected:\n");
@@ -105,7 +102,7 @@ public class ScopeImpl extends Scope {
         newProvider = new ProviderImpl(this, factory, false);
         installProvider(clazz, name, newProvider);
       }
-      if(DETECT_CYCLE) {
+      if (DETECT_CYCLE) {
         cycleDetectionStack.pop();
       }
       return newProvider;
