@@ -1,6 +1,7 @@
 package toothpick;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Main class to access toothpick features.
@@ -8,9 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ToothPick {
 
-  //http://stackoverflow.com/a/29421697/693752
-  //it should really be final, if not volatile
-  private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_INJECTOR = new ConcurrentHashMap<>();
+  private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new HashMap<>();
   private static Injector injector = new InjectorImpl();
 
   private ToothPick() {
@@ -22,7 +21,7 @@ public final class ToothPick {
       throw new IllegalArgumentException("null scopes can't be open.");
     }
 
-    Scope previousScope = null;
+    Scope previousScope;
     Scope lastScope = null;
     for (Object name : names) {
       previousScope = lastScope;
@@ -36,38 +35,33 @@ public final class ToothPick {
   }
 
   public static Scope openScope(Object name) {
-    Scope scope = MAP_KEY_TO_INJECTOR.get(name);
-    if (scope == null) {
-      synchronized (MAP_KEY_TO_INJECTOR) {
-        scope = MAP_KEY_TO_INJECTOR.get(name);
-        if (scope == null) {
-          scope = new ScopeImpl(name);
-          MAP_KEY_TO_INJECTOR.put(name, scope);
-        }
+    synchronized (MAP_KEY_TO_SCOPE) {
+      Scope scope = MAP_KEY_TO_SCOPE.get(name);
+      if (scope == null) {
+        scope = new ScopeImpl(name);
+        MAP_KEY_TO_SCOPE.put(name, scope);
       }
+      return scope;
     }
-    return scope;
   }
 
-  public static void closeScope(Object key) {
-    Scope scope = openScope(key);
-    if (scope == null) {
-      return;
-    }
-
-    MAP_KEY_TO_INJECTOR.remove(key);
-    for (Scope childScope : scope.childrenScopes) {
-      MAP_KEY_TO_INJECTOR.remove(scope.getName());
-    }
-
-    Scope parentScope = scope.getParentScope();
-    if (parentScope != null) {
-      parentScope.removeChild(scope);
+  public static void closeScope(Object name) {
+    synchronized (MAP_KEY_TO_SCOPE) {
+      Scope scope = MAP_KEY_TO_SCOPE.get(name);
+      if (scope != null) {
+        Scope parentScope = scope.getParentScope();
+        if (parentScope != null) {
+          parentScope.removeChild(scope);
+        }
+        removeScopeAndChildrenFromMap(scope);
+      }
     }
   }
 
   public static void reset() {
-    MAP_KEY_TO_INJECTOR.clear();
+    synchronized (MAP_KEY_TO_SCOPE) {
+      MAP_KEY_TO_SCOPE.clear();
+    }
   }
 
   public static void inject(Object obj, Scope scope) {
@@ -76,5 +70,13 @@ public final class ToothPick {
 
   public static <T> void inject(Class<T> clazz, T obj, Scope scope) {
     injector.inject(clazz, obj, scope);
+  }
+
+  // Not synchronized, calling method closeScope is
+  private static void removeScopeAndChildrenFromMap(Scope scope) {
+    MAP_KEY_TO_SCOPE.remove(scope.getName());
+    for (Scope childScope : scope.childrenScopes) {
+      removeScopeAndChildrenFromMap(childScope);
+    }
   }
 }

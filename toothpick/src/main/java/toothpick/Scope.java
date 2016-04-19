@@ -53,7 +53,7 @@ public abstract class Scope {
       throw new IllegalArgumentException("Child must be non null.");
     }
 
-    if(child.parentScope == this) {
+    if (child.parentScope == this) {
       return;
     }
 
