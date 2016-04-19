@@ -182,9 +182,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected boolean isValidInjectField(VariableElement fieldElement) {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
+    final TypeElement fieldType = getType(fieldElement);
 
-    TypeMirror fieldType = fieldElement.asType();
-    if (fieldType.getKind() != TypeKind.DECLARED) {
+    if (fieldType.getKind() != ElementKind.CLASS //
+        && fieldType.getKind() != ElementKind.INTERFACE //
+        && fieldType.getKind() != ElementKind.ENUM) {
       error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
           fieldElement.getSimpleName(), fieldType);
       return false;
@@ -206,6 +208,16 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     return valid;
+  }
+
+  protected TypeElement getType(VariableElement fieldElement) {
+    final TypeElement fieldType;
+    if (getKind(fieldElement) == ParamInjectionTarget.Kind.INSTANCE) {
+      fieldType = (TypeElement) typeUtils.asElement(fieldElement.asType());
+    } else {
+      fieldType = getKindParameter(fieldElement);
+    }
+    return fieldType;
   }
 
   protected boolean isValidInjectMethod(Element methodElement) {

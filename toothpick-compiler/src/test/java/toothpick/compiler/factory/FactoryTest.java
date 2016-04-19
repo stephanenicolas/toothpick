@@ -400,7 +400,7 @@ public class FactoryTest {
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
@@ -488,7 +488,7 @@ public class FactoryTest {
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
@@ -503,7 +503,7 @@ public class FactoryTest {
         "@ProvidesSingleton", //
         "public class TestOptimisticFactoryCreationForInjectedMethod {", //
         "  @Inject void m(Foo foo) {}", //
-        "  private static class Foo {}", //
+        "  public static class Foo {}", //
         "}"));
 
     assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
@@ -542,7 +542,7 @@ public class FactoryTest {
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
@@ -567,7 +567,7 @@ public class FactoryTest {
     try {
       assert_().about(javaSource())
           .that(source)
-          .processedWith(ProcessorTestUtilities.factoryProcessors())
+          .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
           .compilesWithoutError()
           .and()
           .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", noFactoryClass + "$$Factory.class");
