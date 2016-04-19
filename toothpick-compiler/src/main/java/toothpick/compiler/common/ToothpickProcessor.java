@@ -108,14 +108,15 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    * @return true if toothpickRegistryPackageName is defined, false otherwise.
    */
   protected boolean readProcessorOptions() {
-    toothpickRegistryPackageName = processingEnv.getOptions().get(PARAMETER_REGISTRY_PACKAGE_NAME);
+    Map<String, String> options = processingEnv.getOptions();
+    toothpickRegistryPackageName = options.get(PARAMETER_REGISTRY_PACKAGE_NAME);
     if (toothpickRegistryPackageName == null) {
       warning("No option -Atoothpick_registry_package_name was passed to the compiler."
           + " No registries are generated. Will fallback on reflection at runtime to find factories.");
       return false;
     }
 
-    String toothpickRegistryChildrenPackageNames = processingEnv.getOptions().get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
+    String toothpickRegistryChildrenPackageNames = options.get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
     toothpickRegistryChildrenPackageNameList = new ArrayList<>();
     if (toothpickRegistryChildrenPackageNames != null) {
       String[] registryPackageNames = toothpickRegistryChildrenPackageNames.split(":");
@@ -124,7 +125,10 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     }
 
-    toothpickExcludeFilters = processingEnv.getOptions().getOrDefault(PARAMETER_EXCLUDES, toothpickExcludeFilters);
+    //getOrDefault could be used here, but it's ony available on jdk 7.
+    if (options.containsKey(PARAMETER_EXCLUDES)) {
+      toothpickExcludeFilters = options.get(PARAMETER_EXCLUDES);
+    }
 
     return true;
   }
