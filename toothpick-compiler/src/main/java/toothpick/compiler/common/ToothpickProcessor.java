@@ -315,7 +315,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   }
 
   private boolean isSameType(TypeElement typeElement, String typeName) {
-    return typeUtils.isSameType(typeElement.asType(), elementUtils.getTypeElement(typeName).asType());
+    return isSameType(typeElement.asType(), typeName);
   }
 
   private boolean isSameType(TypeMirror typeMirror, String typeName) {
