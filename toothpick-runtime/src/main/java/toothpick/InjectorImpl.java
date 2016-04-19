@@ -3,7 +3,7 @@ package toothpick;
 import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 /**
- * Default implementation of an scope.
+ * Default implementation of an injector.
  */
 public final class InjectorImpl implements Injector {
   @Override
