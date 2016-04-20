@@ -32,7 +32,7 @@ public class MemberInjectorRegistryTest {
         "  }", //
         "", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
-        "    switch(clazz.getName()) {", //
+        "    switch(clazz.getName().replace('$','.')) {", //
         "      case (\"test.TestASimpleRegistry\"):", //
         "      return (MemberInjector<T>) new test.TestASimpleRegistry$$MemberInjector();", //
         "      default:", //
@@ -73,7 +73,7 @@ public class MemberInjectorRegistryTest {
         "  }", //
         "", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
-        "    switch(clazz.getName()) {", //
+        "    switch(clazz.getName().replace('$','.')) {", //
         "      case (\"test.TestARegistry\"):", //
         "      return (MemberInjector<T>) new test.TestARegistry$$MemberInjector();", //
         "      default:", //

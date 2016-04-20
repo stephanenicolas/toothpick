@@ -64,7 +64,9 @@ public class RegistryGenerator extends CodeGenerator {
         .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), t), "clazz")
         .returns(ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), t));
 
-    CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName()");
+    //the ultimate part of the switch is about converting $ to .
+    //this is a bad hack, but the easiest workaroung to injectionTarget.getQualifiedName() using only . and not $ for FQN...
+    CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName().replace('$','.')");
 
     for (TypeElement injectionTarget : registryInjectionTarget.injectionTargetList) {
       switchBlockBuilder.add("case ($S):\n", injectionTarget.getQualifiedName().toString());
