@@ -87,14 +87,13 @@ public class ScopeImpl extends Scope {
       }
 
       //classes discovered at runtime, not bound by any module
+      //they will be a bit slower as we need to get the factory first
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-      final Provider<T> newProvider;
+      final Provider<T> newProvider = new ProviderImpl<>(this, factory, false);
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<>(this, factory, false);
         getRootScope().installProvider(clazz, name, newProvider);
       } else {
-        newProvider = new ProviderImpl(this, factory, false);
         installProvider(clazz, name, newProvider);
       }
       return newProvider;
@@ -146,19 +145,16 @@ public class ScopeImpl extends Scope {
     }
     switch (binding.getMode()) {
       case SIMPLE:
-        Factory<? extends T> factory = FactoryRegistryLocator.getFactory(binding.getKey());
-        return new ProviderImpl<>(this, factory, false);
+        return new ProviderImpl<>(this, binding.getKey(), false);
       case CLASS:
-        Factory<? extends T> factory2 = FactoryRegistryLocator.getFactory(binding.getImplementationClass());
-        return new ProviderImpl<>(this, factory2, false);
+        return new ProviderImpl<>(this, binding.getImplementationClass(), false);
       case INSTANCE:
         return new ProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
         //to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
         return new ProviderImpl<>(binding.getProviderInstance(), false);
       case PROVIDER_CLASS:
-        Factory<? extends Provider<T>> providerFactory = FactoryRegistryLocator.getFactory(binding.getProviderClass());
-        return new ProviderImpl<>(this, providerFactory, true);
+        return new ProviderImpl<>(this, binding.getProviderClass(), true);
 
       //JACOCO:OFF
       default:

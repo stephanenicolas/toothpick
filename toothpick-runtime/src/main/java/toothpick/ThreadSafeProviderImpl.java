@@ -14,13 +14,14 @@ public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {
 
   @Override
   public T get() {
-    if (instance != null) {
+    //the first test avoids accessing a volatile when not needed
+    if (isLazy && instance != null) {
       return instance;
     }
 
     //ensure both sync for DSL
     //and sync around provider
-    //so that devs providers don't deal with concurrency
+    //so that dev's providers don't deal with concurrency
     synchronized (this) {
       if (isLazy) {
         //DCL
