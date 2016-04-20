@@ -6,7 +6,8 @@ import toothpick.registries.MemberInjectorRegistry;
 
 /**
  * Locates the {@link MemberInjectorRegistry} instances.
- * Works in the same way as {@link FactoryRegistry}.
+ * Works in the same way as {@link FactoryRegistry}, except that is no {@link MemberInjector} is found,
+ * we simply return {@code null}. This is required to fully support polymorphism when injecting dependencies.
  *
  * @see FactoryRegistry
  * @see MemberInjectorRegistry
@@ -16,7 +17,6 @@ public class MemberInjectorRegistryLocator {
   private MemberInjectorRegistryLocator() {
   }
 
-  private static ReflectionMemberInjectorRegistry fallbackMemberInjectorRegistry = new ReflectionMemberInjectorRegistry();
   private static MemberInjectorRegistry registry;
 
   public static void setRootRegistry(MemberInjectorRegistry registry) {
@@ -31,6 +31,6 @@ public class MemberInjectorRegistryLocator {
         return memberInjector;
       }
     }
-    return fallbackMemberInjectorRegistry.getMemberInjector(clazz);
+    return null;
   }
 }

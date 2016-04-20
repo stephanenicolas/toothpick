@@ -31,7 +31,7 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    switch(clazz.getName()) {", //
+        "    switch(clazz.getName().replace('$','.')) {", //
         "      case (\"test.TestASimpleRegistry\"):", //
         "      return (Factory<T>) new test.TestASimpleRegistry$$Factory();", //
         "      default:", //
@@ -71,7 +71,7 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    switch(clazz.getName()) {", //
+        "    switch(clazz.getName().replace('$','.')) {", //
         "      case (\"test.TestARegistry\"):", //
         "      return (Factory<T>) new test.TestARegistry$$Factory();", //
         "      default:", //

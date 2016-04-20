@@ -3,6 +3,8 @@ package toothpick.registries.factory;
 import toothpick.Factory;
 import toothpick.registries.FactoryRegistry;
 
+import static java.lang.String.format;
+
 /**
  * Locates the {@link FactoryRegistry} instances.
  * The registries form a tree, or a forest (collection of disjoint trees).
@@ -16,11 +18,9 @@ import toothpick.registries.FactoryRegistry;
  * libraries, etc..), will be explored by the high level root library that uses them. The application should declare
  * root registries to the locator prior to performing any operation.
  *
- * In case no generated factory for a given class can be found in the forest of registries, the locator falls back
- * on reflection and will emit a warning as this process is slower, for instance on Android. Thus, an optimal approach
- * is to clean those warnings during the development cycle to achieve optimal performance, but they are not required by default.
+ * In case no generated factory for a given class, we throw a {@link RuntimeException}.
  *
- * The locator acts as facade for all the {@link FactoryRegistry} instances in the forest to retrieve a {@link Factory}
+ * The locator acts as  facade for all the {@link FactoryRegistry} instances in the forest to retrieve a {@link Factory}
  * for a given class.
  *
  * @see FactoryRegistry
@@ -30,7 +30,6 @@ public class FactoryRegistryLocator {
   private FactoryRegistryLocator() {
   }
 
-  private static ReflectionFactoryRegistry fallbackFactoryRegistry = new ReflectionFactoryRegistry();
   private static FactoryRegistry registry;
 
   public static void setRootRegistry(FactoryRegistry registry) {
@@ -45,6 +44,8 @@ public class FactoryRegistryLocator {
         return factory;
       }
     }
-    return fallbackFactoryRegistry.getFactory(clazz);
+    throw new RuntimeException(format("No factory could be found for class %s." //
+        + " Check that registries are properly setup with annotation processor arguments, " //
+        + "or use annotations correctly in this class.", clazz.getName()));
   }
 }
