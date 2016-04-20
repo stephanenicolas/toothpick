@@ -123,12 +123,12 @@ public class ScopeImpl extends Scope {
         throw new IllegalStateException("A module can't have a null binding.");
       }
 
-      Class key = binding.getKey();
-      synchronized (key) {
+      Class clazz = binding.getKey();
+      synchronized (clazz) {
         String bindingName = binding.getName();
-        if (!hasTestModules || getScopedProvider(key, bindingName) == null) {
+        if (!hasTestModules || getScopedProvider(clazz, bindingName) == null) {
           Provider provider = toProvider(binding);
-          installProvider(key, bindingName, provider);
+          installProvider(clazz, bindingName, provider);
         }
       }
     }

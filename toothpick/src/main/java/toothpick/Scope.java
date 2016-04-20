@@ -170,6 +170,7 @@ public abstract class Scope {
    * @param clazz the class for which to obtain a provider in the scope of this scope.
    * @param <T> the type of {@code clazz}.
    * @return a scoped provider or a new one using the factory associated to {@code clazz}.
+   * Returned providers are thread safe.
    */
   public abstract <T> Provider<T> getProvider(Class<T> clazz);
 
@@ -201,6 +202,7 @@ public abstract class Scope {
    * @param name the name of this instance.
    * @param <T> the type of {@code clazz}.
    * @return a scoped provider or a new one using the factory associated to {@code clazz}.
+   * Returned providers are thread safe.
    */
   public abstract <T> Provider<T> getProvider(Class<T> clazz, String name);
 
@@ -215,6 +217,7 @@ public abstract class Scope {
    * @param clazz the class for which to obtain a lazy in the scope of this scope.
    * @param <T> the type of {@code clazz}.
    * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   * Returned lazies are thread safe.
    * @see #getProvider(Class)
    */
   public abstract <T> Lazy<T> getLazy(Class<T> clazz);
@@ -231,6 +234,7 @@ public abstract class Scope {
    * @param name the name of this instance.
    * @param <T> the type of {@code clazz}.
    * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   * Returned lazies are thread safe.
    * @see #getProvider(Class)
    */
   public abstract <T> Lazy<T> getLazy(Class<T> clazz, String name);

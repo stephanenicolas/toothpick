@@ -3,6 +3,10 @@ package toothpick;
 import javax.inject.Provider;
 import toothpick.registries.factory.FactoryRegistryLocator;
 
+/**
+ * A non thread safe internal provider. It should never be exposed outside of ToothPick.
+ * @param <T> the class of the instances provided by this provider.
+ */
 public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
   private Scope scope;
   private T instance;
@@ -48,12 +52,13 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
 
     if (providerInstance != null) {
       if (isLazy) {
-        return instance = providerInstance.get();
+        instance = providerInstance.get();
+        return instance;
       }
       return providerInstance.get();
     }
 
-    if(factoryClass != null && factory == null) {
+    if (factoryClass != null && factory == null) {
       factory = FactoryRegistryLocator.getFactory(factoryClass);
     }
 
@@ -61,19 +66,22 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
       if (!factory.hasSingletonAnnotation()) {
         return factory.createInstance(scope);
       }
-      return instance = factory.createInstance(scope);
+      instance = factory.createInstance(scope);
+      return instance;
     }
 
-    if(providerFactoryClass != null && providerFactory == null) {
+    if (providerFactoryClass != null && providerFactory == null) {
       providerFactory = FactoryRegistryLocator.getFactory(providerFactoryClass);
     }
 
     if (providerFactory != null) {
       if (providerFactory.hasProducesSingletonAnnotation()) {
-        return instance = providerFactory.createInstance(scope).get();
+        instance = providerFactory.createInstance(scope).get();
+        return instance;
       }
       if (providerFactory.hasSingletonAnnotation()) {
-        return (providerInstance = providerFactory.createInstance(scope)).get();
+        providerInstance = providerFactory.createInstance(scope);
+        return providerInstance.get();
       }
 
       return providerFactory.createInstance(scope).get();
