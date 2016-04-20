@@ -143,30 +143,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
-  protected String getPackageName(TypeElement type) {
-    return elementUtils.getPackageOf(type).getQualifiedName().toString();
-  }
-
-  protected String getClassName(TypeElement type, String packageName) {
-    int packageLen = packageName.length() + 1;
-    return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
-  }
-
-  /**
-   * Returns {@code true} if the an annotation is found on the given element with the given class
-   * name (not fully qualified).
-   */
-  protected boolean hasAnnotationWithName(Element element, String simpleName) {
-    for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
-      final Element annnotationElement = mirror.getAnnotationType().asElement();
-      String annotationName = annnotationElement.getSimpleName().toString();
-      if (simpleName.equals(annotationName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   protected void error(String message, Object... args) {
     processingEnv.getMessager().printMessage(ERROR, String.format(message, args));
   }
@@ -175,16 +151,22 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     processingEnv.getMessager().printMessage(ERROR, String.format(message, args), element);
   }
 
+  protected void warning(Element element, String message, Object... args) {
+    processingEnv.getMessager().printMessage(WARNING, String.format(message, args), element);
+  }
+
   protected void warning(String message, Object... args) {
     processingEnv.getMessager().printMessage(WARNING, String.format(message, args));
   }
 
-  protected boolean isValidInjectField(VariableElement fieldElement) {
+  protected boolean isValidInjectAnnotatedField(VariableElement fieldElement) {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
+    final TypeElement fieldType = getInjectedType(fieldElement);
 
-    TypeMirror fieldType = fieldElement.asType();
-    if (fieldType.getKind() != TypeKind.DECLARED) {
+    if (fieldType.getKind() != ElementKind.CLASS //
+        && fieldType.getKind() != ElementKind.INTERFACE //
+        && fieldType.getKind() != ElementKind.ENUM) {
       error(fieldElement, "Field %s#%s is of type %s which is not supported by Toothpick.", enclosingElement.getQualifiedName(),
           fieldElement.getSimpleName(), fieldType);
       return false;
@@ -208,7 +190,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return valid;
   }
 
-  protected boolean isValidInjectMethod(Element methodElement) {
+  protected boolean isValidInjectAnnotatedMethod(Element methodElement) {
     boolean valid = true;
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
 
@@ -232,11 +214,42 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   }
 
   protected List<ParamInjectionTarget> getParamInjectionTargetList(ExecutableElement executableElement) {
-    List<ParamInjectionTarget> paramInjectionTarget = new ArrayList<>();
+    List<ParamInjectionTarget> paramInjectionTargetList = new ArrayList<>();
     for (VariableElement variableElement : executableElement.getParameters()) {
-      paramInjectionTarget.add(createFieldInjectionTarget(variableElement));
+      paramInjectionTargetList.add(createFieldOrParamInjectionTarget(variableElement));
     }
-    return paramInjectionTarget;
+    return paramInjectionTargetList;
+  }
+
+  protected FieldInjectionTarget createFieldOrParamInjectionTarget(VariableElement variableElement) {
+    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(variableElement.asType());
+    final String memberName = variableElement.getSimpleName().toString();
+
+    ParamInjectionTarget.Kind kind = getKind(variableElement);
+    TypeElement kindParameterTypeElement = getInjectedType(variableElement);
+
+    String name = findQualifierName(variableElement);
+
+    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
+  }
+
+  /**
+   * Retrieves the type of a field or param. The type can be the type of the parameter
+   * in the java way (e.g. {@code B b}, type is {@code B}); but it can also be the type of
+   * a {@link toothpick.Lazy} or {@link javax.inject.Provider}
+   * (e.g. {@code Lazy&lt;B&gt; b}, type is {@code B} not {@code Lazy}).
+   *
+   * @param variableElement the field or variable element. NOT his type !
+   * @return the type has defined above.
+   */
+  protected TypeElement getInjectedType(VariableElement variableElement) {
+    final TypeElement fieldType;
+    if (getKind(variableElement) == ParamInjectionTarget.Kind.INSTANCE) {
+      fieldType = (TypeElement) typeUtils.asElement(variableElement.asType());
+    } else {
+      fieldType = getKindParameter(variableElement);
+    }
+    return fieldType;
   }
 
   protected boolean isExcludedByFilters(TypeElement fieldTypeElement) {
@@ -251,7 +264,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return false;
   }
 
-  public TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement, boolean onlyParents) {
+  protected TypeElement getMostDirectSuperClassWithInjectedMembers(TypeElement typeElement, boolean onlyParents) {
     TypeElement currentTypeElement = typeElement;
     do {
       if (currentTypeElement != typeElement || !onlyParents) {
@@ -274,23 +287,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return null;
   }
 
-  protected FieldInjectionTarget createFieldInjectionTarget(VariableElement element) {
-    final TypeElement memberTypeElement = (TypeElement) typeUtils.asElement(element.asType());
-    final String memberName = element.getSimpleName().toString();
-
-    FieldInjectionTarget.Kind kind = getKind(element);
-    TypeElement kindParameterTypeElement;
-    if (kind == FieldInjectionTarget.Kind.INSTANCE) {
-      kindParameterTypeElement = null;
-    } else {
-      kindParameterTypeElement = getKindParameter(element);
-    }
-
-    Object name = findQualifierName(element);
-
-    return new FieldInjectionTarget(memberTypeElement, memberName, kind, kindParameterTypeElement, name);
-  }
-
   /**
    * Lookup both {@link javax.inject.Qualifier} and {@link javax.inject.Named}
    * to provide the name of an injection.
@@ -309,7 +305,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       if (isSameType(annotationTypeElement, "javax.inject.Named")) {
         checkIfAlreadyHasName(element, name);
         name = getValueOfAnnotation(annotationMirror);
-      } else if (isAnnotationPresent(annotationTypeElement, "javax.inject.Qualifier")) {
+      } else if (annotationTypeElement.getAnnotation(javax.inject.Qualifier.class) != null) {
         checkIfAlreadyHasName(element, name);
         name = annotationTypeElement.getQualifiedName().toString();
       }
@@ -317,23 +313,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return name;
   }
 
-  //http://stackoverflow.com/a/36678792/693752
-  private boolean isAnnotationPresent(TypeElement annotationTypeElement, String annotationName) {
-    for (AnnotationMirror annotationOfAnnotationTypeMirror : annotationTypeElement.getAnnotationMirrors()) {
-      TypeElement annotationOfAnnotationTypeElement = (TypeElement) annotationOfAnnotationTypeMirror.getAnnotationType().asElement();
-      if (isSameType(annotationOfAnnotationTypeElement, annotationName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private boolean isSameType(TypeElement typeElement, String typeName) {
     return isSameType(typeElement.asType(), typeName);
   }
 
   private boolean isSameType(TypeMirror typeMirror, String typeName) {
-    return typeUtils.isSameType(typeMirror, elementUtils.getTypeElement(typeName).asType());
+    return typeUtils.isSameType(typeUtils.erasure(typeMirror), typeUtils.erasure(elementUtils.getTypeElement(typeName).asType()));
   }
 
   private void checkIfAlreadyHasName(VariableElement element, Object name) {
@@ -354,10 +339,9 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   private FieldInjectionTarget.Kind getKind(Element element) {
     TypeMirror elementTypeMirror = element.asType();
-    String elementTypeName = typeUtils.erasure(elementTypeMirror).toString();
-    if ("javax.inject.Provider".equals(elementTypeName)) {
+    if (isSameType(elementTypeMirror, "javax.inject.Provider")) {
       return FieldInjectionTarget.Kind.PROVIDER;
-    } else if ("toothpick.Lazy".equals(elementTypeName)) {
+    } else if (isSameType(elementTypeMirror, "toothpick.Lazy")) {
       return FieldInjectionTarget.Kind.LAZY;
     } else {
       return FieldInjectionTarget.Kind.INSTANCE;

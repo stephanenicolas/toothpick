@@ -17,7 +17,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
 import toothpick.compiler.common.ToothpickProcessor;
-import toothpick.compiler.factory.FactoryProcessor;
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
@@ -26,10 +25,14 @@ import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 
 /**
- * Same as {@link FactoryProcessor} but for {@link MemberInjector} classes.
- * Annotation processor arguments are shared with the {@link FactoryProcessor}.
- *
- * @see FactoryProcessor
+ * This processor's role is to create {@link MemberInjector}.
+ * We create factories in different situations :
+ * <ul>
+ * <li> When a class {@code Foo} has an {@link javax.inject.Singleton} annotated field : <br/>
+ * --> we create a MemberInjector to inject {@code Foo} instances.
+ * <li> When a class {@code Foo} has an {@link javax.inject.Singleton} method : <br/>
+ * --> we create a MemberInjector to inject {@code Foo} instances.
+ * </ul>
  */
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
@@ -88,32 +91,32 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   }
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
-    parseInjectedFields(roundEnv);
-    parseInjectedMethods(roundEnv);
+    processInjectAnnotatedFields(roundEnv);
+    processInjectAnnotatedMethods(roundEnv);
   }
 
-  protected void parseInjectedFields(RoundEnvironment roundEnv) {
+  protected void processInjectAnnotatedFields(RoundEnvironment roundEnv) {
     for (VariableElement element : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       if (!isExcludedByFilters((TypeElement) element.getEnclosingElement())) {
-        parseInjectedField(element, mapTypeElementToFieldInjectorTargetList);
+        processInjectAnnotatedField(element, mapTypeElementToFieldInjectorTargetList);
       }
     }
   }
 
-  protected void parseInjectedMethods(RoundEnvironment roundEnv) {
+  protected void processInjectAnnotatedMethods(RoundEnvironment roundEnv) {
     for (ExecutableElement element : ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       if (!isExcludedByFilters((TypeElement) element.getEnclosingElement())) {
-        parseInjectedMethod(element, mapTypeElementToMethodInjectorTargetList);
+        processInjectAnnotatedMethod(element, mapTypeElementToMethodInjectorTargetList);
       }
     }
   }
 
-  private void parseInjectedField(VariableElement fieldElement,
+  private void processInjectAnnotatedField(VariableElement fieldElement,
       Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
 
     // Verify common generated code restrictions.
-    if (!isValidInjectField(fieldElement)) {
+    if (!isValidInjectAnnotatedField(fieldElement)) {
       return;
     }
 
@@ -124,17 +127,17 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     mapTypeToMostDirectSuperTypeThatNeedsInjection(enclosingElement);
-    fieldInjectionTargetList.add(createFieldInjectionTarget(fieldElement));
+    fieldInjectionTargetList.add(createFieldOrParamInjectionTarget(fieldElement));
   }
 
   //TODO take overrides into account. If the method is an override, do not generate a call to it
   //it will be performed by the super class member scope already.
-  private void parseInjectedMethod(ExecutableElement methodElement,
+  private void processInjectAnnotatedMethod(ExecutableElement methodElement,
       Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
 
     // Verify common generated code restrictions.
-    if (!isValidInjectMethod(methodElement)) {
+    if (!isValidInjectAnnotatedMethod(methodElement)) {
       return;
     }
 
@@ -148,9 +151,9 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     methodInjectionTargetList.add(createMethodInjectionTarget(methodElement));
   }
 
-  private void mapTypeToMostDirectSuperTypeThatNeedsInjection(TypeElement enclosingElement) {
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, true);
-    mapTypeElementToSuperTypeElementThatNeedsInjection.put(enclosingElement, superClassWithInjectedMembers);
+  private void mapTypeToMostDirectSuperTypeThatNeedsInjection(TypeElement typeElement) {
+    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(typeElement, true);
+    mapTypeElementToSuperTypeElementThatNeedsInjection.put(typeElement, superClassWithInjectedMembers);
   }
 
   private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
