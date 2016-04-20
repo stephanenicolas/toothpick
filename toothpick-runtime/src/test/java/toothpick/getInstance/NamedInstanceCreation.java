@@ -69,7 +69,6 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
     assertThat(provider.get(), is(namedFooInstance));
     assertThat(provider2.get(), is(namedFooInstance));
     assertThat(provider3.get(), notNullValue());
-    assertThat(provider, sameInstance(provider2));
     assertThat(provider, not(sameInstance(provider3)));
   }
 

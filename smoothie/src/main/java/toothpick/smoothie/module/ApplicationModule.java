@@ -53,12 +53,12 @@ import static android.content.Context.WINDOW_SERVICE;
 public class ApplicationModule extends Module {
   public ApplicationModule(Application application) {
     bind(Application.class).to(application);
-    bind(AccountManager.class).toProvider(AccountManagerProvider.class);
-    bind(AssetManager.class).toProvider(AssetManagerProvider.class);
-    bind(ContentResolver.class).toProvider(ContentResolverProvider.class);
-    bind(Handler.class).toProvider(HandlerProvider.class);
-    bind(Resources.class).toProvider(ResourcesProvider.class);
-    bind(SharedPreferences.class).toProvider(SharedPreferencesProvider.class);
+    bind(AccountManager.class).toProvider(new AccountManagerProvider(application));
+    bind(AssetManager.class).toProvider(new AssetManagerProvider(application));
+    bind(ContentResolver.class).toProvider(new ContentResolverProvider(application));
+    bind(Handler.class).toProvider(new HandlerProvider());
+    bind(Resources.class).toProvider(new ResourcesProvider(application));
+    bind(SharedPreferences.class).toProvider(new SharedPreferencesProvider(application));
     bindSystemServices(application);
     bindPackageInfo(application);
   }
@@ -73,7 +73,6 @@ public class ApplicationModule extends Module {
     }
   }
 
-  // TODO check min sdk and refactor
   private void bindSystemServices(Application application) {
     bindSystemService(application, LocationManager.class, LOCATION_SERVICE);
     bindSystemService(application, WindowManager.class, WINDOW_SERVICE);

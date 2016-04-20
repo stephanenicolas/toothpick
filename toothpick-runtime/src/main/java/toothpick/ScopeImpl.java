@@ -10,6 +10,20 @@ import toothpick.registries.factory.FactoryRegistryLocator;
 
 import static java.lang.String.format;
 
+/**
+ * {@inheritDoc}
+ * <p>
+ * A note on concurrency :
+ * <ul>
+ * <li> all operations related to the scope tree are synchronized on the {@code ToothPick} class.
+ * <li> all operations related to a scope's content (binding & providers) are synchronized on the key (class) of the binding/injection.
+ * <li> all providers provided by the public API (including Lazy) should return a thread safe provider (done)
+ * but internally, we can live with a non synchronized provider.
+ * </ul>
+ * <em>All operations on the scope itself are non thread-safe. They <em>must</em> be used via the {@code ToothPick} class
+ * or <em>must</em> be synchronized using the {@code ToothPick} class if used concurrently.</em>
+ * </p>
+ */
 public class ScopeImpl extends Scope {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private boolean hasTestModules;
@@ -22,26 +36,39 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return getInstance(clazz, null);
-  }
-
-  @Override
-  public <T> Provider<T> getProvider(Class<T> clazz) {
-    return getProvider(clazz, null);
-  }
-
-  @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz) {
-    return getLazy(clazz, null);
+    return getProviderInternal(clazz, null).get();
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
-    return getProvider(clazz, name).get();
+    return getProviderInternal(clazz, name).get();
+  }
+
+  @Override
+  public <T> Provider<T> getProvider(Class<T> clazz) {
+    Provider<T> provider = getProviderInternal(clazz, null);
+    return new ThreadSafeProviderImpl<>(provider, false);
   }
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz, String name) {
+    Provider<T> provider = getProviderInternal(clazz, name);
+    return new ThreadSafeProviderImpl<>(provider, false);
+  }
+
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz) {
+    Provider<T> provider = getProviderInternal(clazz, null);
+    return new ThreadSafeProviderImpl<>(provider, true);
+  }
+
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
+    Provider<T> provider = getProviderInternal(clazz, name);
+    return new ThreadSafeProviderImpl<>(provider, true);
+  }
+
+  public <T> Provider<T> getProviderInternal(Class<T> clazz, String name) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
@@ -60,24 +87,17 @@ public class ScopeImpl extends Scope {
       }
 
       //classes discovered at runtime, not bound by any module
+      //they will be a bit slower as we need to get the factory first
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-      final Provider<T> newProvider;
+      final Provider<T> newProvider = new ProviderImpl<>(this, factory, false);
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
-        newProvider = new ProviderImpl<>(this, factory, false);
         getRootScope().installProvider(clazz, name, newProvider);
       } else {
-        newProvider = new ProviderImpl(this, factory, false);
         installProvider(clazz, name, newProvider);
       }
       return newProvider;
     }
-  }
-
-  @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
-    Provider<T> provider = getProvider(clazz, name);
-    return new ProviderImpl<>(provider, true);
   }
 
   @Override
@@ -103,12 +123,12 @@ public class ScopeImpl extends Scope {
         throw new IllegalStateException("A module can't have a null binding.");
       }
 
-      Class key = binding.getKey();
-      synchronized (key) {
+      Class clazz = binding.getKey();
+      synchronized (clazz) {
         String bindingName = binding.getName();
-        if (!hasTestModules || getScopedProvider(key, bindingName) == null) {
+        if (!hasTestModules || getScopedProvider(clazz, bindingName) == null) {
           Provider provider = toProvider(binding);
-          installProvider(key, bindingName, provider);
+          installProvider(clazz, bindingName, provider);
         }
       }
     }
@@ -125,19 +145,16 @@ public class ScopeImpl extends Scope {
     }
     switch (binding.getMode()) {
       case SIMPLE:
-        Factory<? extends T> factory = FactoryRegistryLocator.getFactory(binding.getKey());
-        return new ProviderImpl<>(this, factory, false);
+        return new ProviderImpl<>(this, binding.getKey(), false);
       case CLASS:
-        Factory<? extends T> factory2 = FactoryRegistryLocator.getFactory(binding.getImplementationClass());
-        return new ProviderImpl<>(this, factory2, false);
+        return new ProviderImpl<>(this, binding.getImplementationClass(), false);
       case INSTANCE:
         return new ProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
         //to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
         return new ProviderImpl<>(binding.getProviderInstance(), false);
       case PROVIDER_CLASS:
-        Factory<? extends Provider<T>> providerFactory = FactoryRegistryLocator.getFactory(binding.getProviderClass());
-        return new ProviderImpl<>(this, providerFactory, true);
+        return new ProviderImpl<>(this, binding.getProviderClass(), true);
 
       //JACOCO:OFF
       default:

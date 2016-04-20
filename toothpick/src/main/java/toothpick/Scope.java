@@ -13,14 +13,7 @@ import toothpick.config.Module;
 import static java.lang.String.format;
 
 /**
- * Allows to create instances of a given class.
- * A note on concurrency :
- * <ul>
- * <li> all scope operations related to the scope tree should be synchronized on the scope itself (TODO)
- * <li> all operations related to the {@code mapClassesToAllProviders} are synchronized on the class of the provider.
- * <li> all providers provided by the public API (including Lazy) should return a thread safe provider (done)
- * but internally, we can live with a non synchronized provider (TODO).
- * </ul>
+ *
  */
 public abstract class Scope {
   protected Scope parentScope;
@@ -154,43 +147,21 @@ public abstract class Scope {
   }
 
   /**
-   * Returns the instance of {@code clazz} if one is scoped in the current
-   * scope, or its ancestors. If there is no such instance, the factory associated
-   * to the clazz will be used.
-   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created instance
-   * will be scoped in the root scope of the current scope.
+   * Requests an instance via an unnamed binding.
    *
-   * @param clazz the class for which to obtain an instance in the scope of this scope.
-   * @param <T> the type of {@code clazz}.
-   * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
+   * @see #getInstance(Class, String)
+   * @see toothpick.config.Module
    */
   public abstract <T> T getInstance(Class<T> clazz);
 
   /**
-   * Returns a {@code Provider} of {@code clazz} if one is scoped in the current
-   * scope, or its ancestors. If there is no such provider, the factory associated
-   * to the clazz will be used to create one.
-   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
-   * will be scoped in the root scope of the current scope.
-   *
-   * @param clazz the class for which to obtain a provider in the scope of this scope.
-   * @param <T> the type of {@code clazz}.
-   * @return a scoped provider or a new one using the factory associated to {@code clazz}.
-   */
-  public abstract <T> Provider<T> getProvider(Class<T> clazz);
-
-  /**
    * Returns the instance of {@code clazz} named {@code name} if one is scoped in the current
    * scope, or its ancestors. If there is no such instance, the factory associated
-   * to the clazz will be used.
+   * to the clazz will be used to produce the instance.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created instance
-   * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain an instance in the scope of this scope.
-   * @param name the name of this instance.
+   * @param name the name of this instance, if it's null then a unnamed binding is used, otherwise the associated named binding is used.
    * @param <T> the type of {@code clazz}.
    * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
    * @see toothpick.config.Binding
@@ -198,37 +169,38 @@ public abstract class Scope {
   public abstract <T> T getInstance(Class<T> clazz, String name);
 
   /**
-   * Returns a named {@code Provider} of {@code clazz} if one is scoped in the current
+   * Requests a provider via an unnamed binding.
+   *
+   * @see #getProvider(Class, String)
+   * @see toothpick.config.Module
+   */
+  public abstract <T> Provider<T> getProvider(Class<T> clazz);
+
+  /**
+   * Returns a named {@code Provider} named {@code name} of {@code clazz} if one is scoped in the current
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
-   * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain a provider in the scope of this scope.
-   * @param name the name of this instance.
+   * @param name the name of this instance, if it's null then a unnamed binding is used, otherwise the associated named binding is used.
    * @param <T> the type of {@code clazz}.
    * @return a scoped provider or a new one using the factory associated to {@code clazz}.
+   * Returned providers are thread safe.
+   * @see toothpick.config.Module
    */
   public abstract <T> Provider<T> getProvider(Class<T> clazz, String name);
 
   /**
-   * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
-   * scope, or its ancestors. If there is no such provider, the factory associated
-   * to the clazz will be used to create one.
-   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
-   * will be scoped in the root scope of the current scope.
+   * Requests a Lazy via an unnamed binding.
    *
-   * @param clazz the class for which to obtain a lazy in the scope of this scope.
-   * @param <T> the type of {@code clazz}.
-   * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
-   * @see #getProvider(Class)
+   * @see #getLazy(Class, String)
+   * @see toothpick.config.Module
    */
   public abstract <T> Lazy<T> getLazy(Class<T> clazz);
 
   /**
-   * Returns a {@code Lazy} of {@code clazz} if one provider is scoped in the current
+   * Returns a {@code Lazy} named {@code name} of {@code clazz} if one provider is scoped in the current
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
@@ -236,16 +208,17 @@ public abstract class Scope {
    * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain a lazy in the scope of this scope.
-   * @param name the name of this instance.
+   * @param name the name of this instance, if it's null then a unnamed binding is used, otherwise the associated named binding is used.
    * @param <T> the type of {@code clazz}.
    * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
-   * @see #getProvider(Class)
+   * Returned lazies are thread safe.
+   * @see toothpick.config.Module
    */
   public abstract <T> Lazy<T> getLazy(Class<T> clazz, String name);
 
   /**
+   * <em>DO NOT USE IT IN PRODUCTION.</em><br/>
    * Allows to define test modules. These method should only be used for testing.
-   * DO NOT USE IT IN PRODUCTION.
    * Test modules have precedence over other normal modules, allowing to define stubs/fake/mocks.
    * All bindings defined in a test module cannot be overridden by a future call to {@link #installModules(Module...)}.
    * But they can still be overridden by a future call to  {@link #installTestModules(Module...)}.
@@ -255,7 +228,7 @@ public abstract class Scope {
   public abstract void installTestModules(Module... modules);
 
   /**
-   * Allows to define modules.
+   * Allows to install modules.
    *
    * @param modules an array of modules that define bindings.
    * @See #installTestModules
