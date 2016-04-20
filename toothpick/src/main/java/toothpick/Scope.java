@@ -13,14 +13,7 @@ import toothpick.config.Module;
 import static java.lang.String.format;
 
 /**
- * Allows to create instances of a given class.
- * A note on concurrency :
- * <ul>
- * <li> all scope operations related to the scope tree should be synchronized on the scope itself (TODO)
- * <li> all operations related to the {@code mapClassesToAllProviders} are synchronized on the class of the provider.
- * <li> all providers provided by the public API (including Lazy) should return a thread safe provider (done)
- * but internally, we can live with a non synchronized provider (TODO).
- * </ul>
+ *
  */
 public abstract class Scope {
   protected Scope parentScope;

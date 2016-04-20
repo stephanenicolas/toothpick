@@ -10,6 +10,20 @@ import toothpick.registries.factory.FactoryRegistryLocator;
 
 import static java.lang.String.format;
 
+/**
+ * {@inheritDoc}
+ * <p>
+ * A note on concurrency :
+ * <ul>
+ * <li> all operations related to the scope tree are synchronized on the {@code ToothPick} class.
+ * <li> all operations related to a scope's content (binding & providers) are synchronized on the key (class) of the binding/injection.
+ * <li> all providers provided by the public API (including Lazy) should return a thread safe provider (done)
+ * but internally, we can live with a non synchronized provider.
+ * </ul>
+ * <em>All operations on the scope itself are non thread-safe. They <em>must</em> be used via the {@code ToothPick} class
+ * or <em>must</em> be synchronized using the {@code ToothPick} class if used concurrently.</em>
+ * </p>
+ */
 public class ScopeImpl extends Scope {
   public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
   private boolean hasTestModules;
@@ -22,26 +36,39 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return getInstance(clazz, null);
-  }
-
-  @Override
-  public <T> Provider<T> getProvider(Class<T> clazz) {
-    return getProvider(clazz, null);
-  }
-
-  @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz) {
-    return getLazy(clazz, null);
+    return getProviderInternal(clazz, null).get();
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
-    return getProvider(clazz, name).get();
+    return getProviderInternal(clazz, name).get();
+  }
+
+  @Override
+  public <T> Provider<T> getProvider(Class<T> clazz) {
+    Provider<T> provider = getProviderInternal(clazz, null);
+    return new ThreadSafeProviderImpl<>(provider, false);
   }
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz, String name) {
+    Provider<T> provider = getProviderInternal(clazz, name);
+    return new ThreadSafeProviderImpl<>(provider, false);
+  }
+
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz) {
+    Provider<T> provider = getProviderInternal(clazz, null);
+    return new ThreadSafeProviderImpl<>(provider, true);
+  }
+
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
+    Provider<T> provider = getProviderInternal(clazz, name);
+    return new ThreadSafeProviderImpl<>(provider, true);
+  }
+
+  public <T> Provider<T> getProviderInternal(Class<T> clazz, String name) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
@@ -72,12 +99,6 @@ public class ScopeImpl extends Scope {
       }
       return newProvider;
     }
-  }
-
-  @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
-    Provider<T> provider = getProvider(clazz, name);
-    return new ProviderImpl<>(provider, true);
   }
 
   @Override

@@ -2,13 +2,11 @@ package toothpick;
 
 import javax.inject.Provider;
 
-//TODO only the provider created by scope.getProvider need to be thread safe, all others
-//are already accessed with a lock
 public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
   private Scope scope;
-  private volatile T instance;
+  private T instance;
   private Factory<T> factory;
-  private volatile Provider<T> providerInstance;
+  private Provider<T> providerInstance;
   private boolean isLazy;
   private Factory<Provider<T>> providerFactory;
 
@@ -35,64 +33,32 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     if (instance != null) {
       return instance;
     }
+
     if (providerInstance != null) {
       if (isLazy) {
-        //DCL
-        if (instance == null) {
-          synchronized (this) {
-            instance = providerInstance.get();
-          }
-        }
-        return instance;
+        return instance = providerInstance.get();
       }
-      //to ensure the wrapped provider doesn't have to deal
-      //with concurrency
-      synchronized (this) {
-        return providerInstance.get();
-      }
+      return providerInstance.get();
     }
+
     if (factory != null) {
       if (!factory.hasSingletonAnnotation()) {
         return factory.createInstance(scope);
       }
-      //DCL
-      if (instance == null) {
-        synchronized (this) {
-          instance = factory.createInstance(scope);
-        }
-      }
-      return instance;
+      return instance = factory.createInstance(scope);
     }
+
     if (providerFactory != null) {
       if (providerFactory.hasProducesSingletonAnnotation()) {
-        //DCL
-        if (instance == null) {
-          synchronized (this) {
-            instance = providerFactory.createInstance(scope).get();
-          }
-        }
-        return instance;
+        return instance = providerFactory.createInstance(scope).get();
       }
       if (providerFactory.hasSingletonAnnotation()) {
-        if (providerInstance == null) {
-          //DCL
-          synchronized (this) {
-            providerInstance = providerFactory.createInstance(scope);
-          }
-        }
-        //to ensure the wrapped provider doesn't have to deal
-        //with concurrency
-        synchronized (this) {
-          return providerInstance.get();
-        }
+        return (providerInstance = providerFactory.createInstance(scope)).get();
       }
-      Provider<T> provider = providerFactory.createInstance(scope);
-      //to ensure the wrapped provider doesn't have to deal
-      //with concurrency
-      synchronized (this) {
-        return provider.get();
-      }
+
+      return providerFactory.createInstance(scope).get();
     }
+
     throw new IllegalStateException("A provider can only be used with an instance, a provider, a factory or a provider factory.");
   }
 }

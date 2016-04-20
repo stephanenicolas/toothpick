@@ -35,7 +35,7 @@ public final class ToothPick {
   }
 
   public static Scope openScope(Object name) {
-    synchronized (MAP_KEY_TO_SCOPE) {
+    synchronized (ToothPick.class) {
       Scope scope = MAP_KEY_TO_SCOPE.get(name);
       if (scope == null) {
         scope = new ScopeImpl(name);
@@ -46,7 +46,7 @@ public final class ToothPick {
   }
 
   public static void closeScope(Object name) {
-    synchronized (MAP_KEY_TO_SCOPE) {
+    synchronized (ToothPick.class) {
       Scope scope = MAP_KEY_TO_SCOPE.get(name);
       if (scope != null) {
         Scope parentScope = scope.getParentScope();
@@ -59,7 +59,7 @@ public final class ToothPick {
   }
 
   public static void reset() {
-    synchronized (MAP_KEY_TO_SCOPE) {
+    synchronized (ToothPick.class) {
       MAP_KEY_TO_SCOPE.clear();
     }
   }
