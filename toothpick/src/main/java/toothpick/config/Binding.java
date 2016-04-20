@@ -86,6 +86,6 @@ public class Binding<T> {
     CLASS,
     INSTANCE,
     PROVIDER_INSTANCE,
-    PROVIDER_CLASS;
+    PROVIDER_CLASS
   }
 }

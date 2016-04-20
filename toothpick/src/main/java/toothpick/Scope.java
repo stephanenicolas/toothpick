@@ -33,7 +33,7 @@ public abstract class Scope {
     return parentScope;
   }
 
-  public Collection<Scope> getChildren() {
+  public Collection<Scope> getChildrenScopes() {
     return childrenScopes;
   }
 
@@ -56,7 +56,6 @@ public abstract class Scope {
 
     childrenScopes.add(child);
     child.parentScope = this;
-    child.parentScopes = new ArrayList<>();
     child.parentScopes.add(this);
     child.parentScopes.addAll(parentScopes);
   }
@@ -72,7 +71,8 @@ public abstract class Scope {
 
     childrenScopes.remove(child);
     //make the ex-child a new root.
-    child.parentScopes = new ArrayList<>();
+    child.parentScope = null;
+    child.parentScopes.clear();
   }
 
   /**
@@ -98,22 +98,22 @@ public abstract class Scope {
    * @return the scoped provider of this scope for class {@code clazz} and {@code bindingName},
    * if one is scoped, {@code null} otherwise.
    */
-  protected <T> Provider<T> getScopedProvider(Class<T> clazz, Object bindingName) {
+  protected <T> Provider<T> getScopedProvider(Class<T> clazz, String bindingName) {
     synchronized (clazz) {
-      AllProviders allProviders = mapClassesToAllProviders.get(clazz);
+      @SuppressWarnings("unchecked")
+      AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
       if (allProviders == null) {
         return null;
       }
       if (bindingName == null) {
-        return allProviders.unNamedProvider;
+        return (Provider<T>) allProviders.unNamedProvider;
       }
 
-      Map<String, Provider> mapNameToProvider = (Map<String, Provider>) allProviders.getMapNameToProvider();
+      Map<String, Provider<? extends T>> mapNameToProvider = allProviders.getMapNameToProvider();
       if (mapNameToProvider == null) {
         return null;
       }
-      Provider<T> provider = (Provider<T>) mapNameToProvider.get(bindingName);
-      return provider;
+      return (Provider<T>) mapNameToProvider.get(bindingName);
     }
   }
 
@@ -125,17 +125,18 @@ public abstract class Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  protected <T, U extends T> void installProvider(Class<T> clazz, String bindingName, Provider<U> provider) {
+  protected <T> void installProvider(Class<T> clazz, String bindingName, Provider<? extends T> provider) {
     synchronized (clazz) {
-      AllProviders allProviders = mapClassesToAllProviders.get(clazz);
+      @SuppressWarnings("unchecked")
+      AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
       if (allProviders == null) {
-        allProviders = new AllProviders();
+        allProviders = new AllProviders<>();
         mapClassesToAllProviders.put(clazz, allProviders);
       }
       if (bindingName == null) {
         allProviders.setUnNamedProvider(provider);
       } else {
-        Map<String, Provider> mapNameToProvider = allProviders.getMapNameToProvider();
+        Map<String, Provider<? extends T>> mapNameToProvider = allProviders.getMapNameToProvider();
         if (mapNameToProvider == null) {
           mapNameToProvider = new HashMap<>();
           allProviders.setMapNameToProvider(mapNameToProvider);
@@ -289,7 +290,7 @@ public abstract class Scope {
       this.mapNameToProvider = mapNameToProvider;
     }
 
-    public <U extends T> void setUnNamedProvider(Provider<U> unNamedProvider) {
+    public void setUnNamedProvider(Provider<? extends T> unNamedProvider) {
       this.unNamedProvider = unNamedProvider;
     }
   }

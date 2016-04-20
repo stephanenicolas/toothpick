@@ -100,7 +100,7 @@ public final class ToothPick {
     injector.inject(obj, scope);
   }
 
-  // Not synchronized, calling method closeScope is
+  // Not synchronized, called by closeScope that is synchronized
   private static void removeScopeAndChildrenFromMap(Scope scope) {
     MAP_KEY_TO_SCOPE.remove(scope.getName());
     for (Scope childScope : scope.childrenScopes) {
