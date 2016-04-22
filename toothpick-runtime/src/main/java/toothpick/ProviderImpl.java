@@ -12,7 +12,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
   private T instance;
   private Factory<T> factory;
   private Class<T> factoryClass;
-  private Provider<T> providerInstance;
+  private Provider<? extends T> providerInstance;
   private boolean isLazy;
   private Factory<Provider<T>> providerFactory;
   private Class<Provider<T>> providerFactoryClass;
@@ -21,7 +21,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     this.instance = instance;
   }
 
-  public ProviderImpl(Provider<T> providerInstance, boolean isLazy) {
+  public ProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
     this.providerInstance = providerInstance;
     this.isLazy = isLazy;
   }

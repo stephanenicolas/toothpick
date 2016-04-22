@@ -9,8 +9,8 @@ public class Binding<T> {
   private Mode mode;
   private Class<? extends T> implementationClass;
   private T instance;
-  private Provider<T> providerInstance;
-  private Class<? extends Provider<T>> providerClass;
+  private Provider<? extends T> providerInstance;
+  private Class<? extends Provider<? extends T>> providerClass;
   private String name;
 
   public Binding(Class<T> key) {
@@ -33,7 +33,7 @@ public class Binding<T> {
     return this;
   }
 
-  public <IMPL extends T> void to(Class<IMPL> implClass) {
+  public void to(Class<? extends T> implClass) {
     this.implementationClass = implClass;
     mode = Mode.CLASS;
   }
@@ -43,12 +43,12 @@ public class Binding<T> {
     mode = Mode.INSTANCE;
   }
 
-  public void toProvider(Provider<T> providerInstance) {
+  public void toProvider(Provider<? extends T> providerInstance) {
     this.providerInstance = providerInstance;
     mode = Mode.PROVIDER_INSTANCE;
   }
 
-  public void toProvider(Class<? extends Provider<T>> providerClass) {
+  public void toProvider(Class<? extends Provider<? extends T>> providerClass) {
     this.providerClass = providerClass;
     mode = Mode.PROVIDER_CLASS;
   }
@@ -69,11 +69,11 @@ public class Binding<T> {
     return instance;
   }
 
-  public Provider<T> getProviderInstance() {
+  public Provider<? extends T> getProviderInstance() {
     return providerInstance;
   }
 
-  public Class<? extends Provider<T>> getProviderClass() {
+  public Class<? extends Provider<? extends T>> getProviderClass() {
     return providerClass;
   }
 
