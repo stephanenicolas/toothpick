@@ -116,7 +116,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     TypeElement enclosingElement = (TypeElement) fieldElement.getEnclosingElement();
 
     // Verify common generated code restrictions.
-    if (!isValidInjectAnnotatedField(fieldElement)) {
+    if (!isValidInjectAnnotatedFieldOrParameter(fieldElement)) {
       return;
     }
 
