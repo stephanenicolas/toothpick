@@ -9,6 +9,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -16,6 +17,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
+import toothpick.ProvidesSingleton;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
@@ -55,7 +57,11 @@ import static javax.lang.model.element.Modifier.PUBLIC;
  * </ul>
  */
 //http://stackoverflow.com/a/2067863/693752
-@SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
+@SupportedAnnotationTypes({
+    ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME, //
+    ToothpickProcessor.SINGLETON_ANNOTATION_CLASS_NAME, //
+    ToothpickProcessor.PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME
+})
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
@@ -106,6 +112,11 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
+    createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
+    createOptimisticFactories(roundEnv);
+  }
+
+  private void createFactoriesForClassesWithInjectAnnotatedConstructors(RoundEnvironment roundEnv) {
     for (ExecutableElement constructorElement : ElementFilter.constructorsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
 
@@ -115,24 +126,37 @@ public class FactoryProcessor extends ToothpickProcessor {
 
       processInjectAnnotatedConstructor(constructorElement, mapTypeElementToConstructorInjectionTarget);
     }
-    //optimistically, we try to generate a factory for injected classes.
-    //we want to alleviate the burden of creating @Inject constructors in trivially injected classes (those which
-    //are bound to themselves, which is the default.
-    //but we should process injected fields when they are of a class type,
-    //not an interface. We could also create factories for them, if possible.
-    //that would allow not to have to declare an annotation constructor in the
-    //dependency. We would only use the default constructor.
+  }
+
+  /**
+   * Optimistically, we try to generate a factory for classes containing injection related annotations.
+   * We want to alleviate the burden of creating @Inject constructors in trivially injected classes (those which
+   * are bound to themselves, those containing injected fields or methods, etc.
+   * Factories are really needed for sure when a type is constructed by Toothpick, which means
+   * when a class is used as the right part of a binging. But this is determined at runtime.
+   * Hence, when possible, we create a factory "optimistically", for as many classes as we can.
+   * We can't say at compile time if this factories are gonna be used, but there are many chances they will be used.
+   * This allows not to have to declare an annotation constructor in the
+   * dependencies. It makes using Toothpick easier.
+   */
+  private void createOptimisticFactories(RoundEnvironment roundEnv) {
     for (VariableElement fieldElement : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       processInjectAnnotatedField(fieldElement, mapTypeElementToConstructorInjectionTarget);
       processClassContainingInjectAnnotatedMember(fieldElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
     }
-    //we do the same for all arguments of all methods
     for (ExecutableElement methodElement : ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       processInjectAnnotatedMethod(methodElement, mapTypeElementToConstructorInjectionTarget);
       processClassContainingInjectAnnotatedMember(methodElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
     }
 
-    //TODO add singleton and produces singleton
+    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(Singleton.class)) {
+      TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
+      processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+    }
+    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(ProvidesSingleton.class)) {
+      TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
+      processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+    }
   }
 
   private void processClassContainingInjectAnnotatedMember(Element enclosingElement,
