@@ -8,7 +8,7 @@ import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
@@ -27,8 +27,8 @@ public class LessSimpleActivity extends Activity {
   private Scope scope;
 
   @Inject ContextNamer contextNamer;
-  @Bind(R.id.title) TextView title;
-  @Bind(R.id.subtitle) TextView subTitle;
+  @BindView(R.id.title) TextView title;
+  @BindView(R.id.subtitle) TextView subTitle;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

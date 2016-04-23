@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
@@ -20,9 +20,9 @@ public class PersistActivity extends Activity {
   private Scope scope;
 
   @Inject ContextNamer contextNamer;
-  @Bind(R.id.title) TextView title;
-  @Bind(R.id.subtitle) TextView subTitle;
-  @Bind(R.id.hello) Button button;
+  @BindView(R.id.title) TextView title;
+  @BindView(R.id.subtitle) TextView subTitle;
+  @BindView(R.id.hello) Button button;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
