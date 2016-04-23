@@ -8,3 +8,5 @@ dependencies {
 
   testCompile deps.junit
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
