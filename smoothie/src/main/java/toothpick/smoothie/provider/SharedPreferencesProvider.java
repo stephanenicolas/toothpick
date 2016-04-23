@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-// TODO only pass default shared preferences?
 public class SharedPreferencesProvider implements Provider<SharedPreferences> {
   Application application;
 

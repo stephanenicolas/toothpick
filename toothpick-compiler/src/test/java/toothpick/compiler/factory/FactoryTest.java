@@ -3,16 +3,12 @@ package toothpick.compiler.factory;
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
-public class FactoryTest {
+public class FactoryTest extends BaseFactoryTest {
   @Test
   public void testEmptyConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestEmptyConstructor", Joiner.on('\n').join(//
@@ -149,7 +145,7 @@ public class FactoryTest {
   }
 
   @Test
-  public void testAClassThatNeedsInjection_withAnInjectedField() {
+  public void testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -192,7 +188,7 @@ public class FactoryTest {
   }
 
   @Test
-  public void testAClassThatNeedsInjection_withAnInjectedMethod() {
+  public void testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -280,7 +276,7 @@ public class FactoryTest {
   }
 
   @Test
-  public void testInvalidClassConstructor() {
+  public void testAbstractClassWithInjectedConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestInvalidClassConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -293,7 +289,7 @@ public class FactoryTest {
   }
 
   @Test
-  public void testSingletonAnnotation() {
+  public void testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -340,7 +336,7 @@ public class FactoryTest {
   }
 
   @Test
-  public void testProducesSingletonAnnotation() {
+  public void testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -384,197 +380,5 @@ public class FactoryTest {
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedField() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedField {", //
-        "  @Inject Foo foo;", //
-        "}", //
-        "  class Foo {}"));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalid() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedField {", //
-        "  @Inject private Foo foo;", //
-        "}", //
-        "  class Foo {}"));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
-        .failsToCompile()
-        .withErrorContaining("@Inject annotated fields must be non private : test.TestOptimisticFactoryCreationForInjectedField#foo");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedField {", //
-        "  @Inject Foo foo;", //
-        "}", //
-        "  abstract class Foo {}"));
-
-    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedField {", //
-        "  @Inject Foo foo;", //
-        "}", //
-        "class Foo {", //
-        " public Foo(String s) {}", //
-        "}"));
-
-    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedField {", //
-        "  @Inject Foo foo;", //
-        "}", //
-        "class Foo {", //
-        " private Foo() {}", //
-        "}"));
-
-    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedMethod() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedMethod {", //
-        "  @Inject void m(Foo foo) {}", //
-        "}", //
-        "  class Foo {}"));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedMethod_shouldWorkButNoFactoryIsProduced_whenTypeIsPrivate() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedMethod {", //
-        "  @Inject void m(Foo foo) {}", //
-        "  public static class Foo {}", //
-        "}"));
-
-    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedMethod_shouldFail_whenMethodIsInvalid() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedMethod {", //
-        "  @Inject private void m(Foo foo) {}", //
-        "  private static class Foo {}", //
-        "}"));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
-        .failsToCompile()
-        .withErrorContaining("@Inject annotated methods must not be private : test.TestOptimisticFactoryCreationForInjectedMethod#m");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedConstructor() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedConstructor {", //
-        "  @Inject void TestOptimisticFactoryCreationForInjectedConstructor(Foo foo) {}", //
-        "}", //
-        "  class Foo {}"));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "Foo$$Factory.class");
-  }
-
-  @Test
-  public void testOptimisticFactoryCreationForInjectedConstructor_shouldWorkButNoFactoryIsProduced_whenTypeIsInterface() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
-        "public class TestOptimisticFactoryCreationForInjectedConstructor {", //
-        "  @Inject void TestOptimisticFactoryCreationForInjectedConstructor(Foo foo) {}", //
-        "}", //
-        "  interface Foo {}"));
-
-    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "Foo");
-  }
-
-  private void assertThatCompileWithoutErrorButNoFactoryIsNotCreated(JavaFileObject source, String noFactoryPackageName, String noFactoryClass) {
-    try {
-      assert_().about(javaSource())
-          .that(source)
-          .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-          .compilesWithoutError()
-          .and()
-          .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", noFactoryClass + "$$Factory.class");
-      fail("No optimistic factory should be created for an interface");
-    } catch (AssertionError e) {
-      assertThat(e.getMessage(), containsString(
-          String.format("Did not find a generated file corresponding to %s$$Factory.class in package %s;", noFactoryClass, noFactoryPackageName)));
-    }
   }
 }
