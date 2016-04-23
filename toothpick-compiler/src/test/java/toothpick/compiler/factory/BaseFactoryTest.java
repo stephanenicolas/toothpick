@@ -1,10 +1,7 @@
 package toothpick.compiler.factory;
 
-import com.google.common.base.Joiner;
-import com.google.testing.compile.JavaFileObjects;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import org.junit.Test;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
@@ -27,5 +24,4 @@ public class BaseFactoryTest {
           String.format("Did not find a generated file corresponding to %s$$Factory.class in package %s;", noFactoryClass, noFactoryPackageName)));
     }
   }
-
 }
