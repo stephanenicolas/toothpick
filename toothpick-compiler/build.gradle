@@ -12,3 +12,5 @@ dependencies {
   //from https://github.com/google/compile-testing/issues/28
   testCompile files(System.getenv("JAVA_HOME") + "/lib/tools.jar")
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
