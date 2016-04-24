@@ -18,7 +18,7 @@ import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
  * Generates a {@link Factory} for a given {@link ConstructorInjectionTarget}.
  * Typically a factory is created for a class a soon as it contains
  * an {@link javax.inject.Inject} annotated constructor.
- * See Optimistic creation of factories in TP wiki. TODO
+ * See Optimistic creation of factories in TP wiki.
  */
 public class FactoryGenerator extends CodeGenerator {
 

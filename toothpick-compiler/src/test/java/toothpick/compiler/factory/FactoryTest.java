@@ -285,8 +285,11 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    assertThatCompileWithoutErrorButNoFactoryIsNotCreated(source, "test", "TestAbstractClassConstructor");
-  }
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor.");  }
 
   @Test
   public void testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton() {

@@ -7,6 +7,7 @@ buildscript {
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
   }
 }
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
