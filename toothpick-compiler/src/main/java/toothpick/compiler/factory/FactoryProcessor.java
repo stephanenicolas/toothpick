@@ -118,14 +118,14 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void createFactoriesForClassesAnnotatedProvidesSingleton(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(Singleton.class)) {
+    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(ProvidesSingleton.class)) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
   private void createFactoriesForClassesAnnotatedSingleton(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(ProvidesSingleton.class)) {
+    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(Singleton.class)) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
