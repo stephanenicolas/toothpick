@@ -89,11 +89,14 @@ public class ScopeImpl extends Scope {
       //classes discovered at runtime, not bound by any module
       //they will be a bit slower as we need to get the factory first
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-      final Provider<T> newProvider = new ProviderImpl<>(this, factory, false);
+      final Provider<T> newProvider;
       if (factory.hasSingletonAnnotation()) {
         //singleton classes discovered dynamically go to root scope.
-        getRootScope().installProvider(clazz, name, newProvider);
+        Scope rootScope = getRootScope();
+        newProvider = new ProviderImpl<>(rootScope, factory, false);
+        rootScope.installProvider(clazz, name, newProvider);
       } else {
+        newProvider = new ProviderImpl<>(this, factory, false);
         installProvider(clazz, name, newProvider);
       }
       return newProvider;
