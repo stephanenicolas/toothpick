@@ -27,7 +27,9 @@ dependencies {
   compile deps.android
   optional deps.supportv4
 
-  testCompile deps.junit
+  testCompile project(':toothpick-testing')
+  testCompile deps.easymock
+  testCompile deps.robolectric
 }
 
 compileJava {
