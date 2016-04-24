@@ -130,8 +130,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     fieldInjectionTargetList.add(createFieldOrParamInjectionTarget(fieldElement));
   }
 
-  //TODO take overrides into account. If the method is an override, do not generate a call to it
-  //it will be performed by the super class member scope already.
   private void processInjectAnnotatedMethod(ExecutableElement methodElement,
       Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMemberInjectorTargetList) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
@@ -159,10 +157,11 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   private MethodInjectionTarget createMethodInjectionTarget(ExecutableElement methodElement) {
     TypeElement enclosingElement = (TypeElement) methodElement.getEnclosingElement();
 
-    final TypeElement returnType = (TypeElement) typeUtils.asElement(methodElement.getReturnType());
     final String methodName = methodElement.getSimpleName().toString();
 
-    MethodInjectionTarget methodInjectionTarget = new MethodInjectionTarget(enclosingElement, methodName, returnType);
+    boolean isOverride = isOverride(enclosingElement, methodElement);
+
+    MethodInjectionTarget methodInjectionTarget = new MethodInjectionTarget(enclosingElement, methodName, isOverride);
     methodInjectionTarget.parameters.addAll(getParamInjectionTargetList(methodElement));
 
     return methodInjectionTarget;

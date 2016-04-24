@@ -21,8 +21,7 @@ import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
 /**
  * Generates a {@link MemberInjector} for a given collection of {@link FieldInjectionTarget}.
  * Typically a {@link MemberInjector} is created for a class a soon as it contains
- * an {@link javax.inject.Inject} annotated field.
- * TODO also deal with injected methods.
+ * an {@link javax.inject.Inject} annotated field or method.
  */
 public class MemberInjectorGenerator extends CodeGenerator {
 
@@ -88,7 +87,6 @@ public class MemberInjectorGenerator extends CodeGenerator {
     emitInjectFields(fieldInjectionTargetList, injectMethodBuilder);
     emitInjectMethods(methodInjectionTargetList, injectMethodBuilder);
 
-
     scopeMemberTypeSpec.addMethod(injectMethodBuilder.build());
   }
 
@@ -99,6 +97,9 @@ public class MemberInjectorGenerator extends CodeGenerator {
     int counter = 1;
     for (MethodInjectionTarget methodInjectionTarget : methodInjectionTargetList) {
 
+      if (methodInjectionTarget.isOverride) {
+        continue;
+      }
       StringBuilder injectedMethodCallStatement = new StringBuilder();
       injectedMethodCallStatement.append("target.");
       injectedMethodCallStatement.append(methodInjectionTarget.methodName);

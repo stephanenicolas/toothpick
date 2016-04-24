@@ -12,11 +12,11 @@ public final class MethodInjectionTarget {
   public final List<ParamInjectionTarget> parameters = new ArrayList<>();
   public final TypeElement enclosingClass;
   public final String methodName;
-  public final TypeElement returnType;
+  public boolean isOverride;
 
-  public MethodInjectionTarget(TypeElement enclosingClass, String methodName, TypeElement returnType) {
+  public MethodInjectionTarget(TypeElement enclosingClass, String methodName, boolean isOverride) {
     this.enclosingClass = enclosingClass;
     this.methodName = methodName;
-    this.returnType = returnType;
+    this.isOverride = isOverride;
   }
 }

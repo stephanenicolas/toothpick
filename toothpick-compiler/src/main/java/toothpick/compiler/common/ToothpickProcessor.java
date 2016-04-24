@@ -206,7 +206,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     for (VariableElement paramElement : methodElement.getParameters()) {
-      if(!isValidInjectedType(paramElement)) {
+      if (!isValidInjectedType(paramElement)) {
         return false;
       }
     }
@@ -290,6 +290,33 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
         return true;
       }
     }
+    return false;
+  }
+
+  //overrides are simpler in this case as methods can only be package or protected.
+  //a method with the same name in the type hierarchy would necessarily mean that
+  //the {@code methodElement} would be an override of this method.
+  protected boolean isOverride(TypeElement typeElement, ExecutableElement methodElement) {
+    TypeElement currentTypeElement = typeElement;
+    do {
+      if (currentTypeElement != typeElement) {
+        List<? extends Element> enclosedElements = currentTypeElement.getEnclosedElements();
+        for (Element enclosedElement : enclosedElements) {
+          if (enclosedElement.getSimpleName().equals(methodElement.getSimpleName())
+              && enclosedElement.getAnnotation(Inject.class) != null
+              && enclosedElement.getKind() == ElementKind.METHOD) {
+            return true;
+          }
+        }
+      }
+      TypeMirror superclass = currentTypeElement.getSuperclass();
+      if (superclass.getKind() == TypeKind.DECLARED) {
+        DeclaredType superType = (DeclaredType) superclass;
+        currentTypeElement = (TypeElement) superType.asElement();
+      } else {
+        currentTypeElement = null;
+      }
+    } while (currentTypeElement != null);
     return false;
   }
 
