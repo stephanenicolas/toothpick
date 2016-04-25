@@ -22,7 +22,6 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
-        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -33,8 +32,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -117,7 +120,6 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Test2Constructors$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
-        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -128,8 +130,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return test2Constructors;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -160,7 +166,6 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
-        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -168,12 +173,16 @@ public class FactoryTest extends BaseFactoryTest {
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, getTargetScope(scope));", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -204,7 +213,6 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
-        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -212,12 +220,16 @@ public class FactoryTest extends BaseFactoryTest {
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, getTargetScope(scope));", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -261,8 +273,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -325,8 +341,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return \"javax.inject.Singleton\";", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope.getRootScope();", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -373,8 +393,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return \"FooScope\";", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope.getParentScope(\"FooScope\");", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -421,8 +445,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -468,8 +496,12 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public String getScopeName() {", //
-        "    return null;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //

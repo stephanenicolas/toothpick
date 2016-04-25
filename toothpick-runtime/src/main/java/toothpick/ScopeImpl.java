@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.registries.factory.FactoryRegistryLocator;
@@ -91,25 +90,9 @@ public class ScopeImpl extends Scope {
       //they will be a bit slower as we need to get the factory first
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
       final Provider<T> newProvider;
-      String scopeName = factory.getScopeName();
-      if (scopeName != null) {
-        if (scopeName.equals(Singleton.class.getName())) {
-          //singleton classes discovered dynamically go to root scope.
-          Scope rootScope = getRootScope();
-          newProvider = new ProviderImpl<>(rootScope, factory, false);
-          rootScope.installProvider(clazz, name, newProvider);
-        } else {
-          Scope parentScope = getParentScope(scopeName);
-          if (parentScope == null) {
-            throw new RuntimeException(format("There is no scope by the name: %s as a parent of %s ", scopeName, getName()));
-          }
-          newProvider = new ProviderImpl<>(parentScope, factory, false);
-          parentScope.installProvider(clazz, name, newProvider);
-        }
-      } else {
-        newProvider = new ProviderImpl<>(this, factory, false);
-        installProvider(clazz, name, newProvider);
-      }
+      Scope targetScope = factory.getTargetScope(this);
+      newProvider = new ProviderImpl<>(targetScope, factory, false);
+      targetScope.installProvider(clazz, name, newProvider);
       return newProvider;
     }
   }

@@ -64,7 +64,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     }
 
     if (factory != null) {
-      if (factory.getScopeName() == null) {
+      if (!factory.hasScopeAnnotation()) {
         return factory.createInstance(scope);
       }
       instance = factory.createInstance(scope);
@@ -80,7 +80,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
         instance = providerFactory.createInstance(scope).get();
         return instance;
       }
-      if (providerFactory.getScopeName() != null) {
+      if (providerFactory.hasScopeAnnotation()) {
         providerInstance = providerFactory.createInstance(scope);
         return providerInstance.get();
       }

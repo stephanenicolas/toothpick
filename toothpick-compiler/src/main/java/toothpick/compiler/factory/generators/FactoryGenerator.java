@@ -40,7 +40,8 @@ public class FactoryGenerator extends CodeGenerator {
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addSuperinterface(parameterizedTypeName);
     emitCreateInstance(factoryTypeSpec);
-    emitGetScopeName(factoryTypeSpec);
+    emitGetTargetScope(factoryTypeSpec);
+    emitHasScopeAnnotation(factoryTypeSpec);
     emitHasProducesSingleton(factoryTypeSpec);
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), factoryTypeSpec.build()).build();
@@ -86,41 +87,34 @@ public class FactoryGenerator extends CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      CodeBlock.Builder getParentScopeCodeBlockBuilder = CodeBlock.builder();
-      String scopeName = constructorInjectionTarget.scopeName;
-      if (scopeName != null) {
-        if(javax.inject.Singleton.class.getName().equals(scopeName)) {
-          getParentScopeCodeBlockBuilder.add(".getRootScope()");
-        } else {
-          getParentScopeCodeBlockBuilder.add(".getParentScope($S)", scopeName);
-        }
-      } else {
-        getParentScopeCodeBlockBuilder.add("");
-      }
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope$L)",
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, getTargetScope(scope))",
           getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection),
-          varName,
-          getParentScopeCodeBlockBuilder.build().toString());
+          varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);
 
     builder.addMethod(createInstanceBuilder.build());
   }
 
-  private void emitGetScopeName(TypeSpec.Builder builder) {
-    CodeBlock.Builder getParentScopeCodeBlockBuilder = CodeBlock.builder();
-    String scopeName = constructorInjectionTarget.scopeName;
-    if (scopeName != null) {
-      getParentScopeCodeBlockBuilder.add("$S", scopeName);
-    } else {
-      getParentScopeCodeBlockBuilder.add("null");
-    }
-    MethodSpec.Builder getScopeBuilder = MethodSpec.methodBuilder("getScopeName")
+  private void emitGetTargetScope(TypeSpec.Builder builder) {
+    CodeBlock.Builder getParentScopeCodeBlockBuilder = getParentScopeCodeBlockBuilder();
+    MethodSpec.Builder getScopeBuilder = MethodSpec.methodBuilder("getTargetScope")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
-        .returns(ClassName.get(String.class))
-        .addStatement("return $L", getParentScopeCodeBlockBuilder.build().toString());
+        .addParameter(ClassName.get(Scope.class), "scope")
+        .returns(ClassName.get(Scope.class))
+        .addStatement("return scope$L", getParentScopeCodeBlockBuilder.build().toString());
     builder.addMethod(getScopeBuilder.build());
+  }
+
+  private void emitHasScopeAnnotation(TypeSpec.Builder builder) {
+    boolean hasScopeAnnotation = hasScopeAnnotation();
+    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasScopeAnnotation")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return $L", hasScopeAnnotation);
+    builder.addMethod(hasProducesSingletonBuilder.build());
   }
 
   private void emitHasProducesSingleton(TypeSpec.Builder builder) {
@@ -130,5 +124,23 @@ public class FactoryGenerator extends CodeGenerator {
         .returns(TypeName.BOOLEAN)
         .addStatement("return $L", constructorInjectionTarget.hasProducesSingletonAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
+  }
+
+  private CodeBlock.Builder getParentScopeCodeBlockBuilder() {
+    CodeBlock.Builder getParentScopeCodeBlockBuilder = CodeBlock.builder();
+    String scopeName = constructorInjectionTarget.scopeName;
+    if (hasScopeAnnotation()) {
+      if(javax.inject.Singleton.class.getName().equals(scopeName)) {
+        getParentScopeCodeBlockBuilder.add(".getRootScope()");
+      } else {
+        getParentScopeCodeBlockBuilder.add(".getParentScope($S)", scopeName);
+      }
+    }
+    return getParentScopeCodeBlockBuilder;
+  }
+
+  private boolean hasScopeAnnotation() {
+    String scopeName = constructorInjectionTarget.scopeName;
+    return scopeName!=null && !"".equals(scopeName);
   }
 }
