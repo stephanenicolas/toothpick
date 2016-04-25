@@ -21,6 +21,7 @@ import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
 import toothpick.ProvidesSingleton;
 import toothpick.compiler.common.ToothpickProcessor;
+import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
 import toothpick.compiler.registry.generators.RegistryGenerator;
@@ -370,7 +371,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
       if (annotationTypeElement.getAnnotation(Scope.class) != null) {
         //TODO differentiate @ScopeSingleton or @Scoped
-        return annotationTypeElement.getQualifiedName().toString();
+        return CodeGenerator.getGeneratedFQNClassName(annotationTypeElement);
       }
     }
 

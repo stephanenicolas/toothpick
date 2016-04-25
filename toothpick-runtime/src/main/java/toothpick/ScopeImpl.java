@@ -100,6 +100,9 @@ public class ScopeImpl extends Scope {
           rootScope.installProvider(clazz, name, newProvider);
         } else {
           Scope parentScope = getParentScope(scopeName);
+          if (parentScope == null) {
+            throw new RuntimeException(format("There is no scope by the name: %s as a parent of %s ", scopeName, getName()));
+          }
           newProvider = new ProviderImpl<>(parentScope, factory, false);
           parentScope.installProvider(clazz, name, newProvider);
         }

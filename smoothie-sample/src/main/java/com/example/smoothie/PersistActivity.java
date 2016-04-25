@@ -7,19 +7,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.example.smoothie.deps.ContextNamer;
+import com.example.smoothie.deps.PresenterContextNamer;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import javax.inject.Inject;
 import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.config.Module;
 import toothpick.smoothie.module.ActivityModule;
 
 public class PersistActivity extends Activity {
 
-  public static final String PRESENTER_SCOPE = "PRESENTER_SCOPE";
+  public static final String PRESENTER_SCOPE = Presenter.class.getName();
   private Scope scope;
 
-  @Inject ContextNamer contextNamer;
+  @Inject PresenterContextNamer contextNamer;
   @BindView(R.id.title) TextView title;
   @BindView(R.id.subtitle) TextView subTitle;
   @BindView(R.id.hello) Button button;
@@ -37,11 +40,10 @@ public class PersistActivity extends Activity {
     scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new ActivityModule(this));
     ToothPick.inject(this, scope);
-    ToothPick.openScope(PRESENTER_SCOPE).installModules(new PresenterModule());
 
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
-    title.setText("Persist");
+    title.setText("MVP");
     subTitle.setText(contextNamer.getInstanceCount());
     button.setVisibility(View.GONE);
   }
@@ -60,9 +62,10 @@ public class PersistActivity extends Activity {
     super.onBackPressed();
   }
 
-  private class PresenterModule extends Module {
-    {
-      bind(ContextNamer.class).to(contextNamer);
-    }
+  @javax.inject.Scope
+  @Target(ElementType.TYPE)
+  @Retention(RetentionPolicy.RUNTIME)
+  public @interface Presenter {
+
   }
 }
