@@ -61,6 +61,9 @@ public class FactoryGenerator extends CodeGenerator {
         .addParameter(ClassName.get(Scope.class), "scope")
         .returns(className);
 
+    //change the scope to target scope so that all dependencies are created in the target scope
+    //and the potential injection take place in the target scope too
+    createInstanceBuilder.addStatement("scope = getTargetScope(scope)");
     StringBuilder localVarStatement = new StringBuilder("");
     String simpleClassName = getSimpleClassName(className);
     localVarStatement.append(simpleClassName).append(" ");
@@ -87,7 +90,7 @@ public class FactoryGenerator extends CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, getTargetScope(scope))",
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)",
           getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection), varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);

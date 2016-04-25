@@ -28,6 +28,7 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
         "    return testEmptyConstructor;", //
         "  }", //
@@ -126,6 +127,7 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class Test2Constructors$$Factory implements Factory<Test2Constructors> {", //
         "  @Override", //
         "  public Test2Constructors createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    Test2Constructors test2Constructors = new Test2Constructors();", //
         "    return test2Constructors;", //
         "  }", //
@@ -172,8 +174,9 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, getTargetScope(scope));", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -219,8 +222,9 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, getTargetScope(scope));", //
+        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -267,6 +271,7 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
@@ -335,6 +340,7 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
@@ -389,6 +395,7 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
@@ -441,6 +448,7 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
