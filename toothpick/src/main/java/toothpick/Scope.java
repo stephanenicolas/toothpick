@@ -29,8 +29,9 @@ public abstract class Scope {
 
   public Scope(Object name) {
     this.name = name;
-    if (name.getClass() == Class.class && ((Class) name).isAssignableFrom(Annotation.class) && isScopeAnnotationClass(
-        (Class<? extends Annotation>) name.getClass())) {
+    if (name.getClass() == Class.class //
+        && Annotation.class.isAssignableFrom((Class) name) //
+        && isScopeAnnotationClass((Class<? extends Annotation>) name)) {
       bindScopeAnnotation((Class<? extends Annotation>) name);
     }
   }

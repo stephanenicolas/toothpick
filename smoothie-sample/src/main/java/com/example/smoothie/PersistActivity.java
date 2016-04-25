@@ -19,7 +19,7 @@ import toothpick.smoothie.module.ActivityModule;
 
 public class PersistActivity extends Activity {
 
-  public static final String PRESENTER_SCOPE = "PRESENTER_SCOPE";
+  public static final Class PRESENTER_SCOPE = Presenter.class;
   private Scope scope;
 
   @Inject PresenterContextNamer contextNamer;
@@ -30,9 +30,7 @@ public class PersistActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Scope presenterScope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE);
-    presenterScope.bindScopeAnnotation(Presenter.class);
-    scope = ToothPick.openScopes(PRESENTER_SCOPE, this);
+    scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new ActivityModule(this));
     ToothPick.inject(this, scope);
 
