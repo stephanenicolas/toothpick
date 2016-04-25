@@ -369,7 +369,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return name;
   }
 
-  private boolean isSameType(TypeElement typeElement, String typeName) {
+  protected boolean isSameType(TypeElement typeElement, String typeName) {
     return isSameType(typeElement.asType(), typeName);
   }
 
@@ -383,7 +383,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
-  private String getValueOfAnnotation(AnnotationMirror annotationMirror) {
+  protected String getValueOfAnnotation(AnnotationMirror annotationMirror) {
     String result = null;
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues().entrySet()) {
       if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {

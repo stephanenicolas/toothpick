@@ -344,6 +344,54 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
+  public void testAClassWithScopeAnnotation_shouldHaveAFactoryThatSaysItIsScoped() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Scoped;", //
+        "@Scoped(\"FooScope\")", //
+        "public final class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
+        "  public @interface FooScope {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Integer;", //
+        "import java.lang.Override;", //
+        "import java.lang.String;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    String param1 = scope.getInstance(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public String getScopeName() {", //
+        "    return \"FooScope\";", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProducesSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //

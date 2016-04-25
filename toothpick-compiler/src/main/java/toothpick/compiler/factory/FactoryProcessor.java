@@ -20,6 +20,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
 import toothpick.ProvidesSingleton;
+import toothpick.Scoped;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.factory.generators.FactoryGenerator;
@@ -366,16 +367,40 @@ public class FactoryProcessor extends ToothpickProcessor {
     return null;
   }
 
+  /**
+   * Lookup both {@link javax.inject.Scope} and {@link toothpick.Scoped}
+   * to provide the name of a scope. The method logs an error if the
+   * {@code typeElement} has multiple scope annotations.
+   *
+   * @param typeElement the element for which a scope is to be found.
+   * @return the scope of this {@code typeElement} or null if it has no scope annotations.
+   * Note that null is also returned when {@link Scoped} is also used with
+   * an empty value. In this case, the current scope will be used to scope
+   * the instances of the annotated class, but its instances will be recycled
+   * in this scope. (Compatibility with RG @ContextScope !)
+   */
   private String getScopeName(TypeElement typeElement) {
+    String scopeName = null;
+    boolean hasAScope = false;
     for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
       if (annotationTypeElement.getAnnotation(Scope.class) != null) {
-        //TODO differentiate @ScopeSingleton or @Scoped
-        return CodeGenerator.getGeneratedFQNClassName(annotationTypeElement);
+        if (isSameType(annotationTypeElement, Scoped.class.getName())) {
+          scopeName = getValueOfAnnotation(annotationMirror);
+          if ("".equals(scopeName)) {
+            scopeName = null;
+          }
+        } else {
+          scopeName = CodeGenerator.getGeneratedFQNClassName(annotationTypeElement);
+        }
+        if (hasAScope) {
+          error(typeElement, "Only one @Scope qualified annotation is allowed : %s", scopeName);
+        }
+        hasAScope = true;
       }
     }
 
-    return null;
+    return scopeName;
   }
 
   private boolean canTypeHaveAFactory(TypeElement typeElement) {
