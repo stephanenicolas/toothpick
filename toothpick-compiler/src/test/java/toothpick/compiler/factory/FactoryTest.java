@@ -369,7 +369,6 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Scope;", //
-        "import toothpick.Scoped;", //
         "@Scope", //
         "@interface CustomScope {}", //
         "@CustomScope", //

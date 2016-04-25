@@ -7,6 +7,7 @@ import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
+import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
@@ -239,6 +240,7 @@ public class AllBindingsTest extends ToothPickBaseTest {
   public void bindToProviderClass_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() throws Exception {
     //GIVEN
     Scope scope = new ScopeImpl("");
+    scope.bindScopeAnnotation(CustomScope.class);
     scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(IFooProviderAnnotatedProvidesSingleton.class);

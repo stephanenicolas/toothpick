@@ -33,9 +33,11 @@ public class OptimisticFactoryForScopeInstancesTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForHasScopeInstances", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.Scoped;", //
+        "import javax.inject.Scope;", //
         "import toothpick.ScopeInstances;", //
-        "@ScopeInstances @Scoped", //
+        "@Scope", //
+        "@interface CustomScope {}", //
+        "@ScopeInstances @CustomScope", //
         "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
         "}"));
 

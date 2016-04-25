@@ -29,6 +29,10 @@ public abstract class Scope {
 
   public Scope(Object name) {
     this.name = name;
+    if (name.getClass() == Class.class && ((Class) name).isAssignableFrom(Annotation.class) && isScopeAnnotationClass(
+        (Class<? extends Annotation>) name.getClass())) {
+      bindScopeAnnotation((Class<? extends Annotation>) name);
+    }
   }
 
   /**
@@ -55,14 +59,22 @@ public abstract class Scope {
       }
       currentScope = currentScope.getParentScope();
     }
-    return null;
+    throw new IllegalStateException(format("There is no parent scope of %s bound to scope annotation %s", this.name, annotation.getName()));
   }
 
   public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    if (!isScopeAnnotationClass(scopeAnnotationClass)) {
+      throw new IllegalArgumentException(
+          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.", scopeAnnotationClass.getName()));
+    }
     if (scopeAnnotationClasses == null) {
       scopeAnnotationClasses = new HashSet<>();
     }
     scopeAnnotationClasses.add(scopeAnnotationClass);
+  }
+
+  private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
+    return scopeAnnotationClass.getAnnotation(javax.inject.Scope.class) != null;
   }
 
   public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
