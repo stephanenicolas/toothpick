@@ -86,8 +86,21 @@ public class FactoryGenerator extends CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)",
-          getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection), varName);
+      CodeBlock.Builder getParentScopeCodeBlockBuilder = CodeBlock.builder();
+      String scopeName = constructorInjectionTarget.scopeName;
+      if (scopeName != null) {
+        if(javax.inject.Singleton.class.getName().equals(scopeName)) {
+          getParentScopeCodeBlockBuilder.add(".getRootScope()");
+        } else {
+          getParentScopeCodeBlockBuilder.add(".getParentScope($S)", scopeName);
+        }
+      } else {
+        getParentScopeCodeBlockBuilder.add("");
+      }
+      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope$L)",
+          getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection),
+          varName,
+          getParentScopeCodeBlockBuilder.build().toString());
     }
     createInstanceBuilder.addStatement("return $L", varName);
 

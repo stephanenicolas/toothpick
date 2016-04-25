@@ -95,7 +95,7 @@ public abstract class Scope {
    * The root scope is the scope itself if the scope has no parent.
    * Otherwise, if it has parents, it is the highest parent in the hierarchy of parents.
    */
-  protected Scope getRootScope() {
+  public Scope getRootScope() {
     if (parentScopes.isEmpty()) {
       return this;
     }
