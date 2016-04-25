@@ -40,7 +40,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -138,7 +138,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -185,7 +185,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -232,7 +232,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -281,7 +281,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -349,7 +349,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -401,7 +401,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -421,7 +421,7 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import toothpick.Scoped;", //
-        "@Scoped()", //
+        "@Scoped", //
         "public final class TestNonEmptyConstructor {", //
         "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
         "  public @interface FooScope {}", //
@@ -450,10 +450,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
-        "    return false;", //
+        "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -472,8 +472,9 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import javax.inject.Singleton;", //
+        "import toothpick.ScopeInstances;", //
+        "@ScopeInstances @Singleton", //
         "public class TestNonEmptyConstructor {", //
         "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
         "}" //
@@ -497,14 +498,14 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public Scope getTargetScope(Scope scope) {", //
-        "    return scope;", //
+        "    return scope.getRootScope();", //
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
-        "    return false;", //
+        "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return true;", //
         "  }", //
         "}" //

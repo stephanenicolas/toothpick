@@ -12,15 +12,15 @@ public final class ConstructorInjectionTarget {
   public final List<ParamInjectionTarget> parameters = new ArrayList<>();
   public final TypeElement builtClass;
   public String scopeName;
-  public final boolean hasProducesSingletonAnnotation;
+  public final boolean hasScopeInstancesAnnotation;
   /** true if the class as @Injected members */
   public final TypeElement superClassThatNeedsMemberInjection;
 
-  public ConstructorInjectionTarget(TypeElement builtClass, String scopeName, boolean hasProducesSingletonAnnotation,
+  public ConstructorInjectionTarget(TypeElement builtClass, String scopeName, boolean hasScopeInstancesAnnotation,
       TypeElement superClassThatNeedsMemberInjection) {
     this.builtClass = builtClass;
     this.scopeName = scopeName;
-    this.hasProducesSingletonAnnotation = hasProducesSingletonAnnotation;
+    this.hasScopeInstancesAnnotation = hasScopeInstancesAnnotation;
     this.superClassThatNeedsMemberInjection = superClassThatNeedsMemberInjection;
   }
 }

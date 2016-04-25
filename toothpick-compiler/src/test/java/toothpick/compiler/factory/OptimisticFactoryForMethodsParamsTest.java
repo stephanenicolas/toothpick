@@ -15,8 +15,7 @@ public class OptimisticFactoryForMethodsParamsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedMethod {", //
         "  @Inject void m(Foo foo) {}", //
         "}", //
@@ -35,8 +34,7 @@ public class OptimisticFactoryForMethodsParamsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedMethod {", //
         "  @Inject void m(Foo foo) {}", //
         "  public static class Foo {}", //
@@ -50,8 +48,8 @@ public class OptimisticFactoryForMethodsParamsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
+        "@ScopeInstances", //
         "public class TestOptimisticFactoryCreationForInjectedMethod {", //
         "  @Inject private void m(Foo foo) {}", //
         "  private static class Foo {}", //

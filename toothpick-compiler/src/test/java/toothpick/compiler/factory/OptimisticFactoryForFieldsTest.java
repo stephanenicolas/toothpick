@@ -15,7 +15,7 @@ public class OptimisticFactoryForFieldsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedField {", //
         "  @Inject Foo foo;", //
         "}", //
@@ -34,7 +34,7 @@ public class OptimisticFactoryForFieldsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedField {", //
         "  @Inject private Foo foo;", //
         "}", //
@@ -52,8 +52,7 @@ public class OptimisticFactoryForFieldsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedField {", //
         "  @Inject Foo foo;", //
         "}", //
@@ -67,8 +66,7 @@ public class OptimisticFactoryForFieldsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedField {", //
         "  @Inject Foo foo;", //
         "}", //
@@ -84,8 +82,7 @@ public class OptimisticFactoryForFieldsTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedField {", //
         "  @Inject Foo foo;", //
         "}", //

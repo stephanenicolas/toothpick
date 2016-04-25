@@ -33,11 +33,11 @@ public interface Factory<T> {
    *
    * Given a {@code currentScope}, the factory can return either :
    * <ul>
-   *   <li> the scope itself (if class {@code T is not annotated or annotated
-   *   with the {@link Scoped} annotation, with no value (or {@code ""})
-   *   <li> the root scope if the class {@code T} is annotated with {@link javax.inject.Singleton}.
-   *   <li> a parent scope if the class {@code T} is annotated with an different scope annotation
-   *   (i.e. an annotation qualified by {@link javax.inject.Scope}).
+   * <li> the scope itself (if class {@code T is not annotated or annotated
+   * with the {@link Scoped} annotation, with no value (or {@code ""})
+   * <li> the root scope if the class {@code T} is annotated with {@link javax.inject.Singleton}.
+   * <li> a parent scope if the class {@code T} is annotated with an different scope annotation
+   * (i.e. an annotation qualified by {@link javax.inject.Scope}).
    * </ul>
    *
    * @param currentScope the current scope used to create an instance.
@@ -54,9 +54,9 @@ public interface Factory<T> {
   boolean hasScopeAnnotation();
 
   /**
-   * Signals that the class is anotated with {@link ProvidesSingleton}.
+   * Signals that the class is anotated with {@link ScopeInstances}.
    *
    * @return true iff the class is annotated as a producer class whose instances will produce a singleton.
    */
-  boolean hasProducesSingletonAnnotation();
+  boolean hasScopeInstancesAnnotation();
 }

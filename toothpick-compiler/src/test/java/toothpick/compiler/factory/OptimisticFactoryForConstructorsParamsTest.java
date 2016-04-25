@@ -15,8 +15,7 @@ public class OptimisticFactoryForConstructorsParamsTest extends BaseFactoryTest 
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedConstructor {", //
         "  @Inject void TestOptimisticFactoryCreationForInjectedConstructor(Foo foo) {}", //
         "}", //
@@ -35,8 +34,7 @@ public class OptimisticFactoryForConstructorsParamsTest extends BaseFactoryTest 
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import toothpick.ScopeInstances;", //
         "public class TestOptimisticFactoryCreationForInjectedConstructor {", //
         "  @Inject void TestOptimisticFactoryCreationForInjectedConstructor(Foo foo) {}", //
         "}", //

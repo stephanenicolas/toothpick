@@ -76,7 +76,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     }
 
     if (providerFactory != null) {
-      if (providerFactory.hasProducesSingletonAnnotation()) {
+      if (providerFactory.hasScopeInstancesAnnotation()) {
         instance = providerFactory.createInstance(scope).get();
         return instance;
       }
