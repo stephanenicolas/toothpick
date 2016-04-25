@@ -33,8 +33,7 @@ public interface Factory<T> {
    *
    * Given a {@code currentScope}, the factory can return either :
    * <ul>
-   * <li> the scope itself (if class {@code T is not annotated or annotated
-   * with the {@link Scoped} annotation, with no value (or {@code ""})
+   * <li> the scope itself (if class {@code T} is not annotated.
    * <li> the root scope if the class {@code T} is annotated with {@link javax.inject.Singleton}.
    * <li> a parent scope if the class {@code T} is annotated with an different scope annotation
    * (i.e. an annotation qualified by {@link javax.inject.Scope}).

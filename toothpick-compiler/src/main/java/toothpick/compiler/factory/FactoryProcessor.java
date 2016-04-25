@@ -20,9 +20,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
 import toothpick.ScopeInstances;
-import toothpick.Scoped;
 import toothpick.compiler.common.ToothpickProcessor;
-import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
 import toothpick.compiler.registry.generators.RegistryGenerator;
@@ -375,35 +373,21 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   /**
-   * Lookup both {@link javax.inject.Scope} and {@link toothpick.Scoped}
-   * to provide the name of a scope. The method logs an error if the
-   * {@code typeElement} has multiple scope annotations.
+   * Lookup {@link javax.inject.Scope} annotated annotations to provide the name of the scope the {@code typeElement} belongs to.
+   * The method logs an error if the {@code typeElement} has multiple scope annotations.
    *
    * @param typeElement the element for which a scope is to be found.
    * @return the scope of this {@code typeElement} or {@code null} if it has no scope annotations.
-   * Note that {@code ""} is returned when {@link Scoped} is also used with
-   * an empty value. In this case, the current scope will be used to scope
-   * the instances of the annotated class, but its instances will be recycled
-   * in this scope. (Compatibility with RG @ContextScope !)
    */
   private String getScopeName(TypeElement typeElement) {
     String scopeName = null;
-    boolean hasAScope = false;
     for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
       if (annotationTypeElement.getAnnotation(Scope.class) != null) {
-        if (isSameType(annotationTypeElement, Scoped.class.getName())) {
-          scopeName = getValueOfAnnotation(annotationMirror);
-          if (scopeName == null || "".equals(scopeName)) {
-            scopeName = "";
-          }
-        } else {
-          scopeName = CodeGenerator.getGeneratedFQNClassName(annotationTypeElement);
-        }
-        if (hasAScope) {
+        if (scopeName != null) {
           error(typeElement, "Only one @Scope qualified annotation is allowed : %s", scopeName);
         }
-        hasAScope = true;
+        scopeName = annotationTypeElement.getQualifiedName().toString();
       }
     }
 

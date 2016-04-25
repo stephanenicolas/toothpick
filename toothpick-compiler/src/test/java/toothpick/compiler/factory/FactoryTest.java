@@ -364,64 +364,15 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
-  public void testAClassWithScopeAnnotation_shouldHaveAFactoryThatSaysItIsScoped() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "import toothpick.Scoped;", //
-        "@Scoped(\"FooScope\")", //
-        "public final class TestNonEmptyConstructor {", //
-        "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
-        "  public @interface FooScope {}", //
-        "}" //
-    ));
-
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
-        "package test;", //
-        "import java.lang.Integer;", //
-        "import java.lang.Override;", //
-        "import java.lang.String;", //
-        "import toothpick.Factory;", //
-        "import toothpick.Scope;", //
-        "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
-        "  @Override", //
-        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
-        "    String param1 = scope.getInstance(String.class);", //
-        "    Integer param2 = scope.getInstance(Integer.class);", //
-        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
-        "    return testNonEmptyConstructor;", //
-        "  }", //
-        "  @Override", //
-        "  public Scope getTargetScope(Scope scope) {", //
-        "    return scope.getParentScope(\"FooScope\");", //
-        "  }", //
-        "  @Override", //
-        "  public boolean hasScopeAnnotation() {", //
-        "    return true;", //
-        "  }", //
-        "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
-        "    return false;", //
-        "  }", //
-        "}" //
-    ));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
-        .compilesWithoutError()
-        .and()
-        .generatesSources(expectedSource);
-  }
-
-  @Test
   public void testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
         "import toothpick.Scoped;", //
-        "@Scoped", //
+        "@Scope", //
+        "@interface CustomScope {}", //
+        "@CustomScope", //
         "public final class TestNonEmptyConstructor {", //
         "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
         "  public @interface FooScope {}", //
@@ -446,7 +397,7 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public Scope getTargetScope(Scope scope) {", //
-        "    return scope;", //
+        "    return scope.getParentScope(test.CustomScope.class);", //
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //

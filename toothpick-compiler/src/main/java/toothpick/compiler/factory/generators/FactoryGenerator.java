@@ -129,12 +129,12 @@ public class FactoryGenerator extends CodeGenerator {
   private CodeBlock.Builder getParentScopeCodeBlockBuilder() {
     CodeBlock.Builder getParentScopeCodeBlockBuilder = CodeBlock.builder();
     String scopeName = constructorInjectionTarget.scopeName;
-    if (scopeName != null && !"".equals(scopeName)) {
+    if (scopeName != null) {
       //there is no scope name or the current @Scoped annotation.
       if (javax.inject.Singleton.class.getName().equals(scopeName)) {
         getParentScopeCodeBlockBuilder.add(".getRootScope()");
       } else {
-        getParentScopeCodeBlockBuilder.add(".getParentScope($S)", scopeName);
+        getParentScopeCodeBlockBuilder.add(".getParentScope($L.class)", scopeName);
       }
     }
     return getParentScopeCodeBlockBuilder;

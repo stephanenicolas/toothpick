@@ -1,13 +1,17 @@
 package toothpick;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import toothpick.config.Module;
 
 import static java.lang.String.format;
@@ -21,6 +25,7 @@ public abstract class Scope {
   protected List<Scope> parentScopes = new ArrayList<>();
   protected IdentityHashMap<Class, AllProviders> mapClassesToAllProviders = new IdentityHashMap<>();
   protected Object name;
+  protected Set<Class<? extends Annotation>> scopeAnnotationClasses;
 
   public Scope(Object name) {
     this.name = name;
@@ -37,15 +42,34 @@ public abstract class Scope {
    * @return the parentScope of this scope with the name {@code name}. Can be null if no such parent exist.
    * The current {@code scope} can be returned if its name matches.
    */
-  public Scope getParentScope(String name) {
+  @SuppressWarnings({ "unused", "used by generated code" })
+  public Scope getParentScope(Class annotation) {
+    if (annotation == Singleton.class) {
+      return getRootScope();
+    }
+
     Scope currentScope = this;
     while (currentScope != null) {
-      if (currentScope.getName().equals(name)) {
+      if (currentScope.isBoundToScopeAnnotation(annotation)) {
         return currentScope;
       }
       currentScope = currentScope.getParentScope();
     }
     return null;
+  }
+
+  public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    if (scopeAnnotationClasses == null) {
+      scopeAnnotationClasses = new HashSet<>();
+    }
+    scopeAnnotationClasses.add(scopeAnnotationClass);
+  }
+
+  public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    if (scopeAnnotationClasses == null) {
+      return false;
+    }
+    return scopeAnnotationClasses.contains(scopeAnnotationClass);
   }
 
   public Collection<Scope> getChildrenScopes() {
@@ -95,6 +119,7 @@ public abstract class Scope {
    * The root scope is the scope itself if the scope has no parent.
    * Otherwise, if it has parents, it is the highest parent in the hierarchy of parents.
    */
+  @SuppressWarnings({ "unused", "used by generated code" })
   public Scope getRootScope() {
     if (parentScopes.isEmpty()) {
       return this;

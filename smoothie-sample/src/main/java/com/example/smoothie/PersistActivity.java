@@ -19,7 +19,7 @@ import toothpick.smoothie.module.ActivityModule;
 
 public class PersistActivity extends Activity {
 
-  public static final String PRESENTER_SCOPE = Presenter.class.getName();
+  public static final String PRESENTER_SCOPE = "PRESENTER_SCOPE";
   private Scope scope;
 
   @Inject PresenterContextNamer contextNamer;
@@ -30,14 +30,9 @@ public class PersistActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    //Smoothie.openApplicationScope(getApplication(), <modules...>) no need to include application module
-    //.openPresenterScope(<modules...>) no need to include activity module
-    //.openActivityScope(this, <modules...>) no need to include activity module
-    //.inject(this) // all DSL scope state can inject
-    //.parentScope() // all DSL scope state can provide a parent or root
-    //.add(contextNamer); // all DSL scope state can add
-
-    scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
+    Scope presenterScope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE);
+    presenterScope.bindScopeAnnotation(Presenter.class);
+    scope = ToothPick.openScopes(PRESENTER_SCOPE, this);
     scope.installModules(new ActivityModule(this));
     ToothPick.inject(this, scope);
 
