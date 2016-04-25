@@ -5,6 +5,7 @@ import toothpick.registries.factory.FactoryRegistryLocator;
 
 /**
  * A non thread safe internal provider. It should never be exposed outside of ToothPick.
+ *
  * @param <T> the class of the instances provided by this provider.
  */
 public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
@@ -63,7 +64,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     }
 
     if (factory != null) {
-      if (!factory.hasSingletonAnnotation()) {
+      if (factory.getScopeName() == null) {
         return factory.createInstance(scope);
       }
       instance = factory.createInstance(scope);
@@ -79,7 +80,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
         instance = providerFactory.createInstance(scope).get();
         return instance;
       }
-      if (providerFactory.hasSingletonAnnotation()) {
+      if (providerFactory.getScopeName() != null) {
         providerInstance = providerFactory.createInstance(scope);
         return providerInstance.get();
       }

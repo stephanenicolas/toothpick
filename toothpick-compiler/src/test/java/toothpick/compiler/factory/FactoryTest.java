@@ -22,6 +22,7 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
+        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -32,8 +33,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public String getScopeName() {", //
+        "    return null;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -116,6 +117,7 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Test2Constructors$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
+        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -126,8 +128,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return test2Constructors;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public String getScopeName() {", //
+        "    return null;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -158,6 +160,7 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
+        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -169,8 +172,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public String getScopeName() {", //
+        "    return null;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -201,6 +204,7 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
+        "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
@@ -212,8 +216,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public String getScopeName() {", //
+        "    return null;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -257,8 +261,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public String getScopeName() {", //
+        "    return null;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -289,7 +293,8 @@ public class FactoryTest extends BaseFactoryTest {
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryProcessors())
         .failsToCompile()
-        .withErrorContaining("The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor.");  }
+        .withErrorContaining("The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor.");
+  }
 
   @Test
   public void testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton() {
@@ -320,8 +325,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return true;", //
+        "  public String getScopeName() {", //
+        "    return \"javax.inject.Singleton\";", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //
@@ -367,8 +372,8 @@ public class FactoryTest extends BaseFactoryTest {
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public String getScopeName() {", //
+        "    return null;", //
         "  }", //
         "  @Override", //
         "  public boolean hasProducesSingletonAnnotation() {", //

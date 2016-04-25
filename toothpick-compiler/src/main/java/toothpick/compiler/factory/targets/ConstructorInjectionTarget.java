@@ -11,15 +11,15 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 public final class ConstructorInjectionTarget {
   public final List<ParamInjectionTarget> parameters = new ArrayList<>();
   public final TypeElement builtClass;
-  public final boolean hasSingletonAnnotation;
+  public String scopeName;
   public final boolean hasProducesSingletonAnnotation;
   /** true if the class as @Injected members */
   public final TypeElement superClassThatNeedsMemberInjection;
 
-  public ConstructorInjectionTarget(TypeElement builtClass, boolean hasSingletonAnnotation, boolean hasProducesSingletonAnnotation,
+  public ConstructorInjectionTarget(TypeElement builtClass, String scopeName, boolean hasProducesSingletonAnnotation,
       TypeElement superClassThatNeedsMemberInjection) {
     this.builtClass = builtClass;
-    this.hasSingletonAnnotation = hasSingletonAnnotation;
+    this.scopeName = scopeName;
     this.hasProducesSingletonAnnotation = hasProducesSingletonAnnotation;
     this.superClassThatNeedsMemberInjection = superClassThatNeedsMemberInjection;
   }

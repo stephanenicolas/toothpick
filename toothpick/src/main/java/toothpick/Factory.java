@@ -1,7 +1,6 @@
 package toothpick;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Creates instances of classes.
@@ -28,11 +27,10 @@ public interface Factory<T> {
   T createInstance(Scope scope);
 
   /**
-   * Signals that the class is annotated with {@link Singleton}.
-   *
-   * @return true iff the class is annotated as a singleton.
+   * @return the name of the scope in which all instances of this {@code Factory} should be
+   * created and where instances of {@code T} will be recycled.
    */
-  boolean hasSingletonAnnotation();
+  String getScopeName();
 
   /**
    * Signals that the class is anotated with {@link ProvidesSingleton}.

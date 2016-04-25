@@ -9,7 +9,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
+import javax.inject.Scope;
 import javax.inject.Singleton;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -214,8 +216,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     if (!canTypeHaveAFactory(enclosingElement)) {
-      error(enclosingElement, "The class %s is abstract or private. It cannot have an injected constructor.",
-          enclosingElement.getQualifiedName());
+      error(enclosingElement, "The class %s is abstract or private. It cannot have an injected constructor.", enclosingElement.getQualifiedName());
       return;
     }
 
@@ -316,19 +317,19 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private ConstructorInjectionTarget createConstructorInjectionTarget(ExecutableElement constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
-    final boolean hasSingletonAnnotation = enclosingElement.getAnnotation(javax.inject.Singleton.class) != null;
+    final String scopeName = getScopeName(enclosingElement);
     final boolean hasProducesSingletonAnnotation = enclosingElement.getAnnotation(toothpick.ProvidesSingleton.class) != null;
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     ConstructorInjectionTarget constructorInjectionTarget =
-        new ConstructorInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+        new ConstructorInjectionTarget(enclosingElement, scopeName, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
     constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
 
     return constructorInjectionTarget;
   }
 
   private ConstructorInjectionTarget createConstructorInjectionTarget(TypeElement typeElement) {
-    final boolean hasSingletonAnnotation = typeElement.getAnnotation(javax.inject.Singleton.class) != null;
+    final String scopeName = getScopeName(typeElement);
     final boolean hasProducesSingletonAnnotation = typeElement.getAnnotation(toothpick.ProvidesSingleton.class) != null;
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(typeElement, false);
 
@@ -354,13 +355,25 @@ public class FactoryProcessor extends ToothpickProcessor {
         }
 
         ConstructorInjectionTarget constructorInjectionTarget =
-            new ConstructorInjectionTarget(typeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+            new ConstructorInjectionTarget(typeElement, scopeName, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
         return constructorInjectionTarget;
       }
     }
 
     warning(typeElement, "The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
         typeElement.getQualifiedName().toString());
+    return null;
+  }
+
+  private String getScopeName(TypeElement typeElement) {
+    for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
+      TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+      if (annotationTypeElement.getAnnotation(Scope.class) != null) {
+        //TODO differentiate @ScopeSingleton or @Scoped
+        return annotationTypeElement.getQualifiedName().toString();
+      }
+    }
+
     return null;
   }
 

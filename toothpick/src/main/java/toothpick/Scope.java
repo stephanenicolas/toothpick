@@ -33,6 +33,21 @@ public abstract class Scope {
     return parentScope;
   }
 
+  /**
+   * @return the parentScope of this scope with the name {@code name}. Can be null if no such parent exist.
+   * The current {@code scope} can be returned if its name matches.
+   */
+  public Scope getParentScope(String name) {
+    Scope currentScope = this;
+    while (currentScope != null) {
+      if (currentScope.getName().equals(name)) {
+        return currentScope;
+      }
+      currentScope = currentScope.getParentScope();
+    }
+    return null;
+  }
+
   public Collection<Scope> getChildrenScopes() {
     return childrenScopes;
   }
@@ -100,8 +115,7 @@ public abstract class Scope {
    */
   protected <T> Provider<T> getScopedProvider(Class<T> clazz, String bindingName) {
     synchronized (clazz) {
-      @SuppressWarnings("unchecked")
-      AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
+      @SuppressWarnings("unchecked") AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
       if (allProviders == null) {
         return null;
       }
@@ -127,8 +141,7 @@ public abstract class Scope {
    */
   protected <T> void installProvider(Class<T> clazz, String bindingName, Provider<? extends T> provider) {
     synchronized (clazz) {
-      @SuppressWarnings("unchecked")
-      AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
+      @SuppressWarnings("unchecked") AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
       if (allProviders == null) {
         allProviders = new AllProviders<>();
         mapClassesToAllProviders.put(clazz, allProviders);
