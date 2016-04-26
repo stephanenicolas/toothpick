@@ -92,7 +92,9 @@ public class ScopeImpl extends Scope {
       final Provider<T> newProvider;
       Scope targetScope = factory.getTargetScope(this);
       newProvider = new ProviderImpl<>(targetScope, factory, false);
-      targetScope.installProvider(clazz, name, newProvider);
+      if (factory.hasScopeAnnotation()) {
+        targetScope.installProvider(clazz, name, newProvider);
+      }
       return newProvider;
     }
   }
