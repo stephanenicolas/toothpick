@@ -23,7 +23,6 @@ public abstract class Scope {
   protected Scope parentScope;
   protected Collection<Scope> childrenScopes = new ArrayList<>();
   protected List<Scope> parentScopes = new ArrayList<>();
-  protected IdentityHashMap<Class, AllProviders> mapClassesToAllProviders = new IdentityHashMap<>();
   protected Object name;
   protected Set<Class<? extends Annotation>> scopeAnnotationClasses;
 
@@ -169,63 +168,6 @@ public abstract class Scope {
   }
 
   /**
-   * Obtains the provider of the class {@code clazz} and name {@code bindingName}
-   * that is scoped in the current scope, if any.
-   * Ancestors are not taken into account.
-   *
-   * @param clazz the class for which to obtain the scoped provider of this scope, if one is scoped.
-   * @param bindingName the name, possibly {@code null}, for which to obtain the scoped provider of this scope, if one is scoped.
-   * @param <T> the type of {@code clazz}.
-   * @return the scoped provider of this scope for class {@code clazz} and {@code bindingName},
-   * if one is scoped, {@code null} otherwise.
-   */
-  protected <T> Provider<T> getScopedProvider(Class<T> clazz, String bindingName) {
-    synchronized (clazz) {
-      @SuppressWarnings("unchecked") AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
-      if (allProviders == null) {
-        return null;
-      }
-      if (bindingName == null) {
-        return (Provider<T>) allProviders.unNamedProvider;
-      }
-
-      Map<String, Provider<? extends T>> mapNameToProvider = allProviders.getMapNameToProvider();
-      if (mapNameToProvider == null) {
-        return null;
-      }
-      return (Provider<T>) mapNameToProvider.get(bindingName);
-    }
-  }
-
-  /**
-   * Install the provider of the class {@code clazz} and name {@code bindingName}
-   * in the current scope.
-   *
-   * @param clazz the class for which to install the scoped provider of this scope.
-   * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
-   * @param <T> the type of {@code clazz}.
-   */
-  protected <T> void installScopedProvider(Class<T> clazz, String bindingName, Provider<? extends T> provider) {
-    synchronized (clazz) {
-      @SuppressWarnings("unchecked") AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
-      if (allProviders == null) {
-        allProviders = new AllProviders<>();
-        mapClassesToAllProviders.put(clazz, allProviders);
-      }
-      if (bindingName == null) {
-        allProviders.setUnNamedProvider(provider);
-      } else {
-        Map<String, Provider<? extends T>> mapNameToProvider = allProviders.getMapNameToProvider();
-        if (mapNameToProvider == null) {
-          mapNameToProvider = new HashMap<>();
-          allProviders.setMapNameToProvider(mapNameToProvider);
-        }
-        mapNameToProvider.put(bindingName, provider);
-      }
-    }
-  }
-
-  /**
    * Requests an instance via an unnamed binding.
    *
    * @see #getInstance(Class, String)
@@ -313,64 +255,4 @@ public abstract class Scope {
    * @See #installTestModules
    */
   public abstract void installModules(Module... modules);
-
-  @Override
-  public String toString() {
-    final String branch = "---";
-    final char lastNode = '\\';
-    final char node = '+';
-    final String indent = "    ";
-
-    StringBuilder builder = new StringBuilder();
-    builder.append(name);
-    builder.append(':');
-    builder.append(System.identityHashCode(this));
-    builder.append('\n');
-
-    builder.append('[');
-    for (Class aClass : mapClassesToAllProviders.keySet()) {
-      builder.append(aClass.getName());
-      builder.append(',');
-    }
-    builder.deleteCharAt(builder.length() - 1);
-    builder.append(']');
-    builder.append('\n');
-
-    Iterator<Scope> iterator = childrenScopes.iterator();
-    while (iterator.hasNext()) {
-      Scope scope = iterator.next();
-      boolean isLast = !iterator.hasNext();
-      builder.append(isLast ? lastNode : node);
-      builder.append(branch);
-      String childString = scope.toString();
-      String[] split = childString.split("\n");
-      for (int i = 0; i < split.length; i++) {
-        String childLine = split[i];
-        if (i != 0) {
-          builder.append(indent);
-        }
-        builder.append(childLine);
-        builder.append('\n');
-      }
-    }
-
-    return builder.toString();
-  }
-
-  protected static class AllProviders<T> {
-    private Provider<? extends T> unNamedProvider;
-    private Map<String, Provider<? extends T>> mapNameToProvider;
-
-    public Map<String, Provider<? extends T>> getMapNameToProvider() {
-      return mapNameToProvider;
-    }
-
-    public void setMapNameToProvider(Map<String, Provider<? extends T>> mapNameToProvider) {
-      this.mapNameToProvider = mapNameToProvider;
-    }
-
-    public void setUnNamedProvider(Provider<? extends T> unNamedProvider) {
-      this.unNamedProvider = unNamedProvider;
-    }
-  }
 }
