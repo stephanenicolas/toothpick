@@ -64,6 +64,7 @@ public class FactoryGenerator extends CodeGenerator {
     //change the scope to target scope so that all dependencies are created in the target scope
     //and the potential injection take place in the target scope too
     createInstanceBuilder.addStatement("scope = getTargetScope(scope)");
+
     StringBuilder localVarStatement = new StringBuilder("");
     String simpleClassName = getSimpleClassName(className);
     localVarStatement.append(simpleClassName).append(" ");

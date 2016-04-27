@@ -44,34 +44,61 @@ public abstract class Scope {
   }
 
   /**
-   * @return the parentScope of this scope with the name {@code name}. Can be null if no such parent exist.
-   * The current {@code scope} can be returned if its name matches.
+   * @param scopeAnnotationClass an annotation that should be qualified by {@link javax.inject.Scope}. If not,
+   * an exception is thrown.
+   * @return the parent {@link Scope} of this scope that is bound to {@code scopeAnnotationClass}.
+   * The current {@code scope} (this) can be returned if it is bound to {@code scopeAnnotationClass}.
+   * If no such parent exists, it throws an exception. This later case means that something scoped
+   * is using a lower scoped dependency, which is conceptually flawed and not allowed in Toothpick.
+   * Note that is {@code scopeAnnotationClass} is {@link Singleton}, the root scope is always returned.
+   * Thus the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
    */
   @SuppressWarnings({ "unused", "used by generated code" })
-  public Scope getParentScope(Class annotation) {
-    if (annotation == Singleton.class) {
+  public Scope getParentScope(Class scopeAnnotationClass) {
+    checkIsAnnotationScope(scopeAnnotationClass);
+
+    if (scopeAnnotationClass == Singleton.class) {
       return getRootScope();
     }
 
     Scope currentScope = this;
     while (currentScope != null) {
-      if (currentScope.isBoundToScopeAnnotation(annotation)) {
+      if (currentScope.isBoundToScopeAnnotation(scopeAnnotationClass)) {
         return currentScope;
       }
       currentScope = currentScope.getParentScope();
     }
-    throw new IllegalStateException(format("There is no parent scope of %s bound to scope annotation %s", this.name, annotation.getName()));
+    throw new IllegalStateException(format("There is no parent scope of %s bound to scope scopeAnnotationClass %s",
+        this.name, scopeAnnotationClass.getName()));
   }
 
+  /**
+   * Binds a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all classes
+   * that are scoped using this {@code scopeAnnotationClass}.
+   * @param scopeAnnotationClass an annotation that should be qualified by {@link javax.inject.Scope}. If not,
+   * an exception is thrown.
+   * Note that the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
+   * @see #getParentScope(Class)
+   */
   public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
-    if (!isScopeAnnotationClass(scopeAnnotationClass)) {
+    checkIsAnnotationScope(scopeAnnotationClass);
+    if (scopeAnnotationClass == Singleton.class) {
       throw new IllegalArgumentException(
-          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.", scopeAnnotationClass.getName()));
+          String.format("The annotation @Singleton is already bound to the root scope of any scope. It can be bound dynamically."));
     }
+
     if (scopeAnnotationClasses == null) {
       scopeAnnotationClasses = new HashSet<>();
     }
     scopeAnnotationClasses.add(scopeAnnotationClass);
+  }
+
+  private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
+    if (!isScopeAnnotationClass(scopeAnnotationClass)) {
+      throw new IllegalArgumentException(
+          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.",
+              scopeAnnotationClass.getName()));
+    }
   }
 
   private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
@@ -85,6 +112,7 @@ public abstract class Scope {
     return scopeAnnotationClasses.contains(scopeAnnotationClass);
   }
 
+  @SuppressWarnings({"unused", "For the sake of completeness of the API."})
   public Collection<Scope> getChildrenScopes() {
     return childrenScopes;
   }
@@ -177,7 +205,7 @@ public abstract class Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  protected <T> void installProvider(Class<T> clazz, String bindingName, Provider<? extends T> provider) {
+  protected <T> void installScopedProvider(Class<T> clazz, String bindingName, Provider<? extends T> provider) {
     synchronized (clazz) {
       @SuppressWarnings("unchecked") AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
       if (allProviders == null) {

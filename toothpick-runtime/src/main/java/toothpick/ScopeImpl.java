@@ -1,6 +1,9 @@
 package toothpick;
 
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Provider;
@@ -25,77 +28,93 @@ import static java.lang.String.format;
  * </p>
  */
 public class ScopeImpl extends Scope {
-  public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(4);
+  private static IdentityHashMap<Class, UnScopedProviderImpl> mapClassesToUnScopedProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
 
   public ScopeImpl(Object name) {
     super(name);
     //it's always possible to get access to the scope that contains an injected object.
-    installProvider(Scope.class, null, new ProviderImpl<>(this));
+    installScopedProvider(Scope.class, null, new ScopedProviderImpl<>(this));
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return getProviderInternal(clazz, null).get();
+    return ((UnScopedProviderImpl<T>)getProviderInternal(clazz, null)).get(this);
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
-    return getProviderInternal(clazz, name).get();
+    return ((UnScopedProviderImpl<T>)getProviderInternal(clazz, name)).get(this);
   }
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz) {
-    Provider<T> provider = getProviderInternal(clazz, null);
-    return new ThreadSafeProviderImpl<>(provider, false);
+    UnScopedProviderImpl<T> provider = (UnScopedProviderImpl<T>) getProviderInternal(clazz, null);
+    return new ThreadSafeProviderImpl<>(this, provider, false);
   }
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz, String name) {
-    Provider<T> provider = getProviderInternal(clazz, name);
-    return new ThreadSafeProviderImpl<>(provider, false);
+    UnScopedProviderImpl<T> provider = (UnScopedProviderImpl<T>) getProviderInternal(clazz, name);
+    return new ThreadSafeProviderImpl<>(this, provider, false);
   }
 
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz) {
-    Provider<T> provider = getProviderInternal(clazz, null);
-    return new ThreadSafeProviderImpl<>(provider, true);
+    UnScopedProviderImpl<T> provider = (UnScopedProviderImpl<T>) getProviderInternal(clazz, null);
+    return new ThreadSafeProviderImpl<>(this, provider, true);
   }
 
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
-    Provider<T> provider = getProviderInternal(clazz, name);
-    return new ThreadSafeProviderImpl<>(provider, true);
+    UnScopedProviderImpl<T> provider = (UnScopedProviderImpl<T>) getProviderInternal(clazz, name);
+    return new ThreadSafeProviderImpl<>(this, provider, true);
   }
 
-  public <T> Provider<T> getProviderInternal(Class<T> clazz, String name) {
+  private <T> UnScopedProviderImpl<T> getProviderInternal(Class<T> clazz, String name) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
     synchronized (clazz) {
       Provider<T> scopedProvider = getScopedProvider(clazz, name);
       if (scopedProvider != null) {
-        return scopedProvider;
+        return (UnScopedProviderImpl<T>) scopedProvider;
       }
       Iterator<Scope> iterator = parentScopes.iterator();
       while (iterator.hasNext()) {
         Scope parentScope = iterator.next();
         Provider<T> parentScopedProvider = parentScope.getScopedProvider(clazz, name);
         if (parentScopedProvider != null) {
-          return parentScopedProvider;
+          return (UnScopedProviderImpl<T>) parentScopedProvider;
         }
+      }
+
+      //check if we have a cached unscoped provider
+      UnScopedProviderImpl unScopedProviderInPool = mapClassesToUnScopedProviders.get(clazz);
+      if(unScopedProviderInPool != null) {
+        return unScopedProviderInPool;
       }
 
       //classes discovered at runtime, not bound by any module
       //they will be a bit slower as we need to get the factory first
+      //we need to know whether they are scoped or not, if so we scope them
+      //if not, they are place in the pool
       Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
-      final Provider<T> newProvider;
+
       Scope targetScope = factory.getTargetScope(this);
-      newProvider = new ProviderImpl<>(targetScope, factory, false);
       if (factory.hasScopeAnnotation()) {
-        targetScope.installProvider(clazz, name, newProvider);
+        //the new provider will have to work in the current scope
+        final ScopedProviderImpl<T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
+        //it is bound to its target scope only if it has a scope annotation.
+        targetScope.installScopedProvider(clazz, name, newProvider);
+        return newProvider;
+      } else {
+        //the provider is but in a pool of unbound providers for later reuse
+        final UnScopedProviderImpl<T> newProvider = new UnScopedProviderImpl<>(factory, false);
+        //the pool is static as it is accessible from all scopes
+        installUnScopedProvider(clazz, newProvider);
+        return newProvider;
       }
-      return newProvider;
     }
   }
 
@@ -127,7 +146,7 @@ public class ScopeImpl extends Scope {
         String bindingName = binding.getName();
         if (!hasTestModules || getScopedProvider(clazz, bindingName) == null) {
           Provider provider = toProvider(binding);
-          installProvider(clazz, bindingName, provider);
+          installScopedProvider(clazz, bindingName, provider);
         }
       }
     }
@@ -144,21 +163,34 @@ public class ScopeImpl extends Scope {
     }
     switch (binding.getMode()) {
       case SIMPLE:
-        return new ProviderImpl<>(this, binding.getKey(), false);
+        return new ScopedProviderImpl<>(this, binding.getKey(), false);
       case CLASS:
-        return new ProviderImpl<>(this, binding.getImplementationClass(), false);
+        return new ScopedProviderImpl<>(this, binding.getImplementationClass(), false);
       case INSTANCE:
-        return new ProviderImpl<>(binding.getInstance());
+        return new ScopedProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
         //to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
-        return new ProviderImpl<>(binding.getProviderInstance(), false);
+        return new ScopedProviderImpl<>(binding.getProviderInstance(), false);
       case PROVIDER_CLASS:
-        return new ProviderImpl<>(this, binding.getProviderClass(), true);
+        return new ScopedProviderImpl<>(this, binding.getProviderClass(), true);
 
       //JACOCO:OFF
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
         //JACOCO:ON
+    }
+  }
+
+  /**
+   * Install the unScopedProvider of the class {@code clazz}
+   * in the pool of unscoped providers.
+   *
+   * @param clazz the class for which to install the unscoped unScopedProvider.
+   * @param <T> the type of {@code clazz}.
+   */
+  private <T> void installUnScopedProvider(Class<T> clazz, UnScopedProviderImpl<? extends T> unScopedProvider) {
+    synchronized (clazz) {
+      mapClassesToUnScopedProviders.put(clazz, unScopedProvider);
     }
   }
 }
