@@ -3,12 +3,8 @@ package toothpick;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -17,7 +13,58 @@ import toothpick.config.Module;
 import static java.lang.String.format;
 
 /**
+ * <p>
+ * A scope is one of the most important concept in ToothPick.
+ * It is actually important in Dependency Injection at large and Toothpick
+ * exposes it to developers.
+ * </p>
  *
+ * <p>
+ * Conceptually a scope contains {@link toothpick.config.Binding}s & scoped instances :
+ * <dl>
+ * <dt>binding</dt>
+ * <dd>is way to express that a class {@code Foo} is bound to an implementation {@code Bar}.
+ * It means that writing {@code @Inject Foo a;} will return a {@code Bar}. Bindings are valid for the scope where there
+ * are defined, and inherited by children scopes. Children scopes can override any binding inherited from of a parent.
+ * {@link toothpick.config.Module}s allow to define {@link toothpick.config.Binding}s and are installed in scopes.
+ * </dd>
+ * <dt>scoped instance</dt>
+ * <dd>a scoped instance is an instance that is reused for all injection of a given class.
+ * Not all bindings create scoped instances. Bindings {@code Foo} to an instance or to a {@link Provider} instance
+ * means that those instances will be recycled every time we inject {@code Foo} from this scope. Scoped instances
+ * are all lazily initialized on first injection request.
+ * </dd>
+ * </dl>
+ * </p>
+ *
+ * <p>
+ * In toothpick, Scopes create a tree (actually a disjoint forest). Each scope can have children scopes.
+ * Operations on the scope tree (adding / removing children, etc.) are non thread safe.
+ * The implementation of ToothPick provides a {@code Toothpick} class that wraps these operations in a thread
+ * safe way.
+ * </p>
+ *
+ * <p>
+ * Scopes can be associated or bound (not related to binding {@code Foo} to {@code Bar}) to an annotation
+ * class that is qualified by the {@link javax.inject.Scope} annotation. All classes annotated by this annotation
+ * will automatically be scoped by Toothpick in the scope that is associated to them. Their instances will
+ * be recycled in this case.
+ * </p>
+ *
+ * <p>
+ * Classes that are not annotated with a {@link javax.inject.Scope} annotation, also called un-scoped classes,
+ * are not associated to a particular scope and can be used in all scopes. Their instances are not recycled,
+ * every injection provides a different instance. Scoping a class by annotation is conceptually
+ * exactly the same as binding it to itself in a scope.
+ * </p>
+ *
+ * <p>
+ * Scope resolution :
+ * when a class is scoped, either by binding it in a module and then installing this module in a scope, or
+ * by adding a {@link javax.inject.Scope} annotation, it means that all its dependencies must be found in
+ * the scope itself or a parent scope. Otherwise, Toothpick will crash at runtime when first instantiating this
+ * class. The only other allowed alternative is to have an un-scoped dependency.
+ * </p>
  */
 public abstract class Scope {
   protected Scope parentScope;
@@ -33,6 +80,10 @@ public abstract class Scope {
         && isScopeAnnotationClass((Class<? extends Annotation>) name)) {
       bindScopeAnnotation((Class<? extends Annotation>) name);
     }
+  }
+
+  public Object getName() {
+    return name;
   }
 
   /**
@@ -67,57 +118,14 @@ public abstract class Scope {
       }
       currentScope = currentScope.getParentScope();
     }
-    throw new IllegalStateException(format("There is no parent scope of %s bound to scope scopeAnnotationClass %s",
-        this.name, scopeAnnotationClass.getName()));
+    throw new IllegalStateException(format("There is no parent scope of %s bound to scope scopeAnnotationClass %s", //
+        this.name, //
+        scopeAnnotationClass.getName()));
   }
 
-  /**
-   * Binds a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all classes
-   * that are scoped using this {@code scopeAnnotationClass}.
-   * @param scopeAnnotationClass an annotation that should be qualified by {@link javax.inject.Scope}. If not,
-   * an exception is thrown.
-   * Note that the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
-   * @see #getParentScope(Class)
-   */
-  public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
-    checkIsAnnotationScope(scopeAnnotationClass);
-    if (scopeAnnotationClass == Singleton.class) {
-      throw new IllegalArgumentException(
-          String.format("The annotation @Singleton is already bound to the root scope of any scope. It can be bound dynamically."));
-    }
-
-    if (scopeAnnotationClasses == null) {
-      scopeAnnotationClasses = new HashSet<>();
-    }
-    scopeAnnotationClasses.add(scopeAnnotationClass);
-  }
-
-  private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
-    if (!isScopeAnnotationClass(scopeAnnotationClass)) {
-      throw new IllegalArgumentException(
-          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.",
-              scopeAnnotationClass.getName()));
-    }
-  }
-
-  private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
-    return scopeAnnotationClass.getAnnotation(javax.inject.Scope.class) != null;
-  }
-
-  public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
-    if (scopeAnnotationClasses == null) {
-      return false;
-    }
-    return scopeAnnotationClasses.contains(scopeAnnotationClass);
-  }
-
-  @SuppressWarnings({"unused", "For the sake of completeness of the API."})
+  @SuppressWarnings({ "unused", "For the sake of completeness of the API." })
   public Collection<Scope> getChildrenScopes() {
     return childrenScopes;
-  }
-
-  public Object getName() {
-    return name;
   }
 
   public void addChild(Scope child) {
@@ -165,6 +173,42 @@ public abstract class Scope {
       return this;
     }
     return parentScopes.get(parentScopes.size() - 1);
+  }
+
+  /**
+   * Binds a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all classes
+   * that are scoped using this {@code scopeAnnotationClass}.
+   *
+   * @param scopeAnnotationClass an annotation that should be qualified by {@link javax.inject.Scope}. If not,
+   * an exception is thrown.
+   * Note that the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
+   * @see #getParentScope(Class)
+   */
+  public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    checkIsAnnotationScope(scopeAnnotationClass);
+    if (scopeAnnotationClass == Singleton.class) {
+      throw new IllegalArgumentException(
+          String.format("The annotation @Singleton is already bound to the root scope of any scope. It can be bound dynamically."));
+    }
+
+    if (scopeAnnotationClasses == null) {
+      scopeAnnotationClasses = new HashSet<>();
+    }
+    scopeAnnotationClasses.add(scopeAnnotationClass);
+  }
+
+  private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
+    if (!isScopeAnnotationClass(scopeAnnotationClass)) {
+      throw new IllegalArgumentException(
+          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.", scopeAnnotationClass.getName()));
+    }
+  }
+
+  public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    if (scopeAnnotationClasses == null) {
+      return false;
+    }
+    return scopeAnnotationClasses.contains(scopeAnnotationClass);
   }
 
   /**
@@ -255,4 +299,8 @@ public abstract class Scope {
    * @See #installTestModules
    */
   public abstract void installModules(Module... modules);
+
+  private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
+    return scopeAnnotationClass.getAnnotation(javax.inject.Scope.class) != null;
+  }
 }

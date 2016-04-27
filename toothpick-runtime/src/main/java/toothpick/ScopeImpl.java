@@ -223,7 +223,7 @@ public class ScopeImpl extends Scope {
 
       //check if we have a cached un-scoped provider
       UnScopedProviderImpl unScopedProviderInPool = mapClassesToUnScopedProviders.get(clazz);
-      if(unScopedProviderInPool != null) {
+      if (unScopedProviderInPool != null) {
         return unScopedProviderInPool;
       }
 
