@@ -21,6 +21,8 @@
       </intent-filter>
     </activity>
     <activity
+        android:name=".RxMVPActivity"/>
+    <activity
         android:name=".PersistActivity"/>
     <activity
         android:name=".LessSimpleActivity"/>

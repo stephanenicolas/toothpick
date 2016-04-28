@@ -42,7 +42,7 @@ public class SimpleActivity extends Activity {
   @OnClick(R.id.hello)
   @SuppressWarnings("unused")
   void startNewActivity() {
-    startActivity(new Intent(this, PersistActivity.class));
+    startActivity(new Intent(this, RxMVPActivity.class));
   }
 
   @Override

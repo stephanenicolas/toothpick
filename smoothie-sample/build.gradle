@@ -5,19 +5,21 @@ buildscript {
   dependencies {
     classpath 'com.android.tools.build:gradle:2.0.0'
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    classpath 'me.tatarka:gradle-retrolambda:3.2.5'
   }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
   compileSdkVersion 23
   buildToolsVersion '23.0.3'
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 
   defaultConfig {
@@ -39,6 +41,7 @@ dependencies {
   apt project(':toothpick-compiler')
   apt deps.butterknife_compiler
   compile deps.butterknife
+  compile deps.rxandroid
 
   testCompile project(':toothpick-testing')
   testCompile deps.easymock
