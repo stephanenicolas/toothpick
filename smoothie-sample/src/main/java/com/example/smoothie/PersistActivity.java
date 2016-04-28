@@ -29,9 +29,9 @@ public class PersistActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
     scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new ActivityModule(this));
+    super.onCreate(savedInstanceState);
     ToothPick.inject(this, scope);
 
     setContentView(R.layout.simple_activity);
