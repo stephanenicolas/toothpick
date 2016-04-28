@@ -25,12 +25,9 @@ public class SimpleActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    //Smoothie.openApplicationScope(getApplication(), <modules...>) no need to include application module
-    //.openActivityScope(this, <modules...>) no need to include activity module
-    //.inject(this) // all DSL scope state can inject
     scope = ToothPick.openScopes(getApplication(), this);
     scope.installModules(new ActivityModule(this));
+    super.onCreate(savedInstanceState);
     ToothPick.inject(this, scope);
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
@@ -42,7 +39,7 @@ public class SimpleActivity extends Activity {
   @OnClick(R.id.hello)
   @SuppressWarnings("unused")
   void startNewActivity() {
-    startActivity(new Intent(this, PersistActivity.class));
+    startActivity(new Intent(this, RxMVPActivity.class));
   }
 
   @Override

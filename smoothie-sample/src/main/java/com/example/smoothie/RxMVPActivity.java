@@ -7,25 +7,28 @@ import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.example.smoothie.deps.PresenterContextNamer;
+import com.example.smoothie.deps.RxPresenter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.inject.Inject;
+import rx.Subscription;
 import toothpick.Scope;
 import toothpick.ToothPick;
+import toothpick.config.Module;
 import toothpick.smoothie.module.ActivityModule;
 
-public class PersistActivity extends Activity {
+public class RxMVPActivity extends Activity {
 
   public static final Class PRESENTER_SCOPE = Presenter.class;
   private Scope scope;
 
-  @Inject PresenterContextNamer contextNamer;
+  @Inject RxPresenter rxPresenter;
   @BindView(R.id.title) TextView title;
   @BindView(R.id.subtitle) TextView subTitle;
   @BindView(R.id.hello) Button button;
+  private Subscription subscription;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +40,14 @@ public class PersistActivity extends Activity {
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
     title.setText("MVP");
-    subTitle.setText(contextNamer.getInstanceCount());
+    subscription = rxPresenter.subscribe(aLong -> subTitle.setText(String.valueOf(aLong)));
     button.setVisibility(View.GONE);
   }
 
   @Override
   protected void onDestroy() {
     ToothPick.closeScope(this);
+    subscription.unsubscribe();
     super.onDestroy();
   }
 
@@ -51,6 +55,7 @@ public class PersistActivity extends Activity {
   public void onBackPressed() {
     //when we leave the presenter flow,
     //we close its scope
+    rxPresenter.stop();
     ToothPick.closeScope(PRESENTER_SCOPE);
     super.onBackPressed();
   }
@@ -58,7 +63,5 @@ public class PersistActivity extends Activity {
   @javax.inject.Scope
   @Target(ElementType.TYPE)
   @Retention(RetentionPolicy.RUNTIME)
-  public @interface Presenter {
-
-  }
+  public @interface Presenter {}
 }

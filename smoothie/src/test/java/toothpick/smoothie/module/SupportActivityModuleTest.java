@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
 import toothpick.ToothPick;
 
@@ -25,7 +26,7 @@ public class SupportActivityModuleTest {
   public void testGet() throws Exception {
     //GIVEN
     FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class).create().get();
-    Application application = Robolectric.application;
+    Application application = RuntimeEnvironment.application;
     Scope appScope = ToothPick.openScope(application);
     appScope.installModules(new ApplicationModule(application));
 

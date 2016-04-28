@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
 import toothpick.ToothPick;
 
@@ -40,7 +41,7 @@ public class ApplicationModuleTest {
   public void testModule_shouldReturnApplicationBindings() throws Exception {
     //GIVEN
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-    Application application = Robolectric.application;
+    Application application = RuntimeEnvironment.application;
     Scope appScope = ToothPick.openScope(application);
     appScope.installModules(new ApplicationModule(application));
 
@@ -54,7 +55,7 @@ public class ApplicationModuleTest {
     SharedPreferences sharedPreferences = appScope.getInstance(SharedPreferences.class);
 
     //THEN
-    assertThat(injectedApp, is(Robolectric.application));
+    assertThat(injectedApp, is(RuntimeEnvironment.application));
     assertThat(accountManager, notNullValue());
     assertThat(assetManager, notNullValue());
     assertThat(contentResolver, notNullValue());
@@ -67,7 +68,7 @@ public class ApplicationModuleTest {
   public void testModule_shouldReturnSystemServices() throws Exception {
     //GIVEN
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-    Application application = Robolectric.application;
+    Application application = RuntimeEnvironment.application;
     Scope appScope = ToothPick.openScope(application);
     appScope.installModules(new ApplicationModule(application));
 
@@ -90,7 +91,7 @@ public class ApplicationModuleTest {
     DownloadManager downloadManager = appScope.getInstance(DownloadManager.class);
 
     //THEN
-    assertThat(injectedApp, is(Robolectric.application));
+    assertThat(injectedApp, is(RuntimeEnvironment.application));
     assertThat(locationManager, notNullValue());
     assertThat(windowManager, notNullValue());
     assertThat(activityManager, notNullValue());
