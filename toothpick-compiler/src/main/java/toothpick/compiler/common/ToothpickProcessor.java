@@ -41,7 +41,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   /** The name of the {@link javax.inject.Inject} annotation class that triggers {@code ToothpickProcessor}s. */
   public static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
   public static final String SINGLETON_ANNOTATION_CLASS_NAME = "javax.inject.Singleton";
-  public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME = "toothpick.ProvidesSingleton";
+  public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME = "toothpick.ScopeInstances";
 
   /**
    * The name of the annotation processor option to declare in which package a registry should be generated.
@@ -369,7 +369,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return name;
   }
 
-  private boolean isSameType(TypeElement typeElement, String typeName) {
+  protected boolean isSameType(TypeElement typeElement, String typeName) {
     return isSameType(typeElement.asType(), typeName);
   }
 
@@ -383,7 +383,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
-  private String getValueOfAnnotation(AnnotationMirror annotationMirror) {
+  protected String getValueOfAnnotation(AnnotationMirror annotationMirror) {
     String result = null;
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues().entrySet()) {
       if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {

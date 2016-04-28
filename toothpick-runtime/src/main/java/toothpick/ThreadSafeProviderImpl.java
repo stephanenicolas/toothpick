@@ -8,10 +8,12 @@ import javax.inject.Provider;
  */
 public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {
   private volatile T instance;
-  private Provider<T> providerInstance;
+  private Scope scope;
+  private UnScopedProviderImpl<? extends T> providerInstance;
   private boolean isLazy;
 
-  public ThreadSafeProviderImpl(Provider<T> providerInstance, boolean isLazy) {
+  public ThreadSafeProviderImpl(Scope scope, UnScopedProviderImpl<? extends T> providerInstance, boolean isLazy) {
+    this.scope = scope;
     this.providerInstance = providerInstance;
     this.isLazy = isLazy;
   }
@@ -30,11 +32,13 @@ public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {
       if (isLazy) {
         //DCL
         if (instance == null) {
-          instance = providerInstance.get();
+          instance = providerInstance.get(scope);
+          //gc
+          providerInstance = null;
         }
         return instance;
       }
-      return providerInstance.get();
+      return providerInstance.get(scope);
     }
   }
 }

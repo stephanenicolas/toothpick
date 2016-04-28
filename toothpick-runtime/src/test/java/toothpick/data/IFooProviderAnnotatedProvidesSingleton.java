@@ -2,15 +2,19 @@ package toothpick.data;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import toothpick.ProvidesSingleton;
+import toothpick.ScopeInstances;
 
-@ProvidesSingleton public class IFooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
+@ScopeInstances
+@CustomScope
+public class IFooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
   @Inject Bar bar;
 
-  @Inject public IFooProviderAnnotatedProvidesSingleton() {
+  @Inject
+  public IFooProviderAnnotatedProvidesSingleton() {
   }
 
-  @Override public IFoo get() {
+  @Override
+  public IFoo get() {
     return new Foo();
   }
 }

@@ -9,7 +9,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
+import javax.inject.Scope;
 import javax.inject.Singleton;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -17,7 +19,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
-import toothpick.ProvidesSingleton;
+import toothpick.ScopeInstances;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
@@ -37,7 +39,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
  * --> we create a Factory to create {@code Foo} instances.
  * <li> When a class {@code Foo} is annotated with {@link javax.inject.Singleton} : <br/>
  * it will use the default constructor if possible, otherwise nothing happens. Should we raise an error ?
- * <li> When a class {@code Foo} is annotated with {@link toothpick.ProvidesSingleton} : <br/>
+ * <li> When a class {@code Foo} is annotated with {@link ScopeInstances} : <br/>
  * it will use the default constructor if possible, otherwise nothing happens. Should we raise an error ?
  * </ul>
  * The processor will also try to optimistically generate factories in a few cases. These factories
@@ -118,7 +120,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void createFactoriesForClassesAnnotatedProvidesSingleton(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(ProvidesSingleton.class)) {
+    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(ScopeInstances.class)) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
@@ -214,8 +216,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     if (!canTypeHaveAFactory(enclosingElement)) {
-      error(enclosingElement, "The class %s is abstract or private. It cannot have an injected constructor.",
-          enclosingElement.getQualifiedName());
+      error(enclosingElement, "The class %s is abstract or private. It cannot have an injected constructor.", enclosingElement.getQualifiedName());
       return;
     }
 
@@ -316,20 +317,27 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private ConstructorInjectionTarget createConstructorInjectionTarget(ExecutableElement constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
-    final boolean hasSingletonAnnotation = enclosingElement.getAnnotation(javax.inject.Singleton.class) != null;
-    final boolean hasProducesSingletonAnnotation = enclosingElement.getAnnotation(toothpick.ProvidesSingleton.class) != null;
+    final String scopeName = getScopeName(enclosingElement);
+    final boolean hasScopeInstancesAnnotation = enclosingElement.getAnnotation(ScopeInstances.class) != null;
+    if (hasScopeInstancesAnnotation && scopeName == null) {
+      error(enclosingElement, "The type %s uses @ScopeInstances but doesn't have a scope annotation.",
+          enclosingElement.getQualifiedName().toString());
+    }
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     ConstructorInjectionTarget constructorInjectionTarget =
-        new ConstructorInjectionTarget(enclosingElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+        new ConstructorInjectionTarget(enclosingElement, scopeName, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
     constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
 
     return constructorInjectionTarget;
   }
 
   private ConstructorInjectionTarget createConstructorInjectionTarget(TypeElement typeElement) {
-    final boolean hasSingletonAnnotation = typeElement.getAnnotation(javax.inject.Singleton.class) != null;
-    final boolean hasProducesSingletonAnnotation = typeElement.getAnnotation(toothpick.ProvidesSingleton.class) != null;
+    final String scopeName = getScopeName(typeElement);
+    final boolean hasScopeInstancesAnnotation = typeElement.getAnnotation(ScopeInstances.class) != null;
+    if (hasScopeInstancesAnnotation && scopeName == null) {
+      error(typeElement, "The type %s uses @ScopeInstances but doesn't have a scope annotation.", typeElement.getQualifiedName().toString());
+    }
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(typeElement, false);
 
     List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
@@ -354,7 +362,7 @@ public class FactoryProcessor extends ToothpickProcessor {
         }
 
         ConstructorInjectionTarget constructorInjectionTarget =
-            new ConstructorInjectionTarget(typeElement, hasSingletonAnnotation, hasProducesSingletonAnnotation, superClassWithInjectedMembers);
+            new ConstructorInjectionTarget(typeElement, scopeName, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
         return constructorInjectionTarget;
       }
     }
@@ -362,6 +370,28 @@ public class FactoryProcessor extends ToothpickProcessor {
     warning(typeElement, "The class %s has no default constructor, toothpick can't optimistically create a factory for it.",
         typeElement.getQualifiedName().toString());
     return null;
+  }
+
+  /**
+   * Lookup {@link javax.inject.Scope} annotated annotations to provide the name of the scope the {@code typeElement} belongs to.
+   * The method logs an error if the {@code typeElement} has multiple scope annotations.
+   *
+   * @param typeElement the element for which a scope is to be found.
+   * @return the scope of this {@code typeElement} or {@code null} if it has no scope annotations.
+   */
+  private String getScopeName(TypeElement typeElement) {
+    String scopeName = null;
+    for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
+      TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+      if (annotationTypeElement.getAnnotation(Scope.class) != null) {
+        if (scopeName != null) {
+          error(typeElement, "Only one @Scope qualified annotation is allowed : %s", scopeName);
+        }
+        scopeName = annotationTypeElement.getQualifiedName().toString();
+      }
+    }
+
+    return scopeName;
   }
 
   private boolean canTypeHaveAFactory(TypeElement typeElement) {

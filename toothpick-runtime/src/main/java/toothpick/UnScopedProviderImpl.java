@@ -5,10 +5,10 @@ import toothpick.registries.factory.FactoryRegistryLocator;
 
 /**
  * A non thread safe internal provider. It should never be exposed outside of ToothPick.
+ *
  * @param <T> the class of the instances provided by this provider.
  */
-public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
-  private Scope scope;
+public class UnScopedProviderImpl<T> {
   private T instance;
   private Factory<T> factory;
   private Class<T> factoryClass;
@@ -17,17 +17,16 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
   private Factory<Provider<T>> providerFactory;
   private Class<Provider<T>> providerFactoryClass;
 
-  public ProviderImpl(T instance) {
+  public UnScopedProviderImpl(T instance) {
     this.instance = instance;
   }
 
-  public ProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
+  public UnScopedProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
     this.providerInstance = providerInstance;
     this.isLazy = isLazy;
   }
 
-  public ProviderImpl(Scope scope, Factory<?> factory, boolean isProviderFactory) {
-    this.scope = scope;
+  public UnScopedProviderImpl(Factory<?> factory, boolean isProviderFactory) {
     if (isProviderFactory) {
       this.providerFactory = (Factory<Provider<T>>) factory;
     } else {
@@ -35,8 +34,7 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     }
   }
 
-  public ProviderImpl(Scope scope, Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
-    this.scope = scope;
+  public UnScopedProviderImpl(Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
     if (isProviderFactoryClass) {
       this.providerFactoryClass = (Class<Provider<T>>) factoryKeyClass;
     } else {
@@ -44,8 +42,9 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     }
   }
 
-  @Override
-  public T get() {
+  //we lock on the unbound provider itself to prevent concurrent usage
+  //of the unbound provider (
+  public synchronized T get(Scope scope) {
     if (instance != null) {
       return instance;
     }
@@ -53,6 +52,8 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
     if (providerInstance != null) {
       if (isLazy) {
         instance = providerInstance.get();
+        //gc
+        providerInstance = null;
         return instance;
       }
       return providerInstance.get();
@@ -60,27 +61,37 @@ public class ProviderImpl<T> implements Provider<T>, Lazy<T> {
 
     if (factoryClass != null && factory == null) {
       factory = FactoryRegistryLocator.getFactory(factoryClass);
+      //gc
+      factoryClass = null;
     }
 
     if (factory != null) {
-      if (!factory.hasSingletonAnnotation()) {
+      if (!factory.hasScopeAnnotation()) {
         return factory.createInstance(scope);
       }
       instance = factory.createInstance(scope);
+      //gc
+      factory = null;
       return instance;
     }
 
     if (providerFactoryClass != null && providerFactory == null) {
       providerFactory = FactoryRegistryLocator.getFactory(providerFactoryClass);
+      //gc
+      providerFactoryClass = null;
     }
 
     if (providerFactory != null) {
-      if (providerFactory.hasProducesSingletonAnnotation()) {
+      if (providerFactory.hasScopeInstancesAnnotation()) {
         instance = providerFactory.createInstance(scope).get();
+        //gc
+        providerFactory = null;
         return instance;
       }
-      if (providerFactory.hasSingletonAnnotation()) {
+      if (providerFactory.hasScopeAnnotation()) {
         providerInstance = providerFactory.createInstance(scope);
+        //gc
+        providerFactory = null;
         return providerInstance.get();
       }
 

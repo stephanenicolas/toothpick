@@ -1,29 +1,89 @@
 package toothpick;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import toothpick.config.Module;
 
 import static java.lang.String.format;
 
 /**
+ * <p>
+ * A scope is one of the most important concept in ToothPick.
+ * It is actually important in Dependency Injection at large and Toothpick
+ * exposes it to developers.
+ * </p>
  *
+ * <p>
+ * Conceptually a scope contains {@link toothpick.config.Binding}s & scoped instances :
+ * <dl>
+ * <dt>binding</dt>
+ * <dd>is way to express that a class {@code Foo} is bound to an implementation {@code Bar}.
+ * It means that writing {@code @Inject Foo a;} will return a {@code Bar}. Bindings are valid for the scope where there
+ * are defined, and inherited by children scopes. Children scopes can override any binding inherited from of a parent.
+ * {@link toothpick.config.Module}s allow to define {@link toothpick.config.Binding}s and are installed in scopes.
+ * </dd>
+ * <dt>scoped instance</dt>
+ * <dd>a scoped instance is an instance that is reused for all injection of a given class.
+ * Not all bindings create scoped instances. Bindings {@code Foo} to an instance or to a {@link Provider} instance
+ * means that those instances will be recycled every time we inject {@code Foo} from this scope. Scoped instances
+ * are all lazily initialized on first injection request.
+ * </dd>
+ * </dl>
+ * </p>
+ *
+ * <p>
+ * In toothpick, Scopes create a tree (actually a disjoint forest). Each scope can have children scopes.
+ * Operations on the scope tree (adding / removing children, etc.) are non thread safe.
+ * The implementation of ToothPick provides a {@code Toothpick} class that wraps these operations in a thread
+ * safe way.
+ * </p>
+ *
+ * <p>
+ * Scopes can be associated or bound (not related to binding {@code Foo} to {@code Bar}) to an annotation
+ * class that is qualified by the {@link javax.inject.Scope} annotation. All classes annotated by this annotation
+ * will automatically be scoped by Toothpick in the scope that is associated to them. Their instances will
+ * be recycled in this case.
+ * </p>
+ *
+ * <p>
+ * Classes that are not annotated with a {@link javax.inject.Scope} annotation, also called un-scoped classes,
+ * are not associated to a particular scope and can be used in all scopes. Their instances are not recycled,
+ * every injection provides a different instance. Scoping a class by annotation is conceptually
+ * exactly the same as binding it to itself in a scope.
+ * </p>
+ *
+ * <p>
+ * Scope resolution :
+ * when a class is scoped, either by binding it in a module and then installing this module in a scope, or
+ * by adding a {@link javax.inject.Scope} annotation, it means that all its dependencies must be found in
+ * the scope itself or a parent scope. Otherwise, Toothpick will crash at runtime when first instantiating this
+ * class. The only other allowed alternative is to have an un-scoped dependency.
+ * </p>
  */
 public abstract class Scope {
   protected Scope parentScope;
   protected Collection<Scope> childrenScopes = new ArrayList<>();
   protected List<Scope> parentScopes = new ArrayList<>();
-  protected IdentityHashMap<Class, AllProviders> mapClassesToAllProviders = new IdentityHashMap<>();
   protected Object name;
+  protected Set<Class<? extends Annotation>> scopeAnnotationClasses;
 
   public Scope(Object name) {
     this.name = name;
+    if (name.getClass() == Class.class //
+        && Annotation.class.isAssignableFrom((Class) name) //
+        && isScopeAnnotationClass((Class<? extends Annotation>) name)) {
+      bindScopeAnnotation((Class<? extends Annotation>) name);
+    }
+  }
+
+  public Object getName() {
+    return name;
   }
 
   /**
@@ -33,12 +93,39 @@ public abstract class Scope {
     return parentScope;
   }
 
-  public Collection<Scope> getChildrenScopes() {
-    return childrenScopes;
+  /**
+   * @param scopeAnnotationClass an annotation that should be qualified by {@link javax.inject.Scope}. If not,
+   * an exception is thrown.
+   * @return the parent {@link Scope} of this scope that is bound to {@code scopeAnnotationClass}.
+   * The current {@code scope} (this) can be returned if it is bound to {@code scopeAnnotationClass}.
+   * If no such parent exists, it throws an exception. This later case means that something scoped
+   * is using a lower scoped dependency, which is conceptually flawed and not allowed in Toothpick.
+   * Note that is {@code scopeAnnotationClass} is {@link Singleton}, the root scope is always returned.
+   * Thus the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
+   */
+  @SuppressWarnings({ "unused", "used by generated code" })
+  public Scope getParentScope(Class scopeAnnotationClass) {
+    checkIsAnnotationScope(scopeAnnotationClass);
+
+    if (scopeAnnotationClass == Singleton.class) {
+      return getRootScope();
+    }
+
+    Scope currentScope = this;
+    while (currentScope != null) {
+      if (currentScope.isBoundToScopeAnnotation(scopeAnnotationClass)) {
+        return currentScope;
+      }
+      currentScope = currentScope.getParentScope();
+    }
+    throw new IllegalStateException(format("There is no parent scope of %s bound to scope scopeAnnotationClass %s", //
+        this.name, //
+        scopeAnnotationClass.getName()));
   }
 
-  public Object getName() {
-    return name;
+  @SuppressWarnings({ "unused", "For the sake of completeness of the API." })
+  public Collection<Scope> getChildrenScopes() {
+    return childrenScopes;
   }
 
   public void addChild(Scope child) {
@@ -80,7 +167,8 @@ public abstract class Scope {
    * The root scope is the scope itself if the scope has no parent.
    * Otherwise, if it has parents, it is the highest parent in the hierarchy of parents.
    */
-  protected Scope getRootScope() {
+  @SuppressWarnings({ "unused", "used by generated code" })
+  public Scope getRootScope() {
     if (parentScopes.isEmpty()) {
       return this;
     }
@@ -88,62 +176,39 @@ public abstract class Scope {
   }
 
   /**
-   * Obtains the provider of the class {@code clazz} and name {@code bindingName}
-   * that is scoped in the current scope, if any.
-   * Ancestors are not taken into account.
+   * Binds a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all classes
+   * that are scoped using this {@code scopeAnnotationClass}.
    *
-   * @param clazz the class for which to obtain the scoped provider of this scope, if one is scoped.
-   * @param bindingName the name, possibly {@code null}, for which to obtain the scoped provider of this scope, if one is scoped.
-   * @param <T> the type of {@code clazz}.
-   * @return the scoped provider of this scope for class {@code clazz} and {@code bindingName},
-   * if one is scoped, {@code null} otherwise.
+   * @param scopeAnnotationClass an annotation that should be qualified by {@link javax.inject.Scope}. If not,
+   * an exception is thrown.
+   * Note that the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
+   * @see #getParentScope(Class)
    */
-  protected <T> Provider<T> getScopedProvider(Class<T> clazz, String bindingName) {
-    synchronized (clazz) {
-      @SuppressWarnings("unchecked")
-      AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
-      if (allProviders == null) {
-        return null;
-      }
-      if (bindingName == null) {
-        return (Provider<T>) allProviders.unNamedProvider;
-      }
+  public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    checkIsAnnotationScope(scopeAnnotationClass);
+    if (scopeAnnotationClass == Singleton.class) {
+      throw new IllegalArgumentException(
+          String.format("The annotation @Singleton is already bound to the root scope of any scope. It can be bound dynamically."));
+    }
 
-      Map<String, Provider<? extends T>> mapNameToProvider = allProviders.getMapNameToProvider();
-      if (mapNameToProvider == null) {
-        return null;
-      }
-      return (Provider<T>) mapNameToProvider.get(bindingName);
+    if (scopeAnnotationClasses == null) {
+      scopeAnnotationClasses = new HashSet<>();
+    }
+    scopeAnnotationClasses.add(scopeAnnotationClass);
+  }
+
+  private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
+    if (!isScopeAnnotationClass(scopeAnnotationClass)) {
+      throw new IllegalArgumentException(
+          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.", scopeAnnotationClass.getName()));
     }
   }
 
-  /**
-   * Install the provider of the class {@code clazz} and name {@code bindingName}
-   * in the current scope.
-   *
-   * @param clazz the class for which to install the scoped provider of this scope.
-   * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
-   * @param <T> the type of {@code clazz}.
-   */
-  protected <T> void installProvider(Class<T> clazz, String bindingName, Provider<? extends T> provider) {
-    synchronized (clazz) {
-      @SuppressWarnings("unchecked")
-      AllProviders<T> allProviders = mapClassesToAllProviders.get(clazz);
-      if (allProviders == null) {
-        allProviders = new AllProviders<>();
-        mapClassesToAllProviders.put(clazz, allProviders);
-      }
-      if (bindingName == null) {
-        allProviders.setUnNamedProvider(provider);
-      } else {
-        Map<String, Provider<? extends T>> mapNameToProvider = allProviders.getMapNameToProvider();
-        if (mapNameToProvider == null) {
-          mapNameToProvider = new HashMap<>();
-          allProviders.setMapNameToProvider(mapNameToProvider);
-        }
-        mapNameToProvider.put(bindingName, provider);
-      }
+  public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+    if (scopeAnnotationClasses == null) {
+      return false;
     }
+    return scopeAnnotationClasses.contains(scopeAnnotationClass);
   }
 
   /**
@@ -235,63 +300,7 @@ public abstract class Scope {
    */
   public abstract void installModules(Module... modules);
 
-  @Override
-  public String toString() {
-    final String branch = "---";
-    final char lastNode = '\\';
-    final char node = '+';
-    final String indent = "    ";
-
-    StringBuilder builder = new StringBuilder();
-    builder.append(name);
-    builder.append(':');
-    builder.append(System.identityHashCode(this));
-    builder.append('\n');
-
-    builder.append('[');
-    for (Class aClass : mapClassesToAllProviders.keySet()) {
-      builder.append(aClass.getName());
-      builder.append(',');
-    }
-    builder.deleteCharAt(builder.length() - 1);
-    builder.append(']');
-    builder.append('\n');
-
-    Iterator<Scope> iterator = childrenScopes.iterator();
-    while (iterator.hasNext()) {
-      Scope scope = iterator.next();
-      boolean isLast = !iterator.hasNext();
-      builder.append(isLast ? lastNode : node);
-      builder.append(branch);
-      String childString = scope.toString();
-      String[] split = childString.split("\n");
-      for (int i = 0; i < split.length; i++) {
-        String childLine = split[i];
-        if (i != 0) {
-          builder.append(indent);
-        }
-        builder.append(childLine);
-        builder.append('\n');
-      }
-    }
-
-    return builder.toString();
-  }
-
-  protected static class AllProviders<T> {
-    private Provider<? extends T> unNamedProvider;
-    private Map<String, Provider<? extends T>> mapNameToProvider;
-
-    public Map<String, Provider<? extends T>> getMapNameToProvider() {
-      return mapNameToProvider;
-    }
-
-    public void setMapNameToProvider(Map<String, Provider<? extends T>> mapNameToProvider) {
-      this.mapNameToProvider = mapNameToProvider;
-    }
-
-    public void setUnNamedProvider(Provider<? extends T> unNamedProvider) {
-      this.unNamedProvider = unNamedProvider;
-    }
+  private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
+    return scopeAnnotationClass.getAnnotation(javax.inject.Scope.class) != null;
   }
 }

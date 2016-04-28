@@ -1,7 +1,6 @@
 package toothpick;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Creates instances of classes.
@@ -28,16 +27,35 @@ public interface Factory<T> {
   T createInstance(Scope scope);
 
   /**
-   * Signals that the class is annotated with {@link Singleton}.
+   * This method will return the scope where {@code T} instances will be created and
+   * where instances of {@code T} will be recycled if {@link #hasScopeAnnotation()}
+   * return {@code true}.
    *
-   * @return true iff the class is annotated as a singleton.
+   * Given a {@code currentScope}, the factory can return either :
+   * <ul>
+   * <li> the scope itself (if class {@code T} is not annotated.
+   * <li> the root scope if the class {@code T} is annotated with {@link javax.inject.Singleton}.
+   * <li> a parent scope if the class {@code T} is annotated with an different scope annotation
+   * (i.e. an annotation qualified by {@link javax.inject.Scope}).
+   * </ul>
+   *
+   * @param currentScope the current scope used to create an instance.
+   * @return the scope in which all instances produced by this {@code Factory} should be
+   * created.
    */
-  boolean hasSingletonAnnotation();
+  Scope getTargetScope(Scope currentScope);
 
   /**
-   * Signals that the class is anotated with {@link ProvidesSingleton}.
+   * Signals that the class is annotated with an annotation that is qualified by {@link javax.inject.Scope}.
+   *
+   * @return true iff the class is annotated with an annotation that is qualified by {@link javax.inject.Scope}.
+   */
+  boolean hasScopeAnnotation();
+
+  /**
+   * Signals that the class is anotated with {@link ScopeInstances}.
    *
    * @return true iff the class is annotated as a producer class whose instances will produce a singleton.
    */
-  boolean hasProducesSingletonAnnotation();
+  boolean hasScopeInstancesAnnotation();
 }

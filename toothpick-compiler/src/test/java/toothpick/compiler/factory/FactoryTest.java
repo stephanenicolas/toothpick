@@ -28,15 +28,20 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
         "    return testEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -122,15 +127,20 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class Test2Constructors$$Factory implements Factory<Test2Constructors> {", //
         "  @Override", //
         "  public Test2Constructors createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    Test2Constructors test2Constructors = new Test2Constructors();", //
         "    return test2Constructors;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -164,16 +174,21 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
         "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -207,16 +222,21 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
         "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -251,17 +271,22 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -289,7 +314,8 @@ public class FactoryTest extends BaseFactoryTest {
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryProcessors())
         .failsToCompile()
-        .withErrorContaining("The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor.");  }
+        .withErrorContaining("The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor.");
+  }
 
   @Test
   public void testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton() {
@@ -314,17 +340,77 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope.getRootScope();", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
         "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
+        "@Scope", //
+        "@interface CustomScope {}", //
+        "@CustomScope", //
+        "public final class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
+        "  public @interface FooScope {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Integer;", //
+        "import java.lang.Override;", //
+        "import java.lang.String;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    String param1 = scope.getInstance(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope.getParentScope(test.CustomScope.class);", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -343,8 +429,9 @@ public class FactoryTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ProvidesSingleton;", //
-        "@ProvidesSingleton", //
+        "import javax.inject.Singleton;", //
+        "import toothpick.ScopeInstances;", //
+        "@ScopeInstances @Singleton", //
         "public class TestNonEmptyConstructor {", //
         "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
         "}" //
@@ -361,17 +448,22 @@ public class FactoryTest extends BaseFactoryTest {
         "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
         "    String param1 = scope.getInstance(String.class);", //
         "    Integer param2 = scope.getInstance(Integer.class);", //
         "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
         "    return testNonEmptyConstructor;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasSingletonAnnotation() {", //
-        "    return false;", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope.getRootScope();", //
         "  }", //
         "  @Override", //
-        "  public boolean hasProducesSingletonAnnotation() {", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
         "    return true;", //
         "  }", //
         "}" //
