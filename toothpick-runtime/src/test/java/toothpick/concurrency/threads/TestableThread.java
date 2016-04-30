@@ -3,7 +3,7 @@ package toothpick.concurrency.threads;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.format;
-import static toothpick.concurrency.TestUtil.log;
+import static toothpick.concurrency.utils.TestUtil.log;
 
 public abstract class TestableThread extends Thread {
   protected AtomicBoolean isSuccessful = new AtomicBoolean(false);

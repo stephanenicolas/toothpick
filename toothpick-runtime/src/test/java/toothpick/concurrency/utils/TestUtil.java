@@ -1,4 +1,4 @@
-package toothpick.concurrency;
+package toothpick.concurrency.utils;
 
 public class TestUtil {//find a child node of root via DSF, take a random child.
 

@@ -1,18 +1,19 @@
-package toothpick.concurrency;
+package toothpick.concurrency.utils;
 
 import java.util.Random;
 import java.util.Stack;
 import toothpick.Scope;
 import toothpick.ToothPick;
+import toothpick.concurrency.ScopeTreeManipulationsMultiThreadTest;
 
 public class ThreadTestUtil {//find a child node of root via DSF, take a random child.
   static final Random random = new Random();
   static final int RANDOM_INTERVAL_LENGTH = 100;
-  static final int STANDARD_THREAD_COUNT = 5000;
+  public static final int STANDARD_THREAD_COUNT = 5000;
 
   // can be null
-  public static Scope findRandomNode(int acceptanceThreshold) {
-    Scope root = ToothPick.openScope(ScopeTreeManipulationsMultiThreadTest.ROOT_SCOPE);
+  public static Scope findRandomNode(Object rooScopeName, int acceptanceThreshold) {
+    Scope root = ToothPick.openScope(rooScopeName);
     Scope result = null;
     Stack<Scope> scopeStack = new Stack<Scope>();
     scopeStack.push(root);
