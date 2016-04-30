@@ -1,12 +1,11 @@
-package toothpick.concurrency;
+package toothpick.concurrency.threads;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.String.format;
 import static toothpick.concurrency.TestUtil.log;
 
-public abstract class TestableThread extends Thread implements CanFail {
+public abstract class TestableThread extends Thread {
   protected AtomicBoolean isSuccessful = new AtomicBoolean(false);
 
   public TestableThread(String name) {

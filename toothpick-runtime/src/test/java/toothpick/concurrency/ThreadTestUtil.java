@@ -11,8 +11,8 @@ public class ThreadTestUtil {//find a child node of root via DSF, take a random 
   static final int STANDARD_THREAD_COUNT = 5000;
 
   // can be null
-  static Scope findRandomNode(int acceptanceThreshold) {
-    Scope root = ToothPick.openScope(MultiThreadTest.ROOT_SCOPE);
+  public static Scope findRandomNode(int acceptanceThreshold) {
+    Scope root = ToothPick.openScope(ScopeTreeManipulationsMultiThreadTest.ROOT_SCOPE);
     Scope result = null;
     Stack<Scope> scopeStack = new Stack<Scope>();
     scopeStack.push(root);

@@ -6,11 +6,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import toothpick.ToothPick;
+import toothpick.concurrency.threads.AddNodeThread;
+import toothpick.concurrency.threads.RemoveNodeThread;
+import toothpick.concurrency.threads.TestableThread;
 
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.ThreadTestUtil.*;
 
-public class MultiThreadTest {
+public class ScopeTreeManipulationsMultiThreadTest {
 
   static final String ROOT_SCOPE = "ROOT_SCOPE";
 
