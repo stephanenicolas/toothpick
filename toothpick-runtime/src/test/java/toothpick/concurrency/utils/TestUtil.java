@@ -1,10 +1,14 @@
 package toothpick.concurrency.utils;
 
-public class TestUtil {//find a child node of root via DSF, take a random child.
+public class TestUtil {
 
-  static boolean DEBUG = true;
+  public final static boolean DEBUG = true;
+
+  private TestUtil() {
+  }
+
   public static void log(String s) {
-    if(DEBUG) {
+    if (DEBUG) {
       System.out.println(s);
     }
   }
