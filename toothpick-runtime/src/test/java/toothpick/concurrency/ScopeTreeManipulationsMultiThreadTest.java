@@ -2,6 +2,7 @@ package toothpick.concurrency;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +60,34 @@ public class ScopeTreeManipulationsMultiThreadTest {
       RemoveNodeThread removeNodeThread = new RemoveNodeThread(ROOT_SCOPE);
       threadList.add(removeNodeThread);
       removeNodeThread.start();
+    }
+
+    //THEN
+    //we simply should not have crashed when all threads are done
+    for (TestableThread thread : threadList) {
+      thread.join();
+      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+    }
+  }
+
+  @Test
+  public void concurrentScopeAdditionsAndRemovals_shouldNotCrash() throws InterruptedException {
+    //GIVEN
+    final int removalNodeThreadCount = STANDARD_THREAD_COUNT;
+    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
+    List<TestableThread> threadList = new ArrayList<>();
+    final Random random = new Random();
+
+    //WHEN
+    for (int indexThread = 0; indexThread < addNodeThreadCount + removalNodeThreadCount; indexThread++) {
+      final TestableThread testableThread;
+      if (random.nextInt(100) < 50) {
+        testableThread = new RemoveNodeThread(ROOT_SCOPE);
+      } else {
+        testableThread = new AddNodeThread(ROOT_SCOPE);
+      }
+      threadList.add(testableThread);
+      testableThread.start();
     }
 
     //THEN
