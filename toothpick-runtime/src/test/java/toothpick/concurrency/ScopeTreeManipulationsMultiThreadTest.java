@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import toothpick.ToothPick;
 import toothpick.concurrency.threads.AddNodeThread;
@@ -74,8 +75,8 @@ public class ScopeTreeManipulationsMultiThreadTest {
   @Test
   public void concurrentScopeAdditionsAndRemovals_shouldNotCrash() throws InterruptedException {
     //GIVEN
-    final int removalNodeThreadCount = STANDARD_THREAD_COUNT;
-    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
+    final int removalNodeThreadCount = STANDARD_THREAD_COUNT / 2;
+    final int addNodeThreadCount = STANDARD_THREAD_COUNT / 2;
     List<TestableThread> threadList = new ArrayList<>();
     final Random random = new Random();
 

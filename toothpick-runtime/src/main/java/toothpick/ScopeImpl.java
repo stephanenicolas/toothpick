@@ -142,16 +142,14 @@ public class ScopeImpl extends Scope {
   private void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
       if (binding == null) {
-        throw new IllegalStateException("A module can't have a null binding.");
+        throw new IllegalStateException("A module can't have a null binding : " + module);
       }
 
       Class clazz = binding.getKey();
-      synchronized (clazz) {
-        String bindingName = binding.getName();
-        if (!hasTestModules || getScopedProvider(clazz, bindingName) == null) {
-          ScopedProviderImpl provider = toProvider(binding);
-          installScopedProvider(clazz, bindingName, provider);
-        }
+      String bindingName = binding.getName();
+      if (!hasTestModules || getScopedProvider(clazz, bindingName) == null) {
+        ScopedProviderImpl provider = toProvider(binding);
+        installScopedProvider(clazz, bindingName, provider);
       }
     }
   }
@@ -263,21 +261,19 @@ public class ScopeImpl extends Scope {
    * if one is scoped, {@code null} otherwise.
    */
   private <T> ScopedProviderImpl<? extends T> getScopedProvider(Class<T> clazz, String bindingName) {
-    synchronized (clazz) {
-      UnNamedAndNamedProviders<T> unNamedAndNamedProviders = mapClassesToAllProviders.get(clazz);
-      if (unNamedAndNamedProviders == null) {
-        return null;
-      }
-      if (bindingName == null) {
-        return unNamedAndNamedProviders.unNamedProvider;
-      }
-
-      Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-      if (mapNameToProvider == null) {
-        return null;
-      }
-      return mapNameToProvider.get(bindingName);
+    UnNamedAndNamedProviders<T> unNamedAndNamedProviders = mapClassesToAllProviders.get(clazz);
+    if (unNamedAndNamedProviders == null) {
+      return null;
     }
+    if (bindingName == null) {
+      return unNamedAndNamedProviders.unNamedProvider;
+    }
+
+    Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
+    if (mapNameToProvider == null) {
+      return null;
+    }
+    return mapNameToProvider.get(bindingName);
   }
 
   /**
@@ -289,22 +285,25 @@ public class ScopeImpl extends Scope {
    * @param <T> the type of {@code clazz}.
    */
   private <T> void installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> provider) {
-    synchronized (clazz) {
-      UnNamedAndNamedProviders<T> unNamedAndNamedProviders = mapClassesToAllProviders.get(clazz);
-      if (unNamedAndNamedProviders == null) {
-        unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
-        mapClassesToAllProviders.put(clazz, unNamedAndNamedProviders);
+    UnNamedAndNamedProviders<T> unNamedAndNamedProviders = mapClassesToAllProviders.get(clazz);
+    if (unNamedAndNamedProviders == null) {
+      unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
+      try {
+        Thread.sleep(0,500);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
-      if (bindingName == null) {
-        unNamedAndNamedProviders.setUnNamedProvider(provider);
-      } else {
-        Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-        if (mapNameToProvider == null) {
-          mapNameToProvider = new HashMap<>();
-          unNamedAndNamedProviders.setMapNameToProvider(mapNameToProvider);
-        }
-        mapNameToProvider.put(bindingName, provider);
+      mapClassesToAllProviders.putIfAbsent(clazz, unNamedAndNamedProviders);
+    }
+    if (bindingName == null) {
+      unNamedAndNamedProviders.setUnNamedProvider(provider);
+    } else {
+      Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
+      if (mapNameToProvider == null) {
+        mapNameToProvider = new HashMap<>();
+        unNamedAndNamedProviders.setMapNameToProvider(mapNameToProvider);
       }
+      mapNameToProvider.put(bindingName, provider);
     }
   }
 

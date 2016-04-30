@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import toothpick.ToothPick;
 import toothpick.concurrency.threads.AddSameScopeThread;
