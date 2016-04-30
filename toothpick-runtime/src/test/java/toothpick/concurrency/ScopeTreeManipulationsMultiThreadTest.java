@@ -11,7 +11,7 @@ import toothpick.concurrency.threads.RemoveNodeThread;
 import toothpick.concurrency.threads.TestableThread;
 
 import static org.junit.Assert.assertTrue;
-import static toothpick.concurrency.ThreadTestUtil.*;
+import static toothpick.concurrency.utils.ThreadTestUtil.*;
 
 public class ScopeTreeManipulationsMultiThreadTest {
 
@@ -35,7 +35,7 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      AddNodeThread addNodeThread = new AddNodeThread();
+      AddNodeThread addNodeThread = new AddNodeThread(ROOT_SCOPE);
       threadList.add(addNodeThread);
       addNodeThread.start();
     }
@@ -56,7 +56,7 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < removalNodeThreadCount; indexThread++) {
-      RemoveNodeThread removeNodeThread = new RemoveNodeThread();
+      RemoveNodeThread removeNodeThread = new RemoveNodeThread(ROOT_SCOPE);
       threadList.add(removeNodeThread);
       removeNodeThread.start();
     }
