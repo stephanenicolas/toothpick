@@ -11,7 +11,7 @@ import toothpick.concurrency.threads.RemoveNodeThread;
 import toothpick.concurrency.threads.TestableThread;
 
 import static org.junit.Assert.assertTrue;
-import static toothpick.concurrency.utils.ThreadTestUtil.*;
+import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
 public class ScopeTreeManipulationsMultiThreadTest {
 

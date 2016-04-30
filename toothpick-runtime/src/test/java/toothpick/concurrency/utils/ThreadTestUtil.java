@@ -4,14 +4,15 @@ import java.util.Random;
 import java.util.Stack;
 import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.concurrency.ScopeTreeManipulationsMultiThreadTest;
 
-public class ThreadTestUtil {//find a child node of root via DSF, take a random child.
-  static final Random random = new Random();
-  static final int RANDOM_INTERVAL_LENGTH = 100;
+public class ThreadTestUtil {
+  private static final Random RANDOM = new Random();
+  private static final int RANDOM_INTERVAL_LENGTH = 100;
   public static final int STANDARD_THREAD_COUNT = 5000;
 
-  // can be null
+  private ThreadTestUtil() {
+  }
+
   public static Scope findRandomNode(Object rooScopeName, int acceptanceThreshold) {
     Scope root = ToothPick.openScope(rooScopeName);
     Scope result = null;
@@ -19,7 +20,7 @@ public class ThreadTestUtil {//find a child node of root via DSF, take a random 
     scopeStack.push(root);
     while (result == null && !scopeStack.isEmpty()) {
       Scope scope = scopeStack.pop();
-      if (random.nextInt(RANDOM_INTERVAL_LENGTH) < acceptanceThreshold) {
+      if (RANDOM.nextInt(RANDOM_INTERVAL_LENGTH) < acceptanceThreshold) {
         result = scope;
       } else {
         for (Scope childScope : scope.getChildrenScopes()) {
