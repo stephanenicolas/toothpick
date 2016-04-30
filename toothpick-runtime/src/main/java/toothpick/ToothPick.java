@@ -33,17 +33,20 @@ public final class ToothPick {
       throw new IllegalArgumentException("null scopes can't be open.");
     }
 
-    Scope previousScope;
-    Scope lastScope = null;
-    for (Object name : names) {
-      previousScope = lastScope;
-      lastScope = openScope(name);
-      if (previousScope != null) {
-        previousScope.addChild(lastScope);
-      }
-    }
+    synchronized (ToothPick.class) {
 
-    return lastScope;
+      Scope previousScope;
+      Scope lastScope = null;
+      for (Object name : names) {
+        previousScope = lastScope;
+        lastScope = openScope(name);
+        if (previousScope != null) {
+          previousScope.addChild(lastScope);
+        }
+      }
+
+      return lastScope;
+    }
   }
 
   /**

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import toothpick.config.Module;
@@ -68,7 +69,7 @@ import static java.lang.String.format;
  */
 public abstract class Scope {
   protected Scope parentScope;
-  protected Collection<Scope> childrenScopes = new ArrayList<>();
+  protected Collection<Scope> childrenScopes = new CopyOnWriteArrayList<>();
   protected List<Scope> parentScopes = new ArrayList<>();
   protected Object name;
   protected Set<Class<? extends Annotation>> scopeAnnotationClasses;
