@@ -14,6 +14,7 @@ import toothpick.concurrency.threads.InstallBindingThread;
 import toothpick.concurrency.threads.RemoveSameScopeThread;
 import toothpick.concurrency.threads.RemoveScopeFromListThread;
 import toothpick.concurrency.threads.TestableThread;
+import toothpick.concurrency.utils.ThreadTestUtil;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -35,6 +36,7 @@ public class BindingsMultiThreadTest {
   @After
   public void tearDown() throws Exception {
     ToothPick.reset();
+    ThreadTestUtil.shutdown();
   }
 
   @Test
@@ -45,15 +47,15 @@ public class BindingsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      InstallBindingThread thread = new InstallBindingThread(ROOT_SCOPE);
-      threadList.add(thread);
-      thread.start();
+      InstallBindingThread runnable = new InstallBindingThread(ROOT_SCOPE);
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }

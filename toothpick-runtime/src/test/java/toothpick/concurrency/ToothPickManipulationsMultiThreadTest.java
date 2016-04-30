@@ -13,6 +13,7 @@ import toothpick.concurrency.threads.AddScopeToListThread;
 import toothpick.concurrency.threads.RemoveSameScopeThread;
 import toothpick.concurrency.threads.RemoveScopeFromListThread;
 import toothpick.concurrency.threads.TestableThread;
+import toothpick.concurrency.utils.ThreadTestUtil;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,15 +45,15 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      AddScopeToListThread thread = new AddScopeToListThread(scopeNames);
-      threadList.add(thread);
-      thread.start();
+      AddScopeToListThread runnable = new AddScopeToListThread(scopeNames);
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
@@ -71,15 +72,15 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < removalNodeThreadCount; indexThread++) {
-      RemoveScopeFromListThread thread = new RemoveScopeFromListThread(scopeNames);
-      threadList.add(thread);
-      thread.start();
+      RemoveScopeFromListThread runnable = new RemoveScopeFromListThread(scopeNames);
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
@@ -94,20 +95,20 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount + removalNodeThreadCount; indexThread++) {
-      final TestableThread testableThread;
+      final TestableThread runnable;
       if (random.nextInt(100) < 50) {
-        testableThread = new RemoveScopeFromListThread(scopeNames);
+        runnable = new RemoveScopeFromListThread(scopeNames);
       } else {
-        testableThread = new AddScopeToListThread(scopeNames);
+        runnable = new AddScopeToListThread(scopeNames);
       }
-      threadList.add(testableThread);
-      testableThread.start();
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
@@ -120,14 +121,14 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addSameScopeThreadCount; indexThread++) {
-      final TestableThread testableThread = new AddSameScopeThread(ROOT_SCOPE, "childScope");
-      threadList.add(testableThread);
-      testableThread.start();
+      final TestableThread runnable = new AddSameScopeThread(ROOT_SCOPE, "childScope");
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
     assertThat(ToothPick.getScopeNames().size(), is(2));
@@ -143,19 +144,19 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addSameScopeThreadCount + removeSameScopeThreadCount; indexThread++) {
-      final TestableThread testableThread;
+      final TestableThread runnable;
       if (random.nextInt(100) < 50) {
-        testableThread = new RemoveSameScopeThread("childScope");
+        runnable = new RemoveSameScopeThread("childScope");
       } else {
-        testableThread = new AddSameScopeThread(ROOT_SCOPE, "childScope");
+        runnable = new AddSameScopeThread(ROOT_SCOPE, "childScope");
       }
-      threadList.add(testableThread);
-      testableThread.start();
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
     assertThat(ToothPick.getScopeNames().size(), anyOf(is(1), is(2)));

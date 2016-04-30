@@ -10,6 +10,7 @@ import toothpick.ToothPick;
 import toothpick.concurrency.threads.AddNodeThread;
 import toothpick.concurrency.threads.RemoveNodeThread;
 import toothpick.concurrency.threads.TestableThread;
+import toothpick.concurrency.utils.ThreadTestUtil;
 
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
@@ -36,15 +37,15 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      AddNodeThread thread = new AddNodeThread(ROOT_SCOPE);
-      threadList.add(thread);
-      thread.start();
+      AddNodeThread runnable = new AddNodeThread(ROOT_SCOPE);
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
@@ -57,15 +58,15 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < removalNodeThreadCount; indexThread++) {
-      RemoveNodeThread thread = new RemoveNodeThread(ROOT_SCOPE);
-      threadList.add(thread);
-      thread.start();
+      RemoveNodeThread runnable = new RemoveNodeThread(ROOT_SCOPE);
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
@@ -80,20 +81,20 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount + removalNodeThreadCount; indexThread++) {
-      final TestableThread testableThread;
+      final TestableThread runnable;
       if (random.nextInt(100) < 50) {
-        testableThread = new RemoveNodeThread(ROOT_SCOPE);
+        runnable = new RemoveNodeThread(ROOT_SCOPE);
       } else {
-        testableThread = new AddNodeThread(ROOT_SCOPE);
+        runnable = new AddNodeThread(ROOT_SCOPE);
       }
-      threadList.add(testableThread);
-      testableThread.start();
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
     }
 
     //THEN
     //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      thread.join();
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
