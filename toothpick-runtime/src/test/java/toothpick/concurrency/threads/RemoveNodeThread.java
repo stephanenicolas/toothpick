@@ -1,9 +1,10 @@
-package toothpick.concurrency;
+package toothpick.concurrency.threads;
 
 import toothpick.Scope;
 import toothpick.ToothPick;
+import toothpick.concurrency.ThreadTestUtil;
 
-class RemoveNodeThread extends TestableThread {
+public class RemoveNodeThread extends TestableThread {
   static final int ACCEPTANCE_THRESHOLD = 50;
   static int instanceNumber = 0;
 
