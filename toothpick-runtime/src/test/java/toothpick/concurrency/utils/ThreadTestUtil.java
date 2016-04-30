@@ -1,5 +1,6 @@
 package toothpick.concurrency.utils;
 
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import toothpick.Scope;
@@ -30,4 +31,19 @@ public class ThreadTestUtil {
     }
     return result;
   }
+
+  public static Scope findRandomNode(List<Object> scopeNames, int acceptanceThreshold) {
+    if (RANDOM.nextInt(RANDOM_INTERVAL_LENGTH) < acceptanceThreshold) {
+      return null;
+    } else {
+      synchronized (scopeNames) {
+        if(scopeNames.isEmpty()) {
+          return null;
+        }
+        int position = RANDOM.nextInt(scopeNames.size());
+        return ToothPick.openScope(scopeNames.get(position));
+      }
+    }
+  }
+
 }
