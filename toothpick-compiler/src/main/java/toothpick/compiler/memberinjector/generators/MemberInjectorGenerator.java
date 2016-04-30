@@ -112,7 +112,8 @@ public class MemberInjectorGenerator extends CodeGenerator {
         TypeName paramType = TypeName.get(paramInjectionTarget.memberClass.asType());
         injectMethodBuilder.addCode("$T $L = scope.", paramType, paramName);
         injectMethodBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
-        injectMethodBuilder.addCode(";\n");
+        injectMethodBuilder.addCode(";");
+        injectMethodBuilder.addCode(LINE_SEPARATOR);
         injectedMethodCallStatement.append(prefix);
         injectedMethodCallStatement.append(paramName);
         prefix = ", ";
@@ -131,7 +132,8 @@ public class MemberInjectorGenerator extends CodeGenerator {
       CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(memberInjectionTarget);
       injectBuilder.addCode("target.$L = scope.", memberInjectionTarget.memberName);
       injectBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
-      injectBuilder.addCode(";\n");
+      injectBuilder.addCode(";");
+      injectBuilder.addCode(LINE_SEPARATOR);
     }
   }
 

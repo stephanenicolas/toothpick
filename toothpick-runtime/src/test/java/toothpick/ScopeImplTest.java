@@ -41,21 +41,19 @@ public class ScopeImplTest extends ToothPickBaseTest {
     assertThat(instance, notNullValue());
   }
 
-  @Test
-  public void installOverrideModules_shouldInstallOverrideBindingsAgain_whenCalledTwice() {
+  @Test(expected = IllegalStateException.class)
+  public void installTestModules_shoudFailToInstallTestsBindingsAgain_whenCalledTwice() {
     //GIVEN
     Foo testFoo = new Foo();
     Foo testFoo2 = new Foo();
     ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
-    scope.installTestModules(new TestModule(testFoo2));
-    scope.installModules(new ProdModule2());
 
     //WHEN
-    Foo instance = scope.getInstance(Foo.class);
+    scope.installTestModules(new TestModule(testFoo2));
 
     //THEN
-    assertThat(instance, sameInstance(testFoo2));
+    fail("Should throw an exception");
   }
 
   @Test

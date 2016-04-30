@@ -9,10 +9,10 @@ import toothpick.registries.FactoryRegistryLocator;
  * @param <T> the class of the instances provided by this provider.
  */
 public class InternalProviderImpl<T> {
-  private T instance;
+  private volatile T instance;
   private Factory<T> factory;
   private Class<T> factoryClass;
-  private Provider<? extends T> providerInstance;
+  private volatile Provider<? extends T> providerInstance;
   private boolean isLazy;
   private Factory<Provider<T>> providerFactory;
   private Class<Provider<T>> providerFactoryClass;

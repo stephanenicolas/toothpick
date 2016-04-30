@@ -29,6 +29,8 @@ import static java.lang.String.format;
  * </p>
  */
 public class ScopeImpl extends Scope {
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator");;
+
   private static IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToUnBoundProviders = new IdentityHashMap<>();
   protected IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToAllProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
@@ -80,13 +82,13 @@ public class ScopeImpl extends Scope {
   }
 
   @Override
-  public void installTestModules(Module... modules) {
-    //we allow multiple calls to this method
-    boolean oldHasTestModules = hasTestModules;
+  public synchronized void installTestModules(Module... modules) {
+    if (hasTestModules) {
+      throw new IllegalStateException("TestModules can only be installed once per scope.");
+    }
     hasTestModules = false;
     installModules(modules);
-    boolean doOverrideModulesExist = modules != null;
-    hasTestModules = oldHasTestModules || doOverrideModulesExist;
+    hasTestModules = true;
   }
 
   @Override
@@ -107,52 +109,61 @@ public class ScopeImpl extends Scope {
     builder.append(name);
     builder.append(':');
     builder.append(System.identityHashCode(this));
-    builder.append('\n');
+    builder.append(LINE_SEPARATOR);
 
     builder.append("Providers: [");
-    ArrayList<Class> scopedProviders = new ArrayList(mapClassesToAllProviders.keySet());
-    Collections.sort(scopedProviders, new ClassNameComparator());
-    for (Class aClass : scopedProviders) {
+    ArrayList<Class> sortedBoundProviderClassesList;
+    synchronized (mapClassesToAllProviders) {
+      sortedBoundProviderClassesList = new ArrayList(mapClassesToAllProviders.keySet());
+      Collections.sort(sortedBoundProviderClassesList, new ClassNameComparator());
+    }
+    for (Class aClass : sortedBoundProviderClassesList) {
       builder.append(aClass.getName());
       builder.append(',');
     }
-    if (!mapClassesToAllProviders.isEmpty()) {
+
+    if (!sortedBoundProviderClassesList.isEmpty()) {
       builder.deleteCharAt(builder.length() - 1);
     }
-    builder.append(']');
-    builder.append('\n');
 
-    Iterator<Scope> iterator = childrenScopes.iterator();
+    builder.append(']');
+    builder.append(LINE_SEPARATOR);
+
+    Iterator<Scope> iterator = childrenScopes.values().iterator();
     while (iterator.hasNext()) {
       Scope scope = iterator.next();
       boolean isLast = !iterator.hasNext();
       builder.append(isLast ? lastNode : node);
       builder.append(branch);
       String childString = scope.toString();
-      String[] split = childString.split("\n");
+      String[] split = childString.split(LINE_SEPARATOR);
       for (int i = 0; i < split.length; i++) {
         String childLine = split[i];
         if (i != 0) {
           builder.append(indent);
         }
         builder.append(childLine);
-        builder.append('\n');
+        builder.append(LINE_SEPARATOR);
       }
     }
 
     if (getRootScope() == this) {
-      builder.append("UnScoped providers: [");
-      ArrayList<Class> unscopedProviders = new ArrayList(mapClassesToUnBoundProviders.keySet());
-      Collections.sort(unscopedProviders, new ClassNameComparator());
-      for (Class aClass : unscopedProviders) {
+      builder.append("Unbound providers: [");
+      ArrayList<Class> sortedUnboundProviderClassesList;
+      synchronized (mapClassesToUnBoundProviders) {
+        sortedUnboundProviderClassesList = new ArrayList(mapClassesToUnBoundProviders.keySet());
+        Collections.sort(sortedUnboundProviderClassesList, new ClassNameComparator());
+      }
+
+      for (Class aClass : sortedUnboundProviderClassesList) {
         builder.append(aClass.getName());
         builder.append(',');
       }
-      if (!mapClassesToUnBoundProviders.isEmpty()) {
+      if (!sortedUnboundProviderClassesList.isEmpty()) {
         builder.deleteCharAt(builder.length() - 1);
       }
       builder.append(']');
-      builder.append('\n');
+      builder.append(LINE_SEPARATOR);
     }
 
     return builder.toString();
@@ -161,19 +172,17 @@ public class ScopeImpl extends Scope {
   private void installModule(Module module) {
     for (Binding binding : module.getBindingSet()) {
       if (binding == null) {
-        throw new IllegalStateException("A module can't have a null binding.");
+        throw new IllegalStateException("A module can't have a null binding : " + module);
       }
 
       Class clazz = binding.getKey();
-      synchronized (clazz) {
-        String bindingName = binding.getName();
-        if (!hasTestModules || getBoundProvider(clazz, bindingName) == null) {
-          InternalProviderImpl provider = toProvider(binding);
-          if (binding.isScoped()) {
-            installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider);
-          } else {
-            installBoundProvider(clazz, bindingName, provider);
-          }
+      String bindingName = binding.getName();
+      if (!hasTestModules || getBoundProvider(clazz, bindingName) == null) {
+        InternalProviderImpl provider = toProvider(binding);
+        if (binding.isScoped()) {
+          installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider);
+        } else {
+          installBoundProvider(clazz, bindingName, provider);
         }
       }
     }
@@ -239,48 +248,48 @@ public class ScopeImpl extends Scope {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
-    synchronized (clazz) {
-      InternalProviderImpl<? extends T> scopedProvider = getBoundProvider(clazz, bindingName);
-      if (scopedProvider != null) {
-        return scopedProvider;
+    InternalProviderImpl<? extends T> scopedProvider = getBoundProvider(clazz, bindingName);
+    if (scopedProvider != null) {
+      return scopedProvider;
+    }
+    Iterator<Scope> iterator = parentScopes.iterator();
+    while (iterator.hasNext()) {
+      Scope parentScope = iterator.next();
+      ScopeImpl parentScopeImpl = (ScopeImpl) parentScope;
+      InternalProviderImpl<? extends T> parentScopedProvider = parentScopeImpl.getBoundProvider(clazz, bindingName);
+      if (parentScopedProvider != null) {
+        return parentScopedProvider;
       }
-      Iterator<Scope> iterator = parentScopes.iterator();
-      while (iterator.hasNext()) {
-        Scope parentScope = iterator.next();
-        ScopeImpl parentScopeImpl = (ScopeImpl) parentScope;
-        InternalProviderImpl<? extends T> parentScopedProvider = parentScopeImpl.getBoundProvider(clazz, bindingName);
-        if (parentScopedProvider != null) {
-          return parentScopedProvider;
-        }
-      }
+    }
 
-      //check if we have a cached un-scoped provider
-      InternalProviderImpl unScopedProviderInPool = getUnBoundProvider(clazz, bindingName);
-      if (unScopedProviderInPool != null) {
-        return unScopedProviderInPool;
-      }
+    //check if we have a cached un-scoped provider
+    InternalProviderImpl unScopedProviderInPool = getUnBoundProvider(clazz, bindingName);
+    if (unScopedProviderInPool != null) {
+      return unScopedProviderInPool;
+    }
 
-      //classes discovered at runtime, not bound by any module
-      //they will be a bit slower as we need to get the factory first
-      //we need to know whether they are scoped or not, if so we scope them
-      //if not, they are place in the pool
-      Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
+    //classes discovered at runtime, not bound by any module
+    //they will be a bit slower as we need to get the factory first
+    //we need to know whether they are scoped or not, if so we scope them
+    //if not, they are place in the pool
+    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
 
-      Scope targetScope = factory.getTargetScope(this);
-      ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
-      if (factory.hasScopeAnnotation()) {
-        //the new provider will have to work in the current scope
-        final ScopedProviderImpl<T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
-        //it is bound to its target scope only if it has a scope annotation.
-        targetScopeImpl.installScopedProvider(clazz, bindingName, newProvider);
-        return newProvider;
-      } else {
-        //the provider is but in a pool of unbound providers for later reuse
-        final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
-        //the pool is static as it is accessible from all scopes
-        installUnBoundProvider(clazz, bindingName, newProvider);
-        return newProvider;
-      }
+    Scope targetScope = factory.getTargetScope(this);
+    ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
+    if (factory.hasScopeAnnotation()) {
+      //the new provider will have to work in the current scope
+      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
+      //it is bound to its target scope only if it has a scope annotation.
+      //lock free installing a provider means there could have been one set concurrently since last testing
+      //its value. We allow to return it here
+      return targetScopeImpl.installScopedProvider(clazz, bindingName, newProvider);
+    } else {
+      //the provider is but in a pool of unbound providers for later reuse
+      final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
+      //the pool is static as it is accessible from all scopes
+      //lock free installing a provider means there could have been one set concurrently since last testing
+      //its value. We allow to return it here
+      return installUnBoundProvider(clazz, bindingName, newProvider);
     }
   }
 
@@ -336,21 +345,15 @@ public class ScopeImpl extends Scope {
       map = mapClassesToUnBoundProviders;
     }
 
-    synchronized (clazz) {
-      UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
-      if (unNamedAndNamedProviders == null) {
-        return null;
-      }
-      if (bindingName == null) {
-        return unNamedAndNamedProviders.unNamedProvider;
-      }
-
-      Map<String, InternalProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-      if (mapNameToProvider == null) {
-        return null;
-      }
-      return mapNameToProvider.get(bindingName);
+    UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
+    if (unNamedAndNamedProviders == null) {
+      return null;
     }
+    if (bindingName == null) {
+      return unNamedAndNamedProviders.getUnNamedProvider();
+    }
+
+    return unNamedAndNamedProviders.getProvider(bindingName);
   }
 
   /**
@@ -360,9 +363,11 @@ public class ScopeImpl extends Scope {
    * @param clazz the class for which to install the scoped provider of this scope.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
+   * @return the provider that will be installed, if one was previously installed, it is returned, in a lock-free way.
    */
-  private <T> void installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> scopedProvider) {
-    installBoundProvider(clazz, bindingName, scopedProvider);
+  private <T> InternalProviderImpl<? extends T> installScopedProvider(Class<T> clazz, String bindingName,
+      ScopedProviderImpl<? extends T> scopedProvider) {
+    return installBoundProvider(clazz, bindingName, scopedProvider);
   }
 
   /**
@@ -373,8 +378,9 @@ public class ScopeImpl extends Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  private <T> void installBoundProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
-    installInternalProvider(clazz, bindingName, internalProvider, true);
+  private <T> InternalProviderImpl<? extends T> installBoundProvider(Class<T> clazz, String bindingName,
+      InternalProviderImpl<? extends T> internalProvider) {
+    return installInternalProvider(clazz, bindingName, internalProvider, true);
   }
 
   /**
@@ -385,8 +391,9 @@ public class ScopeImpl extends Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  private <T> void installUnBoundProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
-    installInternalProvider(clazz, bindingName, internalProvider, false);
+  private <T> InternalProviderImpl<? extends T> installUnBoundProvider(Class<T> clazz, String bindingName,
+      InternalProviderImpl<? extends T> internalProvider) {
+    return installInternalProvider(clazz, bindingName, internalProvider, false);
   }
 
   /**
@@ -402,7 +409,8 @@ public class ScopeImpl extends Scope {
    * and {@link #installUnBoundProvider(Class, String, InternalProviderImpl)}
    * are a facade of this method and make the calls more clear.
    */
-  private <T> void installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider, boolean isBound) {
+  private <T> InternalProviderImpl installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider,
+      boolean isBound) {
     Map<Class, UnNamedAndNamedProviders> map;
     if (isBound) {
       map = mapClassesToAllProviders;
@@ -410,39 +418,57 @@ public class ScopeImpl extends Scope {
       map = mapClassesToUnBoundProviders;
     }
 
-    synchronized (clazz) {
-      UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
-      if (unNamedAndNamedProviders == null) {
-        unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
-        map.put(clazz, unNamedAndNamedProviders);
-      }
-      if (bindingName == null) {
-        unNamedAndNamedProviders.setUnNamedProvider(internalProvider);
-      } else {
-        Map<String, InternalProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-        if (mapNameToProvider == null) {
-          mapNameToProvider = new HashMap<>();
-          unNamedAndNamedProviders.setMapNameToProvider(mapNameToProvider);
+    UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
+    if (unNamedAndNamedProviders == null) {
+      synchronized (map) {
+        unNamedAndNamedProviders = map.get(clazz);
+        if (unNamedAndNamedProviders == null) {
+          unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
+          map.put(clazz, unNamedAndNamedProviders);
         }
-        mapNameToProvider.put(bindingName, internalProvider);
       }
     }
+    final InternalProviderImpl<? extends T> previousScopedProvider;
+    if (bindingName == null) {
+      //we might overwrite a provider already present here in multi-thread. we don't care, we don't want to lock
+      //this is a highly common case.
+      previousScopedProvider = unNamedAndNamedProviders.setUnNamedProvider(internalProvider);
+    } else {
+      previousScopedProvider = unNamedAndNamedProviders.putProvider(bindingName, internalProvider);
+    }
+    if (previousScopedProvider != null) {
+      return previousScopedProvider;
+    }
+    return internalProvider;
   }
 
   private static class UnNamedAndNamedProviders<T> {
-    private InternalProviderImpl<? extends T> unNamedProvider;
-    private Map<String, InternalProviderImpl<? extends T>> mapNameToProvider;
+    //we use the map to store also the unnamed provider, the key is a java keyword to make
+    //it kind of reserved by Toothpick
+    private final static String UN_NAMED_PROVIDER_KEY = "default";
+    private HashMap<String, InternalProviderImpl<? extends T>> mapNameToProvider = new HashMap<>();
 
-    public Map<String, InternalProviderImpl<? extends T>> getMapNameToProvider() {
-      return mapNameToProvider;
+    public InternalProviderImpl<? extends T> setUnNamedProvider(InternalProviderImpl<? extends T> unNamedProvider) {
+      return putProvider(UN_NAMED_PROVIDER_KEY, unNamedProvider);
     }
 
-    public void setMapNameToProvider(Map<String, InternalProviderImpl<? extends T>> mapNameToProvider) {
-      this.mapNameToProvider = mapNameToProvider;
+    public InternalProviderImpl<? extends T> getUnNamedProvider() {
+      return getProvider(UN_NAMED_PROVIDER_KEY);
     }
 
-    public void setUnNamedProvider(InternalProviderImpl<? extends T> unNamedProvider) {
-      this.unNamedProvider = unNamedProvider;
+    public InternalProviderImpl<? extends T> getProvider(String bindingName) {
+      return mapNameToProvider.get(bindingName);
+    }
+
+    public synchronized InternalProviderImpl<? extends T> putProvider(String bindingName, InternalProviderImpl<? extends T> namedProvider) {
+      InternalProviderImpl<? extends T> internalProvider = mapNameToProvider.get(bindingName);
+      //there is no putIfAbsent in Android IdentityHashMap class !
+      if (internalProvider != null) {
+        return internalProvider;
+      } else {
+        mapNameToProvider.put(bindingName, namedProvider);
+        return namedProvider;
+      }
     }
   }
 

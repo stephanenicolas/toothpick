@@ -28,7 +28,7 @@ public class ScopeImplDumpTest extends ToothPickBaseTest {
         + "Providers: \\[toothpick.Scope,toothpick.data.Foo\\].*"
         + "\\\\---child:\\d+.*"
         + "Providers:.*\\[toothpick.Scope\\].*"
-        + "UnScoped providers: \\[toothpick.data.Bar\\].*", Pattern.DOTALL);
+        + "Unbound providers: \\[toothpick.data.Bar\\].*", Pattern.DOTALL);
     assertThat(dump, MatchesPattern.matchesPattern(expected));
   }
 
