@@ -1,7 +1,9 @@
 package toothpick;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Main class to access toothpick features.
@@ -13,8 +15,10 @@ import java.util.Map;
  */
 public final class ToothPick {
 
-  private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new HashMap<>();
+  private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
+  private static ReentrantLock lockOpenScopes = new ReentrantLock();
+  private static ReentrantLock lockCloseScopes = new ReentrantLock();
 
   private ToothPick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
@@ -29,24 +33,22 @@ public final class ToothPick {
    * @return the last opened scope, leaf node of the created subtree of scopes.
    */
   public static Scope openScopes(Object... names) {
+
     if (names == null) {
       throw new IllegalArgumentException("null scopes can't be open.");
     }
 
-    synchronized (ToothPick.class) {
-
-      Scope previousScope;
-      Scope lastScope = null;
-      for (Object name : names) {
-        previousScope = lastScope;
-        lastScope = openScope(name);
-        if (previousScope != null) {
-          previousScope.addChild(lastScope);
-        }
+    Scope previousScope;
+    Scope lastScope = null;
+    for (Object name : names) {
+      previousScope = lastScope;
+      lastScope = openScope(name);
+      if (previousScope != null) {
+        previousScope.addChild(lastScope);
       }
-
-      return lastScope;
     }
+
+    return lastScope;
   }
 
   /**
@@ -55,13 +57,16 @@ public final class ToothPick {
    * Otherwise a new scope is created.
    */
   public static Scope openScope(Object name) {
-    synchronized (ToothPick.class) {
+    lockOpenScopes.lock();
+    try {
       Scope scope = MAP_KEY_TO_SCOPE.get(name);
       if (scope == null) {
         scope = new ScopeImpl(name);
         MAP_KEY_TO_SCOPE.put(name, scope);
       }
       return scope;
+    } finally {
+      lockOpenScopes.unlock();
     }
   }
 
@@ -72,7 +77,8 @@ public final class ToothPick {
    * @param name the name of the scope to close.
    */
   public static void closeScope(Object name) {
-    synchronized (ToothPick.class) {
+    lockCloseScopes.lock();
+    try {
       Scope scope = MAP_KEY_TO_SCOPE.get(name);
       if (scope != null) {
         Scope parentScope = scope.getParentScope();
@@ -81,6 +87,8 @@ public final class ToothPick {
         }
         removeScopeAndChildrenFromMap(scope);
       }
+    } finally {
+      lockCloseScopes.unlock();
     }
   }
 
@@ -88,9 +96,7 @@ public final class ToothPick {
    * Clears all scopes. Useful for testing and not getting any leak...
    */
   public static void reset() {
-    synchronized (ToothPick.class) {
-      MAP_KEY_TO_SCOPE.clear();
-    }
+    MAP_KEY_TO_SCOPE.clear();
     ScopeImpl.reset();
   }
 
@@ -114,5 +120,9 @@ public final class ToothPick {
 
   public static void setConfiguration(Configuration configuration) {
     Configuration.setConfiguration(configuration);
+  }
+
+  public static Collection<Object> getScopeNames() {
+    return MAP_KEY_TO_SCOPE.keySet();
   }
 }

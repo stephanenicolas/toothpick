@@ -5,6 +5,7 @@ targetCompatibility = 1.7
 
 dependencies {
   compile project(':toothpick-generated-core')
+  //compile 'org.perf4j:perf4j:0.9.16'
 
   testCompile deps.junit
   testCompile project(':toothpick-compiler')
