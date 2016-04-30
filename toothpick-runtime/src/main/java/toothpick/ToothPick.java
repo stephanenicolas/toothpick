@@ -17,6 +17,7 @@ public final class ToothPick {
 
   private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
+  private static ReentrantLock lockOpenScopes2 = new ReentrantLock();
   private static ReentrantLock lockOpenScopes = new ReentrantLock();
   private static ReentrantLock lockCloseScopes = new ReentrantLock();
 
@@ -58,6 +59,7 @@ public final class ToothPick {
    */
   public static Scope openScope(Object name) {
     lockOpenScopes.lock();
+    System.out.println("Thread lock:" + Thread.currentThread().getName());
     try {
       Scope scope = MAP_KEY_TO_SCOPE.get(name);
       if (scope == null) {
@@ -66,6 +68,7 @@ public final class ToothPick {
       }
       return scope;
     } finally {
+      System.out.println("Thread unlock:" + Thread.currentThread().getName());
       lockOpenScopes.unlock();
     }
   }
@@ -77,7 +80,7 @@ public final class ToothPick {
    * @param name the name of the scope to close.
    */
   public static void closeScope(Object name) {
-    lockCloseScopes.lock();
+    lockOpenScopes.lock();
     try {
       Scope scope = MAP_KEY_TO_SCOPE.get(name);
       if (scope != null) {
@@ -88,7 +91,7 @@ public final class ToothPick {
         removeScopeAndChildrenFromMap(scope);
       }
     } finally {
-      lockCloseScopes.unlock();
+      lockOpenScopes.unlock();
     }
   }
 

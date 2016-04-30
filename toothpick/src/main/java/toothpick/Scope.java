@@ -139,7 +139,7 @@ public abstract class Scope {
     }
 
     if (child.parentScope != null) {
-      throw new IllegalStateException(format("Injector %s already has a parent: %s", child, child.parentScope));
+      throw new IllegalStateException(format("Scope %s already has a parent: %s which is not %s", child, child.parentScope, this));
     }
 
     childrenScopes.add(child);
