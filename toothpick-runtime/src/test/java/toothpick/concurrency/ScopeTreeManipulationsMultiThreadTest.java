@@ -36,9 +36,9 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      AddNodeThread addNodeThread = new AddNodeThread(ROOT_SCOPE);
-      threadList.add(addNodeThread);
-      addNodeThread.start();
+      AddNodeThread thread = new AddNodeThread(ROOT_SCOPE);
+      threadList.add(thread);
+      thread.start();
     }
 
     //THEN
@@ -57,9 +57,9 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < removalNodeThreadCount; indexThread++) {
-      RemoveNodeThread removeNodeThread = new RemoveNodeThread(ROOT_SCOPE);
-      threadList.add(removeNodeThread);
-      removeNodeThread.start();
+      RemoveNodeThread thread = new RemoveNodeThread(ROOT_SCOPE);
+      threadList.add(thread);
+      thread.start();
     }
 
     //THEN

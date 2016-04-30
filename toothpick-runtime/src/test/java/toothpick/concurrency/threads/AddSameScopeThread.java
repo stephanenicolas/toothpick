@@ -17,9 +17,6 @@ public class AddSameScopeThread extends TestableThread {
   @Override
   public void doRun() {
     Scope scope = ToothPick.openScopes(parentScopeName, childScopeName);
-    if(scope.getParentScope() == null) {
-      throw  new RuntimeException();
-    }
     setIsSuccessful(true);
   }
 }

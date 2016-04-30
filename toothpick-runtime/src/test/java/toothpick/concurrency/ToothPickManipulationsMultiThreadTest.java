@@ -44,9 +44,9 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      AddScopeToListThread addNodeThread = new AddScopeToListThread(scopeNames);
-      threadList.add(addNodeThread);
-      addNodeThread.start();
+      AddScopeToListThread thread = new AddScopeToListThread(scopeNames);
+      threadList.add(thread);
+      thread.start();
     }
 
     //THEN
@@ -71,9 +71,9 @@ public class ToothPickManipulationsMultiThreadTest {
 
     //WHEN
     for (int indexThread = 0; indexThread < removalNodeThreadCount; indexThread++) {
-      RemoveScopeFromListThread removeNodeThread = new RemoveScopeFromListThread(scopeNames);
-      threadList.add(removeNodeThread);
-      removeNodeThread.start();
+      RemoveScopeFromListThread thread = new RemoveScopeFromListThread(scopeNames);
+      threadList.add(thread);
+      thread.start();
     }
 
     //THEN
