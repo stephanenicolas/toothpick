@@ -4,13 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Map;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
@@ -34,38 +38,29 @@ public class ClassCreator {
   }
 
   private Class<?> createClass(String className) throws ClassNotFoundException, IOException {
-    String sourceFileName = className + ".java";
-    FileWriter aWriter = new FileWriter(sourceFileName, true);
-    aWriter.write("public class " + className + "{\n");
-    aWriter.write("}\n");
-    aWriter.flush();
-    aWriter.close();
-    compileIt(sourceFileName);
-    FileInputStream fis = new FileInputStream(className + ".class");
-    byte[] buffer = new byte[3000];
-    int read = fis.read(buffer);
-    buffer = Arrays.copyOf(buffer, read);
+    String code = "public class " + className + "{}\n";
+    Map<String, byte[]> buffers = compileIt(className, code);
+    byte[] buffer = buffers.get(className);
     Class<?> aClass = byteClassLoader.defineClass(className, buffer);
-    new File(className + ".java").delete();
-    new File(className + ".class").delete();
     return aClass;
   }
 
-  private boolean compileIt(String sourceFileName) {
-    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+  private Map<String, byte[]> compileIt(String className, String code) {
+    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+    InMemoryJavaFileManager fileManager = new InMemoryJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
 
-    Iterable<? extends JavaFileObject> compilationUnit = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(new File(sourceFileName)));
+    JavaFileObject source = new JavaSourceFromString(className, code);
+    Iterable<? extends JavaFileObject> compilationUnit = Arrays.asList(source);
     JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnit);
     if (!task.call()) {
       for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
         System.out.format("Error on line %d in %s%n", diagnostic.getLineNumber(), diagnostic.getSource().toUri());
       }
-      return false;
+      return null;
     }
-    System.out.println("No compile errors for " + sourceFileName);
-    return true;
+    System.out.println("No compile errors for " + className);
+    return fileManager.getAllBuffers();
   }
 
   public static class ByteClassLoader extends URLClassLoader {
@@ -79,6 +74,20 @@ public class ClassCreator {
         return defineClass(name, classBytes, 0, classBytes.length);
       }
       return null;
+    }
+  }
+
+  class JavaSourceFromString extends SimpleJavaFileObject {
+    final String code;
+
+    JavaSourceFromString(String name, String code) {
+      super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),Kind.SOURCE);
+      this.code = code;
+    }
+
+    @Override
+    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+      return code;
     }
   }
 }
