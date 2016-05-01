@@ -19,8 +19,6 @@ public class GetInstanceThread extends TestableThread {
     try {
       ToothPick.openScope(scopeName).getInstance(clazz);
       setIsSuccessful(true);
-    } catch (NoFactoryFoundException e) {
-      setIsSuccessful(true);
     } catch (Exception ex) {
       ex.printStackTrace();
     }

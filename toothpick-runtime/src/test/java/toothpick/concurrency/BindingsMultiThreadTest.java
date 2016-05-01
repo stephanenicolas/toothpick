@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import toothpick.Factory;
+import toothpick.Scope;
 import toothpick.ToothPick;
 import toothpick.concurrency.threads.AddSameScopeThread;
 import toothpick.concurrency.threads.AddScopeToListThread;
@@ -19,6 +21,9 @@ import toothpick.concurrency.threads.ScopeToStringThread;
 import toothpick.concurrency.threads.TestableThread;
 import toothpick.concurrency.utils.ClassCreator;
 import toothpick.concurrency.utils.ThreadTestUtil;
+import toothpick.registries.FactoryRegistry;
+import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -41,6 +46,8 @@ public class BindingsMultiThreadTest {
   @After
   public void tearDown() throws Exception {
     ToothPick.reset();
+    FactoryRegistryLocator.setRootRegistry(null);
+    MemberInjectorRegistryLocator.setRootRegistry(null);
     ThreadTestUtil.shutdown();
   }
 
@@ -98,6 +105,7 @@ public class BindingsMultiThreadTest {
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
+    FactoryRegistryLocator.setRootRegistry(new DynamicTestClassesFactoryRegistry());
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
@@ -119,4 +127,45 @@ public class BindingsMultiThreadTest {
     }
   }
 
+  private static class DynamicTestClassesFactory<T> implements Factory<T> {
+    private final Class<T> clazz;
+
+    public DynamicTestClassesFactory(Class<T> clazz) {
+      this.clazz = clazz;
+    }
+
+    @Override
+    public T createInstance(Scope scope) {
+      try {
+        return clazz.newInstance();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public Scope getTargetScope(Scope currentScope) {
+      return currentScope;
+    }
+
+    @Override
+    public boolean hasScopeAnnotation() {
+      return false;
+    }
+
+    @Override
+    public boolean hasScopeInstancesAnnotation() {
+      return false;
+    }
+  }
+
+  private static class DynamicTestClassesFactoryRegistry implements FactoryRegistry {
+    @Override
+    public <T> Factory<T> getFactory(final Class<T> clazz) {
+      if(clazz.getName().startsWith("Class_")) {
+        return new DynamicTestClassesFactory<>(clazz);
+      }
+      return null;
+    }
+  }
 }
