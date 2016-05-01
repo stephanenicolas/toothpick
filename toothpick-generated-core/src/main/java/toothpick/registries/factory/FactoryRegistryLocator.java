@@ -44,8 +44,6 @@ public class FactoryRegistryLocator {
         return factory;
       }
     }
-    throw new RuntimeException(format("No factory could be found for class %s." //
-        + " Check that registries are properly setup with annotation processor arguments, " //
-        + "or use annotations correctly in this class.", clazz.getName()));
+    throw new NoFactoryFoundException(clazz);
   }
 }
