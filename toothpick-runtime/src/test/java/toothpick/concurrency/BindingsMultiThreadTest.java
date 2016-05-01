@@ -14,6 +14,7 @@ import toothpick.ToothPick;
 import toothpick.concurrency.threads.AddSameScopeThread;
 import toothpick.concurrency.threads.AddScopeToListThread;
 import toothpick.concurrency.threads.GetInstanceThread;
+import toothpick.concurrency.threads.GetInstanceThreadWithoutFactories;
 import toothpick.concurrency.threads.InstallBindingThread;
 import toothpick.concurrency.threads.RemoveSameScopeThread;
 import toothpick.concurrency.threads.RemoveScopeFromListThread;
@@ -105,7 +106,6 @@ public class BindingsMultiThreadTest {
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
-    FactoryRegistryLocator.setRootRegistry(new DynamicTestClassesFactoryRegistry());
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
@@ -113,8 +113,31 @@ public class BindingsMultiThreadTest {
       if(random.nextInt(100) < 20) {
         runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
       } else {
-        runnable = new GetInstanceThread(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
+        runnable = new GetInstanceThreadWithoutFactories(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
       }
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
+    }
+
+    //THEN
+    //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
+    for (TestableThread thread : threadList) {
+      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+    }
+  }
+
+  @Test
+  public void concurrentScopedGetInstance_shouldNotCrash() throws InterruptedException {
+    //GIVEN
+    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
+    List<TestableThread> threadList = new ArrayList<>();
+    Random random = new Random();
+    FactoryRegistryLocator.setRootRegistry(new DynamicTestClassesFactoryRegistry(true));
+
+    //WHEN
+    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+      TestableThread runnable = new GetInstanceThread(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
       threadList.add(runnable);
       ThreadTestUtil.submit(runnable);
     }
@@ -129,9 +152,11 @@ public class BindingsMultiThreadTest {
 
   private static class DynamicTestClassesFactory<T> implements Factory<T> {
     private final Class<T> clazz;
+    private boolean scoped;
 
-    public DynamicTestClassesFactory(Class<T> clazz) {
+    public DynamicTestClassesFactory(Class<T> clazz, boolean scoped) {
       this.clazz = clazz;
+      this.scoped = scoped;
     }
 
     @Override
@@ -150,7 +175,7 @@ public class BindingsMultiThreadTest {
 
     @Override
     public boolean hasScopeAnnotation() {
-      return false;
+      return scoped;
     }
 
     @Override
@@ -160,10 +185,16 @@ public class BindingsMultiThreadTest {
   }
 
   private static class DynamicTestClassesFactoryRegistry implements FactoryRegistry {
+    private boolean scoped;
+
+    public DynamicTestClassesFactoryRegistry(boolean scoped) {
+      this.scoped = scoped;
+    }
+
     @Override
     public <T> Factory<T> getFactory(final Class<T> clazz) {
       if(clazz.getName().startsWith("Class_")) {
-        return new DynamicTestClassesFactory<>(clazz);
+        return new DynamicTestClassesFactory<>(clazz, scoped);
       }
       return null;
     }
