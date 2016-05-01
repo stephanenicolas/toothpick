@@ -530,8 +530,9 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
         HashEntry<K, V> first = tab[index];
         HashEntry<K, V> e = first;
         // a reference remove operation compares the Reference instance
-        while (e != null && key != e.key &&
-            (refRemove || hash != e.hash || !keyEq(key, e.key()))) {
+        while (e != null //
+            && key != e.key //
+            && (refRemove || hash != e.hash || !keyEq(key, e.key()))) {
           e = e.next;
         }
 

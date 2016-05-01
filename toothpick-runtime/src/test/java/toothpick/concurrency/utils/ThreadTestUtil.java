@@ -32,6 +32,7 @@ public class ThreadTestUtil {
       executorService = Executors.newFixedThreadPool(6);
     }
   }
+
   public static Scope findRandomNode(Object rooScopeName, int acceptanceThreshold) {
     Scope root = ToothPick.openScope(rooScopeName);
     Scope result = null;
@@ -55,7 +56,7 @@ public class ThreadTestUtil {
       return null;
     } else {
       synchronized (scopeNames) {
-        if(scopeNames.isEmpty()) {
+        if (scopeNames.isEmpty()) {
           return null;
         }
         int position = RANDOM.nextInt(scopeNames.size());
@@ -63,5 +64,4 @@ public class ThreadTestUtil {
       }
     }
   }
-
 }

@@ -138,7 +138,7 @@ public class ToothPickManipulationsMultiThreadTest {
   public void concurrentOpenScopes_shouldAddChildScopeAtMostOnce_withSameChildScope() throws InterruptedException {
     //GIVEN
     final int addSameScopeThreadCount = STANDARD_THREAD_COUNT / 2;
-    final int removeSameScopeThreadCount = STANDARD_THREAD_COUNT /2;
+    final int removeSameScopeThreadCount = STANDARD_THREAD_COUNT / 2;
     List<TestableThread> threadList = new ArrayList<>();
     final Random random = new Random();
 

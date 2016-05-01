@@ -6,18 +6,13 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import toothpick.Factory;
 import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.concurrency.threads.AddSameScopeThread;
-import toothpick.concurrency.threads.AddScopeToListThread;
 import toothpick.concurrency.threads.GetInstanceThread;
 import toothpick.concurrency.threads.GetInstanceThreadWithoutFactories;
 import toothpick.concurrency.threads.InstallBindingThread;
-import toothpick.concurrency.threads.RemoveSameScopeThread;
-import toothpick.concurrency.threads.RemoveScopeFromListThread;
 import toothpick.concurrency.threads.ScopeToStringThread;
 import toothpick.concurrency.threads.TestableThread;
 import toothpick.concurrency.utils.ClassCreator;
@@ -26,9 +21,6 @@ import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.FactoryRegistryLocator;
 import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
@@ -83,7 +75,7 @@ public class BindingsMultiThreadTest {
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
       TestableThread runnable;
-      if(random.nextInt(100) < 20) {
+      if (random.nextInt(100) < 20) {
         runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
       } else {
         runnable = new ScopeToStringThread(ROOT_SCOPE);
@@ -110,7 +102,7 @@ public class BindingsMultiThreadTest {
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
       TestableThread runnable;
-      if(random.nextInt(100) < 20) {
+      if (random.nextInt(100) < 20) {
         runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
       } else {
         runnable = new GetInstanceThreadWithoutFactories(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
@@ -193,7 +185,7 @@ public class BindingsMultiThreadTest {
 
     @Override
     public <T> Factory<T> getFactory(final Class<T> clazz) {
-      if(clazz.getName().startsWith("Class_")) {
+      if (clazz.getName().startsWith("Class_")) {
         return new DynamicTestClassesFactory<>(clazz, scoped);
       }
       return null;
