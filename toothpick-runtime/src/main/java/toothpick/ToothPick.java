@@ -3,7 +3,6 @@ package toothpick;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Main class to access toothpick features.
@@ -11,15 +10,12 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * The main rule about using TP is : <b>TP will honor all injections in the instances it creates by itself.</b><br/>
  * <em/>A soon as you use {@code new Foo}, in a provider or a binding for instance, TP is not responsible for injecting Foo;
- * developers will have to manually inject the instances they create.</em> <br/
+ * developers have to manually inject the instances they create.</em> <br/
  */
 public final class ToothPick {
 
   private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
-  private static ReentrantLock lockOpenScopes2 = new ReentrantLock();
-  private static ReentrantLock lockOpenScopes = new ReentrantLock();
-  private static ReentrantLock lockCloseScopes = new ReentrantLock();
 
   private ToothPick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
@@ -58,19 +54,16 @@ public final class ToothPick {
    * Otherwise a new scope is created.
    */
   public static Scope openScope(Object name) {
-    lockOpenScopes.lock();
-    System.out.println("Thread lock:" + Thread.currentThread().getName());
-    try {
-      Scope scope = MAP_KEY_TO_SCOPE.get(name);
-      if (scope == null) {
-        scope = new ScopeImpl(name);
-        MAP_KEY_TO_SCOPE.put(name, scope);
-      }
+    Scope scope = MAP_KEY_TO_SCOPE.get(name);
+    if (scope != null) {
       return scope;
-    } finally {
-      System.out.println("Thread unlock:" + Thread.currentThread().getName());
-      lockOpenScopes.unlock();
     }
+    scope = new ScopeImpl(name);
+    Scope previous = MAP_KEY_TO_SCOPE.putIfAbsent(name, scope);
+    if (previous != null) {
+      scope = previous;
+    }
+    return scope;
   }
 
   /**
@@ -79,25 +72,22 @@ public final class ToothPick {
    *
    * @param name the name of the scope to close.
    */
+
   public static void closeScope(Object name) {
-    lockOpenScopes.lock();
-    try {
-      Scope scope = MAP_KEY_TO_SCOPE.get(name);
-      if (scope != null) {
-        Scope parentScope = scope.getParentScope();
-        if (parentScope != null) {
-          parentScope.removeChild(scope);
-        }
-        removeScopeAndChildrenFromMap(scope);
+    Scope scope = MAP_KEY_TO_SCOPE.get(name);
+    if (scope != null) {
+      Scope parentScope = scope.getParentScope();
+      if (parentScope != null) {
+        parentScope.removeChild(scope);
       }
-    } finally {
-      lockOpenScopes.unlock();
+      removeScopeAndChildrenFromMap(scope);
     }
   }
 
   /**
    * Clears all scopes. Useful for testing and not getting any leak...
    */
+
   public static void reset() {
     MAP_KEY_TO_SCOPE.clear();
   }
