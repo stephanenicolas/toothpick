@@ -134,11 +134,12 @@ public abstract class Scope {
       throw new IllegalArgumentException("Child must be non null.");
     }
 
-    if (child.parentScope == this) {
+    Scope parentScope = child.parentScope;
+    if (parentScope == this) {
       return;
     }
 
-    if (child.parentScope != null) {
+    if (parentScope != null) {
       throw new IllegalStateException(format("Scope %s already has a parent: %s which is not %s", child, child.parentScope, this));
     }
 

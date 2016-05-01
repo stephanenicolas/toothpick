@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ public class ClassCreator {
 
   public ClassCreator() {
     try {
-        allClasses = createClasses();
+      allClasses = createClasses();
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -37,7 +36,7 @@ public class ClassCreator {
     Map<String, String> mapClassNameToJavaSource = new HashMap<>();
     for (int indexClass = 0; indexClass < CLASSES_COUNT; indexClass++) {
       String className = "Class_" + indexClass;
-      String source = "public class " + className + "{}\n";
+      String source = String.format("public class %s {}\n", className, className);
       mapClassNameToJavaSource.put(className, source);
     }
     List<Class> classes = new ArrayList<>();
@@ -66,7 +65,7 @@ public class ClassCreator {
     JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnit);
     if (!task.call()) {
       for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-        System.out.format("Error on line %d in %s%n", diagnostic.getLineNumber(), diagnostic.getSource().toUri());
+        System.out.format("Error on line %d in %s%n", diagnostic.getLineNumber(), diagnostic.getSource());
       }
       return null;
     }
@@ -92,7 +91,7 @@ public class ClassCreator {
     final String code;
 
     JavaSourceFromString(String name, String code) {
-      super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),Kind.SOURCE);
+      super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
       this.code = code;
     }
 
