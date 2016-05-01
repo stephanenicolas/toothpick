@@ -154,7 +154,7 @@ public abstract class Scope {
     }
 
     if (child.parentScope != this) {
-      throw new IllegalStateException(format("Injector %s has a different parent: %s", child, child.parentScope));
+      throw new IllegalStateException(format("Scope %s has a different parent: %s", child, child.parentScope));
     }
 
     childrenScopes.remove(child);
