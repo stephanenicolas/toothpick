@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ToothPick {
 
-  private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
 
   private ToothPick() {

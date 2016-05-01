@@ -21,28 +21,14 @@ import toothpick.data.Foo;
 import toothpick.data.IFoo;
 
 public class InstallBindingThread extends TestableThread {
-  static final int CLASSES_COUNT = 200;
   static int instanceNumber = 0;
+  private ClassCreator classCreator;
   private Object rootScopeName;
   private static Random random = new Random();
-  private static ClassCreator classCreator = new ClassCreator();
 
-  private final static Class[] allClasses = new Class[CLASSES_COUNT];
-
-  static {
-    try {
-      for (int indexClass = 0; indexClass < CLASSES_COUNT; indexClass++) {
-        allClasses[indexClass] = classCreator.createClass("Class_"+indexClass);
-      }
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public InstallBindingThread(Object rootScopeName) {
+  public InstallBindingThread(ClassCreator classCreator, Object rootScopeName) {
     super("InstallBindingThread " + instanceNumber++);
+    this.classCreator = classCreator;
     this.rootScopeName = rootScopeName;
   }
 
@@ -51,7 +37,7 @@ public class InstallBindingThread extends TestableThread {
     Scope scope = ToothPick.openScope(rootScopeName);
     scope.installModules(new Module() {
       {
-        Class clazz = allClasses[random.nextInt(allClasses.length)];
+        Class clazz = classCreator.allClasses[random.nextInt(classCreator.allClasses.length)];
         bind(clazz).to(new Foo());
       }
     });

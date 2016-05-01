@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.util.ConcurrentIdentityHashMap;
 
 import static java.lang.String.format;
 
@@ -26,8 +28,8 @@ import static java.lang.String.format;
  * </p>
  */
 public class ScopeImpl extends Scope {
-  private static IdentityHashMap<Class, UnScopedProviderImpl> mapClassesToUnScopedProviders = new IdentityHashMap<>();
-  protected IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToAllProviders = new IdentityHashMap<>();
+  private static ConcurrentIdentityHashMap<Class, UnScopedProviderImpl> mapClassesToUnScopedProviders = new ConcurrentIdentityHashMap<>();
+  protected ConcurrentIdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToAllProviders = new ConcurrentIdentityHashMap<>();
   private boolean hasTestModules;
 
   public ScopeImpl(Object name) {
@@ -204,48 +206,46 @@ public class ScopeImpl extends Scope {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
-    synchronized (clazz) {
-      ScopedProviderImpl<? extends T> scopedProvider = getScopedProvider(clazz, name);
-      if (scopedProvider != null) {
-        return scopedProvider;
+    ScopedProviderImpl<? extends T> scopedProvider = getScopedProvider(clazz, name);
+    if (scopedProvider != null) {
+      return scopedProvider;
+    }
+    Iterator<Scope> iterator = parentScopes.iterator();
+    while (iterator.hasNext()) {
+      Scope parentScope = iterator.next();
+      ScopeImpl parentScopeImpl = (ScopeImpl) parentScope;
+      ScopedProviderImpl<? extends T> parentScopedProvider = parentScopeImpl.getScopedProvider(clazz, name);
+      if (parentScopedProvider != null) {
+        return parentScopedProvider;
       }
-      Iterator<Scope> iterator = parentScopes.iterator();
-      while (iterator.hasNext()) {
-        Scope parentScope = iterator.next();
-        ScopeImpl parentScopeImpl = (ScopeImpl) parentScope;
-        ScopedProviderImpl<? extends T> parentScopedProvider = parentScopeImpl.getScopedProvider(clazz, name);
-        if (parentScopedProvider != null) {
-          return parentScopedProvider;
-        }
-      }
+    }
 
-      //check if we have a cached un-scoped provider
-      UnScopedProviderImpl unScopedProviderInPool = mapClassesToUnScopedProviders.get(clazz);
-      if (unScopedProviderInPool != null) {
-        return unScopedProviderInPool;
-      }
+    //check if we have a cached un-scoped provider
+    UnScopedProviderImpl unScopedProviderInPool = mapClassesToUnScopedProviders.get(clazz);
+    if (unScopedProviderInPool != null) {
+      return unScopedProviderInPool;
+    }
 
-      //classes discovered at runtime, not bound by any module
-      //they will be a bit slower as we need to get the factory first
-      //we need to know whether they are scoped or not, if so we scope them
-      //if not, they are place in the pool
-      Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
+    //classes discovered at runtime, not bound by any module
+    //they will be a bit slower as we need to get the factory first
+    //we need to know whether they are scoped or not, if so we scope them
+    //if not, they are place in the pool
+    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
 
-      Scope targetScope = factory.getTargetScope(this);
-      ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
-      if (factory.hasScopeAnnotation()) {
-        //the new provider will have to work in the current scope
-        final ScopedProviderImpl<T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
-        //it is bound to its target scope only if it has a scope annotation.
-        targetScopeImpl.installScopedProvider(clazz, name, newProvider);
-        return newProvider;
-      } else {
-        //the provider is but in a pool of unbound providers for later reuse
-        final UnScopedProviderImpl<T> newProvider = new UnScopedProviderImpl<>(factory, false);
-        //the pool is static as it is accessible from all scopes
-        installUnScopedProvider(clazz, newProvider);
-        return newProvider;
-      }
+    Scope targetScope = factory.getTargetScope(this);
+    ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
+    if (factory.hasScopeAnnotation()) {
+      //the new provider will have to work in the current scope
+      final ScopedProviderImpl<T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
+      //it is bound to its target scope only if it has a scope annotation.
+      targetScopeImpl.installScopedProvider(clazz, name, newProvider);
+      return newProvider;
+    } else {
+      //the provider is but in a pool of unbound providers for later reuse
+      final UnScopedProviderImpl<T> newProvider = new UnScopedProviderImpl<>(factory, false);
+      //the pool is static as it is accessible from all scopes
+      installUnScopedProvider(clazz, newProvider);
+      return newProvider;
     }
   }
 
@@ -289,19 +289,15 @@ public class ScopeImpl extends Scope {
     if (unNamedAndNamedProviders == null) {
       unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
       UnNamedAndNamedProviders<T> previous = mapClassesToAllProviders.putIfAbsent(clazz, unNamedAndNamedProviders);
-      if(previous!=null) {
+      if (previous != null) {
         unNamedAndNamedProviders = previous;
       }
     }
     if (bindingName == null) {
       unNamedAndNamedProviders.setUnNamedProvider(provider);
     } else {
-      Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-      if (mapNameToProvider == null) {
-        mapNameToProvider = new HashMap<>();
-        unNamedAndNamedProviders.setMapNameToProvider(mapNameToProvider);
-      }
-      mapNameToProvider.put(bindingName, provider);
+      ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
+      mapNameToProvider.putIfAbsent(bindingName, provider);
     }
   }
 
@@ -313,21 +309,15 @@ public class ScopeImpl extends Scope {
    * @param <T> the type of {@code clazz}.
    */
   private <T> void installUnScopedProvider(Class<T> clazz, UnScopedProviderImpl<? extends T> unScopedProvider) {
-    synchronized (clazz) {
-      mapClassesToUnScopedProviders.put(clazz, unScopedProvider);
-    }
+    mapClassesToUnScopedProviders.putIfAbsent(clazz, unScopedProvider);
   }
 
   private static class UnNamedAndNamedProviders<T> {
     private ScopedProviderImpl<? extends T> unNamedProvider;
-    private Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider;
+    private ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> mapNameToProvider = new ConcurrentHashMap<>();
 
-    public Map<String, ScopedProviderImpl<? extends T>> getMapNameToProvider() {
+    public ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> getMapNameToProvider() {
       return mapNameToProvider;
-    }
-
-    public void setMapNameToProvider(Map<String, ScopedProviderImpl<? extends T>> mapNameToProvider) {
-      this.mapNameToProvider = mapNameToProvider;
     }
 
     public void setUnNamedProvider(ScopedProviderImpl<? extends T> unNamedProvider) {
