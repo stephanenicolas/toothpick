@@ -18,7 +18,7 @@ import javax.tools.ToolProvider;
 //from http://stackoverflow.com/a/2320465/693752
 public class ClassCreator {
   private ByteClassLoader byteClassLoader = new ByteClassLoader(ClassCreator.class.getClassLoader());
-  private final int CLASSES_COUNT = 1000;
+  private final static int CLASSES_COUNT = 1000;
 
   public Class[] allClasses;
 
@@ -69,7 +69,6 @@ public class ClassCreator {
       }
       return null;
     }
-    System.out.println("No compile errors");
     return fileManager.getAllBuffers();
   }
 
