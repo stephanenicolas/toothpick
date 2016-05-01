@@ -396,7 +396,10 @@ public class ScopeImpl extends Scope {
     UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
     if (unNamedAndNamedProviders == null) {
       unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
-      map.putIfAbsent(clazz, unNamedAndNamedProviders);
+      UnNamedAndNamedProviders<T> previous = mapClassesToAllProviders.putIfAbsent(clazz, unNamedAndNamedProviders);
+      if(previous!=null) {
+        unNamedAndNamedProviders = previous;
+      }
     }
     if (bindingName == null) {
       unNamedAndNamedProviders.setUnNamedProvider(internalProvider);

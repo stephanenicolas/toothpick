@@ -12,7 +12,7 @@ import toothpick.ToothPick;
 public class ThreadTestUtil {
   private static final Random RANDOM = new Random();
   private static final int RANDOM_INTERVAL_LENGTH = 100;
-  public static final int STANDARD_THREAD_COUNT = 100000;
+  public static final int STANDARD_THREAD_COUNT = 10000;
   static ExecutorService executorService = Executors.newFixedThreadPool(6);
 
   private ThreadTestUtil() {

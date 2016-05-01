@@ -14,6 +14,7 @@ import toothpick.concurrency.threads.AddScopeToListThread;
 import toothpick.concurrency.threads.InstallBindingThread;
 import toothpick.concurrency.threads.RemoveSameScopeThread;
 import toothpick.concurrency.threads.RemoveScopeFromListThread;
+import toothpick.concurrency.threads.ScopeToStringThread;
 import toothpick.concurrency.threads.TestableThread;
 import toothpick.concurrency.utils.ThreadTestUtil;
 
@@ -49,6 +50,33 @@ public class BindingsMultiThreadTest {
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
       InstallBindingThread runnable = new InstallBindingThread(ROOT_SCOPE);
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
+    }
+
+    //THEN
+    //we simply should not have crashed when all threads are done
+    ThreadTestUtil.shutdown();
+    for (TestableThread thread : threadList) {
+      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+    }
+  }
+
+  @Test
+  public void concurrentBindingInstallAndToString_shouldNotCrash() throws InterruptedException {
+    //GIVEN
+    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
+    List<TestableThread> threadList = new ArrayList<>();
+    Random random = new Random();
+
+    //WHEN
+    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+      TestableThread runnable;
+      if(random.nextInt(100) < 50) {
+        runnable = new InstallBindingThread(ROOT_SCOPE);
+      } else {
+        runnable = new ScopeToStringThread(ROOT_SCOPE);
+      }
       threadList.add(runnable);
       ThreadTestUtil.submit(runnable);
     }

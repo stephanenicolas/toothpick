@@ -1,5 +1,6 @@
 package toothpick.concurrency.threads;
 
+import java.io.IOException;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Proxy;
 import java.security.Key;
@@ -14,21 +15,31 @@ import javax.inject.Inject;
 import toothpick.Lazy;
 import toothpick.Scope;
 import toothpick.ToothPick;
+import toothpick.concurrency.utils.ClassCreator;
 import toothpick.config.Module;
 import toothpick.data.Foo;
 import toothpick.data.IFoo;
 
 public class InstallBindingThread extends TestableThread {
-  static final int ACCEPTANCE_THRESHOLD = 50;
+  static final int CLASSES_COUNT = 200;
   static int instanceNumber = 0;
   private Object rootScopeName;
   private static Random random = new Random();
+  private static ClassCreator classCreator = new ClassCreator();
 
-  private final static Class[] allClasses = new Class[] {
-    String.class, Inject.class, Integer.class, Float.class, Objects.class, Enumeration.class,
-      Double.class, Date.class, GenericDeclaration.class, HashMap.class, JarEntry.class, Key.class, Lazy.class,
-      Long.class, Map.class, Math.class
-  };
+  private final static Class[] allClasses = new Class[CLASSES_COUNT];
+
+  static {
+    try {
+      for (int indexClass = 0; indexClass < CLASSES_COUNT; indexClass++) {
+        allClasses[indexClass] = classCreator.createClass("Class_"+indexClass);
+      }
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
   public InstallBindingThread(Object rootScopeName) {
     super("InstallBindingThread " + instanceNumber++);
