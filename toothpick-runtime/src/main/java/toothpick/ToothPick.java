@@ -73,8 +73,8 @@ public final class ToothPick {
    * @param name the name of the scope to close.
    */
 
-  public static void closeScope(Object name) {
-    Scope scope = MAP_KEY_TO_SCOPE.get(name);
+  public static synchronized void closeScope(Object name) {
+    Scope scope = MAP_KEY_TO_SCOPE.remove(name);
     if (scope != null) {
       Scope parentScope = scope.getParentScope();
       if (parentScope != null) {

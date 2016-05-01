@@ -24,10 +24,7 @@ public class AddNodeThread extends TestableThread {
       return;
     }
     Object name = scopeName.getName();
-    Scope scope = ToothPick.openScopes(name, new Object());
-    if(scope.getParentScope() == null) {
-      throw  new RuntimeException("A child scope has no parent !");
-    }
+    ToothPick.openScopes(name, new Object());
     setIsSuccessful(true);
   }
 }
