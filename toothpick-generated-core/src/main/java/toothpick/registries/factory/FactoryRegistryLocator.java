@@ -3,8 +3,6 @@ package toothpick.registries.factory;
 import toothpick.Factory;
 import toothpick.registries.FactoryRegistry;
 
-import static java.lang.String.format;
-
 /**
  * Locates the {@link FactoryRegistry} instances.
  * The registries form a tree, or a forest (collection of disjoint trees).
