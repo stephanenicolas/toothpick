@@ -1,21 +1,19 @@
 package toothpick.concurrency.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 //from http://stackoverflow.com/a/2320465/693752
@@ -23,13 +21,11 @@ public class ClassCreator {
   private ByteClassLoader byteClassLoader = new ByteClassLoader(ClassCreator.class.getClassLoader());
   private final int CLASSES_COUNT = 1000;
 
-  public final Class[] allClasses = new Class[CLASSES_COUNT];
+  public Class[] allClasses;
 
   public ClassCreator() {
     try {
-      for (int indexClass = 0; indexClass < CLASSES_COUNT; indexClass++) {
-        allClasses[indexClass] = createClass("Class_" + indexClass);
-      }
+        allClasses = createClasses();
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -37,21 +33,36 @@ public class ClassCreator {
     }
   }
 
-  private Class<?> createClass(String className) throws ClassNotFoundException, IOException {
-    String code = "public class " + className + "{}\n";
-    Map<String, byte[]> buffers = compileIt(className, code);
-    byte[] buffer = buffers.get(className);
-    Class<?> aClass = byteClassLoader.defineClass(className, buffer);
-    return aClass;
+  private Class[] createClasses() throws ClassNotFoundException, IOException {
+    Map<String, String> mapClassNameToJavaSource = new HashMap<>();
+    for (int indexClass = 0; indexClass < CLASSES_COUNT; indexClass++) {
+      String className = "Class_" + indexClass;
+      String source = "public class " + className + "{}\n";
+      mapClassNameToJavaSource.put(className, source);
+    }
+    List<Class> classes = new ArrayList<>();
+    Map<String, byte[]> buffers = compile(mapClassNameToJavaSource);
+    for (Map.Entry<String, byte[]> classNameToByteCodeEntry : buffers.entrySet()) {
+      String className = classNameToByteCodeEntry.getKey();
+      byte[] buffer = classNameToByteCodeEntry.getValue();
+      Class clazz = byteClassLoader.defineClass(className, buffer);
+      classes.add(clazz);
+    }
+
+    return classes.toArray(new Class[0]);
   }
 
-  private Map<String, byte[]> compileIt(String className, String code) {
+  private Map<String, byte[]> compile(Map<String, String> mapClassNameToJavaSource) {
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     InMemoryJavaFileManager fileManager = new InMemoryJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
 
-    JavaFileObject source = new JavaSourceFromString(className, code);
-    Iterable<? extends JavaFileObject> compilationUnit = Arrays.asList(source);
+    List<JavaFileObject> compilationUnit = new ArrayList<>();
+    for (Map.Entry<String, String> classNameToSourceEntry : mapClassNameToJavaSource.entrySet()) {
+      JavaFileObject source = new JavaSourceFromString(classNameToSourceEntry.getKey(), classNameToSourceEntry.getValue());
+      compilationUnit.add(source);
+    }
+
     JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnit);
     if (!task.call()) {
       for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
@@ -59,7 +70,7 @@ public class ClassCreator {
       }
       return null;
     }
-    System.out.println("No compile errors for " + className);
+    System.out.println("No compile errors");
     return fileManager.getAllBuffers();
   }
 
