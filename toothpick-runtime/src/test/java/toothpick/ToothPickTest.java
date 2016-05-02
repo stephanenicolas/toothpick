@@ -41,15 +41,26 @@ public class ToothPickTest extends ToothPickBaseTest {
   @Test
   public void createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() throws Exception {
     //GIVEN
-    Scope scopeParent = ToothPick.openScope("foo");
+    ScopeNode scopeParent = (ScopeNode) ToothPick.openScope("foo");
 
     //WHEN
-    Scope scope = ToothPick.openScope("bar");
+    ScopeNode scope = (ScopeNode) ToothPick.openScope("bar");
     scopeParent.addChild(scope);
 
     //THEN
     assertThat(scope, notNullValue());
     assertThat(scope.getParentScope(), sameInstance(scopeParent));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void openScopes_shouldFail_whenScopeNamesAreNull() throws Exception {
+    //GIVEN
+
+    //WHEN
+    ToothPick.openScopes((Object[]) null);
+
+    //THEN
+    fail("Shoudl ahve thrown an exception");
   }
 
   @Test
@@ -96,12 +107,12 @@ public class ToothPickTest extends ToothPickBaseTest {
   @Test
   public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() throws Exception {
     //GIVEN
-    Scope scopeParent = ToothPick.openScope("bar");
+    ScopeNode scopeParent = (ScopeNode) ToothPick.openScope("bar");
 
     //WHEN
-    Scope scope = ToothPick.openScope("foo");
+    ScopeNode scope = (ScopeNode) ToothPick.openScope("foo");
     scopeParent.addChild(scope);
-    Scope scope2 = ToothPick.openScope("foo");
+    ScopeNode scope2 = (ScopeNode) ToothPick.openScope("foo");
 
     //THEN
     assertThat(scope, notNullValue());
@@ -110,13 +121,25 @@ public class ToothPickTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void destroyScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
+  public void closeScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
     //GIVEN
 
     //WHEN
     ToothPick.closeScope("foo");
 
     //THEN
+  }
+
+  @Test
+  public void closeScope_shouldRemoveChildScope_whenChildScopeIsClosed() throws Exception {
+    //GIVEN
+    ToothPick.openScopes("foo", "bar");
+
+    //WHEN
+    ToothPick.closeScope("bar");
+
+    //THEN
+    assertThat(((ScopeNode) ToothPick.openScope("foo")).getChildrenScopes().isEmpty(), is(true));
   }
 
   @Test

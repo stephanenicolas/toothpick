@@ -11,14 +11,13 @@ dependencies {
   testCompile project(':toothpick-compiler')
   testCompile deps.easymock
   testCompile deps.powermock
+  testCompile deps.hamcrest
   testCompile files(System.getenv("JAVA_HOME") + "/lib/tools.jar")
 }
 
 compileTestJava {
   doFirst {
-    options.compilerArgs = [
-        '-Atoothpick_registry_package_name=toothpick.test',
-    ]
+    options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.test',]
   }
 }
 

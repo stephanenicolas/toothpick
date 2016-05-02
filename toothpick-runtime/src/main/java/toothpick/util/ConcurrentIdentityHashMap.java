@@ -807,7 +807,10 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
    * @return <tt>true</tt> if and only if the specified object is a key in
    * this table, as determined by the <tt>equals</tt> method;
    * <tt>false</tt> otherwise.
+   * <<<<<<< HEAD
    * @throws NullPointerException if the specified key is null
+   * =======
+   * >>>>>>> master
    */
   @Override
   public boolean containsKey(Object key) {
@@ -921,7 +924,10 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
   /**
    * @return the previous value associated with the specified key, or
    * <tt>null</tt> if there was no mapping for the key
+   * <<<<<<< HEAD
    * @throws NullPointerException if the specified key or value is null
+   * =======
+   * >>>>>>> master
    */
   public V putIfAbsent(K key, V value) {
     if (value == null) {
@@ -952,7 +958,10 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
    * @param key the key that needs to be removed
    * @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
    * if there was no mapping for <tt>key</tt>
+   * <<<<<<< HEAD
    * @throws NullPointerException if the specified key is null
+   * =======
+   * >>>>>>> master
    */
   @Override
   public V remove(Object key) {
@@ -1088,6 +1097,25 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
     return new ValueIterator();
   }
 
+  /**
+   * Returns a shallow copy of this
+   * <tt>ConcurrentHashMap</tt> instance: the keys and
+   * values themselves are not cloned.
+   *
+   * @return a shallow copy of this map.
+   */
+  public Object clone() {
+    // We cannot call super.clone, since it would share final
+    // segments array, and there's no way to reassign finals.
+
+    float lf = segments[0].loadFactor;
+    int segs = segments.length;
+    int cap = (int) (size() / lf);
+    if (cap < segs) cap = segs;
+    ConcurrentIdentityHashMap<K, V> t = new ConcurrentIdentityHashMap<K, V>(cap, lf, segs);
+    t.putAll(this);
+    return t;
+  }
     /* ---------------- Iterator Support -------------- */
 
   abstract class HashIterator {

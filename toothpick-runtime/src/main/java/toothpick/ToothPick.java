@@ -35,11 +35,11 @@ public final class ToothPick {
       throw new IllegalArgumentException("null scopes can't be open.");
     }
 
-    Scope previousScope;
-    Scope lastScope = null;
+    ScopeNode previousScope;
+    ScopeNode lastScope = null;
     for (Object name : names) {
       previousScope = lastScope;
-      lastScope = openScope(name);
+      lastScope = (ScopeNode) openScope(name);
       if (previousScope != null) {
         //if there was already such a node, we add a new child
         //but there might already be such a child, in that case
@@ -79,9 +79,9 @@ public final class ToothPick {
 
   public static void closeScope(Object name) {
     //we remove the scope first, so that other threads don't see it, and see the next snapshot of the tree
-    Scope scope = MAP_KEY_TO_SCOPE.remove(name);
+    ScopeNode scope = (ScopeNode) MAP_KEY_TO_SCOPE.remove(name);
     if (scope != null) {
-      Scope parentScope = scope.getParentScope();
+      ScopeNode parentScope = scope.getParentScope();
       if (parentScope != null) {
         parentScope.removeChild(scope);
       }
@@ -95,6 +95,7 @@ public final class ToothPick {
 
   public static void reset() {
     MAP_KEY_TO_SCOPE.clear();
+    ScopeImpl.reset();
   }
 
   /**
@@ -114,15 +115,19 @@ public final class ToothPick {
    * from the map. We don't do anything else to the children nodes are they will be
    * garbage collected soon. We just cut a whole sub-graph in the references graph of the JVM normally.
    */
-  private static void removeScopeAndChildrenFromMap(Scope scope) {
+  private static void removeScopeAndChildrenFromMap(ScopeNode scope) {
     MAP_KEY_TO_SCOPE.remove(scope.getName());
-    for (Scope childScope : scope.childrenScopes.values()) {
+    for (ScopeNode childScope : scope.childrenScopes.values()) {
       removeScopeAndChildrenFromMap(childScope);
     }
   }
 
+  public static void setConfiguration(Configuration configuration) {
+    Configuration.setConfiguration(configuration);
+  }
+
   /*for testing.*/
   static int getScopeNamesSize() {
-    return MAP_KEY_TO_SCOPE.keySet().size();
+    return MAP_KEY_TO_SCOPE.size();
   }
 }

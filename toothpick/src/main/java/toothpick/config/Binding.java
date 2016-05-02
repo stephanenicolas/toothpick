@@ -5,6 +5,7 @@ import javax.inject.Provider;
 import javax.inject.Qualifier;
 
 public class Binding<T> {
+  private boolean isScoped;
   private Class<T> key;
   private Mode mode;
   private Class<? extends T> implementationClass;
@@ -29,13 +30,18 @@ public class Binding<T> {
           String.format("Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
               annotationClassWithQualifierAnnotation));
     }
-    this.name = annotationClassWithQualifierAnnotation.getClass().getName();
+    this.name = annotationClassWithQualifierAnnotation.getName();
     return this;
   }
 
-  public void to(Class<? extends T> implClass) {
+  public void scope() {
+    isScoped = true;
+  }
+
+  public BoundState to(Class<? extends T> implClass) {
     this.implementationClass = implClass;
     mode = Mode.CLASS;
+    return new BoundState();
   }
 
   public void to(T instance) {
@@ -48,9 +54,10 @@ public class Binding<T> {
     mode = Mode.PROVIDER_INSTANCE;
   }
 
-  public void toProvider(Class<? extends Provider<? extends T>> providerClass) {
+  public BoundState toProvider(Class<? extends Provider<? extends T>> providerClass) {
     this.providerClass = providerClass;
     mode = Mode.PROVIDER_CLASS;
+    return new BoundState();
   }
 
   public Mode getMode() {
@@ -81,11 +88,21 @@ public class Binding<T> {
     return name;
   }
 
+  public boolean isScoped() {
+    return isScoped;
+  }
+
   public enum Mode {
     SIMPLE,
     CLASS,
     INSTANCE,
     PROVIDER_INSTANCE,
     PROVIDER_CLASS
+  }
+
+  public class BoundState {
+    public void scope() {
+      isScoped = true;
+    }
   }
 }

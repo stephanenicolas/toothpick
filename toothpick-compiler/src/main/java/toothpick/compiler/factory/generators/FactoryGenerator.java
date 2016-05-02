@@ -82,7 +82,8 @@ public class FactoryGenerator extends CodeGenerator {
       TypeName paramType = TypeName.get(paramInjectionTarget.memberClass.asType());
       createInstanceBuilder.addCode("$T $L = scope.", paramType, paramName);
       createInstanceBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
-      createInstanceBuilder.addCode(";\n");
+      createInstanceBuilder.addCode(";");
+      createInstanceBuilder.addCode(LINE_SEPARATOR);
       localVarStatement.append(prefix);
       localVarStatement.append(paramName);
       prefix = ", ";

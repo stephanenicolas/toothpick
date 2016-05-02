@@ -1,4 +1,4 @@
-package toothpick.concurrency;
+package toothpick.config;
 
 import java.util.ArrayList;
 import java.util.List;
