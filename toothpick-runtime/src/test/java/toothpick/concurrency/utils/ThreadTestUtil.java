@@ -40,7 +40,7 @@ public class ThreadTestUtil {
     scopeStack.push(root);
     while (result == null && !scopeStack.isEmpty()) {
       Scope scope = scopeStack.pop();
-      if (RANDOM.nextInt(RANDOM_INTERVAL_LENGTH) < acceptanceThreshold) {
+      if (RANDOM.nextInt(RANDOM_INTERVAL_LENGTH) < acceptanceThreshold && scope != root) {
         result = scope;
       } else {
         for (Scope childScope : scope.getChildrenScopes()) {

@@ -1,12 +1,13 @@
 package toothpick;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import toothpick.config.Module;
@@ -68,13 +69,23 @@ import static java.lang.String.format;
  * </p>
  */
 public abstract class Scope {
-  protected Scope parentScope;
-  protected Collection<Scope> childrenScopes = new CopyOnWriteArrayList<>();
-  protected List<Scope> parentScopes = new ArrayList<>();
+  //lock free children. A Concurrent HashMap is better than a list here as
+  //we need to know atomically which value could be already in the map
+  protected final ConcurrentHashMap<Object, Scope> childrenScopes = new ConcurrentHashMap<>();
+  //lock free parents = each node has its own copy of the parent edges up to the root
+  //it means that when we access a node, all operations are lock free relatively to
+  //concurrent operations performed on the tree. There is no need for copy on write
+  //as setting the parent is called only once when creating a node
+  protected final List<Scope> parentScopes = new CopyOnWriteArrayList<>();
   protected Object name;
-  protected Set<Class<? extends Annotation>> scopeAnnotationClasses;
+  //same here for lock free access
+  protected final Set<Class<? extends Annotation>> scopeAnnotationClasses = new CopyOnWriteArraySet<>();
 
   public Scope(Object name) {
+    if (name == null) {
+      throw new IllegalArgumentException("A scope can't have a null name");
+    }
+
     this.name = name;
     if (name.getClass() == Class.class //
         && Annotation.class.isAssignableFrom((Class) name) //
@@ -87,11 +98,28 @@ public abstract class Scope {
     return name;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Scope scope = (Scope) o;
+
+    return name.equals(scope.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
+
   /**
    * @return the parentScope of this scope. Can be null for a root scope.
    */
   public Scope getParentScope() {
-    return parentScope;
+    Iterator<Scope> snapshotIterator = parentScopes.iterator();
+    boolean hasParent = snapshotIterator.hasNext();
+    return hasParent ? snapshotIterator.next() : null;
   }
 
   /**
@@ -126,27 +154,42 @@ public abstract class Scope {
 
   @SuppressWarnings({ "unused", "For the sake of completeness of the API." })
   public Collection<Scope> getChildrenScopes() {
-    return childrenScopes;
+    return childrenScopes.values();
   }
 
-  public void addChild(Scope child) {
+  /**
+   * Adds a child {@link Scope} to a {@link Scope}.
+   * Children sccopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
+   * In a lock free way, this method return the child scope : either {@code child} or a child scope that was already added.
+   *
+   * @param child the new child scope.
+   * @return either {@code child} or a child scope that was already added.
+   */
+  public Scope addChild(Scope child) {
     if (child == null) {
       throw new IllegalArgumentException("Child must be non null.");
     }
 
-    Scope parentScope = child.parentScope;
+    //this variable is important. It takes a snapshot of the node
+    final Scope parentScope = getParentScope();
     if (parentScope == this) {
-      return;
+      return child;
     }
 
     if (parentScope != null) {
-      throw new IllegalStateException(format("Scope %s already has a parent: %s which is not %s", child, child.parentScope, this));
+      throw new IllegalStateException(format("Scope %s already has a parent: %s which is not %s", child, parentScope, this));
     }
 
-    childrenScopes.add(child);
-    child.parentScope = this;
+    Scope scope = childrenScopes.putIfAbsent(child.getName(), child);
+    if (scope != null) {
+      return child;
+    }
+    //this could bug in multi-thread if a node is added to 2 parents...
+    //there is no atomic operation to add them both and getting sure they are the only parent scopes.
+    //we choose not to lock as this scenario doesn't seem meaningful
     child.parentScopes.add(this);
     child.parentScopes.addAll(parentScopes);
+    return child;
   }
 
   public void removeChild(Scope child) {
@@ -154,13 +197,8 @@ public abstract class Scope {
       throw new IllegalArgumentException("Child must be non null.");
     }
 
-    if (child.parentScope != this) {
-      throw new IllegalStateException(format("Scope %s has a different parent: %s", child, child.parentScope));
-    }
-
     childrenScopes.remove(child);
     //make the ex-child a new root.
-    child.parentScope = null;
     child.parentScopes.clear();
   }
 
@@ -193,9 +231,6 @@ public abstract class Scope {
           String.format("The annotation @Singleton is already bound to the root scope of any scope. It can be bound dynamically."));
     }
 
-    if (scopeAnnotationClasses == null) {
-      scopeAnnotationClasses = new HashSet<>();
-    }
     scopeAnnotationClasses.add(scopeAnnotationClass);
   }
 

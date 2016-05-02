@@ -109,7 +109,7 @@ public class ScopeImpl extends Scope {
     builder.append(']');
     builder.append('\n');
 
-    Iterator<Scope> iterator = childrenScopes.iterator();
+    Iterator<Scope> iterator = childrenScopes.values().iterator();
     while (iterator.hasNext()) {
       Scope scope = iterator.next();
       boolean isLast = !iterator.hasNext();
@@ -234,16 +234,18 @@ public class ScopeImpl extends Scope {
     ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
     if (factory.hasScopeAnnotation()) {
       //the new provider will have to work in the current scope
-      final ScopedProviderImpl<T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
+      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
       //it is bound to its target scope only if it has a scope annotation.
-      targetScopeImpl.installScopedProvider(clazz, name, newProvider);
-      return newProvider;
+      //lock free installing a provider means there could have been one set concurrently since last testing
+      //its value. We allow to return it here
+      return targetScopeImpl.installScopedProvider(clazz, name, newProvider);
     } else {
       //the provider is but in a pool of unbound providers for later reuse
-      final UnScopedProviderImpl<T> newProvider = new UnScopedProviderImpl<>(factory, false);
+      UnScopedProviderImpl<? extends T> newProvider = new UnScopedProviderImpl<>(factory, false);
       //the pool is static as it is accessible from all scopes
-      installUnScopedProvider(clazz, newProvider);
-      return newProvider;
+      //lock free installing a provider means there could have been one set concurrently since last testing
+      //its value. We allow to return it here
+      return installUnScopedProvider(clazz, newProvider);
     }
   }
 
@@ -281,8 +283,10 @@ public class ScopeImpl extends Scope {
    * @param clazz the class for which to install the scoped provider of this scope.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
+   * @return the provider that will be installed, if one was previously installed, it is returned, in a lock-free way.
    */
-  private <T> void installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> provider) {
+  private <T> ScopedProviderImpl<? extends T> installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> provider) {
+    ScopedProviderImpl<? extends T> providerInScope = provider;
     UnNamedAndNamedProviders<T> unNamedAndNamedProviders = mapClassesToAllProviders.get(clazz);
     if (unNamedAndNamedProviders == null) {
       unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
@@ -292,11 +296,17 @@ public class ScopeImpl extends Scope {
       }
     }
     if (bindingName == null) {
-      unNamedAndNamedProviders.setUnNamedProvider(provider);
+      //we might overwrite a provider already present here in multi-thread. we don't care, we don't want to lock
+      //this is a highly common case
+      unNamedAndNamedProviders.setAbsentUnNamedProvider(provider);
     } else {
       ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-      mapNameToProvider.putIfAbsent(bindingName, provider);
+      ScopedProviderImpl<? extends T> previousScopedProvider = mapNameToProvider.putIfAbsent(bindingName, provider);
+      if (previousScopedProvider != null) {
+        providerInScope = previousScopedProvider;
+      }
     }
+    return providerInScope;
   }
 
   /**
@@ -305,21 +315,34 @@ public class ScopeImpl extends Scope {
    *
    * @param clazz the class for which to install the unscoped unScopedProvider.
    * @param <T> the type of {@code clazz}.
+   * @return the provider that will be installed, if one was previously installed, it is returned, in a lock-free way.
    */
-  private <T> void installUnScopedProvider(Class<T> clazz, UnScopedProviderImpl<? extends T> unScopedProvider) {
-    mapClassesToUnScopedProviders.putIfAbsent(clazz, unScopedProvider);
+  private <T> UnScopedProviderImpl<? extends T> installUnScopedProvider(Class<T> clazz, UnScopedProviderImpl<? extends T> unScopedProvider) {
+    UnScopedProviderImpl previousUnScopedProvider = mapClassesToUnScopedProviders.putIfAbsent(clazz, unScopedProvider);
+    if (previousUnScopedProvider != null) {
+      return previousUnScopedProvider;
+    } else {
+      return unScopedProvider;
+    }
   }
 
   private static class UnNamedAndNamedProviders<T> {
+    //we don't do any sync / lock free here. It means that it is possible
+    //that a client of TP would use a provider that is not exactly the one store in the tree of scopes
+    //but they would provide the same values anyway.
     private ScopedProviderImpl<? extends T> unNamedProvider;
-    private ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> mapNameToProvider = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> mapNameToProvider = new ConcurrentHashMap<>();
 
     public ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> getMapNameToProvider() {
       return mapNameToProvider;
     }
 
-    public void setUnNamedProvider(ScopedProviderImpl<? extends T> unNamedProvider) {
+    public void setAbsentUnNamedProvider(ScopedProviderImpl<? extends T> unNamedProvider) {
       this.unNamedProvider = unNamedProvider;
+    }
+
+    public ScopedProviderImpl<? extends T> getUnNamedProvider() {
+      return unNamedProvider;
     }
   }
 }

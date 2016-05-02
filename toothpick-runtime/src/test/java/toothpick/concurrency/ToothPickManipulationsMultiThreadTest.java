@@ -131,7 +131,7 @@ public class ToothPickManipulationsMultiThreadTest {
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
-    assertThat(ToothPick.getScopeNames().size(), is(2));
+    assertThat(ToothPick.getScopeNamesSize(), is(2));
   }
 
   @Test
@@ -159,6 +159,6 @@ public class ToothPickManipulationsMultiThreadTest {
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
-    assertThat(ToothPick.getScopeNames().size(), anyOf(is(1), is(2)));
+    assertThat(ToothPick.getScopeNamesSize(), anyOf(is(1), is(2)));
   }
 }

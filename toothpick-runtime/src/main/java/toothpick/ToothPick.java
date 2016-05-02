@@ -1,6 +1,5 @@
 package toothpick;
 
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -13,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ToothPick {
 
+  //TP must be lock free, any thread can see the state of tp before or after it is transformed but not during
+  //its transformation
   private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
 
@@ -40,7 +41,10 @@ public final class ToothPick {
       previousScope = lastScope;
       lastScope = openScope(name);
       if (previousScope != null) {
-        previousScope.addChild(lastScope);
+        //if there was already such a node, we add a new child
+        //but there might already be such a child, in that case
+        //we use it.
+        lastScope = previousScope.addChild(lastScope);
       }
     }
 
@@ -60,6 +64,7 @@ public final class ToothPick {
     scope = new ScopeImpl(name);
     Scope previous = MAP_KEY_TO_SCOPE.putIfAbsent(name, scope);
     if (previous != null) {
+      //if there was already a scope by this name, we return it
       scope = previous;
     }
     return scope;
@@ -73,6 +78,7 @@ public final class ToothPick {
    */
 
   public static synchronized void closeScope(Object name) {
+    //we remove the scope first, so that other threads don't see it, and see the next snapshot of the tree
     Scope scope = MAP_KEY_TO_SCOPE.remove(name);
     if (scope != null) {
       Scope parentScope = scope.getParentScope();
@@ -101,15 +107,27 @@ public final class ToothPick {
     injector.inject(obj, scope);
   }
 
-  // Not synchronized, called by closeScope that is synchronized
+  /**
+   * Removes all nodes of {@code scope} using DFS. We don't lock here.
+   *
+   * @param scope the parent scope of which all children will recursively be removed
+   * from the map. We don't do anything else to the children nodes are they will be
+   * garbage collected soon. We just cut a whole sub-graph in the references graph of the JVM normally.
+   */
   private static void removeScopeAndChildrenFromMap(Scope scope) {
     MAP_KEY_TO_SCOPE.remove(scope.getName());
-    for (Scope childScope : scope.childrenScopes) {
+    for (Scope childScope : scope.childrenScopes.values()) {
       removeScopeAndChildrenFromMap(childScope);
     }
   }
 
-  public static Collection<Object> getScopeNames() {
-    return MAP_KEY_TO_SCOPE.keySet();
+  /**
+   * This method is for testing only.
+   * It is not thread safe and WILL CRASH in multi-thread.
+   * TODO how can we hide this API ? Reflection in tests ?
+   */
+  @Deprecated
+  public static int getScopeNamesSize() {
+    return MAP_KEY_TO_SCOPE.keySet().size();
   }
 }
