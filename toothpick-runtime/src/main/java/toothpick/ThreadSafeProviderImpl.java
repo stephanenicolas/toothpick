@@ -9,10 +9,10 @@ import javax.inject.Provider;
 public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {
   private volatile T instance;
   private Scope scope;
-  private UnScopedProviderImpl<? extends T> providerInstance;
+  private InternalProviderImpl<? extends T> providerInstance;
   private boolean isLazy;
 
-  public ThreadSafeProviderImpl(Scope scope, UnScopedProviderImpl<? extends T> providerInstance, boolean isLazy) {
+  public ThreadSafeProviderImpl(Scope scope, InternalProviderImpl<? extends T> providerInstance, boolean isLazy) {
     this.scope = scope;
     this.providerInstance = providerInstance;
     this.isLazy = isLazy;
