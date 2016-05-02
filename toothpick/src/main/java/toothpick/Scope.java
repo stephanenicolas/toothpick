@@ -160,7 +160,7 @@ public abstract class Scope {
   /**
    * Adds a child {@link Scope} to a {@link Scope}.
    * Children sccopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
-   * In a lock free way, this method return the child scope : either {@code child} or a child scope that was already added.
+   * In a lock free way, this method returns the child scope : either {@code child} or a child scope that was already added.
    *
    * @param child the new child scope.
    * @return either {@code child} or a child scope that was already added.
@@ -182,7 +182,7 @@ public abstract class Scope {
 
     Scope scope = childrenScopes.putIfAbsent(child.getName(), child);
     if (scope != null) {
-      return child;
+      return scope;
     }
     //this could bug in multi-thread if a node is added to 2 parents...
     //there is no atomic operation to add them both and getting sure they are the only parent scopes.

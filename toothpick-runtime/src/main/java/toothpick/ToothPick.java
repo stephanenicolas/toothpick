@@ -121,13 +121,8 @@ public final class ToothPick {
     }
   }
 
-  /**
-   * This method is for testing only.
-   * It is not thread safe and WILL CRASH in multi-thread.
-   * TODO how can we hide this API ? Reflection in tests ?
-   */
-  @Deprecated
-  public static int getScopeNamesSize() {
+  /*for testing.*/
+  static int getScopeNamesSize() {
     return MAP_KEY_TO_SCOPE.keySet().size();
   }
 }

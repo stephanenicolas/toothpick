@@ -297,7 +297,7 @@ public class ScopeImpl extends Scope {
     }
     if (bindingName == null) {
       //we might overwrite a provider already present here in multi-thread. we don't care, we don't want to lock
-      //this is a highly common case
+      //this is a highly common case.
       unNamedAndNamedProviders.setAbsentUnNamedProvider(provider);
     } else {
       ConcurrentHashMap<String, ScopedProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
