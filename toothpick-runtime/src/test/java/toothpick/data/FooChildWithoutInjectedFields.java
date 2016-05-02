@@ -1,6 +1,8 @@
 package toothpick.data;
 
+import javax.inject.Inject;
+
 public class FooChildWithoutInjectedFields extends Foo {
-  public FooChildWithoutInjectedFields() {
+  @Inject public FooChildWithoutInjectedFields() {
   }
 }

@@ -5,12 +5,16 @@ import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
+import toothpick.data.Bar;
+import toothpick.data.BarChild;
 import toothpick.data.Foo;
+import toothpick.data.FooChildWithoutInjectedFields;
 import toothpick.data.FooSingleton;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /*
@@ -65,6 +69,50 @@ public class ScopingTest extends ToothPickBaseTest {
     //THEN
     assertThat(foo1, sameInstance(instance));
     assertThat(foo1, sameInstance(instance2));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenParentHasKeyInHisScopeThroughModule() throws Exception {
+    //GIVEN
+    Scope scopeParent = new ScopeImpl("");
+    scopeParent.installModules(new Module() {
+      {
+        bind(Foo.class).to(FooChildWithoutInjectedFields.class);
+      }
+    });
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+    scopeParent.addChild(scope);
+
+    //WHEN
+    Foo instance = scope.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance.bar, instanceOf(BarChild.class));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenParentHasKeyInHisScopeDynamically() throws Exception {
+    //GIVEN
+    Scope scopeParent = new ScopeImpl("");
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+    scopeParent.addChild(scope);
+
+    //WHEN
+    scopeParent.getInstance(Foo.class); // Create Foo internal provider in parent scope dynamically
+    Foo instance = scope.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance.bar, instanceOf(BarChild.class));
   }
 
   @Test
