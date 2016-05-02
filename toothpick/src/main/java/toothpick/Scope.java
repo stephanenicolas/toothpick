@@ -98,21 +98,6 @@ public abstract class Scope {
     return name;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    Scope scope = (Scope) o;
-
-    return name.equals(scope.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return name.hashCode();
-  }
-
   /**
    * @return the parentScope of this scope. Can be null for a root scope.
    */
@@ -159,11 +144,11 @@ public abstract class Scope {
 
   /**
    * Adds a child {@link Scope} to a {@link Scope}.
-   * Children sccopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
+   * Children scopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
    * In a lock free way, this method returns the child scope : either {@code child} or a child scope that was already added.
    *
    * @param child the new child scope.
-   * @return either {@code child} or a child scope that was already added.
+   * @return either {@code child} or a child scope that was already added, with the same name.
    */
   public Scope addChild(Scope child) {
     if (child == null) {
