@@ -16,6 +16,15 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 
 //from http://stackoverflow.com/a/2320465/693752
+
+/**
+ * We create classes dynamically with this class.
+ * It can seem a bit far fetched. We could also have enumerated a thousand real classes
+ * from the JDK or create them by hand for real. But this is more scalable and allow more testing.
+ * We also have full control on the classes.
+ *
+ * They are used as injection parameters and bindings.
+ */
 public class ClassCreator {
   private ByteClassLoader byteClassLoader = new ByteClassLoader(ClassCreator.class.getClassLoader());
   private final static int CLASSES_COUNT = 1000;
@@ -25,10 +34,9 @@ public class ClassCreator {
   public ClassCreator() {
     try {
       allClasses = createClasses();
-    } catch (ClassNotFoundException e) {
+    } catch (Exception e) {
       e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException("Impossible to create all classes.", e);
     }
   }
 
