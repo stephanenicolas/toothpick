@@ -122,22 +122,12 @@ public final class ToothPick {
     }
   }
 
-<<<<<<< HEAD
   public static void setConfiguration(Configuration configuration) {
     Configuration.setConfiguration(configuration);
   }
 
-  public static Collection<Object> getScopeNames() {
-    return MAP_KEY_TO_SCOPE.keySet();
-=======
-  /**
-   * This method is for testing only.
-   * It is not thread safe and WILL CRASH in multi-thread.
-   * TODO how can we hide this API ? Reflection in tests ?
-   */
-  @Deprecated
-  public static int getScopeNamesSize() {
-    return MAP_KEY_TO_SCOPE.keySet().size();
->>>>>>> finalize lock-free. Self review of the PR
+  /*for testing.*/
+  static int getScopeNamesSize() {
+    return MAP_KEY_TO_SCOPE.size();
   }
 }
