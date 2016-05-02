@@ -115,7 +115,7 @@ public class ScopeImpl extends Scope {
     builder.append(']');
     builder.append('\n');
 
-    Iterator<Scope> iterator = childrenScopes.iterator();
+    Iterator<Scope> iterator = childrenScopes.values().iterator();
     while (iterator.hasNext()) {
       Scope scope = iterator.next();
       boolean isLast = !iterator.hasNext();
@@ -254,16 +254,18 @@ public class ScopeImpl extends Scope {
     ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
     if (factory.hasScopeAnnotation()) {
       //the new provider will have to work in the current scope
-      final ScopedProviderImpl<T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
+      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
       //it is bound to its target scope only if it has a scope annotation.
-      targetScopeImpl.installScopedProvider(clazz, bindingName, newProvider);
-      return newProvider;
+      //lock free installing a provider means there could have been one set concurrently since last testing
+      //its value. We allow to return it here
+      return targetScopeImpl.installScopedProvider(clazz, bindingName, newProvider);
     } else {
       //the provider is but in a pool of unbound providers for later reuse
       final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
       //the pool is static as it is accessible from all scopes
-      installUnBoundProvider(clazz, bindingName, newProvider);
-      return newProvider;
+      //lock free installing a provider means there could have been one set concurrently since last testing
+      //its value. We allow to return it here
+      return installUnBoundProvider(clazz, bindingName, newProvider);
     }
   }
 
@@ -341,9 +343,10 @@ public class ScopeImpl extends Scope {
    * @param clazz the class for which to install the scoped provider of this scope.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
+   * @return the provider that will be installed, if one was previously installed, it is returned, in a lock-free way.
    */
-  private <T> void installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> scopedProvider) {
-    installBoundProvider(clazz, bindingName, scopedProvider);
+  private <T> InternalProviderImpl<? extends T> installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> scopedProvider) {
+    return installBoundProvider(clazz, bindingName, scopedProvider);
   }
 
   /**
@@ -354,8 +357,8 @@ public class ScopeImpl extends Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  private <T> void installBoundProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
-    installInternalProvider(clazz, bindingName, internalProvider, true);
+  private <T> InternalProviderImpl<? extends T> installBoundProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
+    return installInternalProvider(clazz, bindingName, internalProvider, true);
   }
 
   /**
@@ -366,8 +369,8 @@ public class ScopeImpl extends Scope {
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param <T> the type of {@code clazz}.
    */
-  private <T> void installUnBoundProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
-    installInternalProvider(clazz, bindingName, internalProvider, false);
+  private <T> InternalProviderImpl<? extends T> installUnBoundProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
+    return installInternalProvider(clazz, bindingName, internalProvider, false);
   }
 
   /**
@@ -383,7 +386,7 @@ public class ScopeImpl extends Scope {
    * and {@link #installUnBoundProvider(Class, String, InternalProviderImpl)}
    * are a facade of this method and make the calls more clear.
    */
-  private <T> void installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider, boolean isBound) {
+  private <T> InternalProviderImpl installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider, boolean isBound) {
     Map<Class, UnNamedAndNamedProviders> map;
     if (isBound) {
       map = mapClassesToAllProviders;
@@ -403,8 +406,13 @@ public class ScopeImpl extends Scope {
       unNamedAndNamedProviders.setUnNamedProvider(internalProvider);
     } else {
       ConcurrentHashMap<String, InternalProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-      mapNameToProvider.putIfAbsent(bindingName, internalProvider);
+      InternalProviderImpl<? extends T> previousScopedProvider = mapNameToProvider.putIfAbsent(bindingName, internalProvider);
+      if (previousScopedProvider != null) {
+        return previousScopedProvider;
+      }
+
     }
+    return internalProvider;
   }
 
   private static class UnNamedAndNamedProviders<T> {
@@ -417,6 +425,10 @@ public class ScopeImpl extends Scope {
 
     public void setUnNamedProvider(InternalProviderImpl<? extends T> unNamedProvider) {
       this.unNamedProvider = unNamedProvider;
+    }
+
+    public InternalProviderImpl<? extends T> getUnNamedProvider() {
+      return unNamedProvider;
     }
   }
 
