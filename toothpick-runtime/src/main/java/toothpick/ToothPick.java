@@ -77,7 +77,7 @@ public final class ToothPick {
    * @param name the name of the scope to close.
    */
 
-  public static synchronized void closeScope(Object name) {
+  public static void closeScope(Object name) {
     //we remove the scope first, so that other threads don't see it, and see the next snapshot of the tree
     Scope scope = MAP_KEY_TO_SCOPE.remove(name);
     if (scope != null) {
