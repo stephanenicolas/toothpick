@@ -29,6 +29,12 @@ android {
     versionCode 1
     versionName '1.0.0'
   }
+
+  variantFilter { variant ->
+    if (variant.buildType.name.endsWith('release')) {
+      variant.setIgnore(true);
+    }
+  }
 }
 
 repositories {
