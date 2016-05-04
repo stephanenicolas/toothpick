@@ -11,7 +11,8 @@ import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
 public class FactoryRegistryTest {
-  @Test public void testASimpleRegistry() {
+  @Test
+  public void testASimpleRegistry() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestASimpleRegistry", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -31,8 +32,8 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    switch(clazz.getName().replace('$','.')) {", //
-        "      case (\"test.TestASimpleRegistry\"):", //
+        "    switch(clazz.getName()) {", //
+        "      case \"test.TestASimpleRegistry\":", //
         "      return (Factory<T>) new test.TestASimpleRegistry$$Factory();", //
         "      default:", //
         "      return getFactoryInChildrenRegistries(clazz);", //
@@ -49,7 +50,52 @@ public class FactoryRegistryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testARegistry_withDependencies() {
+  @Test
+  public void testASimpleRegistry_whenAnInnerClassHasAFactory() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestASimpleRegistry", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestASimpleRegistry {", //
+        "  @Inject public TestASimpleRegistry() {}", //
+        " public static class InnerClass {", //
+        "  @Inject public InnerClass() {}", //
+        " }", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(//
+        "package toothpick;", //
+        "", //
+        "import java.lang.Class;", //
+        "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+        "", //
+        "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+        "  public FactoryRegistry() {", //
+        "  }", //
+        "", //
+        "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+        "    switch(clazz.getName()) {", //
+        "      case \"test.TestASimpleRegistry$InnerClass\":", //
+        "      return (Factory<T>) new test.TestASimpleRegistry$InnerClass$$Factory();", //
+        "      case \"test.TestASimpleRegistry\":", //
+        "      return (Factory<T>) new test.TestASimpleRegistry$$Factory();", //
+        "      default:", //
+        "      return getFactoryInChildrenRegistries(clazz);", //
+        "    }", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors("toothpick", Collections.EMPTY_LIST))
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testARegistry_withDependencies() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestARegistry", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -71,8 +117,8 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    switch(clazz.getName().replace('$','.')) {", //
-        "      case (\"test.TestARegistry\"):", //
+        "    switch(clazz.getName()) {", //
+        "      case \"test.TestARegistry\":", //
         "      return (Factory<T>) new test.TestARegistry$$Factory();", //
         "      default:", //
         "      return getFactoryInChildrenRegistries(clazz);", //
