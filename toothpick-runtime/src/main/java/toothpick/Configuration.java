@@ -15,7 +15,12 @@ public abstract class Configuration {
 
   abstract void checkCyclesEnd();
 
-  static void development() {
+  static {
+    //default mode is production
+    production();
+  }
+
+  public static void development() {
     INSTANCE = new Configuration() {
       private Stack<Class> cycleDetectionStack = new Stack<>();
 
@@ -28,7 +33,7 @@ public abstract class Configuration {
       void checkCyclesStart(Class clazz) {
         if (cycleDetectionStack.contains(clazz)) {
           //TODO make the message better
-          throw new CyclicDependencyException(format("Class % creates a cycle", clazz.getName()));
+          throw new CyclicDependencyException(format("Class %s creates a cycle", clazz.getName()));
         }
 
         cycleDetectionStack.push(clazz);
@@ -41,7 +46,7 @@ public abstract class Configuration {
     };
   }
 
-  static void production() {
+  public static void production() {
     INSTANCE = new Configuration() {
       @Override
       void checkIllegalBinding(Binding binding) {
@@ -60,6 +65,11 @@ public abstract class Configuration {
     };
   }
 
+  /**
+   * Allows to pass custom configurations.
+   *
+   * @param configuration the configuration to use
+   */
   static void setConfiguration(Configuration configuration) {
     INSTANCE = configuration;
   }
