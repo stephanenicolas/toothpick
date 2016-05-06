@@ -8,7 +8,7 @@ import static java.lang.String.format;
 
 public abstract class Configuration {
 
-  public static volatile Configuration instance;
+  /*package-private.*/ static Configuration instance;
 
   abstract void checkIllegalBinding(Binding binding);
 
@@ -18,13 +18,13 @@ public abstract class Configuration {
 
   static {
     //default mode is production
-    production();
+    instance = production();
   }
 
-  public static void development() {
-    instance = new Configuration() {
+  public static Configuration development() {
+    return new Configuration() {
       private Stack<Class> cycleDetectionStack = new Stack<>();
-      //used to make the cycle check atomic. 
+      //used to make the cycle check atomic.
       private ReentrantLock reentrantLock = new ReentrantLock();
 
       @Override
@@ -51,8 +51,8 @@ public abstract class Configuration {
     };
   }
 
-  public static void production() {
-    instance = new Configuration() {
+  public static Configuration production() {
+    return new Configuration() {
       @Override
       void checkIllegalBinding(Binding binding) {
         //do nothing
