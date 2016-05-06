@@ -8,7 +8,7 @@ import toothpick.registries.factory.FactoryRegistryLocator;
  *
  * @param <T> the class of the instances provided by this provider.
  */
-public class UnScopedProviderImpl<T> {
+public class InternalProviderImpl<T> {
   private T instance;
   private Factory<T> factory;
   private Class<T> factoryClass;
@@ -17,16 +17,16 @@ public class UnScopedProviderImpl<T> {
   private Factory<Provider<T>> providerFactory;
   private Class<Provider<T>> providerFactoryClass;
 
-  public UnScopedProviderImpl(T instance) {
+  public InternalProviderImpl(T instance) {
     this.instance = instance;
   }
 
-  public UnScopedProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
+  public InternalProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
     this.providerInstance = providerInstance;
     this.isLazy = isLazy;
   }
 
-  public UnScopedProviderImpl(Factory<?> factory, boolean isProviderFactory) {
+  public InternalProviderImpl(Factory<?> factory, boolean isProviderFactory) {
     if (isProviderFactory) {
       this.providerFactory = (Factory<Provider<T>>) factory;
     } else {
@@ -34,7 +34,7 @@ public class UnScopedProviderImpl<T> {
     }
   }
 
-  public UnScopedProviderImpl(Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
+  public InternalProviderImpl(Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
     if (isProviderFactoryClass) {
       this.providerFactoryClass = (Class<Provider<T>>) factoryKeyClass;
     } else {

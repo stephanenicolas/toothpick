@@ -7,7 +7,7 @@ import javax.inject.Provider;
  *
  * @param <T> the class of the instances provided by this provider.
  */
-public class ScopedProviderImpl<T> extends UnScopedProviderImpl<T> implements Provider<T>, Lazy<T> {
+public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected Scope scope;
   public ScopedProviderImpl(T instance) {
     super(instance);
@@ -27,14 +27,9 @@ public class ScopedProviderImpl<T> extends UnScopedProviderImpl<T> implements Pr
     this.scope = scope;
   }
 
-  @Override
-  public T get() {
-    return super.get(scope);
-  }
-
   //we lock on the unbound provider itself to prevent concurrent usage
   //of the unbound provider (
   public T get(Scope scope) {
-    return get();
+    return get(this.scope);
   }
 }
