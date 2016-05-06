@@ -96,7 +96,7 @@ public class ScopingTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenParentHasKeyInHisScopeDynamically() throws Exception {
+  public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenChildOverridesBinding() throws Exception {
     //GIVEN
     Scope scopeParent = new ScopeImpl("");
     Scope scope = new ScopeImpl("");
@@ -113,6 +113,31 @@ public class ScopingTest extends ToothPickBaseTest {
 
     //THEN
     assertThat(instance.bar, instanceOf(BarChild.class));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenBindingIsScoped() throws Exception {
+    //GIVEN
+    Scope scopeParent = new ScopeImpl("");
+    scopeParent.installModules(new Module() {
+      {
+        bind(Foo.class).scope();
+      }
+    });
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class).scope();
+      }
+    });
+    scopeParent.addChild(scope);
+
+    //WHEN
+    scopeParent.getInstance(Foo.class); // Create Foo internal provider in parent scope dynamically
+    Foo instance = scope.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance.bar, instanceOf(Bar.class));
   }
 
   @Test
