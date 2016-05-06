@@ -153,7 +153,7 @@ public class ScopeImpl extends Scope {
           if (binding.isScoped()) {
             installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider);
           } else {
-            installUnScopedProvider(clazz, bindingName, provider);
+            installInternalProvider(clazz, bindingName, provider, true);
           }
         }
       }
@@ -258,7 +258,7 @@ public class ScopeImpl extends Scope {
         //the provider is but in a pool of unbound providers for later reuse
         final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
         //the pool is static as it is accessible from all scopes
-        installUnScopedProvider(clazz, bindingName, newProvider);
+        installInternalProvider(clazz, bindingName, newProvider, false);
         return newProvider;
       }
     }
@@ -318,17 +318,6 @@ public class ScopeImpl extends Scope {
    */
   private <T> void installScopedProvider(Class<T> clazz, String bindingName, ScopedProviderImpl<? extends T> scopedProvider) {
     installInternalProvider(clazz, bindingName, scopedProvider, true);
-  }
-
-  /**
-   * Install the unScopedProvider of the class {@code clazz}
-   * in the pool of unscoped providers.
-   *
-   * @param clazz the class for which to install the unscoped unScopedProvider.
-   * @param <T> the type of {@code clazz}.
-   */
-  private <T> void installUnScopedProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> unScopedProvider) {
-    installInternalProvider(clazz, bindingName, unScopedProvider, false);
   }
 
   private <T> void installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> unScopedProvider, boolean isScoped) {
