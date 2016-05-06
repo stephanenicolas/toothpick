@@ -88,6 +88,7 @@ public final class ToothPick {
     synchronized (ToothPick.class) {
       MAP_KEY_TO_SCOPE.clear();
     }
+    ScopeImpl.reset();
   }
 
   /**

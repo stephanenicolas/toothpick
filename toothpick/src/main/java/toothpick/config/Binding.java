@@ -5,6 +5,7 @@ import javax.inject.Provider;
 import javax.inject.Qualifier;
 
 public class Binding<T> {
+  private boolean isScoped;
   private Class<T> key;
   private Mode mode;
   private Class<? extends T> implementationClass;
@@ -33,9 +34,14 @@ public class Binding<T> {
     return this;
   }
 
-  public void to(Class<? extends T> implClass) {
+  public void scope() {
+    isScoped = true;
+  }
+
+  public BoundState to(Class<? extends T> implClass) {
     this.implementationClass = implClass;
     mode = Mode.CLASS;
+    return new BoundState();
   }
 
   public void to(T instance) {
@@ -43,14 +49,16 @@ public class Binding<T> {
     mode = Mode.INSTANCE;
   }
 
-  public void toProvider(Provider<? extends T> providerInstance) {
+  public BoundState toProvider(Provider<? extends T> providerInstance) {
     this.providerInstance = providerInstance;
     mode = Mode.PROVIDER_INSTANCE;
+    return new BoundState();
   }
 
-  public void toProvider(Class<? extends Provider<? extends T>> providerClass) {
+  public BoundState toProvider(Class<? extends Provider<? extends T>> providerClass) {
     this.providerClass = providerClass;
     mode = Mode.PROVIDER_CLASS;
+    return new BoundState();
   }
 
   public Mode getMode() {
@@ -81,11 +89,21 @@ public class Binding<T> {
     return name;
   }
 
+  public boolean isScoped() {
+    return isScoped;
+  }
+
   public enum Mode {
     SIMPLE,
     CLASS,
     INSTANCE,
     PROVIDER_INSTANCE,
     PROVIDER_CLASS
+  }
+
+  public class BoundState {
+    public void scope() {
+      isScoped = true;
+    }
   }
 }
