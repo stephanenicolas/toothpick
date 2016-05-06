@@ -1,7 +1,6 @@
 package toothpick;
 
 import java.util.Stack;
-import java.util.concurrent.locks.ReentrantLock;
 import toothpick.config.Binding;
 
 import static java.lang.String.format;
@@ -23,9 +22,12 @@ public abstract class Configuration {
 
   public static Configuration development() {
     return new Configuration() {
-      private Stack<Class> cycleDetectionStack = new Stack<>();
-      //used to make the cycle check atomic.
-      private ReentrantLock reentrantLock = new ReentrantLock();
+      private ThreadLocal<Stack<Class>> cycleDetectionStack = new ThreadLocal<Stack<Class>>() {
+        @Override
+        protected Stack<Class> initialValue() {
+          return new Stack<>();
+        }
+      };
 
       @Override
       void checkIllegalBinding(Binding binding) {
@@ -34,19 +36,17 @@ public abstract class Configuration {
 
       @Override
       void checkCyclesStart(Class clazz) {
-        if (cycleDetectionStack.contains(clazz)) {
+        if (cycleDetectionStack.get().contains(clazz)) {
           //TODO make the message better
           throw new CyclicDependencyException(format("Class %s creates a cycle", clazz.getName()));
         }
 
-        cycleDetectionStack.push(clazz);
-        reentrantLock.lock();
+        cycleDetectionStack.get().push(clazz);
       }
 
       @Override
       void checkCyclesEnd() {
-        cycleDetectionStack.pop();
-        reentrantLock.unlock();
+        cycleDetectionStack.get().pop();
       }
     };
   }
