@@ -12,6 +12,7 @@ public class Binding<T> {
   private Provider<? extends T> providerInstance;
   private Class<? extends Provider<? extends T>> providerClass;
   private String name;
+  private boolean isScoped;
 
   public Binding(Class<T> key) {
     this.key = key;
@@ -33,9 +34,14 @@ public class Binding<T> {
     return this;
   }
 
-  public void to(Class<? extends T> implClass) {
+  public void scope() {
+    isScoped = true;
+  }
+
+  public BoundState to(Class<? extends T> implClass) {
     this.implementationClass = implClass;
     mode = Mode.CLASS;
+    return new BoundState();
   }
 
   public void to(T instance) {
@@ -43,14 +49,16 @@ public class Binding<T> {
     mode = Mode.INSTANCE;
   }
 
-  public void toProvider(Provider<? extends T> providerInstance) {
+  public BoundState toProvider(Provider<? extends T> providerInstance) {
     this.providerInstance = providerInstance;
     mode = Mode.PROVIDER_INSTANCE;
+    return new BoundState();
   }
 
-  public void toProvider(Class<? extends Provider<? extends T>> providerClass) {
+  public BoundState toProvider(Class<? extends Provider<? extends T>> providerClass) {
     this.providerClass = providerClass;
     mode = Mode.PROVIDER_CLASS;
+    return new BoundState();
   }
 
   public Mode getMode() {
@@ -87,5 +95,11 @@ public class Binding<T> {
     INSTANCE,
     PROVIDER_INSTANCE,
     PROVIDER_CLASS
+  }
+
+  public class BoundState {
+    public void scope() {
+      isScoped = true;
+    }
   }
 }
