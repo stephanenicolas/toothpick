@@ -32,8 +32,8 @@ public class ScopeImpl extends Scope {
 
   public ScopeImpl(Object name) {
     super(name);
-    //it's always possible to get access to the scope that contains an injected object.
-    installScopedProvider(Scope.class, null, new ScopedProviderImpl<>(this));
+    //it's always possible to get access to the scope that conitains an injected object.
+    installInternalProvider(Scope.class, null, new InternalProviderImpl<>(this), true);
   }
 
   @Override
@@ -320,9 +320,9 @@ public class ScopeImpl extends Scope {
     installInternalProvider(clazz, bindingName, scopedProvider, true);
   }
 
-  private <T> void installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> unScopedProvider, boolean isScoped) {
+  private <T> void installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> unScopedProvider, boolean installInScope) {
     Map<Class, UnNamedAndNamedProviders> map;
-    if (isScoped) {
+    if (installInScope) {
       map = mapClassesToAllProviders;
     } else {
       map = mapClassesToUnScopedProviders;

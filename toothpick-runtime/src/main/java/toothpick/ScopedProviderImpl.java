@@ -1,7 +1,5 @@
 package toothpick;
 
-import javax.inject.Provider;
-
 /**
  * A non thread safe internal provider. It should never be exposed outside of ToothPick.
  *
@@ -9,13 +7,6 @@ import javax.inject.Provider;
  */
 public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected Scope scope;
-  public ScopedProviderImpl(T instance) {
-    super(instance);
-  }
-
-  public ScopedProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
-    super(providerInstance, isLazy);
-  }
 
   public ScopedProviderImpl(Scope scope, Factory<?> factory, boolean isProviderFactory) {
     super(factory, isProviderFactory);
