@@ -5,6 +5,7 @@ import javax.inject.Provider;
 import javax.inject.Qualifier;
 
 public class Binding<T> {
+  private boolean isScoped;
   private Class<T> key;
   private Mode mode;
   private Class<? extends T> implementationClass;
@@ -12,7 +13,6 @@ public class Binding<T> {
   private Provider<? extends T> providerInstance;
   private Class<? extends Provider<? extends T>> providerClass;
   private String name;
-  private boolean isScoped;
 
   public Binding(Class<T> key) {
     this.key = key;
@@ -87,6 +87,10 @@ public class Binding<T> {
 
   public String getName() {
     return name;
+  }
+
+  public boolean isScoped() {
+    return isScoped;
   }
 
   public enum Mode {
