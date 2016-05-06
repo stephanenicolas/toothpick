@@ -7,7 +7,7 @@ import static java.lang.String.format;
 
 public abstract class Configuration {
 
-  public static volatile Configuration INSTANCE;
+  public static volatile Configuration instance;
 
   abstract void checkIllegalBinding(Binding binding);
 
@@ -21,7 +21,7 @@ public abstract class Configuration {
   }
 
   public static void development() {
-    INSTANCE = new Configuration() {
+    instance = new Configuration() {
       private Stack<Class> cycleDetectionStack = new Stack<>();
 
       @Override
@@ -47,7 +47,7 @@ public abstract class Configuration {
   }
 
   public static void production() {
-    INSTANCE = new Configuration() {
+    instance = new Configuration() {
       @Override
       void checkIllegalBinding(Binding binding) {
         //do nothing
@@ -71,6 +71,6 @@ public abstract class Configuration {
    * @param configuration the configuration to use
    */
   static void setConfiguration(Configuration configuration) {
-    INSTANCE = configuration;
+    instance = configuration;
   }
 }
