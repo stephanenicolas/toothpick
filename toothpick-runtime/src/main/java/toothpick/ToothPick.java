@@ -108,4 +108,8 @@ public final class ToothPick {
       removeScopeAndChildrenFromMap(childScope);
     }
   }
+
+  public static void setConfiguration(Configuration configuration) {
+    Configuration.setConfiguration(configuration);
+  }
 }

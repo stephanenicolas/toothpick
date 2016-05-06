@@ -7,7 +7,7 @@ import static java.lang.String.format;
 
 public abstract class Configuration {
 
-  public static volatile Configuration instance;
+  /*package-private.*/ static Configuration instance;
 
   abstract void checkIllegalBinding(Binding binding);
 
@@ -17,12 +17,17 @@ public abstract class Configuration {
 
   static {
     //default mode is production
-    production();
+    instance = production();
   }
 
-  public static void development() {
-    instance = new Configuration() {
-      private Stack<Class> cycleDetectionStack = new Stack<>();
+  public static Configuration development() {
+    return new Configuration() {
+      private ThreadLocal<Stack<Class>> cycleDetectionStack = new ThreadLocal<Stack<Class>>() {
+        @Override
+        protected Stack<Class> initialValue() {
+          return new Stack<>();
+        }
+      };
 
       @Override
       void checkIllegalBinding(Binding binding) {
@@ -31,23 +36,23 @@ public abstract class Configuration {
 
       @Override
       void checkCyclesStart(Class clazz) {
-        if (cycleDetectionStack.contains(clazz)) {
+        if (cycleDetectionStack.get().contains(clazz)) {
           //TODO make the message better
           throw new CyclicDependencyException(format("Class %s creates a cycle", clazz.getName()));
         }
 
-        cycleDetectionStack.push(clazz);
+        cycleDetectionStack.get().push(clazz);
       }
 
       @Override
       void checkCyclesEnd() {
-        cycleDetectionStack.pop();
+        cycleDetectionStack.get().pop();
       }
     };
   }
 
-  public static void production() {
-    instance = new Configuration() {
+  public static Configuration production() {
+    return new Configuration() {
       @Override
       void checkIllegalBinding(Binding binding) {
         //do nothing
