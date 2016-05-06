@@ -30,6 +30,6 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   //we lock on the unbound provider itself to prevent concurrent usage
   //of the unbound provider (
   public T get(Scope scope) {
-    return get(this.scope);
+    return super.get(this.scope);
   }
 }

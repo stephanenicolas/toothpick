@@ -374,4 +374,8 @@ public class ScopeImpl extends Scope {
       this.unNamedProvider = unNamedProvider;
     }
   }
+
+  static void reset() {
+    mapClassesToUnScopedProviders.clear();
+  }
 }
