@@ -38,12 +38,18 @@ public class ScopeImpl extends Scope {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return lookupProvider(clazz, null).get(this);
+    Configuration.INSTANCE.checkCyclesStart(clazz);
+    T t = lookupProvider(clazz, null).get(this);
+    Configuration.INSTANCE.checkCyclesEnd();
+    return t;
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
-    return lookupProvider(clazz, name).get(this);
+    Configuration.INSTANCE.checkCyclesStart(clazz);
+    T t = lookupProvider(clazz, name).get(this);
+    Configuration.INSTANCE.checkCyclesEnd();
+    return t;
   }
 
   @Override
