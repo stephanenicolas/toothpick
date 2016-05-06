@@ -150,7 +150,11 @@ public class ScopeImpl extends Scope {
         String bindingName = binding.getName();
         if (!hasTestModules || getScopedProvider(clazz, bindingName) == null) {
           InternalProviderImpl provider = toProvider(binding);
-          installProvider(clazz, bindingName, provider, binding.isScoped());
+          if (binding.isScoped()) {
+            installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider);
+          } else {
+            installUnScopedProvider(clazz, bindingName, provider);
+          }
         }
       }
     }
@@ -301,14 +305,6 @@ public class ScopeImpl extends Scope {
         return null;
       }
       return mapNameToProvider.get(bindingName);
-    }
-  }
-
-  private <T> void installProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider, boolean isScoped) {
-    if (isScoped) {
-      installScopedProvider(clazz, bindingName, (ScopedProviderImpl) internalProvider);
-    } else {
-      installUnScopedProvider(clazz, bindingName, internalProvider);
     }
   }
 
