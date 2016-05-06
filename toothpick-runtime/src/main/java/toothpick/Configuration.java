@@ -1,5 +1,6 @@
 package toothpick;
 
+import java.lang.annotation.Annotation;
 import java.util.Stack;
 import toothpick.config.Binding;
 
@@ -31,7 +32,26 @@ public abstract class Configuration {
 
       @Override
       void checkIllegalBinding(Binding binding) {
+        Class<?> clazz;
+        switch (binding.getMode()) {
+          case SIMPLE:
+            clazz = binding.getKey();
+            break;
+          case CLASS:
+            clazz = binding.getImplementationClass();
+            break;
+          case PROVIDER_CLASS:
+            clazz = binding.getProviderClass();
+            break;
+          default:
+            return;
+        }
 
+        for (Annotation annotation : clazz.getAnnotations()) {
+          if (annotation.annotationType().isAnnotationPresent(javax.inject.Scope.class)) {
+            throw new IllegalBindingException();
+          }
+        }
       }
 
       @Override

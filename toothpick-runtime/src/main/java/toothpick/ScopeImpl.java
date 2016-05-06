@@ -1,5 +1,6 @@
 package toothpick;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -175,6 +176,8 @@ public class ScopeImpl extends Scope {
     if (binding == null) {
       throw new IllegalStateException("null binding are not allowed. Should not happen unless getBindingSet is overridden.");
     }
+    Configuration.instance.checkIllegalBinding(binding);
+
     switch (binding.getMode()) {
       case SIMPLE:
         return createInternalProvider(this, binding.getKey(), false, binding.isScoped());
