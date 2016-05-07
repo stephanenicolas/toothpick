@@ -115,7 +115,7 @@ public class BindingsMultiThreadTest {
     //THEN
     //we simply should not have crashed when all threads are done
     boolean timeout = ThreadTestUtil.shutdown();
-    assertFalse("Executor service should not timeout.", timeout);
+    assertTrue("Executor service should not timeout.", timeout);
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
