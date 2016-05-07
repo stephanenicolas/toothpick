@@ -3,14 +3,18 @@
 
 
 <table>
-<td width="125"><img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> </td>
-<td>
-<a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick">
-<img src="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master"/></a>
-<br/>
-<a alt="Coverage Status" href="https://coveralls.io/github/stephanenicolas/toothpick?branch=master">
-<img src="https://coveralls.io/repos/github/stephanenicolas/toothpick/badge.svg?branch=master"/></a>
-</td>
+  <tr style="border:0px">
+    <td style="border:0px" width="125">
+      <img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> 
+    </td>
+    <td style="border:0px">
+      <a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick">
+      <img src="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master"/></a>
+      <br/>
+      <a alt="Coverage Status" href="https://coveralls.io/github/stephanenicolas/toothpick?branch=master">
+      <img src="https://coveralls.io/repos/github/stephanenicolas/toothpick/badge.svg?branch=master"/></a>
+    </td>
+  </tr>
 </table>
 
 ## What is ToothPick ?
