@@ -2,12 +2,17 @@
 #Toothpick 
 
 
-<table style="border:0px">
-  <tr style="border:0px">
-    <td style="border:0px" width="125">
+<style>
+.site-main table.no-border td {
+    border: none;
+}
+</style>
+<table>
+  <tr>
+    <td width="125">
       <img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> 
     </td>
-    <td style="border:0px">
+    <td>
       <a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick">
       <img src="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master"/></a>
       <br/>
