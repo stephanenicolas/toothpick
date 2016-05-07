@@ -3,7 +3,7 @@
 
 
 <table>
-<td width=125><img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> </td>
+<td width="125"><img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> </td>
 <td>
 <a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick">
 <img src="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master"/></a>
