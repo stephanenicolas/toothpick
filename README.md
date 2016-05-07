@@ -42,6 +42,10 @@ Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.
 
 ## Examples
 
+Currently Toothpick has 2 sets of examples : 
+* one [in pure Java](https://github.com/stephanenicolas/toothpick/tree/master/toothpick-sample)
+* one [for Android](* one [in pure Java](https://github.com/stephanenicolas/toothpick/tree/master/smoothie-sample))
+
 ## Setup
 For Android : 
 ```
