@@ -92,6 +92,35 @@ public class BindingsMultiThreadTest {
   }
 
   @Test
+  public void concurrentBindingInstallAndGetInstance_shouldNotCrash() throws InterruptedException {
+    //GIVEN
+    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
+    List<TestableThread> threadList = new ArrayList<>();
+    Random random = new Random();
+    FactoryRegistryLocator.setRootRegistry(new DynamicTestClassesFactoryRegistry(true));
+
+    //WHEN
+    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+      TestableThread runnable;
+      if (random.nextInt(100) < 20) {
+        runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
+      } else {
+        runnable = new GetInstanceThread(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
+      }
+      threadList.add(runnable);
+      ThreadTestUtil.submit(runnable);
+    }
+
+    //THEN
+    //we simply should not have crashed when all threads are done
+    boolean timeout = ThreadTestUtil.shutdown();
+    assertTrue("Executor service should not timeout.", timeout);
+    for (TestableThread thread : threadList) {
+      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+    }
+  }
+
+  @Test
   public void concurrentScopedGetInstance_shouldNotCrash() throws InterruptedException {
     //GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
