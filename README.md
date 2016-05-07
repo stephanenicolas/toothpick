@@ -19,7 +19,7 @@ ToothPick is :
 
 Hey, Android Devs, you can use TP to [create MVP apps so easily]() !
 
-## setup
+## Setup
 
 ## Examples
 
