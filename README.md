@@ -7,7 +7,7 @@ ToothPick is a tree scope based Dependency Injection (DI) library.
 
 It is a full-featured, runtime based implementation of [JSR 330](https://jcp.org/en/jsr/detail?id=330).
 
-## What does ToothPick offer
+## What does ToothPick offer ?
 ToothPick is :
 * pure java
 * fast, it doesn't use reflection but annotation processing
@@ -19,7 +19,28 @@ ToothPick is :
 
 Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.com/stephanenicolas/toothpick/blob/master/smoothie-sample/src/main/java/com/example/smoothie/RxMVPActivity.java) !
 
+
+## Examples
+
 ## Setup
+For Android : 
+```
+#android setup using apt 
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+  }
+}
+dependencies {
+  compile 'toothpick:toothpick-runtime:x.y.z') //or 'toothpick:smoothie:x.y.z'
+  apt 'toothpick:toothpick-compiler:x.y.z')
+  testCompile 'toothpick:toothpick-testing:x.y.z') //highly recommended
+  testCompile 'mockito or easymock'
+}
+```
 
 For java:
 ```
@@ -49,26 +70,9 @@ For java:
   </dependencies>
 ```
 
-For Android : 
-```
-#android setup using apt 
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-  }
-}
-dependencies {
-  compile 'toothpick:toothpick-runtime:x.y.z') //or 'toothpick:smoothie:x.y.z'
-  apt 'toothpick:toothpick-compiler:x.y.z')
-  testCompile 'toothpick:toothpick-testing:x.y.z') //highly recommended
-  testCompile 'mockito or easymock'
-}
-```
+# Wanna know more ?
 
-## Examples
+Visit TP [wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 
 
 
