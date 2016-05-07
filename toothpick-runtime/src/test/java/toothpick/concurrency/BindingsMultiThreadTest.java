@@ -21,7 +21,6 @@ import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.FactoryRegistryLocator;
 import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
