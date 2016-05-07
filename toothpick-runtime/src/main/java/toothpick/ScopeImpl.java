@@ -1,6 +1,5 @@
 package toothpick;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
