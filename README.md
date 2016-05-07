@@ -2,7 +2,7 @@
 #Toothpick 
 
 
-<table>
+<table style="border:0px">
   <tr style="border:0px">
     <td style="border:0px" width="125">
       <img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> 
