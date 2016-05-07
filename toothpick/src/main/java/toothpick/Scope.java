@@ -146,6 +146,7 @@ public abstract class Scope {
    * Adds a child {@link Scope} to a {@link Scope}.
    * Children scopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
    * In a lock free way, this method returns the child scope : either {@code child} or a child scope that was already added.
+   * Note: 2 children scopes of a same parent can't have the same name.
    *
    * @param child the new child scope.
    * @return either {@code child} or a child scope that was already added, with the same name.

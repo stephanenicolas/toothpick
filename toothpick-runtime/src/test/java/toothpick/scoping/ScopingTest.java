@@ -14,10 +14,10 @@ import toothpick.data.FooChildWithoutInjectedFields;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFooSingleton;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static toothpick.Configuration.development;
@@ -165,8 +165,8 @@ public class ScopingTest extends ToothPickBaseTest {
   public void singleton_shouldBeSharedBySubscopes() throws Exception {
     //GIVEN
     Scope scopeParent = new ScopeImpl("");
-    Scope scope1 = new ScopeImpl("");
-    Scope scope2 = new ScopeImpl("");
+    Scope scope1 = new ScopeImpl("scope1");
+    Scope scope2 = new ScopeImpl("scope2");
     scopeParent.addChild(scope1);
     scopeParent.addChild(scope2);
 
@@ -208,7 +208,6 @@ public class ScopingTest extends ToothPickBaseTest {
     Scope scope2 = new ScopeImpl("");
     scopeParent.addChild(scope1);
     scopeParent.addChild(scope2);
-
 
     //WHEN
     scope1.installModules(new Module() {
