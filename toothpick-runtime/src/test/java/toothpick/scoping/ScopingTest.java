@@ -183,8 +183,8 @@ public class ScopingTest extends ToothPickBaseTest {
     //GIVEN
     ToothPick.setConfiguration(development());
     Scope scopeParent = new ScopeImpl("");
-    Scope scope1 = new ScopeImpl("");
-    Scope scope2 = new ScopeImpl("");
+    Scope scope1 = new ScopeImpl("scope1");
+    Scope scope2 = new ScopeImpl("scope2");
     scopeParent.addChild(scope1);
     scopeParent.addChild(scope2);
 
@@ -204,8 +204,8 @@ public class ScopingTest extends ToothPickBaseTest {
     //GIVEN
     ToothPick.setConfiguration(development());
     Scope scopeParent = new ScopeImpl("");
-    Scope scope1 = new ScopeImpl("");
-    Scope scope2 = new ScopeImpl("");
+    Scope scope1 = new ScopeImpl("scope1");
+    Scope scope2 = new ScopeImpl("scope2");
     scopeParent.addChild(scope1);
     scopeParent.addChild(scope2);
 
