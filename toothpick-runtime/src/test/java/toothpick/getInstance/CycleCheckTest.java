@@ -22,6 +22,7 @@ public class CycleCheckTest extends ToothPickBaseTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
+    ToothPickBaseTest.setUp();
     ToothPick.setConfiguration(development());
   }
 
