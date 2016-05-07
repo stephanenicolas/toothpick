@@ -4,10 +4,28 @@
  *(a.k.a T.P. like a teepee)*
  
 ToothPick is a tree scope based Dependency Injection (DI) library.
-
 It is a full-featured, runtime based implementation of [JSR 330](https://jcp.org/en/jsr/detail?id=330).
 
 ## What does ToothPick offer ?
+
+```
+//a typical Toothpick scope tree during the execution of an Android app.
+
+       @ApplicationSingleton 
+         /              |    \  
+        /               |     \
+       /                |      \
+   @PresenterSingleton  |   Service 2
+         /              | 
+        /            Service 1  
+       /            
+Activity 1
+    /   \
+   /   Fragment 2
+  /
+Fragment 1
+```
+
 ToothPick is :
 * pure java
 * fast, it doesn't use reflection but annotation processing
@@ -72,7 +90,7 @@ For java:
 
 # Wanna know more ?
 
-Visit TP [wiki](https://github.com/stephanenicolas/toothpick/wiki) !
+Visit [ToothPick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 
 
 
