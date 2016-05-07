@@ -1,5 +1,5 @@
  
-#Toothpick 
+#Toothpick *(a.k.a T.P. like a teepee)*
 
 
 <table style="border:0px">
@@ -18,7 +18,7 @@
 </table>
 
 ## What is ToothPick ?
- *(a.k.a T.P. like a teepee)*
+ 
  
 ToothPick is a tree scope based Dependency Injection (DI) library.
 
