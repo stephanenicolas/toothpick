@@ -22,12 +22,13 @@ public class ThreadTestUtil {
     executorService.submit(runnable);
   }
 
-  public static void shutdown() {
+  public static boolean shutdown() {
     try {
       executorService.shutdown();
-      executorService.awaitTermination(STANDARD_THREAD_COUNT / 100, TimeUnit.SECONDS);
+      return executorService.awaitTermination(STANDARD_THREAD_COUNT / 100, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       e.printStackTrace();
+      return true;
     } finally {
       executorService = Executors.newFixedThreadPool(6);
     }

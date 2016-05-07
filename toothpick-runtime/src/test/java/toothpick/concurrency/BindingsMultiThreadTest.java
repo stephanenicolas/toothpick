@@ -21,6 +21,7 @@ import toothpick.registries.FactoryRegistry;
 import toothpick.registries.factory.FactoryRegistryLocator;
 import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
@@ -113,7 +114,8 @@ public class BindingsMultiThreadTest {
 
     //THEN
     //we simply should not have crashed when all threads are done
-    ThreadTestUtil.shutdown();
+    boolean timeout = ThreadTestUtil.shutdown();
+    assertFalse("Executor service should not timeout.", timeout);
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
