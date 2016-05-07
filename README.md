@@ -5,9 +5,11 @@
 <table>
 <td width=125><img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> </td>
 <td>
-<a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master">
-<img src=https://travis-ci.org/stephanenicolas/toothpick"/>
-)[![Coverage Status](https://coveralls.io/repos/github/stephanenicolas/toothpick/badge.svg?branch=master)](https://coveralls.io/github/stephanenicolas/toothpick?branch=master)
+<a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick">
+<img src="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master"/></a>
+<br/>
+<a alt="Coverage Status" href="https://coveralls.io/github/stephanenicolas/toothpick?branch=master">
+<img src="https://coveralls.io/repos/github/stephanenicolas/toothpick/badge.svg?branch=master"/></a>
 </td>
 </table>
 
