@@ -310,6 +310,7 @@ public abstract class Scope {
    * Test modules have precedence over other normal modules, allowing to define stubs/fake/mocks.
    * All bindings defined in a test module cannot be overridden by a future call to {@link #installModules(Module...)}.
    * But they can still be overridden by a future call to  {@link #installTestModules(Module...)}.
+   * This method can only be called once in a scope.
    *
    * @param modules an array of modules that define test bindings.
    */

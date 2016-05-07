@@ -78,12 +78,12 @@ public class ScopeImpl extends Scope {
 
   @Override
   public void installTestModules(Module... modules) {
-    //we allow multiple calls to this method
-    boolean oldHasTestModules = hasTestModules;
+    if (hasTestModules) {
+      throw new IllegalStateException("TestModules can only be installed once per scope.");
+    }
     hasTestModules = false;
     installModules(modules);
-    boolean doOverrideModulesExist = modules != null;
-    hasTestModules = oldHasTestModules || doOverrideModulesExist;
+    hasTestModules = true;
   }
 
   @Override
@@ -326,11 +326,10 @@ public class ScopeImpl extends Scope {
       return null;
     }
     if (bindingName == null) {
-      return unNamedAndNamedProviders.unNamedProvider;
+      return unNamedAndNamedProviders.getUnNamedProvider();
     }
 
-    ConcurrentHashMap<String, InternalProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-    return mapNameToProvider.get(bindingName);
+    return unNamedAndNamedProviders.getProvider(bindingName);
   }
 
   /**
@@ -403,34 +402,40 @@ public class ScopeImpl extends Scope {
         unNamedAndNamedProviders = previous;
       }
     }
+    final InternalProviderImpl<? extends T> previousScopedProvider;
     if (bindingName == null) {
       //we might overwrite a provider already present here in multi-thread. we don't care, we don't want to lock
       //this is a highly common case.
-      unNamedAndNamedProviders.setUnNamedProvider(internalProvider);
+      previousScopedProvider = unNamedAndNamedProviders.setUnNamedProvider(internalProvider);
     } else {
-      ConcurrentHashMap<String, InternalProviderImpl<? extends T>> mapNameToProvider = unNamedAndNamedProviders.getMapNameToProvider();
-      InternalProviderImpl<? extends T> previousScopedProvider = mapNameToProvider.putIfAbsent(bindingName, internalProvider);
-      if (previousScopedProvider != null) {
-        return previousScopedProvider;
-      }
+      previousScopedProvider = unNamedAndNamedProviders.putProvider(bindingName, internalProvider);
+    }
+    if (previousScopedProvider != null) {
+      return previousScopedProvider;
     }
     return internalProvider;
   }
 
   private static class UnNamedAndNamedProviders<T> {
-    private InternalProviderImpl<? extends T> unNamedProvider;
+    //we use the map to store also the unnamed provider, the key is a java keyword to make
+    //it kind of reserved by Toothpick
+    private final static String UN_NAMED_PROVIDER_KEY = "default";
     private ConcurrentHashMap<String, InternalProviderImpl<? extends T>> mapNameToProvider = new ConcurrentHashMap<>();
 
-    public ConcurrentHashMap<String, InternalProviderImpl<? extends T>> getMapNameToProvider() {
-      return mapNameToProvider;
-    }
-
-    public void setUnNamedProvider(InternalProviderImpl<? extends T> unNamedProvider) {
-      this.unNamedProvider = unNamedProvider;
+    public InternalProviderImpl<? extends T> setUnNamedProvider(InternalProviderImpl<? extends T> unNamedProvider) {
+      return putProvider(UN_NAMED_PROVIDER_KEY, unNamedProvider);
     }
 
     public InternalProviderImpl<? extends T> getUnNamedProvider() {
-      return unNamedProvider;
+      return getProvider(UN_NAMED_PROVIDER_KEY);
+    }
+
+    public InternalProviderImpl<? extends T> getProvider(String bindingName) {
+      return mapNameToProvider.get(bindingName);
+    }
+
+    public InternalProviderImpl<? extends T> putProvider(String bindingName, InternalProviderImpl<? extends T> namedProvider) {
+      return mapNameToProvider.putIfAbsent(bindingName, namedProvider);
     }
   }
 
