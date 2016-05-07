@@ -25,7 +25,7 @@ public class ThreadTestUtil {
   public static void shutdown() {
     try {
       executorService.shutdown();
-      executorService.awaitTermination(STANDARD_THREAD_COUNT / 1000, TimeUnit.SECONDS);
+      executorService.awaitTermination(STANDARD_THREAD_COUNT / 100, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       e.printStackTrace();
     } finally {
