@@ -1,7 +1,6 @@
 package toothpick.concurrency.threads;
 
 import toothpick.ToothPick;
-import toothpick.registries.factory.NoFactoryFoundException;
 
 public class GetInstanceThreadWithoutFactories extends TestableThread {
   static int instanceNumber = 0;
@@ -16,13 +15,7 @@ public class GetInstanceThreadWithoutFactories extends TestableThread {
 
   @Override
   public void doRun() {
-    try {
-      ToothPick.openScope(scopeName).getInstance(clazz);
-      setIsSuccessful(true);
-    } catch (NoFactoryFoundException ex) {
-      setIsSuccessful(true);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+    ToothPick.openScope(scopeName).getInstance(clazz);
+    setIsSuccessful(true);
   }
 }
