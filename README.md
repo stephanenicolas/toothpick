@@ -78,7 +78,9 @@ buildscript {
 dependencies {
   compile 'toothpick:toothpick-runtime:x.y.z') //or 'toothpick:smoothie:x.y.z'
   apt 'toothpick:toothpick-compiler:x.y.z')
-  testCompile 'toothpick:toothpick-testing:x.y.z') //highly recommended
+  
+  //highly recommended
+  testCompile 'toothpick:toothpick-testing:x.y.z') 
   testCompile 'mockito or easymock'
 }
 ```
@@ -99,7 +101,9 @@ For java:
       <version>x.y.z</version>
       <scope>compile</scope>
     </dependency>
-    <dependency> <!-- highly recommended-->
+    
+    <!-- highly recommended-->
+    <dependency> 
       <groupId>toothpick</groupId>
       <artifactId>toothpick-testing</artifactId>
       <version>x.y.z</version>
