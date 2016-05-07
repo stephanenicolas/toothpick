@@ -17,9 +17,56 @@ ToothPick is :
 * documented & Open Source 
 * it works very well with Android or any other context based framework (such as web containers)
 
-Hey, Android Devs, you can use TP to [create MVP apps so easily]() !
+Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.com/stephanenicolas/toothpick/blob/master/smoothie-sample/src/main/java/com/example/smoothie/RxMVPActivity.java) !
 
 ## Setup
+
+For java:
+```
+<!--java setup with maven -->
+  <dependencies>
+    <dependency>
+      <groupId>toothpick</groupId>
+      <artifactId>toothpick-compiler</artifactId>
+      <version>x.y.z</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>toothpick</groupId>
+      <artifactId>toothpick-runtime</artifactId>
+      <version>x.y.z</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency> <!-- highly recommended-->
+      <groupId>toothpick</groupId>
+      <artifactId>toothpick-testing</artifactId>
+      <version>x.y.z</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    <easymock or mockito>
+    </dependency>
+  </dependencies>
+```
+
+For Android : 
+```
+#android setup using apt 
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+  }
+}
+dependencies {
+  compile 'toothpick:toothpick-runtime:x.y.z') //or 'toothpick:smoothie:x.y.z'
+  apt 'toothpick:toothpick-compiler:x.y.z')
+  testCompile 'toothpick:toothpick-testing:x.y.z') //highly recommended
+  testCompile 'mockito or easymock'
+}
+```
 
 ## Examples
 
