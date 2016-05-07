@@ -3,11 +3,11 @@
 
 
 <table style="border:0px">
-  <tr>
-    <td width="125">
+  <tr  style="border:0px">
+    <td width="125" style="border:0px">
       <img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> 
     </td>
-    <td>
+    <td  style="border:0px">
       <a alt="Build Status" href="https://travis-ci.org/stephanenicolas/toothpick">
       <img src="https://travis-ci.org/stephanenicolas/toothpick.svg?branch=master"/></a>
       <br/>
@@ -60,7 +60,7 @@ Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.
 
 Currently Toothpick has 2 sets of examples : 
 * one [in pure Java](https://github.com/stephanenicolas/toothpick/tree/master/toothpick-sample)
-* one [for Android](* one [in pure Java](https://github.com/stephanenicolas/toothpick/tree/master/smoothie-sample))
+* one [for Android](https://github.com/stephanenicolas/toothpick/tree/master/smoothie-sample)
 
 ## Setup
 For Android : 
