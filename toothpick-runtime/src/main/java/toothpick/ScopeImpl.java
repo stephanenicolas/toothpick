@@ -77,7 +77,7 @@ public class ScopeImpl extends Scope {
   }
 
   @Override
-  public void installTestModules(Module... modules) {
+  public synchronized void installTestModules(Module... modules) {
     if (hasTestModules) {
       throw new IllegalStateException("TestModules can only be installed once per scope.");
     }
