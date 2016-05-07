@@ -2,12 +2,7 @@
 #Toothpick 
 
 
-<style>
-.site-main table.no-border td {
-    border: none;
-}
-</style>
-<table>
+<table style="border:0px">
   <tr>
     <td width="125">
       <img src="https://raw.github.com/stephanenicolas/toothpick/master/assets/logo.jpg" width="125px" /> 
