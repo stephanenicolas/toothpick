@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
 public class MemberInjectorRegistryLocatorTest {
 
   @Test
-  public void testGetMemberInjector_shouldThrowAnException_whenThereAreNoRegistries() throws Exception {
+  public void testGetMemberInjector_shouldReturnNull_whenThereAreNoRegistries() throws Exception {
     //GIVEN
     MemberInjectorRegistryLocator.setRootRegistry(null);
 
@@ -76,7 +76,7 @@ public class MemberInjectorRegistryLocatorTest {
   }
 
   @Test
-  public void testGetMemberInjector_shouldThrowAnException_whenThereIsNoRegistryThatKnowsTheMemberInjector() throws Exception {
+  public void testGetMemberInjector_shouldReturnNull_whenThereIsNoRegistryThatKnowsTheMemberInjector() throws Exception {
     //GIVEN
     AbstractMemberInjectorRegistry rootRegistry = new AbstractMemberInjectorRegistry() {
       @Override
