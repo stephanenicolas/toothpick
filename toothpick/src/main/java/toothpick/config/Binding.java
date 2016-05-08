@@ -49,10 +49,9 @@ public class Binding<T> {
     mode = Mode.INSTANCE;
   }
 
-  public BoundState toProvider(Provider<? extends T> providerInstance) {
+  public void toProvider(Provider<? extends T> providerInstance) {
     this.providerInstance = providerInstance;
     mode = Mode.PROVIDER_INSTANCE;
-    return new BoundState();
   }
 
   public BoundState toProvider(Class<? extends Provider<? extends T>> providerClass) {
