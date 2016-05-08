@@ -10,13 +10,12 @@ dependencies {
   testCompile project(':toothpick-compiler')
   testCompile deps.easymock
   testCompile deps.powermock
+  testCompile deps.hamcrest
 }
 
 compileTestJava {
   doFirst {
-    options.compilerArgs = [
-        '-Atoothpick_registry_package_name=toothpick.test',
-    ]
+    options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.test',]
   }
 }
 

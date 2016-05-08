@@ -1,5 +1,8 @@
 package toothpick;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -107,11 +110,14 @@ public class ScopeImpl extends Scope {
     builder.append('\n');
 
     builder.append("Providers: [");
-    for (Class aClass : mapClassesToAllProviders.keySet()) {
+    ArrayList<Class> scopedProviders = new ArrayList(mapClassesToAllProviders.keySet());
+    Collections.sort(scopedProviders, new ClassNameComparator());
+    for (Class aClass : scopedProviders) {
       builder.append(aClass.getName());
       builder.append(',');
+    } if (!mapClassesToAllProviders.isEmpty()) {
+      builder.deleteCharAt(builder.length() - 1);
     }
-    builder.deleteCharAt(builder.length() - 1);
     builder.append(']');
     builder.append('\n');
 
@@ -133,14 +139,20 @@ public class ScopeImpl extends Scope {
       }
     }
 
-    builder.append("UnScoped providers : [");
-    for (Class aClass : mapClassesToUnBoundProviders.keySet()) {
-      builder.append(aClass.getName());
-      builder.append(',');
+    if (getRootScope() == this) {
+      builder.append("UnScoped providers: [");
+      ArrayList<Class> unscopedProviders = new ArrayList(mapClassesToUnBoundProviders.keySet());
+      Collections.sort(unscopedProviders, new ClassNameComparator());
+      for (Class aClass : unscopedProviders) {
+        builder.append(aClass.getName());
+        builder.append(',');
+      }
+      if (!mapClassesToUnBoundProviders.isEmpty()) {
+        builder.deleteCharAt(builder.length() - 1);
+      }
+      builder.append(']');
+      builder.append('\n');
     }
-    builder.deleteCharAt(builder.length() - 1);
-    builder.append(']');
-    builder.append('\n');
 
     return builder.toString();
   }
@@ -435,5 +447,12 @@ public class ScopeImpl extends Scope {
 
   static void reset() {
     mapClassesToUnBoundProviders.clear();
+  }
+
+  private static class ClassNameComparator implements Comparator<Class> {
+    @Override
+    public int compare(Class o1, Class o2) {
+      return o1.getName().compareTo(o2.getName());
+    }
   }
 }

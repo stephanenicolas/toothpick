@@ -3,7 +3,6 @@ package toothpick;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import toothpick.config.Binding;
 
 import static java.lang.String.format;

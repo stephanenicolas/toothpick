@@ -9,15 +9,19 @@ import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
+import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooChildWithoutInjectedFields;
 import toothpick.data.FooSingleton;
+import toothpick.data.IFoo;
+import toothpick.data.IFooProviderAnnotatedProvidesSingleton;
+import toothpick.data.IFooProviderAnnotatedSingleton;
 import toothpick.data.IFooSingleton;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static toothpick.Configuration.development;
@@ -209,7 +213,6 @@ public class ScopingTest extends ToothPickBaseTest {
     scopeParent.addChild(scope1);
     scopeParent.addChild(scope2);
 
-
     //WHEN
     scope1.installModules(new Module() {
       {
@@ -219,5 +222,58 @@ public class ScopingTest extends ToothPickBaseTest {
 
     //THEN
     fail("This test should throw a IllegalBindingException.");
+  }
+
+  @Test(expected = IllegalBindingException.class)
+  public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAProvider() throws Exception {
+    //GIVEN
+    ToothPick.setConfiguration(development());
+    Scope scopeParent = new ScopeImpl("");
+    Scope scope1 = new ScopeImpl("");
+    Scope scope2 = new ScopeImpl("");
+    scopeParent.addChild(scope1);
+    scopeParent.addChild(scope2);
+
+    //WHEN
+    scope1.installModules(new Module() {
+      {
+        bind(IFoo.class).toProvider(IFooProviderAnnotatedSingleton.class);
+      }
+    });
+
+    //THEN
+    fail("This test should throw a IllegalBindingException.");
+  }
+
+  @Test
+  public void binding_shouldCreateAnnotatedClassInRootScope_whenInjectingSingletonAnnotatedClass() throws Exception {
+    //GIVEN
+    ToothPick.setConfiguration(development());
+    Scope scopeParent = new ScopeImpl("root");
+    Scope scope1 = new ScopeImpl("child");
+    scopeParent.addChild(scope1);
+
+    //WHEN
+    IFooProviderAnnotatedSingleton instanceInParent = scopeParent.getInstance(IFooProviderAnnotatedSingleton.class);
+    IFooProviderAnnotatedSingleton instanceInChild = scope1.getInstance(IFooProviderAnnotatedSingleton.class);
+
+    //THEN
+    assertThat(instanceInParent, sameInstance(instanceInChild));
+  }
+
+  @Test
+  public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotation_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
+    //GIVEN
+    ToothPick.setConfiguration(development());
+    Scope scopeParent = new ScopeImpl(CustomScope.class);
+    Scope scope1 = new ScopeImpl("child");
+    scopeParent.addChild(scope1);
+
+    //WHEN
+    IFooProviderAnnotatedProvidesSingleton instanceInParent = scopeParent.getInstance(IFooProviderAnnotatedProvidesSingleton.class);
+    IFooProviderAnnotatedProvidesSingleton instanceInChild = scope1.getInstance(IFooProviderAnnotatedProvidesSingleton.class);
+
+    //THEN
+    assertThat(instanceInParent, sameInstance(instanceInChild));
   }
 }
