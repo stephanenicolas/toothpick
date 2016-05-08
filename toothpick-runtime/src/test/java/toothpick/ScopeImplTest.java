@@ -12,28 +12,13 @@ import static org.junit.Assert.fail;
 
 public class ScopeImplTest extends ToothPickBaseTest {
 
-  @Test(expected = IllegalArgumentException.class)
-  public void toProvider_shouldThrowException_whenBindingIsNull() throws Exception {
-    //GIVEN
-    Module module = new Module();
-    module.getBindingSet().add(null);
-    ScopeImpl scope = new ScopeImpl(module);
-
-    //WHEN
-    scope.getInstance(null);
-
-    //THEN
-    fail("Should not allow null bindings");
-  }
-
-  // Modules
-
   @Test
   public void installOverrideModules_shouldInstallOverrideBindings_whenCalledOnce() {
     //GIVEN
     Foo testFoo = new Foo();
-    ScopeImpl scope = new ScopeImpl(new ProdModule());
+    ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
+    scope.installModules(new ProdModule());
 
     //WHEN
     Foo instance = scope.getInstance(Foo.class);
@@ -45,8 +30,9 @@ public class ScopeImplTest extends ToothPickBaseTest {
   @Test
   public void installOverrideModules_shouldNotInstallOverrideBindings_whenCalledWithoutTestModules() {
     //GIVEN
-    ScopeImpl scope = new ScopeImpl(new ProdModule());
+    ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules();
+    scope.installModules(new ProdModule());
 
     //WHEN
     Foo instance = scope.getInstance(Foo.class);
@@ -60,9 +46,10 @@ public class ScopeImplTest extends ToothPickBaseTest {
     //GIVEN
     Foo testFoo = new Foo();
     Foo testFoo2 = new Foo();
-    ScopeImpl scope = new ScopeImpl(new ProdModule());
+    ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
     scope.installTestModules(new TestModule(testFoo2));
+    scope.installModules(new ProdModule2());
 
     //WHEN
     Foo instance = scope.getInstance(Foo.class);
@@ -75,8 +62,9 @@ public class ScopeImplTest extends ToothPickBaseTest {
   public void installOverrideModules_shouldNotOverrideOtherBindings() {
     //GIVEN
     Foo testFoo = new Foo();
-    ScopeImpl scope = new ScopeImpl(new ProdModule2());
+    ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
+    scope.installModules(new ProdModule2());
 
     //WHEN
     Foo fooInstance = scope.getInstance(Foo.class);
@@ -85,6 +73,19 @@ public class ScopeImplTest extends ToothPickBaseTest {
     //THEN
     assertThat(fooInstance, sameInstance(testFoo));
     assertThat(barInstance, notNullValue());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void installModule_shouldThrowAnException_whenModuleHasANullBinding() {
+    //GIVEN
+    Foo testFoo = new Foo();
+    ScopeImpl scope = new ScopeImpl("");
+
+    //WHEN
+    scope.installModules(new NullBindingModule());
+
+    //THEN
+    fail("Should throw an exception.");
   }
 
   private static class TestModule extends Module {
@@ -103,6 +104,12 @@ public class ScopeImplTest extends ToothPickBaseTest {
     public ProdModule2() {
       bind(Foo.class).to(new Foo());
       bind(Bar.class).to(new Bar());
+    }
+  }
+
+  private static class NullBindingModule extends Module {
+    public NullBindingModule() {
+      getBindingSet().add(null);
     }
   }
 }
