@@ -44,10 +44,11 @@ Fragment 1
 ToothPick is :
 * pure java
 * [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but annotation processing
-* flexible, extensible & powerful, robust & tested
-* test oriented
+* simple, flexible, extensible & powerful, robust & tested
 * thread safe
-* documented & Open Source 
+* [documented](https://github.com/stephanenicolas/toothpick/wiki) & Open Source 
+* scope safe : it enforces leak free apps
+* test oriented : it makes tests easier
 * it works very well with Android or any other context based framework (such as web containers)
 
 Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.com/stephanenicolas/toothpick/blob/master/smoothie-sample/src/main/java/com/example/smoothie/RxMVPActivity.java) !
