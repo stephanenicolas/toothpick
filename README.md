@@ -21,7 +21,7 @@
 ## What is ToothPick ?
  
  
-ToothPick is a scope tree based Dependency Injection (DI) library.
+ToothPick is a scope tree based Dependency Injection (DI) library for Java.
 
 It is a full-featured, runtime based implementation of [JSR 330](https://jcp.org/en/jsr/detail?id=330).
 
