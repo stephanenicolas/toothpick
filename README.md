@@ -1,7 +1,5 @@
- 
-#Toothpick 
+ #Toothpick 
 *(a.k.a T.P. like a teepee)*
-
 
 <table style="border:0px">
   <tr  style="border:0px">
@@ -19,7 +17,6 @@
 </table>
 
 ## What is ToothPick ?
- 
  
 ToothPick is a scope tree based Dependency Injection (DI) library for Java.
 
@@ -47,7 +44,7 @@ Fragment 1
 
 ToothPick is :
 * pure java
-* fast, it doesn't use reflection but annotation processing
+* [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but annotation processing
 * flexible, extensible & powerful, robust & tested
 * test oriented
 * thread safe
