@@ -111,7 +111,9 @@ public class ScopeImpl extends Scope {
       builder.append(aClass.getName());
       builder.append(',');
     }
-    builder.deleteCharAt(builder.length() - 1);
+    if (!mapClassesToAllProviders.isEmpty()) {
+      builder.deleteCharAt(builder.length() - 1);
+    }
     builder.append(']');
     builder.append('\n');
 
@@ -133,14 +135,18 @@ public class ScopeImpl extends Scope {
       }
     }
 
-    builder.append("UnScoped providers : [");
-    for (Class aClass : mapClassesToUnBoundProviders.keySet()) {
-      builder.append(aClass.getName());
-      builder.append(',');
+    if (getRootScope() == this) {
+      builder.append("UnScoped providers: [");
+      for (Class aClass : mapClassesToUnBoundProviders.keySet()) {
+        builder.append(aClass.getName());
+        builder.append(',');
+      }
+      if (!mapClassesToUnBoundProviders.isEmpty()) {
+        builder.deleteCharAt(builder.length() - 1);
+      }
+      builder.append(']');
+      builder.append('\n');
     }
-    builder.deleteCharAt(builder.length() - 1);
-    builder.append(']');
-    builder.append('\n');
 
     return builder.toString();
   }
