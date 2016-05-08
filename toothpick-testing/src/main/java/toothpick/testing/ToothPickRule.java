@@ -6,9 +6,9 @@ import org.junit.runners.model.Statement;
 import toothpick.Scope;
 import toothpick.ToothPick;
 import toothpick.registries.FactoryRegistry;
+import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistry;
-import toothpick.registries.factory.FactoryRegistryLocator;
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
+import toothpick.registries.MemberInjectorRegistryLocator;
 
 public class ToothPickRule implements TestRule {
   private ToothPickTestModule testModule;

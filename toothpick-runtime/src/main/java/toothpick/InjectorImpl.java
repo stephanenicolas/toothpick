@@ -1,6 +1,6 @@
 package toothpick;
 
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
+import toothpick.registries.MemberInjectorRegistryLocator;
 
 /**
  * Default implementation of an injector.
