@@ -7,8 +7,8 @@ public class IllegalBindingException extends IllegalStateException {
   public IllegalBindingException() {
   }
 
-  public IllegalBindingException(String s) {
-    super(s);
+  public IllegalBindingException(String message) {
+    super(message);
   }
 
   public IllegalBindingException(String message, Throwable cause) {
