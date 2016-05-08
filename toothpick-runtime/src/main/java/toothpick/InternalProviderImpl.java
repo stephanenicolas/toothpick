@@ -1,7 +1,7 @@
 package toothpick;
 
 import javax.inject.Provider;
-import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.FactoryRegistryLocator;
 
 /**
  * A non thread safe internal provider. It should never be exposed outside of ToothPick.

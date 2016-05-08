@@ -1,7 +1,6 @@
-package toothpick.registries.factory;
+package toothpick.registries;
 
 import toothpick.Factory;
-import toothpick.registries.FactoryRegistry;
 
 import static java.lang.String.format;
 

@@ -1,8 +1,6 @@
-package toothpick.registries.memberinjector;
+package toothpick.registries;
 
 import toothpick.MemberInjector;
-import toothpick.registries.FactoryRegistry;
-import toothpick.registries.MemberInjectorRegistry;
 
 /**
  * Locates the {@link MemberInjectorRegistry} instances.

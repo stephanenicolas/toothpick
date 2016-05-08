@@ -7,8 +7,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import toothpick.ToothPick;
-import toothpick.registries.factory.FactoryRegistryLocator;
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
+import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.MemberInjectorRegistryLocator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

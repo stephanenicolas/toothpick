@@ -3,8 +3,8 @@ package com.example.smoothie;
 import android.app.Application;
 import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.registries.factory.FactoryRegistryLocator;
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
+import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.MemberInjectorRegistryLocator;
 import toothpick.smoothie.module.ApplicationModule;
 
 public class SimpleApp extends Application {

@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
-import toothpick.registries.factory.FactoryRegistryLocator;
+import toothpick.registries.FactoryRegistryLocator;
 
 import static java.lang.String.format;
 
@@ -115,7 +115,8 @@ public class ScopeImpl extends Scope {
     for (Class aClass : scopedProviders) {
       builder.append(aClass.getName());
       builder.append(',');
-    } if (!mapClassesToAllProviders.isEmpty()) {
+    }
+    if (!mapClassesToAllProviders.isEmpty()) {
       builder.deleteCharAt(builder.length() - 1);
     }
     builder.append(']');

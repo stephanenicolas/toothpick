@@ -2,8 +2,8 @@ package toothpick;
 
 import org.junit.After;
 import org.junit.BeforeClass;
-import toothpick.registries.factory.FactoryRegistryLocator;
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
+import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.MemberInjectorRegistryLocator;
 
 public class ToothPickBaseTest {
   protected ToothPickBaseTest() {
