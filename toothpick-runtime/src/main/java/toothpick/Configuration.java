@@ -1,7 +1,9 @@
 package toothpick;
 
 import java.lang.annotation.Annotation;
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import toothpick.config.Binding;
 
 import static java.lang.String.format;
@@ -14,7 +16,7 @@ public abstract class Configuration {
 
   abstract void checkCyclesStart(Class clazz);
 
-  abstract void checkCyclesEnd();
+  abstract void checkCyclesEnd(Class clazz);
 
   static {
     //default mode is production
@@ -23,10 +25,12 @@ public abstract class Configuration {
 
   public static Configuration development() {
     return new Configuration() {
-      private ThreadLocal<Stack<Class>> cycleDetectionStack = new ThreadLocal<Stack<Class>>() {
+      // We need a LIFO structure here, but stack is thread safe and we use thread local,
+      // so this property is overkill and LinkedHashSet is faster on retrieval.
+      private ThreadLocal<LinkedHashSet<Class>> cycleDetectionStack = new ThreadLocal<LinkedHashSet<Class>>() {
         @Override
-        protected Stack<Class> initialValue() {
-          return new Stack<>();
+        protected LinkedHashSet<Class> initialValue() {
+          return new LinkedHashSet<>();
         }
       };
 
@@ -49,7 +53,7 @@ public abstract class Configuration {
 
         for (Annotation annotation : clazz.getAnnotations()) {
           if (annotation.annotationType().isAnnotationPresent(javax.inject.Scope.class)) {
-            throw new IllegalBindingException();
+            throw new IllegalBindingException(format("Class %s cannot be bound. It has an scope annotation", clazz.getName()));
           }
         }
       }
@@ -57,16 +61,15 @@ public abstract class Configuration {
       @Override
       void checkCyclesStart(Class clazz) {
         if (cycleDetectionStack.get().contains(clazz)) {
-          //TODO make the message better
-          throw new CyclicDependencyException(format("Class %s creates a cycle", clazz.getName()));
+          throw new CyclicDependencyException(new ArrayList<>(cycleDetectionStack.get()), clazz);
         }
 
-        cycleDetectionStack.get().push(clazz);
+        cycleDetectionStack.get().add(clazz);
       }
 
       @Override
-      void checkCyclesEnd() {
-        cycleDetectionStack.get().pop();
+      void checkCyclesEnd(Class clazz) {
+        cycleDetectionStack.get().remove(clazz);
       }
     };
   }
@@ -84,7 +87,7 @@ public abstract class Configuration {
       }
 
       @Override
-      void checkCyclesEnd() {
+      void checkCyclesEnd(Class clazz) {
         //do nothing
       }
     };

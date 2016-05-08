@@ -40,7 +40,7 @@ public class ScopeImpl extends Scope {
   public <T> T getInstance(Class<T> clazz) {
     Configuration.instance.checkCyclesStart(clazz);
     T t = lookupProvider(clazz, null).get(this);
-    Configuration.instance.checkCyclesEnd();
+    Configuration.instance.checkCyclesEnd(clazz);
     return t;
   }
 
@@ -48,7 +48,7 @@ public class ScopeImpl extends Scope {
   public <T> T getInstance(Class<T> clazz, String name) {
     Configuration.instance.checkCyclesStart(clazz);
     T t = lookupProvider(clazz, name).get(this);
-    Configuration.instance.checkCyclesEnd();
+    Configuration.instance.checkCyclesEnd(clazz);
     return t;
   }
 

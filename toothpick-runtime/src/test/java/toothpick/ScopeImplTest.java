@@ -13,7 +13,7 @@ import static org.junit.Assert.fail;
 public class ScopeImplTest extends ToothPickBaseTest {
 
   @Test(expected = IllegalArgumentException.class)
-  public void toProvider_shoudThrowException_whenBindingIsNull() throws Exception {
+  public void toProvider_shouldThrowException_whenBindingIsNull() throws Exception {
     //GIVEN
     Module module = new Module();
     module.getBindingSet().add(null);
@@ -29,7 +29,7 @@ public class ScopeImplTest extends ToothPickBaseTest {
   // Modules
 
   @Test
-  public void installOverrideModules_shoudInstallOverrideBindings_whenCalledOnce() {
+  public void installOverrideModules_shouldInstallOverrideBindings_whenCalledOnce() {
     //GIVEN
     Foo testFoo = new Foo();
     ScopeImpl scope = new ScopeImpl(new ProdModule());
@@ -43,7 +43,7 @@ public class ScopeImplTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void installOverrideModules_shoudNotInstallOverrideBindings_whenCalledWithoutTestModules() {
+  public void installOverrideModules_shouldNotInstallOverrideBindings_whenCalledWithoutTestModules() {
     //GIVEN
     ScopeImpl scope = new ScopeImpl(new ProdModule());
     scope.installTestModules();
@@ -56,7 +56,7 @@ public class ScopeImplTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void installOverrideModules_shoudInstallOverrideBindingsAgain_whenCalledTwice() {
+  public void installOverrideModules_shouldInstallOverrideBindingsAgain_whenCalledTwice() {
     //GIVEN
     Foo testFoo = new Foo();
     Foo testFoo2 = new Foo();
@@ -72,7 +72,7 @@ public class ScopeImplTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void installOverrideModules_shoudNotOverrideOtherBindings() {
+  public void installOverrideModules_shouldNotOverrideOtherBindings() {
     //GIVEN
     Foo testFoo = new Foo();
     ScopeImpl scope = new ScopeImpl(new ProdModule2());
