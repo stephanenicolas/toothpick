@@ -1,14 +1,7 @@
 package toothpick.sample;
 
-import org.easymock.EasyMockRule;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import toothpick.ToothPick;
-import toothpick.registries.factory.FactoryRegistryLocator;
-import toothpick.registries.memberinjector.MemberInjectorRegistryLocator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
