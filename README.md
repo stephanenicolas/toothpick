@@ -1,4 +1,4 @@
- #Toothpick 
+#Toothpick 
 *(a.k.a T.P. like a teepee)*
 
 <table style="border:0px">
