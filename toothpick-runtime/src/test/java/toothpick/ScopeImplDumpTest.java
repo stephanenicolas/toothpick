@@ -25,7 +25,7 @@ public class ScopeImplDumpTest extends ToothPickBaseTest {
 
     //THEN
     Pattern expected = Pattern.compile("root:\\d+.*"
-        + "Providers: \\[toothpick.data.Foo,toothpick.Scope\\].*"
+        + "Providers: \\[toothpick.Scope,toothpick.data.Foo\\].*"
         + "\\\\---child:\\d+.*"
         + "Providers:.*\\[toothpick.Scope\\].*"
         + "UnScoped providers: \\[toothpick.data.Bar\\].*", Pattern.DOTALL);
