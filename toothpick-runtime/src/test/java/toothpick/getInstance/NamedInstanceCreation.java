@@ -1,6 +1,7 @@
 package toothpick.getInstance;
 
 import javax.inject.Provider;
+import javax.inject.Qualifier;
 import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
@@ -13,6 +14,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 /*
  * Creates a instance in the simplest possible way
@@ -36,7 +38,7 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
   }
 
   @Test
-  public void testNamedInjection_shouldNotBeConfusedWithUnNamedInjection() throws Exception {
+  public void testNamedInjection_shouldNotBeConfusedWithUnNamedInjection_whenUsingName() throws Exception {
     //GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(new SimpleModule());
@@ -44,14 +46,17 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
     //WHEN
     Foo instance = scope.getInstance(Foo.class, "bar");
     Foo instance2 = scope.getInstance(Foo.class, "bar");
-    Foo instance3 = scope.getInstance(Foo.class);
+    Foo instance3 = scope.getInstance(Foo.class, FooName.class.getName());
+    Foo instance4 = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, is(namedFooInstance));
     assertThat(instance2, is(namedFooInstance));
-    assertThat(instance3, notNullValue());
+    assertThat(instance3, is(namedFooInstance));
+    assertThat(instance4, notNullValue());
     assertThat(instance, sameInstance(instance2));
-    assertThat(instance, not(sameInstance(instance3)));
+    assertThat(instance, sameInstance(instance3));
+    assertThat(instance, not(sameInstance(instance4)));
   }
 
   @Test
@@ -63,19 +68,45 @@ public class NamedInstanceCreation extends ToothPickBaseTest {
     //WHEN
     Provider<Foo> provider = scope.getProvider(Foo.class, "bar");
     Provider<Foo> provider2 = scope.getProvider(Foo.class, "bar");
-    Provider<Foo> provider3 = scope.getProvider(Foo.class);
+    Provider<Foo> provider3 = scope.getProvider(Foo.class, FooName.class.getName());
+    Provider<Foo> provider4 = scope.getProvider(Foo.class);
 
     //THEN
     assertThat(provider.get(), is(namedFooInstance));
     assertThat(provider2.get(), is(namedFooInstance));
-    assertThat(provider3.get(), notNullValue());
-    assertThat(provider, not(sameInstance(provider3)));
+    assertThat(provider3.get(), is(namedFooInstance));
+    assertThat(provider4.get(), notNullValue());
+    assertThat(provider, not(sameInstance(provider4)));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInstallModule_shouldFail_ifModuleUsesClassAsNameButNotAnAnnotation() throws Exception {
+    //GIVEN
+    Scope scope = new ScopeImpl("");
+
+    //WHEN
+    scope.installModules(new Module() {
+      {
+        bind(Foo.class).withName(NotQualifierAnnotationFooName.class).to(namedFooInstance);
+      }
+    });
+
+    //THEN
+    fail("Should have thrown an exception");
   }
 
   private static class SimpleModule extends Module {
     public SimpleModule() {
       bind(Foo.class).withName("bar").to(namedFooInstance);
+      bind(Foo.class).withName(FooName.class).to(namedFooInstance);
       bind(Foo.class).to(Foo.class);
     }
+  }
+
+  @Qualifier
+  private @interface FooName {
+  }
+
+  private @interface NotQualifierAnnotationFooName {
   }
 }
