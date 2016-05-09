@@ -52,6 +52,17 @@ public class ToothPickTest extends ToothPickBaseTest {
     assertThat(scope.getParentScope(), sameInstance(scopeParent));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void openScopes_shouldFail_whenScopeNamesAreNull() throws Exception {
+    //GIVEN
+
+    //WHEN
+    Scope scope = ToothPick.openScopes(null);
+
+    //THEN
+    fail("Shoudl ahve thrown an exception");
+  }
+
   @Test
   public void reset_shouldClear_WhenSomeScopesWereCreated() throws Exception {
     //GIVEN
@@ -110,13 +121,25 @@ public class ToothPickTest extends ToothPickBaseTest {
   }
 
   @Test
-  public void destroyScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
+  public void closeScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
     //GIVEN
 
     //WHEN
     ToothPick.closeScope("foo");
 
     //THEN
+  }
+
+  @Test
+  public void closeScope_shouldRemoveChildScope_whenChildScopeIsClosed() throws Exception {
+    //GIVEN
+    ToothPick.openScopes("foo", "bar");
+
+    //WHEN
+    ToothPick.closeScope("bar");
+
+    //THEN
+    assertThat(ToothPick.openScope("foo").getChildrenScopes().isEmpty(), is(true));
   }
 
   @Test

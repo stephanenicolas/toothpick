@@ -30,7 +30,7 @@ public class Binding<T> {
           String.format("Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
               annotationClassWithQualifierAnnotation));
     }
-    this.name = annotationClassWithQualifierAnnotation.getClass().getName();
+    this.name = annotationClassWithQualifierAnnotation.getName();
     return this;
   }
 
