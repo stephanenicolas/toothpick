@@ -34,7 +34,7 @@ public class MemberInjectorRegistryLocatorTest {
         if (clazz == Foo.class) {
           return (MemberInjector<T>) new FooMemberInjector();
         } else {
-          return null;
+          return getMemberInjectorInChildrenRegistries(clazz);
         }
       }
     });
@@ -61,7 +61,7 @@ public class MemberInjectorRegistryLocatorTest {
         if (clazz == Foo.class) {
           return (MemberInjector<T>) new FooMemberInjector();
         } else {
-          return null;
+          return getMemberInjectorInChildrenRegistries(clazz);
         }
       }
     };
@@ -84,7 +84,7 @@ public class MemberInjectorRegistryLocatorTest {
         if (clazz == Foo.class) {
           return (MemberInjector<T>) new FooMemberInjector();
         } else {
-          return null;
+          return getMemberInjectorInChildrenRegistries(clazz);
         }
       }
     };
@@ -94,7 +94,7 @@ public class MemberInjectorRegistryLocatorTest {
         if (clazz == Foo.class) {
           return (MemberInjector<T>) new FooMemberInjector();
         } else {
-          return null;
+          return getMemberInjectorInChildrenRegistries(clazz);
         }
       }
     };

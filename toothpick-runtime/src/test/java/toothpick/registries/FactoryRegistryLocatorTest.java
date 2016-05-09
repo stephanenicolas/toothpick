@@ -34,7 +34,7 @@ public class FactoryRegistryLocatorTest {
         if (clazz == Foo.class) {
           return (Factory<T>) new FooFactory();
         } else {
-          return null;
+          return super.getFactoryInChildrenRegistries(clazz);
         }
       }
     });
@@ -84,7 +84,7 @@ public class FactoryRegistryLocatorTest {
         if (clazz == Foo.class) {
           return (Factory<T>) new FooFactory();
         } else {
-          return null;
+          return super.getFactoryInChildrenRegistries(clazz);
         }
       }
     };
