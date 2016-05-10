@@ -807,6 +807,13 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
    * @return <tt>true</tt> if and only if the specified object is a key in
    * this table, as determined by the <tt>equals</tt> method;
    * <tt>false</tt> otherwise.
+   * <<<<<<< HEAD
+   * <<<<<<< HEAD
+   * @throws NullPointerException if the specified key is null
+   * =======
+   * >>>>>>> master
+   * =======
+   * >>>>>>> master
    */
   @Override
   public boolean containsKey(Object key) {
@@ -920,6 +927,13 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
   /**
    * @return the previous value associated with the specified key, or
    * <tt>null</tt> if there was no mapping for the key
+   * <<<<<<< HEAD
+   * <<<<<<< HEAD
+   * @throws NullPointerException if the specified key or value is null
+   * =======
+   * >>>>>>> master
+   * =======
+   * >>>>>>> master
    */
   public V putIfAbsent(K key, V value) {
     if (value == null) {
@@ -950,6 +964,13 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
    * @param key the key that needs to be removed
    * @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
    * if there was no mapping for <tt>key</tt>
+   * <<<<<<< HEAD
+   * <<<<<<< HEAD
+   * @throws NullPointerException if the specified key is null
+   * =======
+   * >>>>>>> master
+   * =======
+   * >>>>>>> master
    */
   @Override
   public V remove(Object key) {

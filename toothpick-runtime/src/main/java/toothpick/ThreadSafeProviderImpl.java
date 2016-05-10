@@ -4,6 +4,7 @@ import javax.inject.Provider;
 
 /**
  * A thread safe internal provider. It will be exposed outside of ToothPick.
+ *
  * @param <T> the class of the instances provided by this provider.
  */
 public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {

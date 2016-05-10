@@ -41,10 +41,10 @@ public class ToothPickTest extends ToothPickBaseTest {
   @Test
   public void createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() throws Exception {
     //GIVEN
-    Scope scopeParent = ToothPick.openScope("foo");
+    ScopeNode scopeParent = (ScopeNode) ToothPick.openScope("foo");
 
     //WHEN
-    Scope scope = ToothPick.openScope("bar");
+    ScopeNode scope = (ScopeNode) ToothPick.openScope("bar");
     scopeParent.addChild(scope);
 
     //THEN
@@ -107,12 +107,12 @@ public class ToothPickTest extends ToothPickBaseTest {
   @Test
   public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() throws Exception {
     //GIVEN
-    Scope scopeParent = ToothPick.openScope("bar");
+    ScopeNode scopeParent = (ScopeNode) ToothPick.openScope("bar");
 
     //WHEN
-    Scope scope = ToothPick.openScope("foo");
+    ScopeNode scope = (ScopeNode) ToothPick.openScope("foo");
     scopeParent.addChild(scope);
-    Scope scope2 = ToothPick.openScope("foo");
+    ScopeNode scope2 = (ScopeNode) ToothPick.openScope("foo");
 
     //THEN
     assertThat(scope, notNullValue());
@@ -139,7 +139,7 @@ public class ToothPickTest extends ToothPickBaseTest {
     ToothPick.closeScope("bar");
 
     //THEN
-    assertThat(ToothPick.openScope("foo").getChildrenScopes().isEmpty(), is(true));
+    assertThat(((ScopeNode) ToothPick.openScope("foo")).getChildrenScopes().isEmpty(), is(true));
   }
 
   @Test

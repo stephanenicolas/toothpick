@@ -37,14 +37,14 @@ public class InjectionWithoutModuleTest extends ToothPickBaseTest {
   @Test
   public void testInjection_shouldWork_whenInheritingBinding() throws Exception {
     //GIVEN
-    Scope scope = new ScopeImpl("root");
+
+    Scope scope = ToothPick.openScope("root");
     scope.installModules(new Module() {
       {
         bind(Foo.class).to(Foo.class);
       }
     });
-    Scope childScope = new ScopeImpl("child");
-    scope.addChild(childScope);
+    Scope childScope = ToothPick.openScopes("root", "child");
     Foo foo = new Foo();
 
     //WHEN

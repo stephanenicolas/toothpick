@@ -28,8 +28,8 @@ import static java.lang.String.format;
  * or <em>must</em> be synchronized using the {@code ToothPick} class if used concurrently.</em>
  * </p>
  */
-public class ScopeImpl extends Scope {
-  private static final String LINE_SEPARATOR = System.getProperty("line.separator");;
+public class ScopeImpl extends ScopeNode {
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
   private static IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToUnBoundProviders = new IdentityHashMap<>();
   protected IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToAllProviders = new IdentityHashMap<>();
@@ -129,7 +129,7 @@ public class ScopeImpl extends Scope {
     builder.append(']');
     builder.append(LINE_SEPARATOR);
 
-    Iterator<Scope> iterator = childrenScopes.values().iterator();
+    Iterator<ScopeNode> iterator = childrenScopes.values().iterator();
     while (iterator.hasNext()) {
       Scope scope = iterator.next();
       boolean isLast = !iterator.hasNext();
@@ -252,7 +252,7 @@ public class ScopeImpl extends Scope {
     if (scopedProvider != null) {
       return scopedProvider;
     }
-    Iterator<Scope> iterator = parentScopes.iterator();
+    Iterator<ScopeNode> iterator = parentScopes.iterator();
     while (iterator.hasNext()) {
       Scope parentScope = iterator.next();
       ScopeImpl parentScopeImpl = (ScopeImpl) parentScope;

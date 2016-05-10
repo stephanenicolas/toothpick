@@ -1,11 +1,6 @@
-package toothpick.scoping;
+package toothpick;
 
 import org.junit.Test;
-import toothpick.IllegalBindingException;
-import toothpick.Scope;
-import toothpick.ScopeImpl;
-import toothpick.ToothPick;
-import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
@@ -35,14 +30,15 @@ public class ScopingTest extends ToothPickBaseTest {
   public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Scope scopeParent = new ScopeImpl("root");
+    ScopeNode scopeParent = new ScopeImpl("");
     scopeParent.installModules(new Module() {
       {
         bind(Foo.class).to(foo1);
       }
     });
     final Foo foo2 = new Foo();
-    Scope scope = ToothPick.openScopes("root", "child");
+    ScopeNode scope = new ScopeImpl("");
+    scopeParent.addChild(scope);
     scope.installModules(new Module() {
       {
         bind(Foo.class).to(foo2);
@@ -61,13 +57,14 @@ public class ScopingTest extends ToothPickBaseTest {
   public void childInjector_shouldReturnInstancesInParentScope_whenParentHasKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Scope scopeParent = ToothPick.openScope("root");
+    ScopeNode scopeParent = new ScopeImpl("");
     scopeParent.installModules(new Module() {
       {
         bind(Foo.class).to(foo1);
       }
     });
-    Scope scope = ToothPick.openScopes("root", "child");
+    ScopeNode scope = new ScopeImpl("");
+    scopeParent.addChild(scope);
 
     //WHEN
     Foo instance = scope.getInstance(Foo.class);
@@ -81,18 +78,19 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenParentHasKeyInHisScopeThroughModule() throws Exception {
     //GIVEN
-    Scope scopeParent = new ScopeImpl("root");
+    ScopeNode scopeParent = new ScopeImpl("");
     scopeParent.installModules(new Module() {
       {
         bind(Foo.class).to(FooChildWithoutInjectedFields.class);
       }
     });
-    Scope scope = ToothPick.openScopes("root", "child");
+    ScopeNode scope = new ScopeImpl("");
     scope.installModules(new Module() {
       {
         bind(Bar.class).to(BarChild.class);
       }
     });
+    scopeParent.addChild(scope);
 
     //WHEN
     Foo instance = scope.getInstance(Foo.class);
@@ -104,13 +102,14 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenChildOverridesBinding() throws Exception {
     //GIVEN
-    Scope scopeParent = new ScopeImpl("root");
-    Scope scope = ToothPick.openScopes("root", "child");
+    ScopeNode scopeParent = new ScopeImpl("");
+    ScopeNode scope = new ScopeImpl("");
     scope.installModules(new Module() {
       {
         bind(Bar.class).to(BarChild.class);
       }
     });
+    scopeParent.addChild(scope);
 
     //WHEN
     scopeParent.getInstance(Foo.class); // Create Foo internal provider in parent scope dynamically
@@ -123,18 +122,19 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenBindingIsScoped() throws Exception {
     //GIVEN
-    Scope scopeParent = new ScopeImpl("root");
+    ScopeNode scopeParent = new ScopeImpl("");
     scopeParent.installModules(new Module() {
       {
         bind(Foo.class).scope();
       }
     });
-    Scope scope = ToothPick.openScopes("root", "child");
+    ScopeNode scope = new ScopeImpl("");
     scope.installModules(new Module() {
       {
         bind(Bar.class).to(BarChild.class).scope();
       }
     });
+    scopeParent.addChild(scope);
 
     //WHEN
     scopeParent.getInstance(Foo.class); // Create Foo internal provider in parent scope dynamically
@@ -147,8 +147,9 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void singletonDiscoveredDynamically_shouldGoInRootScope() throws Exception {
     //GIVEN
-    Scope scopeParent = ToothPick.openScope("root");
-    Scope scope = ToothPick.openScopes("root", "child");
+    ScopeNode scopeParent = new ScopeImpl("");
+    ScopeNode scope = new ScopeImpl("");
+    scopeParent.addChild(scope);
 
     //WHEN
     FooSingleton instance = scope.getInstance(FooSingleton.class);
@@ -162,8 +163,11 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void singleton_shouldBeSharedBySubscopes() throws Exception {
     //GIVEN
-    Scope scope1 = ToothPick.openScopes("root", "scope1");
-    Scope scope2 = ToothPick.openScopes("root", "scope2");
+    ScopeNode scopeParent = new ScopeImpl("");
+    ScopeNode scope1 = new ScopeImpl("scope1");
+    ScopeNode scope2 = new ScopeImpl("scope2");
+    scopeParent.addChild(scope1);
+    scopeParent.addChild(scope2);
 
     //WHEN
     FooSingleton instance = scope1.getInstance(FooSingleton.class);
@@ -177,7 +181,11 @@ public class ScopingTest extends ToothPickBaseTest {
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingIsSimple() throws Exception {
     //GIVEN
     ToothPick.setConfiguration(development());
-    Scope scope1 = ToothPick.openScopes("root", "scope1");
+    ScopeNode scopeParent = new ScopeImpl("");
+    ScopeNode scope1 = new ScopeImpl("scope1");
+    ScopeNode scope2 = new ScopeImpl("scope2");
+    scopeParent.addChild(scope1);
+    scopeParent.addChild(scope2);
 
     //WHEN
     scope1.installModules(new Module() {
@@ -194,7 +202,11 @@ public class ScopingTest extends ToothPickBaseTest {
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAClass() throws Exception {
     //GIVEN
     ToothPick.setConfiguration(development());
-    Scope scope1 = ToothPick.openScopes("root", "scope1");
+    ScopeNode scopeParent = new ScopeImpl("");
+    ScopeNode scope1 = new ScopeImpl("scope1");
+    ScopeNode scope2 = new ScopeImpl("scope2");
+    scopeParent.addChild(scope1);
+    scopeParent.addChild(scope2);
 
     //WHEN
     scope1.installModules(new Module() {
@@ -211,7 +223,11 @@ public class ScopingTest extends ToothPickBaseTest {
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAProvider() throws Exception {
     //GIVEN
     ToothPick.setConfiguration(development());
-    Scope scope1 = ToothPick.openScopes("root", "scope1");
+    ScopeNode scopeParent = new ScopeImpl("");
+    ScopeNode scope1 = new ScopeImpl("");
+    ScopeNode scope2 = new ScopeImpl("");
+    scopeParent.addChild(scope1);
+    scopeParent.addChild(scope2);
 
     //WHEN
     scope1.installModules(new Module() {
@@ -228,8 +244,9 @@ public class ScopingTest extends ToothPickBaseTest {
   public void binding_shouldCreateAnnotatedClassInRootScope_whenInjectingSingletonAnnotatedClass() throws Exception {
     //GIVEN
     ToothPick.setConfiguration(development());
-    Scope scopeParent = ToothPick.openScope("root");
-    Scope scope1 = ToothPick.openScopes("root", "scope1");
+    ScopeNode scopeParent = new ScopeImpl("root");
+    ScopeNode scope1 = new ScopeImpl("child");
+    scopeParent.addChild(scope1);
 
     //WHEN
     IFooProviderAnnotatedSingleton instanceInParent = scopeParent.getInstance(IFooProviderAnnotatedSingleton.class);
@@ -243,8 +260,9 @@ public class ScopingTest extends ToothPickBaseTest {
   public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotation_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
     //GIVEN
     ToothPick.setConfiguration(development());
-    Scope scopeParent = ToothPick.openScope(CustomScope.class);
-    Scope scope1 = ToothPick.openScopes(CustomScope.class, "child");
+    ScopeNode scopeParent = new ScopeImpl(CustomScope.class);
+    ScopeNode scope1 = new ScopeImpl("child");
+    scopeParent.addChild(scope1);
 
     //WHEN
     IFooProviderAnnotatedProvidesSingleton instanceInParent = scopeParent.getInstance(IFooProviderAnnotatedProvidesSingleton.class);

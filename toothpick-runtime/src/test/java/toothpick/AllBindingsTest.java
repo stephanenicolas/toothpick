@@ -1,10 +1,7 @@
-package toothpick.bindings;
+package toothpick;
 
 import javax.inject.Provider;
 import org.junit.Test;
-import toothpick.Scope;
-import toothpick.ScopeImpl;
-import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.CustomScope;

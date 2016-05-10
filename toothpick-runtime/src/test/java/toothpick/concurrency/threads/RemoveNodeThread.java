@@ -1,8 +1,8 @@
 package toothpick.concurrency.threads;
 
+import toothpick.NodeUtil;
 import toothpick.Scope;
 import toothpick.ToothPick;
-import toothpick.concurrency.utils.ThreadTestUtil;
 
 public class RemoveNodeThread extends TestableThread {
   static final int ACCEPTANCE_THRESHOLD = 50;
@@ -18,7 +18,7 @@ public class RemoveNodeThread extends TestableThread {
   public void doRun() {
     //pick a random node in the tree, starting from root
     //add a new child node to this node
-    Scope scope = ThreadTestUtil.findRandomNode(rootScopeName, ACCEPTANCE_THRESHOLD);
+    Scope scope = NodeUtil.findRandomNode(rootScopeName, ACCEPTANCE_THRESHOLD);
     if (scope == null) {
       setIsSuccessful(true);
       return;
