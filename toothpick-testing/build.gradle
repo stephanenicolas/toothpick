@@ -6,6 +6,15 @@ targetCompatibility = 1.7
 dependencies {
   compile project(':toothpick-runtime')
   compile deps.junit
+
+  testCompile deps.easymock
+  testCompile project(':toothpick-compiler')
+}
+
+compileTestJava {
+  doFirst {
+    options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.testing',]
+  }
 }
 
 //apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
