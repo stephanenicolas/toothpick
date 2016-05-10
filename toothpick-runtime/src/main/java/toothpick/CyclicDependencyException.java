@@ -5,6 +5,7 @@ import java.util.List;
 public class CyclicDependencyException extends RuntimeException {
 
   private static final int MARGIN_SIZE = 3;
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator");;
 
   public CyclicDependencyException() {
   }
@@ -26,7 +27,7 @@ public class CyclicDependencyException extends RuntimeException {
   }
 
   public CyclicDependencyException(List<Class> path, Class startClass) {
-    this(String.format("Class %s creates a cycle:\n%s", startClass.getName(), format(path, startClass)));
+    this(String.format("Class %s creates a cycle:%n%s", startClass.getName(), format(path, startClass)));
   }
 
   private static String format(List<Class> path, Class startClass) {
@@ -53,7 +54,7 @@ public class CyclicDependencyException extends RuntimeException {
   }
 
   private static void addTopLines(StringBuilder builder, int middleWordPos, int loopLinePosition) {
-    builder.append("\n");
+    builder.append(LINE_SEPARATOR);
     addHorizontalLine(builder, middleWordPos, loopLinePosition);
     addLine(builder, "||", middleWordPos, loopLinePosition);
     addLine(builder, "\\/", middleWordPos, loopLinePosition);
@@ -62,7 +63,7 @@ public class CyclicDependencyException extends RuntimeException {
   private static void addHorizontalLine(StringBuilder builder, int middleWordPos, int loopLinePosition) {
     builder.append(repeat(' ', middleWordPos));
     builder.append(repeat('=', loopLinePosition - middleWordPos + 1));
-    builder.append("\n");
+    builder.append(LINE_SEPARATOR);
   }
 
   private static void addLine(StringBuilder builder, String content, int middleWordPos, int loopLinePosition) {
@@ -71,7 +72,8 @@ public class CyclicDependencyException extends RuntimeException {
     builder.append(repeat(' ', leftMarginSize));
     builder.append(content);
     builder.append(repeat(' ', rightMarginSize));
-    builder.append("||\n");
+    builder.append("||");
+    builder.append(LINE_SEPARATOR);
   }
 
   private static int findLongestClassNameLength(List<Class> path) {

@@ -3,7 +3,7 @@ package toothpick;
 /**
  * Inject member of an instance of a class.
  * All injected members are gonna be obtained in the scope of the current scope.
- * MemberInjector are discovered via a {@link AbstractMemberInjectorRegistry}.
+ * MemberInjector are discovered via a {@code AbstractMemberInjectorRegistry}.
  * Implementations are generated during annotation processing.
  * As soon as a class as an {@link javax.inject.Inject} annotated field or method,
  * a member scope is created. All classes that need to be injected via toothpick

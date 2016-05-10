@@ -11,6 +11,8 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
  */
 public abstract class CodeGenerator {
 
+  protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
   /**
    * Creates all java code.
    *

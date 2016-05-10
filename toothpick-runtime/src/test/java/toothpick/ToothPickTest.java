@@ -57,7 +57,7 @@ public class ToothPickTest extends ToothPickBaseTest {
     //GIVEN
 
     //WHEN
-    Scope scope = ToothPick.openScopes(null);
+    ToothPick.openScopes((Object[]) null);
 
     //THEN
     fail("Shoudl ahve thrown an exception");

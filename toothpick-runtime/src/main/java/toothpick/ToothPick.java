@@ -1,7 +1,6 @@
 package toothpick;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Main class to access toothpick features.
@@ -9,11 +8,13 @@ import java.util.Map;
  *
  * The main rule about using TP is : <b>TP will honor all injections in the instances it creates by itself.</b><br/>
  * <em/>A soon as you use {@code new Foo}, in a provider or a binding for instance, TP is not responsible for injecting Foo;
- * developers will have to manually inject the instances they create.</em> <br/
+ * developers have to manually inject the instances they create.</em> <br/
  */
 public final class ToothPick {
 
-  private static final Map<Object, Scope> MAP_KEY_TO_SCOPE = new HashMap<>();
+  //TP must be lock free, any thread can see the state of tp before or after it is transformed but not during
+  //its transformation
+  private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
 
   private ToothPick() {
@@ -29,6 +30,7 @@ public final class ToothPick {
    * @return the last opened scope, leaf node of the created subtree of scopes.
    */
   public static Scope openScopes(Object... names) {
+
     if (names == null) {
       throw new IllegalArgumentException("null scopes can't be open.");
     }
@@ -39,7 +41,10 @@ public final class ToothPick {
       previousScope = lastScope;
       lastScope = openScope(name);
       if (previousScope != null) {
-        previousScope.addChild(lastScope);
+        //if there was already such a node, we add a new child
+        //but there might already be such a child, in that case
+        //we use it.
+        lastScope = previousScope.addChild(lastScope);
       }
     }
 
@@ -52,14 +57,17 @@ public final class ToothPick {
    * Otherwise a new scope is created.
    */
   public static Scope openScope(Object name) {
-    synchronized (ToothPick.class) {
-      Scope scope = MAP_KEY_TO_SCOPE.get(name);
-      if (scope == null) {
-        scope = new ScopeImpl(name);
-        MAP_KEY_TO_SCOPE.put(name, scope);
-      }
+    Scope scope = MAP_KEY_TO_SCOPE.get(name);
+    if (scope != null) {
       return scope;
     }
+    scope = new ScopeImpl(name);
+    Scope previous = MAP_KEY_TO_SCOPE.putIfAbsent(name, scope);
+    if (previous != null) {
+      //if there was already a scope by this name, we return it
+      scope = previous;
+    }
+    return scope;
   }
 
   /**
@@ -68,26 +76,25 @@ public final class ToothPick {
    *
    * @param name the name of the scope to close.
    */
+
   public static void closeScope(Object name) {
-    synchronized (ToothPick.class) {
-      Scope scope = MAP_KEY_TO_SCOPE.get(name);
-      if (scope != null) {
-        Scope parentScope = scope.getParentScope();
-        if (parentScope != null) {
-          parentScope.removeChild(scope);
-        }
-        removeScopeAndChildrenFromMap(scope);
+    //we remove the scope first, so that other threads don't see it, and see the next snapshot of the tree
+    Scope scope = MAP_KEY_TO_SCOPE.remove(name);
+    if (scope != null) {
+      Scope parentScope = scope.getParentScope();
+      if (parentScope != null) {
+        parentScope.removeChild(scope);
       }
+      removeScopeAndChildrenFromMap(scope);
     }
   }
 
   /**
    * Clears all scopes. Useful for testing and not getting any leak...
    */
+
   public static void reset() {
-    synchronized (ToothPick.class) {
-      MAP_KEY_TO_SCOPE.clear();
-    }
+    MAP_KEY_TO_SCOPE.clear();
     ScopeImpl.reset();
   }
 
@@ -101,15 +108,26 @@ public final class ToothPick {
     injector.inject(obj, scope);
   }
 
-  // Not synchronized, called by closeScope that is synchronized
+  /**
+   * Removes all nodes of {@code scope} using DFS. We don't lock here.
+   *
+   * @param scope the parent scope of which all children will recursively be removed
+   * from the map. We don't do anything else to the children nodes are they will be
+   * garbage collected soon. We just cut a whole sub-graph in the references graph of the JVM normally.
+   */
   private static void removeScopeAndChildrenFromMap(Scope scope) {
     MAP_KEY_TO_SCOPE.remove(scope.getName());
-    for (Scope childScope : scope.childrenScopes) {
+    for (Scope childScope : scope.childrenScopes.values()) {
       removeScopeAndChildrenFromMap(childScope);
     }
   }
 
   public static void setConfiguration(Configuration configuration) {
     Configuration.setConfiguration(configuration);
+  }
+
+  /*for testing.*/
+  static int getScopeNamesSize() {
+    return MAP_KEY_TO_SCOPE.size();
   }
 }

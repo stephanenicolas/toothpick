@@ -69,12 +69,12 @@ public class RegistryGenerator extends CodeGenerator {
     CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch($L)", "clazz.getName().replace('$','.')");
 
     for (TypeElement injectionTarget : registryInjectionTarget.injectionTargetList) {
-      switchBlockBuilder.add("case ($S):\n", injectionTarget.getQualifiedName().toString());
+      switchBlockBuilder.add("case ($S):" + LINE_SEPARATOR, injectionTarget.getQualifiedName().toString());
       String typeSimpleName = registryInjectionTarget.type.getSimpleName();
       switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, getGeneratedFQNClassName(injectionTarget), typeSimpleName);
     }
 
-    switchBlockBuilder.add("default:\n");
+    switchBlockBuilder.add("default:" + LINE_SEPARATOR);
     switchBlockBuilder.addStatement("return $L(clazz)", registryInjectionTarget.childrenGetterName);
     switchBlockBuilder.endControlFlow();
     getMethod.addCode(switchBlockBuilder.build());
