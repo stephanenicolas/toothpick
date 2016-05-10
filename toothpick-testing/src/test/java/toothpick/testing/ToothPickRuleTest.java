@@ -29,4 +29,9 @@ public class ToothPickRuleTest {
   public void testMock() {
     assertThat(JUnitCore.runClasses(TestMocking.class).wasSuccessful(), is(true));
   }
+
+  @Test
+  public void testBadRegistry() {
+    assertThat(JUnitCore.runClasses(TestBadRegistry.class).wasSuccessful(), is(true));
+  }
 }
