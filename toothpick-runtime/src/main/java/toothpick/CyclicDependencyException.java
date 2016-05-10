@@ -6,6 +6,7 @@ public class CyclicDependencyException extends RuntimeException {
 
   private static final int MARGIN_SIZE = 3;
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  ;
 
   public CyclicDependencyException() {
   }
