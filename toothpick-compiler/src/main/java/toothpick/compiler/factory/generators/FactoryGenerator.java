@@ -2,7 +2,6 @@ package toothpick.compiler.factory.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -40,7 +39,6 @@ public class FactoryGenerator extends CodeGenerator {
     TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(getGeneratedSimpleClassName(constructorInjectionTarget.builtClass) + FACTORY_SUFFIX)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addSuperinterface(parameterizedTypeName);
-    emitMemberInjector(factoryTypeSpec);
     emitCreateInstance(factoryTypeSpec);
     emitGetTargetScope(factoryTypeSpec);
     emitHasScopeAnnotation(factoryTypeSpec);
@@ -48,14 +46,6 @@ public class FactoryGenerator extends CodeGenerator {
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), factoryTypeSpec.build()).build();
     return javaFile.toString();
-  }
-
-  private void emitMemberInjector(TypeSpec.Builder builder) {
-    if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      FieldSpec.builder(ClassName.get(getGeneratedPackageName()))
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)",
-          getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection), varName);
-    }
   }
 
   @Override
