@@ -15,8 +15,8 @@ import toothpick.concurrency.threads.InstallBindingThread;
 import toothpick.concurrency.threads.ScopeToStringThread;
 import toothpick.concurrency.threads.TestableThread;
 import toothpick.concurrency.utils.ClassCreator;
+import toothpick.concurrency.utils.DynamicTestClassesFactoryRegistry;
 import toothpick.concurrency.utils.ThreadTestUtil;
-import toothpick.registries.FactoryRegistry;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistryLocator;
 
@@ -141,56 +141,6 @@ public class BindingsMultiThreadTest {
     assertTrue("Executor service should not timeout.", timeout);
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
-    }
-  }
-
-  private static class DynamicTestClassesFactory<T> implements Factory<T> {
-    private final Class<T> clazz;
-    private boolean scoped;
-
-    public DynamicTestClassesFactory(Class<T> clazz, boolean scoped) {
-      this.clazz = clazz;
-      this.scoped = scoped;
-    }
-
-    @Override
-    public T createInstance(Scope scope) {
-      try {
-        return clazz.newInstance();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public Scope getTargetScope(Scope currentScope) {
-      return currentScope;
-    }
-
-    @Override
-    public boolean hasScopeAnnotation() {
-      return scoped;
-    }
-
-    @Override
-    public boolean hasScopeInstancesAnnotation() {
-      return false;
-    }
-  }
-
-  private static class DynamicTestClassesFactoryRegistry implements FactoryRegistry {
-    private boolean scoped;
-
-    public DynamicTestClassesFactoryRegistry(boolean scoped) {
-      this.scoped = scoped;
-    }
-
-    @Override
-    public <T> Factory<T> getFactory(final Class<T> clazz) {
-      if (clazz.getName().startsWith("Class_")) {
-        return new DynamicTestClassesFactory<>(clazz, scoped);
-      }
-      return null;
     }
   }
 }
