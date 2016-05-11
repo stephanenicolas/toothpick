@@ -31,8 +31,9 @@ import static java.lang.String.format;
 public class ScopeImpl extends ScopeNode {
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-  private static IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToUnBoundProviders = new IdentityHashMap<>();
-  protected IdentityHashMap<Class, UnNamedAndNamedProviders> mapClassesToAllProviders = new IdentityHashMap<>();
+  private static IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedUnBoundProviders = new IdentityHashMap<>();
+  private IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders = new IdentityHashMap<>();
+  protected IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
 
   public ScopeImpl(Object name) {
@@ -113,10 +114,13 @@ public class ScopeImpl extends ScopeNode {
 
     builder.append("Providers: [");
     ArrayList<Class> sortedBoundProviderClassesList;
-    synchronized (mapClassesToAllProviders) {
-      sortedBoundProviderClassesList = new ArrayList(mapClassesToAllProviders.keySet());
-      Collections.sort(sortedBoundProviderClassesList, new ClassNameComparator());
+    synchronized (mapClassesToNamedBoundProviders) {
+      sortedBoundProviderClassesList = new ArrayList(mapClassesToNamedBoundProviders.keySet());
     }
+    synchronized (mapClassesToUnNamedBoundProviders) {
+      sortedBoundProviderClassesList.addAll(mapClassesToUnNamedBoundProviders.keySet());
+    }
+    Collections.sort(sortedBoundProviderClassesList, new ClassNameComparator());
     for (Class aClass : sortedBoundProviderClassesList) {
       builder.append(aClass.getName());
       builder.append(',');
@@ -150,10 +154,10 @@ public class ScopeImpl extends ScopeNode {
     if (getRootScope() == this) {
       builder.append("Unbound providers: [");
       ArrayList<Class> sortedUnboundProviderClassesList;
-      synchronized (mapClassesToUnBoundProviders) {
-        sortedUnboundProviderClassesList = new ArrayList(mapClassesToUnBoundProviders.keySet());
-        Collections.sort(sortedUnboundProviderClassesList, new ClassNameComparator());
+      synchronized (mapClassesToUnNamedUnBoundProviders) {
+        sortedUnboundProviderClassesList = new ArrayList(mapClassesToUnNamedUnBoundProviders.keySet());
       }
+      Collections.sort(sortedUnboundProviderClassesList, new ClassNameComparator());
 
       for (Class aClass : sortedUnboundProviderClassesList) {
         builder.append(aClass.getName());
@@ -349,22 +353,25 @@ public class ScopeImpl extends ScopeNode {
    * are a facade of this method and make the calls more clear.
    */
   private <T> InternalProviderImpl<? extends T> getInternalProvider(Class<T> clazz, String bindingName, boolean isBound) {
-    Map<Class, UnNamedAndNamedProviders> map;
-    if (isBound) {
-      map = mapClassesToAllProviders;
-    } else {
-      map = mapClassesToUnBoundProviders;
-    }
-
-    UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
-    if (unNamedAndNamedProviders == null) {
-      return null;
-    }
     if (bindingName == null) {
-      return unNamedAndNamedProviders.getUnNamedProvider();
+      if (isBound) {
+        synchronized (mapClassesToUnNamedBoundProviders) {
+          return mapClassesToUnNamedBoundProviders.get(clazz);
+        }
+      } else {
+        synchronized (mapClassesToUnNamedUnBoundProviders) {
+          return mapClassesToUnNamedUnBoundProviders.get(clazz);
+        }
+      }
+    } else {
+      synchronized (mapClassesToNamedBoundProviders) {
+        Map<String, InternalProviderImpl> mapNameToProvider = mapClassesToNamedBoundProviders.get(clazz);
+        if (mapNameToProvider == null) {
+          return null;
+        }
+        return mapNameToProvider.get(bindingName);
+      }
     }
-
-    return unNamedAndNamedProviders.getProvider(bindingName);
   }
 
   /**
@@ -422,69 +429,53 @@ public class ScopeImpl extends ScopeNode {
    */
   private <T> InternalProviderImpl installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider,
       boolean isBound) {
-    Map<Class, UnNamedAndNamedProviders> map;
-    if (isBound) {
-      map = mapClassesToAllProviders;
-    } else {
-      map = mapClassesToUnBoundProviders;
-    }
-
-    UnNamedAndNamedProviders<T> unNamedAndNamedProviders = map.get(clazz);
-    if (unNamedAndNamedProviders == null) {
-      synchronized (map) {
-        unNamedAndNamedProviders = map.get(clazz);
-        if (unNamedAndNamedProviders == null) {
-          unNamedAndNamedProviders = new UnNamedAndNamedProviders<>();
-          map.put(clazz, unNamedAndNamedProviders);
-        }
-      }
-    }
-    final InternalProviderImpl<? extends T> previousScopedProvider;
     if (bindingName == null) {
-      //we might overwrite a provider already present here in multi-thread. we don't care, we don't want to lock
-      //this is a highly common case.
-      previousScopedProvider = unNamedAndNamedProviders.setUnNamedProvider(internalProvider);
+      if (isBound) {
+        return installUnNamedProvider(mapClassesToUnNamedBoundProviders, clazz, internalProvider);
+      } else {
+        return installUnNamedProvider(mapClassesToUnNamedUnBoundProviders, clazz, internalProvider);
+      }
     } else {
-      previousScopedProvider = unNamedAndNamedProviders.putProvider(bindingName, internalProvider);
+      return installNamedProvider(mapClassesToNamedBoundProviders, clazz, bindingName, internalProvider);
     }
-    if (previousScopedProvider != null) {
-      return previousScopedProvider;
-    }
-    return internalProvider;
   }
 
-  private static class UnNamedAndNamedProviders<T> {
-    //we use the map to store also the unnamed provider, the key is a java keyword to make
-    //it kind of reserved by Toothpick
-    private final static String UN_NAMED_PROVIDER_KEY = "default";
-    private HashMap<String, InternalProviderImpl<? extends T>> mapNameToProvider = new HashMap<>();
+  private <T> InternalProviderImpl installNamedProvider(IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders,
+      Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
+    synchronized (mapClassesToNamedBoundProviders) {
+      Map<String, InternalProviderImpl> mapNameToProvider = mapClassesToNamedBoundProviders.get(clazz);
+      if (mapNameToProvider == null) {
+        mapNameToProvider = new HashMap<>(1);
+        mapClassesToNamedBoundProviders.put(clazz, mapNameToProvider);
+        mapNameToProvider.put(bindingName, internalProvider);
+        return internalProvider;
+      }
 
-    public InternalProviderImpl<? extends T> setUnNamedProvider(InternalProviderImpl<? extends T> unNamedProvider) {
-      return putProvider(UN_NAMED_PROVIDER_KEY, unNamedProvider);
-    }
-
-    public InternalProviderImpl<? extends T> getUnNamedProvider() {
-      return getProvider(UN_NAMED_PROVIDER_KEY);
-    }
-
-    public InternalProviderImpl<? extends T> getProvider(String bindingName) {
-      return mapNameToProvider.get(bindingName);
-    }
-
-    public synchronized InternalProviderImpl<? extends T> putProvider(String bindingName, InternalProviderImpl<? extends T> namedProvider) {
-      InternalProviderImpl<? extends T> internalProvider = mapNameToProvider.get(bindingName);
-      //there is no putIfAbsent in Android IdentityHashMap class !
-      if (internalProvider != null) {
+      InternalProviderImpl previous = mapNameToProvider.get(bindingName);
+      if (previous == null) {
+        mapNameToProvider.put(bindingName, internalProvider);
         return internalProvider;
       } else {
-        mapNameToProvider.put(bindingName, namedProvider);
-        return namedProvider;
+        return previous;
+      }
+    }
+  }
+
+  private <T> InternalProviderImpl installUnNamedProvider(IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedProviders, Class<T> clazz,
+      InternalProviderImpl<? extends T> internalProvider) {
+    synchronized (mapClassesToUnNamedProviders) {
+      InternalProviderImpl previous = mapClassesToUnNamedProviders.get(clazz);
+      if (previous == null) {
+        mapClassesToUnNamedProviders.put(clazz, internalProvider);
+        return internalProvider;
+      } else {
+        return previous;
       }
     }
   }
 
   static void reset() {
-    mapClassesToUnBoundProviders.clear();
+    mapClassesToUnNamedUnBoundProviders.clear();
   }
 
   private static class ClassNameComparator implements Comparator<Class> {
