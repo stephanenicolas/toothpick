@@ -100,6 +100,16 @@ public abstract class ScopeNode implements Scope {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || !(o instanceof Scope)) return false;
+
+    ScopeNode scopeNode = (ScopeNode) o;
+
+    return !(name != null ? !name.equals(scopeNode.name) : scopeNode.name != null);
+  }
+
+  @Override
   public int hashCode() {
     return name.hashCode();
   }
@@ -109,9 +119,9 @@ public abstract class ScopeNode implements Scope {
    */
   @Override
   public ScopeNode getParentScope() {
-    Iterator<ScopeNode> snapshotIterator = parentScopes.iterator();
-    boolean hasParent = snapshotIterator.hasNext();
-    return hasParent ? snapshotIterator.next() : null;
+    Iterator<ScopeNode> parentIterator = parentScopes.iterator();
+    boolean hasParent = parentIterator.hasNext();
+    return hasParent ? parentIterator.next() : null;
   }
 
   /**
@@ -172,8 +182,8 @@ public abstract class ScopeNode implements Scope {
   public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
     if (scopeAnnotationClass == Singleton.class) {
-      throw new IllegalArgumentException(
-          String.format("The annotation @Singleton is already bound to the root scope of any scope. It can be bound dynamically."));
+      throw new IllegalArgumentException(format("The annotation @Singleton is already bound "
+          + "to the root scope of any scope. It can't be bound dynamically."));
     }
 
     scopeAnnotationClasses.add(scopeAnnotationClass);
@@ -181,9 +191,11 @@ public abstract class ScopeNode implements Scope {
 
   @Override
   public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
-    if (scopeAnnotationClasses == null) {
-      return false;
+    if (scopeAnnotationClass == Singleton.class) {
+      throw new IllegalArgumentException(format("The annotation @Singleton is already bound "
+              + "to the root scope of any scope. It can't be tested dynamically."));
     }
+
     return scopeAnnotationClasses.contains(scopeAnnotationClass);
   }
 
@@ -206,7 +218,7 @@ public abstract class ScopeNode implements Scope {
     }
 
     //this variable is important. It takes a snapshot of the node
-    final ScopeNode parentScope = getParentScope();
+    final ScopeNode parentScope = child.getParentScope();
     if (parentScope == this) {
       return child;
     }
@@ -215,6 +227,8 @@ public abstract class ScopeNode implements Scope {
       throw new IllegalStateException(format("Scope %s already has a parent: %s which is not %s", child, parentScope, this));
     }
 
+    //non-locking allows multiple threads to arrive here,
+    //we take into account the first one only
     ScopeNode scope = childrenScopes.putIfAbsent(child.getName(), child);
     if (scope != null) {
       return scope;
@@ -232,6 +246,17 @@ public abstract class ScopeNode implements Scope {
       throw new IllegalArgumentException("Child must be non null.");
     }
 
+    //this variable is important. It takes a snapshot of the node
+    final ScopeNode parentScope = child.getParentScope();
+    if (parentScope == null) {
+      throw new IllegalStateException(format("The scope has no parent: %s", child.getName()));
+    }
+
+    if (parentScope != this) {
+      throw new IllegalStateException(format("The scope %s has parent: different of this: %s", //
+          child.getName(), parentScope.getName(), getName()));
+    }
+
     childrenScopes.remove(child.getName());
     //make the ex-child a new root.
     child.parentScopes.clear();
@@ -239,12 +264,12 @@ public abstract class ScopeNode implements Scope {
 
   private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
     if (!isScopeAnnotationClass(scopeAnnotationClass)) {
-      throw new IllegalArgumentException(
-          String.format("The annotation %s is not a scope annotation, it is not qualified by javax.inject.Scope.", scopeAnnotationClass.getName()));
+      throw new IllegalArgumentException(format("The annotation %s is not a scope annotation, "
+              + "it is not qualified by javax.inject.Scope.", scopeAnnotationClass.getName()));
     }
   }
 
   private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
-    return scopeAnnotationClass.getAnnotation(javax.inject.Scope.class) != null;
+    return scopeAnnotationClass.isAnnotationPresent(javax.inject.Scope.class);
   }
 }
