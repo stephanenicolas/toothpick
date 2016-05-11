@@ -16,11 +16,6 @@ public class ToothPickRule implements TestRule {
 
   public ToothPickRule(Object test) {
     this(test, null);
-    try {
-      throw new RuntimeException();
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-    }
   }
 
   public ToothPickRule(Object test, Object scopeName) {
@@ -72,6 +67,11 @@ public class ToothPickRule implements TestRule {
   }
 
   public <T> T getInstance(Class<T> clazz) {
-    return scope.getInstance(clazz);
+    return getInstance(clazz, null);
   }
+
+  public <T> T getInstance(Class<T> clazz, String name) {
+    return scope.getInstance(clazz, name);
+  }
+
 }
