@@ -76,7 +76,6 @@ public class ScopeImplTest extends ToothPickBaseTest {
   @Test(expected = IllegalStateException.class)
   public void installModule_shouldThrowAnException_whenModuleHasANullBinding() {
     //GIVEN
-    Foo testFoo = new Foo();
     ScopeImpl scope = new ScopeImpl("");
 
     //WHEN
@@ -84,6 +83,23 @@ public class ScopeImplTest extends ToothPickBaseTest {
 
     //THEN
     fail("Should throw an exception.");
+  }
+
+  /* TODO we should have unit tests for this and all this class
+  @Test
+  public void testLookup() {
+
+  }
+  */
+
+  @Test(expected = IllegalStateException.class)
+  public void testToBinding_shouldFail_whenAddingANullBinding() {
+    //GIVEN
+
+    //WHEN
+    new ScopeImpl("").toProvider(null);
+
+    //THEN
   }
 
   private static class TestModule extends Module {

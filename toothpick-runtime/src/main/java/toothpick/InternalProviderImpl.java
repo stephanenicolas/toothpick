@@ -13,20 +13,30 @@ public class InternalProviderImpl<T> {
   private Factory<T> factory;
   private Class<T> factoryClass;
   private volatile Provider<? extends T> providerInstance;
-  private boolean isLazy;
   private Factory<Provider<T>> providerFactory;
   private Class<Provider<T>> providerFactoryClass;
 
   public InternalProviderImpl(T instance) {
+    if (instance == null) {
+      throw new IllegalArgumentException("The instance can't be null.");
+    }
+
     this.instance = instance;
   }
 
-  public InternalProviderImpl(Provider<? extends T> providerInstance, boolean isLazy) {
+  public InternalProviderImpl(Provider<? extends T> providerInstance) {
+    if (providerInstance == null) {
+      throw new IllegalArgumentException("The provider can't be null.");
+    }
+
     this.providerInstance = providerInstance;
-    this.isLazy = isLazy;
   }
 
   public InternalProviderImpl(Factory<?> factory, boolean isProviderFactory) {
+    if (factory == null) {
+      throw new IllegalArgumentException("The factory can't be null.");
+    }
+
     if (isProviderFactory) {
       this.providerFactory = (Factory<Provider<T>>) factory;
     } else {
@@ -35,6 +45,10 @@ public class InternalProviderImpl<T> {
   }
 
   public InternalProviderImpl(Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
+    if (factoryKeyClass == null) {
+      throw new IllegalArgumentException("The factory class can't be null.");
+    }
+
     if (isProviderFactoryClass) {
       this.providerFactoryClass = (Class<Provider<T>>) factoryKeyClass;
     } else {
@@ -50,12 +64,6 @@ public class InternalProviderImpl<T> {
     }
 
     if (providerInstance != null) {
-      if (isLazy) {
-        instance = providerInstance.get();
-        //gc
-        providerInstance = null;
-        return instance;
-      }
       return providerInstance.get();
     }
 
@@ -98,6 +106,6 @@ public class InternalProviderImpl<T> {
       return providerFactory.createInstance(scope).get();
     }
 
-    throw new IllegalStateException("A provider can only be used with an instance, a provider, a factory or a provider factory.");
+    throw new IllegalStateException("A provider can only be used with an instance, a provider, a factory or a provider factory. Should not happen.");
   }
 }
