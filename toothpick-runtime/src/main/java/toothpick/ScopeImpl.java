@@ -244,7 +244,7 @@ public class ScopeImpl extends ScopeNode {
    * @return a provider associated to the {@code T}. The returned provider is un-scoped (remember that {@link ScopedProviderImpl} is a subclass of
    * {@link InternalProviderImpl}). The returned provider will be scoped by the public methods to use the current scope.
    */
-  private <T> InternalProviderImpl<? extends T> lookupProvider(Class<T> clazz, String bindingName) {
+  /* @VisibleForTesting */ <T> InternalProviderImpl<? extends T> lookupProvider(Class<T> clazz, String bindingName) {
     if (clazz == null) {
       throw new IllegalArgumentException("TP can't get an instance of a null class.");
     }
@@ -262,8 +262,19 @@ public class ScopeImpl extends ScopeNode {
       }
     }
 
+    //if the binding is named
+    //we couldn't find it in any scope, we must fail
+    //as only unnamed bindings can be created dynamically
+    if (bindingName != null) {
+      throw new RuntimeException(format("No binding was defined for class %s and name %s " //
+          + "in scope %s and its parents", clazz.getName(), bindingName, getName()));
+    }
+
+    //we now look for an unnamed binding
+    //bindingName = null;  <-- valid but fails checkstyle as we use null directly
+
     //check if we have a cached un-scoped provider
-    InternalProviderImpl unScopedProviderInPool = getUnBoundProvider(clazz, bindingName);
+    InternalProviderImpl unScopedProviderInPool = getUnBoundProvider(clazz, null);
     if (unScopedProviderInPool != null) {
       return unScopedProviderInPool;
     }
@@ -282,14 +293,14 @@ public class ScopeImpl extends ScopeNode {
       //it is bound to its target scope only if it has a scope annotation.
       //lock free installing a provider means there could have been one set concurrently since last testing
       //its value. We allow to return it here
-      return targetScopeImpl.installScopedProvider(clazz, bindingName, newProvider);
+      return targetScopeImpl.installScopedProvider(clazz, null, newProvider);
     } else {
       //the provider is but in a pool of unbound providers for later reuse
       final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
       //the pool is static as it is accessible from all scopes
       //lock free installing a provider means there could have been one set concurrently since last testing
       //its value. We allow to return it here
-      return installUnBoundProvider(clazz, bindingName, newProvider);
+      return installUnBoundProvider(clazz, null, newProvider);
     }
   }
 

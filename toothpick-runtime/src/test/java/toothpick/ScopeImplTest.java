@@ -92,6 +92,16 @@ public class ScopeImplTest extends ToothPickBaseTest {
   }
   */
 
+  @Test(expected = RuntimeException.class)
+  public void testLookup_shouldFail_whenNotFindingABindingForANamedProvider() {
+    //GIVEN
+    //WHEN
+    new ScopeImpl("").lookupProvider(Foo.class, "Bar");
+
+    //THEN
+    fail("Should throw an exception");
+  }
+
   @Test(expected = IllegalStateException.class)
   public void testToBinding_shouldFail_whenAddingANullBinding() {
     //GIVEN

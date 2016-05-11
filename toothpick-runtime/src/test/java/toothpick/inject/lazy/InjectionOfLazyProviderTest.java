@@ -46,7 +46,7 @@ public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
     Scope scope = new ScopeImpl("");
     scope.installModules(new Module() {
       {
-        bind(Bar.class).withName("Foo").to(Bar.class);
+        bind(Bar.class).withName("foo").to(Bar.class);
       }
     });
     FooWithNamedLazy fooWithLazy = new FooWithNamedLazy();
