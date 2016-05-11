@@ -209,7 +209,7 @@ public class ScopeImpl extends ScopeNode {
       case PROVIDER_INSTANCE:
         // to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
         // We do not need to pass the scope here because the provider won't use any scope to create the instance
-        return new InternalProviderImpl<>(binding.getProviderInstance(), false);
+        return new InternalProviderImpl<>(binding.getProviderInstance());
       case PROVIDER_CLASS:
         return createInternalProvider(this, binding.getProviderClass(), true, binding.isScoped());
       //JACOCO:OFF
