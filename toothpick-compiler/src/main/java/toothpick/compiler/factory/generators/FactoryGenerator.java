@@ -2,6 +2,7 @@ package toothpick.compiler.factory.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -9,6 +10,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 import toothpick.Factory;
+import toothpick.MemberInjector;
 import toothpick.Scope;
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
@@ -39,6 +41,7 @@ public class FactoryGenerator extends CodeGenerator {
     TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(getGeneratedSimpleClassName(constructorInjectionTarget.builtClass) + FACTORY_SUFFIX)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .addSuperinterface(parameterizedTypeName);
+    emitSuperMemberInjectorFieldIfNeeded(factoryTypeSpec);
     emitCreateInstance(factoryTypeSpec);
     emitGetTargetScope(factoryTypeSpec);
     emitHasScopeAnnotation(factoryTypeSpec);
@@ -46,6 +49,19 @@ public class FactoryGenerator extends CodeGenerator {
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), factoryTypeSpec.build()).build();
     return javaFile.toString();
+  }
+
+  private void emitSuperMemberInjectorFieldIfNeeded(TypeSpec.Builder scopeMemberTypeSpec) {
+    if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
+      ClassName superTypeThatNeedsInjection = ClassName.get(constructorInjectionTarget.superClassThatNeedsMemberInjection);
+      ParameterizedTypeName memberInjectorSuperParameterizedTypeName =
+          ParameterizedTypeName.get(ClassName.get(MemberInjector.class), superTypeThatNeedsInjection);
+      FieldSpec.Builder superMemberInjectorField =
+          FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "memberInjector", Modifier.PRIVATE)
+              //TODO use proper typing here
+              .initializer("new $L$$$$MemberInjector()", getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection));
+      scopeMemberTypeSpec.addField(superMemberInjectorField.build());
+    }
   }
 
   @Override
@@ -92,8 +108,7 @@ public class FactoryGenerator extends CodeGenerator {
     localVarStatement.append(")");
     createInstanceBuilder.addStatement(localVarStatement.toString());
     if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      createInstanceBuilder.addStatement("new $L$$$$MemberInjector().inject($L, scope)",
-          getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection), varName);
+      createInstanceBuilder.addStatement("memberInjector.inject($L, scope)", varName);
     }
     createInstanceBuilder.addStatement("return $L", varName);
 
