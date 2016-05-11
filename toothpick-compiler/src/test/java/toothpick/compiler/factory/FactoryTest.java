@@ -169,14 +169,16 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
+        "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection$$MemberInjector();", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
+        "    memberInjector.inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
@@ -217,14 +219,17 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
+        "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
         "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection$$MemberInjector();", //
+
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
         "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
-        "    new test.TestAClassThatNeedsInjection$$MemberInjector().inject(testAClassThatNeedsInjection, scope);", //
+        "    memberInjector.inject(testAClassThatNeedsInjection, scope);", //
         "    return testAClassThatNeedsInjection;", //
         "  }", //
         "  @Override", //
