@@ -11,6 +11,9 @@
       <br/>
       <a alt="Coverage Status" href="https://coveralls.io/github/stephanenicolas/toothpick?branch=master">
       <img src="https://coveralls.io/repos/github/stephanenicolas/toothpick/badge.svg?branch=master"/></a>
+      <br/>
+      <a alt="License" href="https://raw.githubusercontent.com/stephanenicolas/toothpick/master/LICENSE">
+      <img src="http://img.shields.io/:license-apache-blue.svg"/></a>
     </td>
   </tr>
 </table>
