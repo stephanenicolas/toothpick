@@ -4,18 +4,24 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import toothpick.config.Binding;
+import toothpick.registries.FactoryRegistryLocator;
 
 import static java.lang.String.format;
 
+/**
+ *
+ */
 public abstract class Configuration {
 
-  /*package-private.*/ static Configuration instance;
+  public static Configuration instance;
 
   abstract void checkIllegalBinding(Binding binding);
 
   abstract void checkCyclesStart(Class clazz);
 
   abstract void checkCyclesEnd(Class clazz);
+
+  public abstract <T> Factory<T> getFactory(Class<T> clazz);
 
   static {
     //default mode is production
@@ -70,6 +76,11 @@ public abstract class Configuration {
       void checkCyclesEnd(Class clazz) {
         cycleDetectionStack.get().remove(clazz);
       }
+
+      @Override
+      public <T> Factory<T> getFactory(Class<T> clazz) {
+        return FactoryRegistryLocator.getFactoryUsingReflection(clazz);
+      }
     };
   }
 
@@ -88,6 +99,35 @@ public abstract class Configuration {
       @Override
       void checkCyclesEnd(Class clazz) {
         //do nothing
+      }
+
+      @Override
+      public <T> Factory<T> getFactory(Class<T> clazz) {
+        return FactoryRegistryLocator.getFactoryUsingReflection(clazz);
+      }
+    };
+  }
+
+  public static Configuration reflectionFree() {
+    return new Configuration() {
+      @Override
+      void checkIllegalBinding(Binding binding) {
+        //do nothing
+      }
+
+      @Override
+      void checkCyclesStart(Class clazz) {
+        //do nothing
+      }
+
+      @Override
+      void checkCyclesEnd(Class clazz) {
+        //do nothing
+      }
+
+      @Override
+      public <T> Factory<T> getFactory(Class<T> clazz) {
+        return FactoryRegistryLocator.getFactoryUsingRegistries(clazz);
       }
     };
   }
