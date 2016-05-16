@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import toothpick.config.Binding;
 import toothpick.registries.FactoryRegistryLocator;
+import toothpick.registries.MemberInjectorRegistryLocator;
 
 import static java.lang.String.format;
 
@@ -18,13 +19,15 @@ public abstract class Configuration {
 
   public static Configuration instance = production();
 
-  abstract void checkIllegalBinding(Binding binding);
+  public abstract void checkIllegalBinding(Binding binding);
 
-  abstract void checkCyclesStart(Class clazz);
+  public abstract void checkCyclesStart(Class clazz);
 
-  abstract void checkCyclesEnd(Class clazz);
+  public abstract void checkCyclesEnd(Class clazz);
 
   public abstract <T> Factory<T> getFactory(Class<T> clazz);
+
+  public abstract <T> MemberInjector<T> getMemberInjector(Class<T> clazz);
 
   /**
    * Allows to pass custom configurations.
@@ -80,20 +83,25 @@ public abstract class Configuration {
   private static class BaseConfiguration extends Configuration {
 
     @Override
-    void checkIllegalBinding(Binding binding) {
+    public void checkIllegalBinding(Binding binding) {
     }
 
     @Override
-    void checkCyclesStart(Class clazz) {
+    public void checkCyclesStart(Class clazz) {
     }
 
     @Override
-    void checkCyclesEnd(Class clazz) {
+    public void checkCyclesEnd(Class clazz) {
     }
 
     @Override
     public <T> Factory<T> getFactory(Class<T> clazz) {
       return FactoryRegistryLocator.getFactoryUsingReflection(clazz);
+    }
+
+    @Override
+    public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
+      return MemberInjectorRegistryLocator.getMemberInjectorUsingReflection(clazz);
     }
   }
 
@@ -108,7 +116,7 @@ public abstract class Configuration {
     };
 
     @Override
-    void checkIllegalBinding(Binding binding) {
+    public void checkIllegalBinding(Binding binding) {
       Class<?> clazz;
       switch (binding.getMode()) {
         case SIMPLE:
@@ -132,7 +140,7 @@ public abstract class Configuration {
     }
 
     @Override
-    void checkCyclesStart(Class clazz) {
+    public void checkCyclesStart(Class clazz) {
       if (cycleDetectionStack.get().contains(clazz)) {
         throw new CyclicDependencyException(new ArrayList<>(cycleDetectionStack.get()), clazz);
       }
@@ -141,13 +149,18 @@ public abstract class Configuration {
     }
 
     @Override
-    void checkCyclesEnd(Class clazz) {
+    public void checkCyclesEnd(Class clazz) {
       cycleDetectionStack.get().remove(clazz);
     }
 
     @Override
     public <T> Factory<T> getFactory(Class<T> clazz) {
       return FactoryRegistryLocator.getFactoryUsingReflection(clazz);
+    }
+
+    @Override
+    public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
+      return MemberInjectorRegistryLocator.getMemberInjectorUsingReflection(clazz);
     }
   }
 
@@ -162,6 +175,11 @@ public abstract class Configuration {
     @Override
     public <T> Factory<T> getFactory(Class<T> clazz) {
       return FactoryRegistryLocator.getFactoryUsingRegistries(clazz);
+    }
+
+    @Override
+    public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
+      return MemberInjectorRegistryLocator.getMemberInjectorUsingRegistries(clazz);
     }
   }
 }
