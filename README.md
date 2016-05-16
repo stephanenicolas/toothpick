@@ -18,6 +18,11 @@
       <a alt="Maven Central" href="http://search.maven.org/#search|gav|1|g:'com.github.stephanenicolas'%20AND%20a:'toothpick'">
       <img src="https://img.shields.io/maven-central/v/com.github.stephanenicolas/toothpick.svg?maxAge=2592000"/></a>
     </td>
+    <td>
+      <a href="https://github.com/stephanenicolas/toothpick/wiki">
+      Visit TP wiki !
+      </a>
+    </td>
   </tr>
 </table>
 
