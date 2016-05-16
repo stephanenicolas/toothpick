@@ -8,9 +8,13 @@ import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
+import toothpick.data.FooChildMaskingMember;
+import toothpick.data.FooParentMaskingMember;
 
 import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -32,6 +36,20 @@ public class InjectionWithoutModuleTest extends ToothPickBaseTest {
     //THEN
     assertThat(foo.bar, notNullValue());
     assertThat(foo.bar, isA(Bar.class));
+  }
+
+  @Test
+  public void testInjection_shouldFail_whenFieldsAreMasked() throws Exception {
+    //GIVEN
+    Scope scope = new ScopeImpl("");
+
+    //WHEN
+    FooChildMaskingMember fooChildMaskingMember = scope.getInstance(FooChildMaskingMember.class);
+    String parentBarToString = fooChildMaskingMember.toString();
+
+    //THEN
+    assertThat(parentBarToString, notNullValue());
+    assertThat(fooChildMaskingMember.bar, not(sameInstance(((FooParentMaskingMember) fooChildMaskingMember).bar)));
   }
 
   @Test
