@@ -30,7 +30,7 @@
  
 ToothPick is a scope tree based Dependency Injection (DI) library for Java.
 
-It is a full-featured, runtime based, but reflection free, implementation of [JSR 330](https://jcp.org/en/jsr/detail?id=330).
+It is a full-featured, runtime based, but reflection free, implementation of [JSR 330](https://github.com/stephanenicolas/toothpick/wiki/Relation-to-JSR-330).
 
 ## What does ToothPick offer ?
 
@@ -54,12 +54,12 @@ Fragment 1
 
 ToothPick is :
 * pure java
-* [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but annotation processing
-* simple, flexible, extensible & powerful, robust & tested
+* [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but [annotation processing](https://github.com/stephanenicolas/toothpick/wiki/Factories-and-Member-Injectors)
+* simple, flexible, extensible & powerful, [robust & tested](https://coveralls.io/github/stephanenicolas/toothpick?branch=master)
 * thread safe
-* [documented](https://github.com/stephanenicolas/toothpick/wiki) & Open Source 
-* scope safe : it enforces leak free apps
-* test oriented : it makes tests easier
+* [documented](https://github.com/stephanenicolas/toothpick/wiki) & [Open Source](https://raw.githubusercontent.com/stephanenicolas/toothpick/master/LICENSE)
+* [scope safe](https://github.com/stephanenicolas/toothpick/wiki/Scope-Resolution) : it enforces leak free apps
+* [test oriented](https://github.com/stephanenicolas/toothpick/blob/master/toothpick-sample/src/test/java/toothpick/sample/SimpleEntryPointTestWithRules.java) : it makes tests easier
 * it works very well with Android or any other context based framework (such as web containers)
 
 Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.com/stephanenicolas/toothpick/blob/master/smoothie-sample/src/main/java/com/example/smoothie/RxMVPActivity.java) !
