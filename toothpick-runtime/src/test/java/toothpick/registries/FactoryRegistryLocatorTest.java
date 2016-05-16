@@ -1,8 +1,11 @@
 package toothpick.registries;
 
+import org.junit.Before;
 import org.junit.Test;
+import toothpick.Configuration;
 import toothpick.Factory;
 import toothpick.Scope;
+import toothpick.ToothPick;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
 import toothpick.registries.factory.AbstractFactoryRegistry;
@@ -12,6 +15,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class FactoryRegistryLocatorTest {
+
+  @Before
+  public void setUp() throws Exception {
+    ToothPick.setConfiguration(Configuration.reflectionFree());
+  }
 
   @Test(expected = RuntimeException.class)
   public void testGetFactory_shouldThrowAnException_whenThereAreNoRegistries() throws Exception {

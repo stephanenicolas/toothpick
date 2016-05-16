@@ -51,7 +51,7 @@ public class FactoryRegistryLocator {
 
   public static <T> Factory<T> getFactoryUsingReflection(Class<T> clazz) {
     try {
-      Class<? extends Factory<T>> factoryClass = (Class<? extends Factory<T>>) Class.forName(clazz.getName()+"$$Factory");
+      Class<? extends Factory<T>> factoryClass = (Class<? extends Factory<T>>) Class.forName(clazz.getName() + "$$Factory");
       return factoryClass.newInstance();
     } catch (Exception e) {
       throw new NoFactoryFoundException(clazz, e);
