@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class BaseFactoryTest {
-  protected void assertThatCompileWithoutErrorButNoFactoryIsNotCreated(JavaFileObject source, String noFactoryPackageName, String noFactoryClass) {
+  protected void assertThatCompileWithoutErrorButNoFactoryIsCreated(JavaFileObject source, String noFactoryPackageName, String noFactoryClass) {
     try {
       assert_().about(javaSource())
           .that(source)

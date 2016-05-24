@@ -48,5 +48,7 @@ public class TestInjectionAndGetInstance {
   }
 
   public static class Dependency {
+    @Inject public Dependency() {
+    }
   }
 }

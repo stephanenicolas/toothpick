@@ -9,7 +9,7 @@ import org.junit.Test;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
-public class OptimisticFactoryForScopeInstancesTest extends BaseFactoryTest {
+public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
   @Test
   public void testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsNoScopeAnnotation() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForHasScopeInstances", Joiner.on('\n').join(//
