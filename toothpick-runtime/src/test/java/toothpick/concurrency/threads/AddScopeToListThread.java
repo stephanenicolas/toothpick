@@ -3,7 +3,7 @@ package toothpick.concurrency.threads;
 import java.util.List;
 import toothpick.NodeUtil;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class AddScopeToListThread extends TestableThread {
   static final int ACCEPTANCE_THRESHOLD = 50;
@@ -27,7 +27,7 @@ public class AddScopeToListThread extends TestableThread {
     Object name = scopeName.getName();
     Object newScopeName = new Object();
     scopeNames.add(newScopeName);
-    ToothPick.openScopes(name, newScopeName);
+    Toothpick.openScopes(name, newScopeName);
     setIsSuccessful(true);
   }
 }

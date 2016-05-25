@@ -4,7 +4,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistry;
@@ -29,7 +29,7 @@ public class ToothPickRule implements TestRule {
     if (scope != null) {
       throw new IllegalStateException("scope is already initialized, use a constructor without a scope name for the rule.");
     }
-    scope = ToothPick.openScope(scopeName);
+    scope = Toothpick.openScope(scopeName);
     scope.installTestModules(testModule);
   }
 
@@ -38,7 +38,7 @@ public class ToothPickRule implements TestRule {
     try {
       return base;
     } finally {
-      ToothPick.reset();
+      Toothpick.reset();
     }
   }
 
@@ -51,7 +51,7 @@ public class ToothPickRule implements TestRule {
   }
 
   public void inject(Object objectUnderTest) {
-    ToothPick.inject(objectUnderTest, scope);
+    Toothpick.inject(objectUnderTest, scope);
   }
 
   public ToothPickRule setRootRegistryPackage(String rootRegistryPackageName) {

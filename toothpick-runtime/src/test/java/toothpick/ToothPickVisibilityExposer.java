@@ -5,6 +5,6 @@ public class ToothPickVisibilityExposer {
   }
 
   public static int getScopeNamesSize() {
-    return ToothPick.getScopeNamesSize();
+    return Toothpick.getScopeNamesSize();
   }
 }

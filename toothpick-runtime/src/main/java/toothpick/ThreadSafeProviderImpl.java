@@ -3,7 +3,7 @@ package toothpick;
 import javax.inject.Provider;
 
 /**
- * A thread safe internal provider. It will be exposed outside of ToothPick.
+ * A thread safe internal provider. It will be exposed outside of Toothpick.
  *
  * @param <T> the class of the instances provided by this provider.
  */

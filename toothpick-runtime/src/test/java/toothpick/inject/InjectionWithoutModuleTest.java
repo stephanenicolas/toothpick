@@ -3,7 +3,7 @@ package toothpick.inject;
 import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
@@ -31,7 +31,7 @@ public class InjectionWithoutModuleTest extends ToothPickBaseTest {
     Foo foo = new Foo();
 
     //WHEN
-    ToothPick.inject(foo, scope);
+    Toothpick.inject(foo, scope);
 
     //THEN
     assertThat(foo.bar, notNullValue());
@@ -56,17 +56,17 @@ public class InjectionWithoutModuleTest extends ToothPickBaseTest {
   public void testInjection_shouldWork_whenInheritingBinding() throws Exception {
     //GIVEN
 
-    Scope scope = ToothPick.openScope("root");
+    Scope scope = Toothpick.openScope("root");
     scope.installModules(new Module() {
       {
         bind(Foo.class).to(Foo.class);
       }
     });
-    Scope childScope = ToothPick.openScopes("root", "child");
+    Scope childScope = Toothpick.openScopes("root", "child");
     Foo foo = new Foo();
 
     //WHEN
-    ToothPick.inject(foo, childScope);
+    Toothpick.inject(foo, childScope);
 
     //THEN
     assertThat(foo.bar, notNullValue());
@@ -80,7 +80,7 @@ public class InjectionWithoutModuleTest extends ToothPickBaseTest {
     NotInjectable notInjectable = new NotInjectable();
 
     //WHEN
-    ToothPick.inject(notInjectable, scope);
+    Toothpick.inject(notInjectable, scope);
 
     //THEN
     fail("Should throw an exception");

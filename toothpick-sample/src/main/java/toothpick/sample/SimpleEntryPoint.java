@@ -2,7 +2,7 @@ package toothpick.sample;
 
 import javax.inject.Inject;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class SimpleEntryPoint {
 
@@ -15,8 +15,8 @@ public class SimpleEntryPoint {
   }
 
   public SimpleEntryPoint() {
-    Scope scope = ToothPick.openScope("SimpleEntryPoint");
-    ToothPick.inject(this, scope);
+    Scope scope = Toothpick.openScope("SimpleEntryPoint");
+    Toothpick.inject(this, scope);
   }
 
   public int multiply() {

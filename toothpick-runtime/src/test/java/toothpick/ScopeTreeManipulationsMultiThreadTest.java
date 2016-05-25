@@ -20,12 +20,12 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
   @Before
   public void setUp() throws Exception {
-    ToothPick.openScope(ROOT_SCOPE);
+    Toothpick.openScope(ROOT_SCOPE);
   }
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test

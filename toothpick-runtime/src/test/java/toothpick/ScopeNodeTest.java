@@ -16,7 +16,7 @@ public class ScopeNodeTest {
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -57,8 +57,8 @@ public class ScopeNodeTest {
   @Test
   public void testGetParentScope_shouldReturnRootScope_whenAskedForSingleton() {
     //GIVEN
-    Scope parentScope = ToothPick.openScope("root");
-    Scope childScope = ToothPick.openScopes("root", "child");
+    Scope parentScope = Toothpick.openScope("root");
+    Scope childScope = Toothpick.openScopes("root", "child");
 
     //WHEN
     Scope scope = childScope.getParentScope(Singleton.class);
@@ -70,7 +70,7 @@ public class ScopeNodeTest {
   @Test
   public void testGetParentScope_shouldReturnItself_whenBoundToScopeAnnotation() {
     //GIVEN
-    Scope childScope = ToothPick.openScopes("root", "child");
+    Scope childScope = Toothpick.openScopes("root", "child");
     childScope.bindScopeAnnotation(CustomScope.class);
 
     //WHEN
@@ -83,9 +83,9 @@ public class ScopeNodeTest {
   @Test
   public void testGetParentScope_shouldReturnParentScope_whenParentBoundToScopeAnnotation() {
     //GIVEN
-    Scope parentScope = ToothPick.openScope("root");
+    Scope parentScope = Toothpick.openScope("root");
     parentScope.bindScopeAnnotation(CustomScope.class);
-    Scope childScope = ToothPick.openScopes("root", "child");
+    Scope childScope = Toothpick.openScopes("root", "child");
 
     //WHEN
     Scope scope = childScope.getParentScope(CustomScope.class);
@@ -97,7 +97,7 @@ public class ScopeNodeTest {
   @Test(expected = IllegalStateException.class)
   public void testGetParentScope_shouldFail_whenNoParentBoundToScopeAnnotation() {
     //GIVEN
-    Scope scope = ToothPick.openScope("root");
+    Scope scope = Toothpick.openScope("root");
 
     //WHEN
     scope.getParentScope(CustomScope.class);
@@ -109,7 +109,7 @@ public class ScopeNodeTest {
   @Test(expected = IllegalArgumentException.class)
   public void testGetParentScope_shouldFail_WhenAnnotationIsNotAScope() {
     //GIVEN
-    Scope scope = ToothPick.openScope("root");
+    Scope scope = Toothpick.openScope("root");
 
     //WHEN
     scope.getParentScope(NotAScope.class);
@@ -121,7 +121,7 @@ public class ScopeNodeTest {
   @Test
   public void testGetRootScope_shouldReturnNodeItselfI_whenRoot() {
     //GIVEN
-    Scope parentScope = ToothPick.openScope("root");
+    Scope parentScope = Toothpick.openScope("root");
 
     //WHEN
     Scope scope = parentScope.getRootScope();
@@ -133,8 +133,8 @@ public class ScopeNodeTest {
   @Test
   public void testGetRootScope_shouldReturnRootScope_whenHasParent() {
     //GIVEN
-    Scope parentScope = ToothPick.openScope("root");
-    Scope childScope = ToothPick.openScopes("root", "child");
+    Scope parentScope = Toothpick.openScope("root");
+    Scope childScope = Toothpick.openScopes("root", "child");
 
     //WHEN
     Scope scope = childScope.getRootScope();
@@ -146,7 +146,7 @@ public class ScopeNodeTest {
   @Test(expected = IllegalArgumentException.class)
   public void testBindScopeAnnotation_shouldFail_whenSingleton() {
     //GIVEN
-    Scope scope = ToothPick.openScope("root");
+    Scope scope = Toothpick.openScope("root");
 
     //WHEN
     scope.bindScopeAnnotation(Singleton.class);
@@ -158,7 +158,7 @@ public class ScopeNodeTest {
   @Test(expected = IllegalArgumentException.class)
   public void testBindScopeAnnotation_shouldFail_whenAnnotationIsNotAScope() {
     //GIVEN
-    Scope scope = ToothPick.openScope("root");
+    Scope scope = Toothpick.openScope("root");
 
     //WHEN
     scope.bindScopeAnnotation(NotAScope.class);
@@ -170,7 +170,7 @@ public class ScopeNodeTest {
   @Test
   public void testBindScopeAnnotation_shouldReturnFalse_whenNotBound() {
     //GIVEN
-    Scope scope = ToothPick.openScope("root");
+    Scope scope = Toothpick.openScope("root");
 
     //WHEN
     boolean isBoundToScopeAnnotation = scope.isBoundToScopeAnnotation(CustomScope.class);
@@ -182,7 +182,7 @@ public class ScopeNodeTest {
   @Test
   public void testBindScopeAnnotation_shouldReturnTrue_whenBound() {
     //GIVEN
-    Scope parentScope = ToothPick.openScope("root");
+    Scope parentScope = Toothpick.openScope("root");
     parentScope.bindScopeAnnotation(CustomScope.class);
 
     //WHEN
@@ -195,7 +195,7 @@ public class ScopeNodeTest {
   @Test(expected = IllegalArgumentException.class)
   public void testBindScopeAnnotation_shouldFail_whenAskedForSingleton() {
     //GIVEN
-    Scope parentScope = ToothPick.openScope("root");
+    Scope parentScope = Toothpick.openScope("root");
 
     //WHEN
     parentScope.isBoundToScopeAnnotation(Singleton.class);

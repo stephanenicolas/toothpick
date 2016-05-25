@@ -14,7 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.inject.Inject;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.smoothie.module.ActivityModule;
 
 public class PersistActivity extends Activity {
@@ -29,10 +29,10 @@ public class PersistActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
+    scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new ActivityModule(this));
     super.onCreate(savedInstanceState);
-    ToothPick.inject(this, scope);
+    Toothpick.inject(this, scope);
 
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
@@ -43,7 +43,7 @@ public class PersistActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.closeScope(this);
+    Toothpick.closeScope(this);
     super.onDestroy();
   }
 
@@ -51,7 +51,7 @@ public class PersistActivity extends Activity {
   public void onBackPressed() {
     //when we leave the presenter flow,
     //we close its scope
-    ToothPick.closeScope(PRESENTER_SCOPE);
+    Toothpick.closeScope(PRESENTER_SCOPE);
     super.onBackPressed();
   }
 

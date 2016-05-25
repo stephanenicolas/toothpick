@@ -4,7 +4,7 @@ import org.junit.Test;
 import toothpick.Lazy;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.ToothPickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
@@ -28,7 +28,7 @@ public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
     FooWithLazy fooWithLazy = new FooWithLazy();
 
     //WHEN
-    ToothPick.inject(fooWithLazy, scope);
+    Toothpick.inject(fooWithLazy, scope);
 
     //THEN
     assertThat(fooWithLazy.bar, notNullValue());
@@ -52,7 +52,7 @@ public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
     FooWithNamedLazy fooWithLazy = new FooWithNamedLazy();
 
     //WHEN
-    ToothPick.inject(fooWithLazy, scope);
+    Toothpick.inject(fooWithLazy, scope);
 
     //THEN
     assertThat(fooWithLazy.bar, notNullValue());

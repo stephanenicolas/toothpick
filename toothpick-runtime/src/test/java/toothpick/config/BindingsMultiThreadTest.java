@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import toothpick.Factory;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.concurrency.threads.GetInstanceThread;
 import toothpick.concurrency.threads.InstallBindingThread;
 import toothpick.concurrency.threads.ScopeToStringThread;
@@ -31,13 +31,13 @@ public class BindingsMultiThreadTest {
 
   @Before
   public void setUp() throws Exception {
-    ToothPick.openScope(ROOT_SCOPE);
+    Toothpick.openScope(ROOT_SCOPE);
     scopeNames.clear();
   }
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
     FactoryRegistryLocator.setRootRegistry(null);
     MemberInjectorRegistryLocator.setRootRegistry(null);
     ThreadTestUtil.shutdown();

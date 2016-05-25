@@ -9,7 +9,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.config.Module;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -24,7 +24,7 @@ public class SimpleActivityTest {
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test
@@ -36,7 +36,7 @@ public class SimpleActivityTest {
 
     ActivityController<SimpleActivity> controllerSimpleActivity = Robolectric.buildActivity(SimpleActivity.class);
     SimpleActivity activity = controllerSimpleActivity.get();
-    Scope scope = ToothPick.openScope(activity);
+    Scope scope = Toothpick.openScope(activity);
     //or new ToothPickTestModule(this)
     scope.installTestModules(new TestModule(mockContextNamer));
     replay(mockContextNamer);

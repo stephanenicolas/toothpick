@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.config.Module;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistryLocator;
@@ -34,7 +34,7 @@ public class SimpleEntryPointTest {
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test
@@ -44,7 +44,7 @@ public class SimpleEntryPointTest {
     expect(mockComputer2.compute()).andReturn(4);
     replay(mockComputer, mockComputer2);
 
-    final Scope scope = ToothPick.openScope("SimpleEntryPoint");
+    final Scope scope = Toothpick.openScope("SimpleEntryPoint");
     scope.installTestModules(new TestModule());
 
     //WHEN

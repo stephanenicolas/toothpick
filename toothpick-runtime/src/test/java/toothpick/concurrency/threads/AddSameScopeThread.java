@@ -1,6 +1,6 @@
 package toothpick.concurrency.threads;
 
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class AddSameScopeThread extends TestableThread {
   static int instanceNumber = 0;
@@ -15,7 +15,7 @@ public class AddSameScopeThread extends TestableThread {
 
   @Override
   public void doRun() {
-    ToothPick.openScopes(parentScopeName, childScopeName);
+    Toothpick.openScopes(parentScopeName, childScopeName);
     setIsSuccessful(true);
   }
 }

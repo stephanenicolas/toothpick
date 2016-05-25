@@ -28,7 +28,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -42,7 +42,7 @@ public class ApplicationModuleTest {
     //GIVEN
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;
-    Scope appScope = ToothPick.openScope(application);
+    Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new ApplicationModule(application));
 
     //WHEN
@@ -69,7 +69,7 @@ public class ApplicationModuleTest {
     //GIVEN
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;
-    Scope appScope = ToothPick.openScope(application);
+    Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new ApplicationModule(application));
 
     //WHEN

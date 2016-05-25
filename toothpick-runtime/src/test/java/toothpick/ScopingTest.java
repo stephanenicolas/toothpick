@@ -180,7 +180,7 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingIsSimple() throws Exception {
     //GIVEN
-    ToothPick.setConfiguration(development());
+    Toothpick.setConfiguration(development());
     ScopeNode scopeParent = new ScopeImpl("");
     ScopeNode scope1 = new ScopeImpl("scope1");
     ScopeNode scope2 = new ScopeImpl("scope2");
@@ -201,7 +201,7 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAClass() throws Exception {
     //GIVEN
-    ToothPick.setConfiguration(development());
+    Toothpick.setConfiguration(development());
     ScopeNode scopeParent = new ScopeImpl("");
     ScopeNode scope1 = new ScopeImpl("scope1");
     ScopeNode scope2 = new ScopeImpl("scope2");
@@ -222,7 +222,7 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAProvider() throws Exception {
     //GIVEN
-    ToothPick.setConfiguration(development());
+    Toothpick.setConfiguration(development());
     ScopeNode scopeParent = new ScopeImpl("");
     ScopeNode scope1 = new ScopeImpl("");
     ScopeNode scope2 = new ScopeImpl("");
@@ -243,7 +243,7 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void binding_shouldCreateAnnotatedClassInRootScope_whenInjectingSingletonAnnotatedClass() throws Exception {
     //GIVEN
-    ToothPick.setConfiguration(development());
+    Toothpick.setConfiguration(development());
     ScopeNode scopeParent = new ScopeImpl("root");
     ScopeNode scope1 = new ScopeImpl("child");
     scopeParent.addChild(scope1);
@@ -259,7 +259,7 @@ public class ScopingTest extends ToothPickBaseTest {
   @Test
   public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotation_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
     //GIVEN
-    ToothPick.setConfiguration(development());
+    Toothpick.setConfiguration(development());
     ScopeNode scopeParent = new ScopeImpl(CustomScope.class);
     ScopeNode scope1 = new ScopeImpl("child");
     scopeParent.addChild(scope1);

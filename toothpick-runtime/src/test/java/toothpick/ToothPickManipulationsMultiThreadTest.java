@@ -20,20 +20,20 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
-public class ToothPickManipulationsMultiThreadTest {
+public class ToothpickManipulationsMultiThreadTest {
 
   static final String ROOT_SCOPE = "ROOT_SCOPE";
   final List<Object> scopeNames = new CopyOnWriteArrayList<>();
 
   @Before
   public void setUp() throws Exception {
-    ToothPick.openScope(ROOT_SCOPE);
+    Toothpick.openScope(ROOT_SCOPE);
     scopeNames.clear();
   }
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test
@@ -64,7 +64,7 @@ public class ToothPickManipulationsMultiThreadTest {
     for (int indexScope = 0; indexScope < scopeCount; indexScope++) {
       Object newScopeName = new Object();
       scopeNames.add(newScopeName);
-      ToothPick.openScopes(ROOT_SCOPE, newScopeName);
+      Toothpick.openScopes(ROOT_SCOPE, newScopeName);
     }
     final int removalNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
@@ -130,7 +130,7 @@ public class ToothPickManipulationsMultiThreadTest {
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
-    assertThat(ToothPick.getScopeNamesSize(), is(2));
+    assertThat(Toothpick.getScopeNamesSize(), is(2));
   }
 
   @Test
@@ -158,6 +158,6 @@ public class ToothPickManipulationsMultiThreadTest {
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
-    assertThat(ToothPick.getScopeNamesSize(), anyOf(is(1), is(2)));
+    assertThat(Toothpick.getScopeNamesSize(), anyOf(is(1), is(2)));
   }
 }

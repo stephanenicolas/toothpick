@@ -15,8 +15,7 @@ import java.lang.annotation.Target;
 import javax.inject.Inject;
 import rx.Subscription;
 import toothpick.Scope;
-import toothpick.ToothPick;
-import toothpick.config.Module;
+import toothpick.Toothpick;
 import toothpick.smoothie.module.ActivityModule;
 
 public class RxMVPActivity extends Activity {
@@ -32,10 +31,10 @@ public class RxMVPActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    scope = ToothPick.openScopes(getApplication(), PRESENTER_SCOPE, this);
+    scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new ActivityModule(this));
     super.onCreate(savedInstanceState);
-    ToothPick.inject(this, scope);
+    Toothpick.inject(this, scope);
 
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
@@ -46,7 +45,7 @@ public class RxMVPActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    ToothPick.closeScope(this);
+    Toothpick.closeScope(this);
     subscription.unsubscribe();
     super.onDestroy();
   }
@@ -56,7 +55,7 @@ public class RxMVPActivity extends Activity {
     //when we leave the presenter flow,
     //we close its scope
     rxPresenter.stop();
-    ToothPick.closeScope(PRESENTER_SCOPE);
+    Toothpick.closeScope(PRESENTER_SCOPE);
     super.onBackPressed();
   }
 

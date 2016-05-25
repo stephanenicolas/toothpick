@@ -6,7 +6,7 @@ import org.junit.Test;
 import toothpick.CyclicDependencyException;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.ToothPickBaseTest;
 import toothpick.data.CyclicFoo;
 
@@ -23,13 +23,13 @@ public class CycleCheckTest extends ToothPickBaseTest {
   @BeforeClass
   public static void setUp() throws Exception {
     ToothPickBaseTest.setUp();
-    ToothPick.setConfiguration(development());
+    Toothpick.setConfiguration(development());
     ToothPickBaseTest.setUp();
   }
 
   @AfterClass
   public static void staticTearDown() throws Exception {
-    ToothPick.setConfiguration(production());
+    Toothpick.setConfiguration(production());
   }
 
   @Test(expected = CyclicDependencyException.class)

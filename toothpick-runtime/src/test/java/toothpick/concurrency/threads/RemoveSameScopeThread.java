@@ -1,6 +1,6 @@
 package toothpick.concurrency.threads;
 
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class RemoveSameScopeThread extends TestableThread {
   static int instanceNumber = 0;
@@ -13,7 +13,7 @@ public class RemoveSameScopeThread extends TestableThread {
 
   @Override
   public void doRun() {
-    ToothPick.closeScope(childScopeName);
+    Toothpick.closeScope(childScopeName);
     setIsSuccessful(true);
   }
 }

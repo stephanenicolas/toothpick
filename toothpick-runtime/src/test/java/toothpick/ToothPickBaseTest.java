@@ -17,6 +17,6 @@ public class ToothPickBaseTest {
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 }

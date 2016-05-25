@@ -1,7 +1,7 @@
 package toothpick.concurrency.threads;
 
 import java.util.Random;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class ScopeToStringThread extends TestableThread {
   static int instanceNumber = 0;
@@ -15,7 +15,7 @@ public class ScopeToStringThread extends TestableThread {
 
   @Override
   public void doRun() {
-    ToothPick.openScope(scopeName).toString();
+    Toothpick.openScope(scopeName).toString();
     setIsSuccessful(true);
   }
 }

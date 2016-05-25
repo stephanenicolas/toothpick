@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistryLocator;
 
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class ComputerTest {
 
   @Rule public EasyMockRule mocks = new EasyMockRule(this);
-  @TestSubject private Computer computerUnderTest = ToothPick.openScope("Computer").getInstance(Computer.class);
+  @TestSubject private Computer computerUnderTest = Toothpick.openScope("Computer").getInstance(Computer.class);
 
   @BeforeClass
   public static void setUp() throws Exception {
@@ -26,7 +26,7 @@ public class ComputerTest {
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test

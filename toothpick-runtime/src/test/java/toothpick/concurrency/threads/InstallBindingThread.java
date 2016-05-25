@@ -2,7 +2,7 @@ package toothpick.concurrency.threads;
 
 import java.util.Random;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.concurrency.utils.ClassCreator;
 import toothpick.config.Module;
 import toothpick.data.Foo;
@@ -21,7 +21,7 @@ public class InstallBindingThread extends TestableThread {
 
   @Override
   public void doRun() {
-    Scope scope = ToothPick.openScope(rootScopeName);
+    Scope scope = Toothpick.openScope(rootScopeName);
     scope.installModules(new Module() {
       {
         Class clazz = classCreator.allClasses[random.nextInt(classCreator.allClasses.length)];
