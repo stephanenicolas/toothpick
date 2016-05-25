@@ -10,14 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * <em/>A soon as you use {@code new Foo}, in a provider or a binding for instance, TP is not responsible for injecting Foo;
  * developers have to manually inject the instances they create.</em> <br/
  */
-public final class ToothPick {
+public final class Toothpick {
 
   //TP must be lock free, any thread can see the state of tp before or after it is transformed but not during
   //its transformation
   private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE = new ConcurrentHashMap<>();
   private static Injector injector = new InjectorImpl();
 
-  private ToothPick() {
+  private Toothpick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
   }
 
@@ -72,7 +72,7 @@ public final class ToothPick {
 
   /**
    * Detach a scope from its parent, this will trigger the garbage collection of this scope and it's sub-scopes
-   * if they are not referenced outside of ToothPick.
+   * if they are not referenced outside of Toothpick.
    *
    * @param name the name of the scope to close.
    */

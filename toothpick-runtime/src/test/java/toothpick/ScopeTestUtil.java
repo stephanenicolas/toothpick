@@ -11,7 +11,7 @@ public class ScopeTestUtil {
   }
 
   public static Scope findRandomNode(Object rooScopeName, int acceptanceThreshold) {
-    ScopeNode root = (ScopeNode) ToothPick.openScope(rooScopeName);
+    ScopeNode root = (ScopeNode) Toothpick.openScope(rooScopeName);
     ScopeNode result = null;
     Stack<ScopeNode> scopeStack = new Stack<>();
     scopeStack.push(root);

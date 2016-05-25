@@ -12,7 +12,7 @@ public class NodeUtil {
   }
 
   public static Scope findRandomNode(Object rooScopeName, int acceptanceThreshold) {
-    Scope root = ToothPick.openScope(rooScopeName);
+    Scope root = Toothpick.openScope(rooScopeName);
     Scope result = null;
     Stack<Scope> scopeStack = new Stack<Scope>();
     scopeStack.push(root);
@@ -38,7 +38,7 @@ public class NodeUtil {
           return null;
         }
         int position = RANDOM.nextInt(scopeNames.size());
-        return ToothPick.openScope(scopeNames.get(position));
+        return Toothpick.openScope(scopeNames.get(position));
       }
     }
   }

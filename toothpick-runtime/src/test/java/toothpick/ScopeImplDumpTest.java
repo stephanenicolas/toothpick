@@ -9,7 +9,7 @@ import toothpick.data.Foo;
 
 import static org.junit.Assert.assertThat;
 
-public class ScopeImplDumpTest extends ToothPickBaseTest {
+public class ScopeImplDumpTest extends ToothpickBaseTest {
 
   @Test
   public void testToString() {

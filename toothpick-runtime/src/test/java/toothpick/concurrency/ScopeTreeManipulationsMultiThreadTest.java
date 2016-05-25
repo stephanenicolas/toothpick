@@ -6,7 +6,7 @@ import java.util.Random;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.concurrency.threads.AddNodeThread;
 import toothpick.concurrency.threads.RemoveNodeThread;
 import toothpick.concurrency.threads.TestableThread;
@@ -21,12 +21,12 @@ public class ScopeTreeManipulationsMultiThreadTest {
 
   @Before
   public void setUp() throws Exception {
-    ToothPick.openScope(ROOT_SCOPE);
+    Toothpick.openScope(ROOT_SCOPE);
   }
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test

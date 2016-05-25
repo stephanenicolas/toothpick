@@ -2,7 +2,7 @@ package toothpick.concurrency.threads;
 
 import toothpick.NodeUtil;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class AddNodeThread extends TestableThread {
   static final int ACCEPTANCE_THRESHOLD = 50;
@@ -24,7 +24,7 @@ public class AddNodeThread extends TestableThread {
       return;
     }
     Object name = scopeName.getName();
-    ToothPick.openScopes(name, new Object());
+    Toothpick.openScopes(name, new Object());
     setIsSuccessful(true);
   }
 }

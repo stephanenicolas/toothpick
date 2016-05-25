@@ -4,8 +4,8 @@ import org.junit.Test;
 import toothpick.Lazy;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
-import toothpick.ToothPick;
-import toothpick.ToothPickBaseTest;
+import toothpick.Toothpick;
+import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.FooWithLazy;
@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /*
  * Test injection of {@code Lazy}s.
  */
-public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
+public class InjectionOfLazyProviderTest extends ToothpickBaseTest {
 
   @Test
   public void testSimpleInjection() throws Exception {
@@ -28,7 +28,7 @@ public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
     FooWithLazy fooWithLazy = new FooWithLazy();
 
     //WHEN
-    ToothPick.inject(fooWithLazy, scope);
+    Toothpick.inject(fooWithLazy, scope);
 
     //THEN
     assertThat(fooWithLazy.bar, notNullValue());
@@ -52,7 +52,7 @@ public class InjectionOfLazyProviderTest extends ToothPickBaseTest {
     FooWithNamedLazy fooWithLazy = new FooWithNamedLazy();
 
     //WHEN
-    ToothPick.inject(fooWithLazy, scope);
+    Toothpick.inject(fooWithLazy, scope);
 
     //THEN
     assertThat(fooWithLazy.bar, notNullValue());

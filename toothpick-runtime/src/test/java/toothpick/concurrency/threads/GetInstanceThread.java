@@ -1,6 +1,6 @@
 package toothpick.concurrency.threads;
 
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class GetInstanceThread extends TestableThread {
   static int instanceNumber = 0;
@@ -15,7 +15,7 @@ public class GetInstanceThread extends TestableThread {
 
   @Override
   public void doRun() {
-    ToothPick.openScope(scopeName).getInstance(clazz);
+    Toothpick.openScope(scopeName).getInstance(clazz);
     setIsSuccessful(true);
   }
 }

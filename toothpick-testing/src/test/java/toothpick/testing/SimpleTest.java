@@ -5,7 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class SimpleTest {
   public static boolean wasRun;
@@ -21,7 +21,7 @@ public class SimpleTest {
   public void tearDown() throws Exception {
     //needs to be performed after test execution
     //not before as rule are initialized before @Before
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test

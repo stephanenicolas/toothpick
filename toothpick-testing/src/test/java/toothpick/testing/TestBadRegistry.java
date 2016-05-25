@@ -2,7 +2,7 @@ package toothpick.testing;
 
 import org.junit.AfterClass;
 import org.junit.Test;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class TestBadRegistry {
 
@@ -10,7 +10,7 @@ public class TestBadRegistry {
   public static void tearDown() throws Exception {
     //needs to be performed after test execution
     //not before as rule are initialized before @Before
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test(expected = IllegalArgumentException.class)

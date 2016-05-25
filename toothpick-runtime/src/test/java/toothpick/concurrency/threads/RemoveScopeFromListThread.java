@@ -3,7 +3,7 @@ package toothpick.concurrency.threads;
 import java.util.List;
 import toothpick.NodeUtil;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 public class RemoveScopeFromListThread extends TestableThread {
   static final int ACCEPTANCE_THRESHOLD = 50;
@@ -30,7 +30,7 @@ public class RemoveScopeFromListThread extends TestableThread {
       return;
     }
     Object scopeName = scope.getName();
-    ToothPick.closeScope(scopeName);
+    Toothpick.closeScope(scopeName);
     setIsSuccessful(true);
   }
 }

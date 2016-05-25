@@ -4,7 +4,7 @@ import javax.inject.Provider;
 import toothpick.registries.FactoryRegistryLocator;
 
 /**
- * A non thread safe internal provider. It should never be exposed outside of ToothPick.
+ * A non thread safe internal provider. It should never be exposed outside of Toothpick.
  *
  * @param <T> the class of the instances provided by this provider.
  */

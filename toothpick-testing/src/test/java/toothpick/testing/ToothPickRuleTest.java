@@ -6,7 +6,7 @@ import org.junit.runner.JUnitCore;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ToothPickRuleTest {
+public class ToothpickRuleTest {
 
   @Test
   public void testRuleIsIntroducedAndEvaluated() {

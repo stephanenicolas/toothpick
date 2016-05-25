@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * from guice that toothpick honors as well.
  * All things created by toothpick are injected.
  */
-public class AllBindingsTest extends ToothPickBaseTest {
+public class AllBindingsTest extends ToothpickBaseTest {
 
   @Test
   public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() throws Exception {

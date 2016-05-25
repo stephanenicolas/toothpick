@@ -16,7 +16,7 @@ import static java.lang.String.format;
 
 /**
  * <p>
- * A scope is one of the most important concept in ToothPick.
+ * A scope is one of the most important concept in Toothpick.
  * It is actually important in Dependency Injection at large and Toothpick
  * exposes it to developers.
  * </p>
@@ -42,7 +42,7 @@ import static java.lang.String.format;
  * <p>
  * In toothpick, Scopes create a tree (actually a disjoint forest). Each scope can have children scopes.
  * Operations on the scope tree (adding / removing children, etc.) are non thread safe.
- * The implementation of ToothPick provides a {@code Toothpick} class that wraps these operations in a thread
+ * The implementation of Toothpick provides a {@code Toothpick} class that wraps these operations in a thread
  * safe way.
  * </p>
  *

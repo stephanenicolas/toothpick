@@ -5,8 +5,8 @@ import org.junit.BeforeClass;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistryLocator;
 
-public class ToothPickBaseTest {
-  protected ToothPickBaseTest() {
+public class ToothpickBaseTest {
+  protected ToothpickBaseTest() {
   }
 
   @BeforeClass
@@ -17,6 +17,6 @@ public class ToothPickBaseTest {
 
   @After
   public void tearDown() throws Exception {
-    ToothPick.reset();
+    Toothpick.reset();
   }
 }

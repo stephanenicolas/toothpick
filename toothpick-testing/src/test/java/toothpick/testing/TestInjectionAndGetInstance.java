@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -17,7 +17,7 @@ public class TestInjectionAndGetInstance {
   public void tearDown() throws Exception {
     //needs to be performed after test execution
     //not before as rule are initialized before @Before
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test

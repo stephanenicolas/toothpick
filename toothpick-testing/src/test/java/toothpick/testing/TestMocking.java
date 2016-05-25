@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -28,7 +28,7 @@ public class TestMocking {
   public void tearDown() throws Exception {
     //needs to be performed after test execution
     //not before as rule are initialized before @Before
-    ToothPick.reset();
+    Toothpick.reset();
   }
 
   @Test

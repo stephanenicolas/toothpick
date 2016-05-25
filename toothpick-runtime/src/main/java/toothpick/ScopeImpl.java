@@ -19,13 +19,13 @@ import static java.lang.String.format;
  * <p>
  * A note on concurrency :
  * <ul>
- * <li> all operations related to the scope tree are synchronized on the {@code ToothPick} class.
+ * <li> all operations related to the scope tree are synchronized on the {@code Toothpick} class.
  * <li> all operations related to a scope's content (binding & providers) are synchronized on the key (class) of the binding/injection.
  * <li> all providers provided by the public API (including Lazy) should return a thread safe provider (done)
  * but internally, we can live with a non synchronized provider.
  * </ul>
- * <em>All operations on the scope itself are non thread-safe. They <em>must</em> be used via the {@code ToothPick} class
- * or <em>must</em> be synchronized using the {@code ToothPick} class if used concurrently.</em>
+ * <em>All operations on the scope itself are non thread-safe. They <em>must</em> be used via the {@code Toothpick} class
+ * or <em>must</em> be synchronized using the {@code Toothpick} class if used concurrently.</em>
  * </p>
  */
 public class ScopeImpl extends ScopeNode {
