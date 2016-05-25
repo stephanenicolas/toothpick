@@ -5,7 +5,7 @@ import javax.inject.Qualifier;
 import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
-import toothpick.ToothPickBaseTest;
+import toothpick.ToothpickBaseTest2;
 import toothpick.config.Module;
 import toothpick.data.Foo;
 
@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
  * Creates a instance in the simplest possible way
   * with a module that binds a single class.
  */
-public class NamedInstanceCreation extends ToothPickBaseTest {
+public class NamedInstanceCreation extends ToothpickBaseTest2 {
 
   static Foo namedFooInstance = new Foo();
 

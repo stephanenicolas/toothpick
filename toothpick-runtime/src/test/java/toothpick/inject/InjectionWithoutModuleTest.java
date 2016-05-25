@@ -4,7 +4,7 @@ import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
-import toothpick.ToothPickBaseTest;
+import toothpick.ToothpickBaseTest2;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
  * Creates a instance in the simplest possible way
   * without any module.
  */
-public class InjectionWithoutModuleTest extends ToothPickBaseTest {
+public class InjectionWithoutModuleTest extends ToothpickBaseTest2 {
 
   @Test
   public void testSimpleInjection() throws Exception {

@@ -8,7 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import toothpick.Toothpick;
-import toothpick.ToothPickVisibilityExposer;
+import toothpick.ToothpickVisibilityExposer2;
 import toothpick.concurrency.threads.AddSameScopeThread;
 import toothpick.concurrency.threads.AddScopeToListThread;
 import toothpick.concurrency.threads.RemoveSameScopeThread;
@@ -132,7 +132,7 @@ public class ToothpickManipulationsMultiThreadTest {
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
-    assertThat(ToothPickVisibilityExposer.getScopeNamesSize(), is(2));
+    assertThat(ToothpickVisibilityExposer2.getScopeNamesSize(), is(2));
   }
 
   @Test
@@ -160,6 +160,6 @@ public class ToothpickManipulationsMultiThreadTest {
     for (TestableThread thread : threadList) {
       assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
-    assertThat(ToothPickVisibilityExposer.getScopeNamesSize(), anyOf(is(1), is(2)));
+    assertThat(ToothpickVisibilityExposer2.getScopeNamesSize(), anyOf(is(1), is(2)));
   }
 }
