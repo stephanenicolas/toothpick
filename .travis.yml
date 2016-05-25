@@ -31,7 +31,7 @@ cache:
     - $HOME/.m2
 
 script:
-  - ./gradlew clean test -s -d
+  - ./gradlew clean :toothpick-runtime:test -s -d
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
