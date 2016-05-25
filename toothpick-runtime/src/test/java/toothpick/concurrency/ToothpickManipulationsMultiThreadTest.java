@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
-public class ToothpickManipulationsMultiThreadTest2 {
+public class ToothpickManipulationsMultiThreadTest {
 
   static final String ROOT_SCOPE = "ROOT_SCOPE";
   final List<Object> scopeNames = new CopyOnWriteArrayList<>();
