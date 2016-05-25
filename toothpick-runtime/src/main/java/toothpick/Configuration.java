@@ -34,7 +34,7 @@ public abstract class Configuration {
    *
    * @param configuration the configuration to use
    */
-  static void setConfiguration(Configuration configuration) {
+  public static void setConfiguration(Configuration configuration) {
     instance = configuration;
   }
 
@@ -105,7 +105,7 @@ public abstract class Configuration {
     }
   }
 
-  private static class DevelopmentConfiguration extends Configuration {
+  private static class DevelopmentConfiguration extends BaseConfiguration {
     // We need a LIFO structure here, but stack is thread safe and we use thread local,
     // so this property is overkill and LinkedHashSet is faster on retrieval.
     private ThreadLocal<LinkedHashSet<Class>> cycleDetectionStack = new ThreadLocal<LinkedHashSet<Class>>() {
@@ -152,23 +152,9 @@ public abstract class Configuration {
     public void checkCyclesEnd(Class clazz) {
       cycleDetectionStack.get().remove(clazz);
     }
-
-    @Override
-    public <T> Factory<T> getFactory(Class<T> clazz) {
-      return FactoryRegistryLocator.getFactoryUsingReflection(clazz);
-    }
-
-    @Override
-    public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
-      return MemberInjectorRegistryLocator.getMemberInjectorUsingReflection(clazz);
-    }
   }
 
   private static class ProductionConfiguration extends BaseConfiguration {
-    @Override
-    public <T> Factory<T> getFactory(Class<T> clazz) {
-      return FactoryRegistryLocator.getFactoryUsingReflection(clazz);
-    }
   }
 
   private static class ReflectionFreeConfiguration extends BaseConfiguration {

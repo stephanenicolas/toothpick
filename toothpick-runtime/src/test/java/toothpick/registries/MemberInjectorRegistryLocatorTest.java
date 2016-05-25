@@ -4,7 +4,7 @@ import org.junit.Test;
 import toothpick.Configuration;
 import toothpick.MemberInjector;
 import toothpick.Scope;
-import toothpick.ToothPick;
+import toothpick.Toothpick;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
 import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
@@ -18,7 +18,7 @@ public class MemberInjectorRegistryLocatorTest {
   @Test
   public void testGetMemberInjector_shouldReturnNull_whenThereAreNoRegistries() throws Exception {
     //GIVEN
-    ToothPick.setConfiguration(Configuration.reflectionFree());
+    Toothpick.setConfiguration(Configuration.reflectionFree());
     MemberInjectorRegistryLocator.setRootRegistry(null);
 
     //WHEN
