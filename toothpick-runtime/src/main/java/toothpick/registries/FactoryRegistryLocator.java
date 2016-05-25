@@ -1,5 +1,6 @@
 package toothpick.registries;
 
+import toothpick.Configuration;
 import toothpick.Factory;
 
 /**
@@ -27,20 +28,33 @@ public class FactoryRegistryLocator {
   private FactoryRegistryLocator() {
   }
 
-  private static FactoryRegistry registry;
+  private static FactoryRegistry rootRegistry;
 
-  public static void setRootRegistry(FactoryRegistry registry) {
-    FactoryRegistryLocator.registry = registry;
+  public static void setRootRegistry(FactoryRegistry rootRegistry) {
+    FactoryRegistryLocator.rootRegistry = rootRegistry;
   }
 
   public static <T> Factory<T> getFactory(Class<T> clazz) {
+    return Configuration.instance.getFactory(clazz);
+  }
+
+  public static <T> Factory<T> getFactoryUsingRegistries(Class<T> clazz) {
     Factory<T> factory;
-    if (registry != null) {
-      factory = registry.getFactory(clazz);
+    if (rootRegistry != null) {
+      factory = rootRegistry.getFactory(clazz);
       if (factory != null) {
         return factory;
       }
     }
     throw new NoFactoryFoundException(clazz);
+  }
+
+  public static <T> Factory<T> getFactoryUsingReflection(Class<T> clazz) {
+    try {
+      Class<? extends Factory<T>> factoryClass = (Class<? extends Factory<T>>) Class.forName(clazz.getName() + "$$Factory");
+      return factoryClass.newInstance();
+    } catch (Exception e) {
+      throw new NoFactoryFoundException(clazz, e);
+    }
   }
 }

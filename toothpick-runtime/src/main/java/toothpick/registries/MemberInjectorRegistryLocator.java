@@ -1,5 +1,6 @@
 package toothpick.registries;
 
+import toothpick.Configuration;
 import toothpick.MemberInjector;
 
 /**
@@ -22,6 +23,10 @@ public class MemberInjectorRegistryLocator {
   }
 
   public static <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
+    return Configuration.instance.getMemberInjector(clazz);
+  }
+
+  public static <T> MemberInjector<T> getMemberInjectorUsingRegistries(Class<T> clazz) {
     MemberInjector<T> memberInjector;
     if (registry != null) {
       memberInjector = registry.getMemberInjector(clazz);
@@ -30,5 +35,15 @@ public class MemberInjectorRegistryLocator {
       }
     }
     return null;
+  }
+
+  public static <T> MemberInjector<T> getMemberInjectorUsingReflection(Class<T> clazz) {
+    try {
+      Class<? extends MemberInjector<T>> memberInjectorClass =
+          (Class<? extends MemberInjector<T>>) Class.forName(clazz.getName() + "$$MemberInjector");
+      return memberInjectorClass.newInstance();
+    } catch (Exception e) {
+      return null;
+    }
   }
 }
