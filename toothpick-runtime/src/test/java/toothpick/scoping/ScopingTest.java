@@ -5,7 +5,7 @@ import toothpick.IllegalBindingException;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
-import toothpick.ToothpickBaseTest2;
+import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
@@ -29,7 +29,7 @@ import static toothpick.Configuration.development;
 /*
  * Tests scopes related features of toothpick.
  */
-public class ScopingTest extends ToothpickBaseTest2 {
+public class ScopingTest extends ToothpickBaseTest {
 
   @Test
   public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {

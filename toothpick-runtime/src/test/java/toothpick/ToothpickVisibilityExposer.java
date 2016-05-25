@@ -1,7 +1,7 @@
 package toothpick;
 
-public class ToothpickVisibilityExposer2 {
-  private ToothpickVisibilityExposer2() {
+public class ToothpickVisibilityExposer {
+  private ToothpickVisibilityExposer() {
   }
 
   public static int getScopeNamesSize() {

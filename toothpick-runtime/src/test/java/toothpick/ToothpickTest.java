@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-public class ToothpickTest extends ToothpickBaseTest2 {
+public class ToothpickTest extends ToothpickBaseTest {
 
   @Test
   public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() throws Exception {

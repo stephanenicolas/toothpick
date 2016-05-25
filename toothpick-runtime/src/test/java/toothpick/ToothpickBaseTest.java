@@ -5,8 +5,8 @@ import org.junit.BeforeClass;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistryLocator;
 
-public class ToothpickBaseTest2 {
-  protected ToothpickBaseTest2() {
+public class ToothpickBaseTest {
+  protected ToothpickBaseTest() {
   }
 
   @BeforeClass

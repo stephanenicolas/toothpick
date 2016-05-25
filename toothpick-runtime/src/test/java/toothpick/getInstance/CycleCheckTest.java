@@ -7,7 +7,7 @@ import toothpick.CyclicDependencyException;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
-import toothpick.ToothpickBaseTest2;
+import toothpick.ToothpickBaseTest;
 import toothpick.data.CyclicFoo;
 
 import static org.junit.Assert.fail;
@@ -18,13 +18,13 @@ import static toothpick.Configuration.production;
  * Creates a instance in the simplest possible way
   * without any module.
  */
-public class CycleCheckTest extends ToothpickBaseTest2 {
+public class CycleCheckTest extends ToothpickBaseTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    ToothpickBaseTest2.setUp();
+    ToothpickBaseTest.setUp();
     Toothpick.setConfiguration(development());
-    ToothpickBaseTest2.setUp();
+    ToothpickBaseTest.setUp();
   }
 
   @AfterClass

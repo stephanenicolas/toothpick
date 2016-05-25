@@ -24,7 +24,7 @@ import static toothpick.Configuration.development;
 /*
  * Tests scopes related features of toothpick.
  */
-public class ScopingTest extends ToothpickBaseTest2 {
+public class ScopingTest extends ToothpickBaseTest {
 
   @Test
   public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
