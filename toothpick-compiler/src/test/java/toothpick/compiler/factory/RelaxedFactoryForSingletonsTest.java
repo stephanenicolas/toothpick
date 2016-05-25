@@ -9,7 +9,7 @@ import org.junit.Test;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
-public class OptimisticFactoryForSingletonsTest extends BaseFactoryTest {
+public class RelaxedFactoryForSingletonsTest extends BaseFactoryTest {
   @Test
   public void testOptimisticFactoryCreationForSingleton() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
