@@ -93,10 +93,8 @@ public class RelaxedFactoryForClassContainingFieldsTest extends BaseFactoryTest 
     assertThatCompileWithoutErrorButNoFactoryIsCreated(source, "test", "TestRelaxedFactoryCreationForInjectField");
   }
 
-  //we should keep this error, it helps developers. If the class is not meant to be injected but subclassed,
-  //it should be declared abstract, and then TP will produce no errors.
   @Test
-  public void testRelaxedFactoryCreationForInjectedField_shouldFail_whenTypeHasANonDefaultConstructor() {
+  public void testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -107,17 +105,11 @@ public class RelaxedFactoryForClassContainingFieldsTest extends BaseFactoryTest 
         "}", //
         "class Foo {}"));
 
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
-        .failsToCompile()
-        .withErrorContaining(
-            "The class test.TestRelaxedFactoryCreationForInjectField has injected fields but has no injected constructor, "
-                + "and no public default constructor. Toothpick can't create a factory for it.");
+    assertThatCompileWithoutErrorButNoFactoryIsCreated(source, "test", "TestRelaxedFactoryCreationForInjectField");
   }
 
   @Test
-  public void testRelaxedFactoryCreationForInjectedField_shouldFail_whenTypeHasAPrivateDefaultConstructor() {
+  public void testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectField", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
@@ -128,11 +120,6 @@ public class RelaxedFactoryForClassContainingFieldsTest extends BaseFactoryTest 
         "}", //
         "class Foo {}"));
 
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors())
-        .failsToCompile()
-        .withErrorContaining(
-            "The class test.TestRelaxedFactoryCreationForInjectField has a private default constructor, Toothpick can't create a factory for it.");
+    assertThatCompileWithoutErrorButNoFactoryIsCreated(source, "test", "TestRelaxedFactoryCreationForInjectField");
   }
 }

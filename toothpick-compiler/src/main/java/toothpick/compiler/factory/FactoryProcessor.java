@@ -274,7 +274,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     for (ExecutableElement constructorElement : constructorElements) {
       if (constructorElement.getParameters().isEmpty()) {
         if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
-          error(constructorElement, "The class %s has a private default constructor, Toothpick can't create a factory for it.",
+          warning(constructorElement, "The class %s has a private default constructor, Toothpick can't create a factory for it.",
               typeElement.getQualifiedName().toString());
           return null;
         }
@@ -285,10 +285,8 @@ public class FactoryProcessor extends ToothpickProcessor {
       }
     }
 
-    error(typeElement,
-        "The class %s has injected fields but has no injected constructor, and no public default constructor."
-            + " Toothpick can't create a factory for it.",
-        typeElement.getQualifiedName().toString());
+    warning(typeElement, "The class %s has injected fields but has no injected constructor, and no public default constructor."
+            + " Toothpick can't create a factory for it.", typeElement.getQualifiedName().toString());
     return null;
   }
 
