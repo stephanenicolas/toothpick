@@ -26,7 +26,7 @@
   </tr>
 </table>
 
-## What is ToothPick ?
+## What is Toothpick ?
  
 ToothPick is a scope tree based Dependency Injection (DI) library for Java.
 
