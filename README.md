@@ -28,11 +28,11 @@
 
 ## What is Toothpick ?
  
-ToothPick is a scope tree based Dependency Injection (DI) library for Java.
+Toothpick is a scope tree based Dependency Injection (DI) library for Java.
 
 It is a full-featured, runtime based, but reflection free, implementation of [JSR 330](https://github.com/stephanenicolas/toothpick/wiki/Relation-to-JSR-330).
 
-## What does ToothPick offer ?
+## What does Toothpick offer ?
 
 ```
 //a typical Toothpick scope tree during the execution of an Android app.
@@ -52,7 +52,7 @@ Activity 1
 Fragment 1
 ```
 
-ToothPick is :
+Toothpick is :
 * pure java
 * [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but [annotation processing](https://github.com/stephanenicolas/toothpick/wiki/Factories-and-Member-Injectors)
 * simple, flexible, extensible & powerful, [robust & tested](https://coveralls.io/github/stephanenicolas/toothpick?branch=master)
@@ -125,7 +125,7 @@ For java:
 
 # Wanna know more ?
 
-Visit [ToothPick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
+Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 
 
 
