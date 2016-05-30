@@ -20,6 +20,9 @@
       <br/>
       <a alt="Android Dev Weekly" href="http://androidweekly.net/issues/issue-207">
       <img src="https://img.shields.io/badge/Android%20Weekly-%23207-brightgreen.svg"/></a>
+      <br/>
+      <a alt="Android Arsenal" href="http://android-arsenal.com/details/1/3646">
+      <img src="https://img.shields.io/badge/Android%20Arsenal-Toothpick-brightgreen.svg?style=flat"/></a>
     </td>
     <td>
       <a href="https://github.com/stephanenicolas/toothpick/wiki">
