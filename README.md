@@ -73,7 +73,7 @@ Currently Toothpick has 2 sets of examples :
 
 ## Setup
 For Android : 
-```
+```groovy
 #android setup using apt 
 buildscript {
   repositories {
@@ -95,7 +95,7 @@ dependencies {
 ```
 
 For java:
-```
+```xml
 <!--java setup with maven -->
   <dependencies>
     <dependency>
