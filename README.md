@@ -90,12 +90,12 @@ buildscript {
   }
 }
 dependencies {
-  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:x.y.z') 
+  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:x.y.z'
   //or 'com.github.stephanenicolas.toothpick:smoothie:x.y.z'
-  apt 'com.github.stephanenicolas.toothpick:toothpick-compiler:x.y.z')
-  
+  apt 'com.github.stephanenicolas.toothpick:toothpick-compiler:x.y.z'
+
   //highly recommended
-  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:x.y.z') 
+  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:x.y.z'
   testCompile 'mockito or easymock'
 }
 ```
