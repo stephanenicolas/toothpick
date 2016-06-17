@@ -130,6 +130,10 @@ For java:
   </dependencies>
 ```
 
+## Talks
+
+Droidcon Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection)
+
 # Wanna know more ?
 
 Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
