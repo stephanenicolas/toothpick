@@ -34,9 +34,9 @@ public class ToothPickTestModule extends Module {
       if (mockAnnotation != null) {
         FieldValueProvider mockProvider = new FieldValueProvider(field, test);
         if (injectionName != null) {
-          bind(field.getType()).withName(injectionName).toProvider(mockProvider);
+          bind(field.getType()).withName(injectionName).toProviderInstance(mockProvider);
         } else {
-          bind(field.getType()).toProvider(mockProvider);
+          bind(field.getType()).toProviderInstance(mockProvider);
         }
         mockCount++;
       }

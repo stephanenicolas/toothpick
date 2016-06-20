@@ -33,7 +33,7 @@ public class ScopingTest extends ToothpickBaseTest {
     ScopeNode scopeParent = new ScopeImpl("");
     scopeParent.installModules(new Module() {
       {
-        bind(Foo.class).to(foo1);
+        bind(Foo.class).toInstance(foo1);
       }
     });
     final Foo foo2 = new Foo();
@@ -41,7 +41,7 @@ public class ScopingTest extends ToothpickBaseTest {
     scopeParent.addChild(scope);
     scope.installModules(new Module() {
       {
-        bind(Foo.class).to(foo2);
+        bind(Foo.class).toInstance(foo2);
       }
     });
 
@@ -60,7 +60,7 @@ public class ScopingTest extends ToothpickBaseTest {
     ScopeNode scopeParent = new ScopeImpl("");
     scopeParent.installModules(new Module() {
       {
-        bind(Foo.class).to(foo1);
+        bind(Foo.class).toInstance(foo1);
       }
     });
     ScopeNode scope = new ScopeImpl("");

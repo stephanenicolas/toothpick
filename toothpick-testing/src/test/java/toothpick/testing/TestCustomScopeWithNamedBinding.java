@@ -42,7 +42,7 @@ public class TestCustomScopeWithNamedBinding {
     public EntryPoint instance = new EntryPoint();
 
     public ModuleWithNamedBindings() {
-      bind(EntryPoint.class).withName("Foo").to(instance);
+      bind(EntryPoint.class).withName("Foo").toInstance(instance);
     }
   }
 }

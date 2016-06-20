@@ -87,7 +87,7 @@ public class NamedInstanceCreation extends ToothpickBaseTest {
     //WHEN
     scope.installModules(new Module() {
       {
-        bind(Foo.class).withName(NotQualifierAnnotationFooName.class).to(namedFooInstance);
+        bind(Foo.class).withName(NotQualifierAnnotationFooName.class).toInstance(namedFooInstance);
       }
     });
 
@@ -97,8 +97,8 @@ public class NamedInstanceCreation extends ToothpickBaseTest {
 
   private static class SimpleModule extends Module {
     public SimpleModule() {
-      bind(Foo.class).withName("bar").to(namedFooInstance);
-      bind(Foo.class).withName(FooName.class).to(namedFooInstance);
+      bind(Foo.class).withName("bar").toInstance(namedFooInstance);
+      bind(Foo.class).withName(FooName.class).toInstance(namedFooInstance);
       bind(Foo.class).to(Foo.class);
     }
   }

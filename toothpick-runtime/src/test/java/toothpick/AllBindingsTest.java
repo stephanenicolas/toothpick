@@ -80,7 +80,7 @@ public class AllBindingsTest extends ToothpickBaseTest {
     Scope scope = new ScopeImpl("");
     scope.installModules(new Module() {
       {
-        bind(Foo.class).to(instance);
+        bind(Foo.class).toInstance(instance);
       }
     });
 
@@ -152,7 +152,7 @@ public class AllBindingsTest extends ToothpickBaseTest {
     Scope scope = new ScopeImpl("");
     scope.installModules(new Module() {
       {
-        bind(IFoo.class).toProvider(providerInstance);
+        bind(IFoo.class).toProviderInstance(providerInstance);
       }
     });
 
