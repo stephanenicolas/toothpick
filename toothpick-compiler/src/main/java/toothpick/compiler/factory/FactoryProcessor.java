@@ -109,7 +109,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
-    createFactoriesForClassesAnnotatedProvidesSingleton(roundEnv);
+    createFactoriesForClassesAnnotatedScopeInstances(roundEnv);
     createFactoriesForClassesAnnotatedSingleton(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedMethods(roundEnv);
@@ -127,15 +127,15 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
   }
 
-  private void createFactoriesForClassesAnnotatedProvidesSingleton(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(ScopeInstances.class)) {
+  private void createFactoriesForClassesAnnotatedScopeInstances(RoundEnvironment roundEnv) {
+    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(ScopeInstances.class))) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
   private void createFactoriesForClassesAnnotatedSingleton(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : roundEnv.getElementsAnnotatedWith(Singleton.class)) {
+    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(Singleton.class))) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
