@@ -25,7 +25,7 @@ public class InstallBindingThread extends TestableThread {
     scope.installModules(new Module() {
       {
         Class clazz = classCreator.allClasses[random.nextInt(classCreator.allClasses.length)];
-        bind(clazz).to(new Foo());
+        bind(clazz).toInstance(new Foo());
       }
     });
     setIsSuccessful(true);

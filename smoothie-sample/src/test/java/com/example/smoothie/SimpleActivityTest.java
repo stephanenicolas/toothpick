@@ -52,7 +52,7 @@ public class SimpleActivityTest {
 
   private class TestModule extends Module {
     public TestModule(ContextNamer mockContextNamer) {
-      bind(ContextNamer.class).to(mockContextNamer);
+      bind(ContextNamer.class).toInstance(mockContextNamer);
     }
   }
 }
