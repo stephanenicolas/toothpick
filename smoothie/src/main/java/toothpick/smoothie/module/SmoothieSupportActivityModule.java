@@ -10,8 +10,8 @@ import toothpick.smoothie.provider.LayoutInflaterProvider;
 import toothpick.smoothie.provider.SupportFragmentManagerProvider;
 import toothpick.smoothie.provider.SupportLoaderManagerProvider;
 
-public class SupportActivityModule extends Module {
-  public SupportActivityModule(FragmentActivity activity) {
+public class SmoothieSupportActivityModule extends Module {
+  public SmoothieSupportActivityModule(FragmentActivity activity) {
     bind(Activity.class).toInstance(activity);
     bind(FragmentManager.class).toProviderInstance(new SupportFragmentManagerProvider(activity));
     bind(LoaderManager.class).toProviderInstance(new SupportLoaderManagerProvider(activity));

@@ -53,8 +53,8 @@ import static android.content.Context.TELEPHONY_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 
-public class ApplicationModule extends Module {
-  public ApplicationModule(Application application) {
+public class SmoothieApplicationModule extends Module {
+  public SmoothieApplicationModule(Application application) {
     bind(Application.class).toInstance(application);
     bind(AccountManager.class).toProviderInstance(new AccountManagerProvider(application));
     bind(AssetManager.class).toProviderInstance(new AssetManagerProvider(application));
