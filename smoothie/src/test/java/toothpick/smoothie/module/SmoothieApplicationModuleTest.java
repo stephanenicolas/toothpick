@@ -35,7 +35,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-public class ApplicationModuleTest {
+public class SmoothieApplicationModuleTest {
 
   @Test
   public void testModule_shouldReturnApplicationBindings() throws Exception {
@@ -43,7 +43,7 @@ public class ApplicationModuleTest {
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
-    appScope.installModules(new ApplicationModule(application));
+    appScope.installModules(new SmoothieApplicationModule(application));
 
     //WHEN
     Application injectedApp = appScope.getInstance(Application.class);
@@ -70,7 +70,7 @@ public class ApplicationModuleTest {
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
-    appScope.installModules(new ApplicationModule(application));
+    appScope.installModules(new SmoothieApplicationModule(application));
 
     //WHEN
     Application injectedApp = appScope.getInstance(Application.class);

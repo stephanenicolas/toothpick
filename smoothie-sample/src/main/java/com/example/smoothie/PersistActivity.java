@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 import javax.inject.Inject;
 import toothpick.Scope;
 import toothpick.Toothpick;
-import toothpick.smoothie.module.ActivityModule;
+import toothpick.smoothie.module.SmoothieActivityModule;
 
 public class PersistActivity extends Activity {
 
@@ -30,7 +30,7 @@ public class PersistActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this);
-    scope.installModules(new ActivityModule(this));
+    scope.installModules(new SmoothieActivityModule(this));
     super.onCreate(savedInstanceState);
     Toothpick.inject(this, scope);
 
