@@ -73,8 +73,8 @@ public class InjectionWithoutModuleTest extends ToothpickBaseTest {
     assertThat(foo.bar, isA(Bar.class));
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testInjection_shouldThrowAnException_whenNoBindingIsFound() throws Exception {
+  @Test
+  public void testInjection_shouldNotThrowAnException_whenNoDependencyIsFound() throws Exception {
     //GIVEN
     Scope scope = new ScopeImpl("root");
     NotInjectable notInjectable = new NotInjectable();
@@ -83,7 +83,7 @@ public class InjectionWithoutModuleTest extends ToothpickBaseTest {
     Toothpick.inject(notInjectable, scope);
 
     //THEN
-    fail("Should throw an exception");
+    // nothing
   }
 
   class NotInjectable {

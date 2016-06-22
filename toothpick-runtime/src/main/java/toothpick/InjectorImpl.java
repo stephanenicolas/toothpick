@@ -28,7 +28,5 @@ public final class InjectorImpl implements Injector {
         currentClass = currentClass.getSuperclass();
       }
     } while (currentClass != null);
-    throw new RuntimeException(String.format("Object %s of class %s could not be injected. Make sure all registries are setup properly.", obj,
-        obj != null ? obj.getClass() : "(N/A)"));
   }
 }
