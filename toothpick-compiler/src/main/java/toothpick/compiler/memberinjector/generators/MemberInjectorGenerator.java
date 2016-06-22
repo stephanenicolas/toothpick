@@ -62,10 +62,8 @@ public class MemberInjectorGenerator extends CodeGenerator {
   private void emitSuperMemberInjectorFieldIfNeeded(TypeSpec.Builder scopeMemberTypeSpec) {
     if (superClassThatNeedsInjection != null) {
       ClassName superTypeThatNeedsInjection = ClassName.get(superClassThatNeedsInjection);
-      ParameterizedTypeName memberInjectorSuperParameterizedTypeName =
-          ParameterizedTypeName.get(ClassName.get(MemberInjector.class), superTypeThatNeedsInjection);
       FieldSpec.Builder superMemberInjectorField =
-          FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "superMemberInjector", Modifier.PRIVATE)
+          FieldSpec.builder(MemberInjector.class, "superMemberInjector", Modifier.PRIVATE)
               //TODO use proper typing here
               .initializer("new $L$$$$MemberInjector()", superTypeThatNeedsInjection);
       scopeMemberTypeSpec.addField(superMemberInjectorField.build());
