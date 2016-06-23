@@ -1,5 +1,13 @@
 //Continue from top
 
+## Release version 1.0.0-RC3 (Jun 23th 2016)
+
+* renaming binding methods for instances: to -> toInstance and toProvider -> toProviderInstance
+* adding SearchManager and PackageManager to Smoothie
+* renaming Smoothie Modules: ActivityModule -> SmoothieActivityModule, ApplicationModule -> SmoothieApplicationModule
+and SupportActivityModule -> SmoothieSupportActivityModule
+* bug fixes
+
 ## Release version 1.0.0-RC2 (May 25th 2016)
 
 * optimistic factories are dropped. We realized we should restrain anntation processing only to classes that 

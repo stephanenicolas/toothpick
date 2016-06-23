@@ -90,12 +90,12 @@ buildscript {
   }
 }
 dependencies {
-  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:x.y.z'
-  //or 'com.github.stephanenicolas.toothpick:smoothie:x.y.z'
-  apt 'com.github.stephanenicolas.toothpick:toothpick-compiler:x.y.z'
+  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.0.0-RC3'
+  //and 'com.github.stephanenicolas.toothpick:smoothie:1.0.0-RC3'
+  apt 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.0.0-RC3'
 
   //highly recommended
-  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:x.y.z'
+  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:1.0.0-RC3'
   testCompile 'mockito or easymock'
 }
 ```
@@ -107,13 +107,13 @@ For java:
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-compiler</artifactId>
-      <version>x.y.z</version>
+      <version>1.0.0-RC3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-runtime</artifactId>
-      <version>x.y.z</version>
+      <version>1.0.0-RC3</version>
       <scope>compile</scope>
     </dependency>
     
@@ -121,7 +121,7 @@ For java:
     <dependency> 
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-testing</artifactId>
-      <version>x.y.z</version>
+      <version>1.0.0-RC3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
