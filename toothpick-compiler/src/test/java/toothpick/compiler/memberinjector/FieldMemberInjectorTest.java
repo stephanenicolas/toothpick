@@ -450,7 +450,7 @@ public class FieldMemberInjectorTest {
         "import toothpick.Scope;", //
         "", //
         "public final class TestMemberInjection$$MemberInjector implements MemberInjector<TestMemberInjection> {", //
-        "  private MemberInjector<TestMemberInjectionParent> superMemberInjector " + "= new test.TestMemberInjectionParent$$MemberInjector();",
+        "  private MemberInjector superMemberInjector " + "= new test.TestMemberInjectionParent$$MemberInjector();",
         //
         "  @Override", //
         "  public void inject(TestMemberInjection target, Scope scope) {", //
