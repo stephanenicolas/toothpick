@@ -1,5 +1,9 @@
 //Continue from top
 
+## Release version 1.0.0-RC4 (Jul 5th 2016)
+
+* fixing annotation processor compatibility issues with java 7
+
 ## Release version 1.0.0-RC3 (Jun 23th 2016)
 
 * renaming binding methods for instances: to -> toInstance and toProvider -> toProviderInstance
