@@ -14,9 +14,15 @@ final class ProcessorTestUtilities {
 
   static Iterable<? extends Processor> memberInjectorProcessors(String toothpickRegistryPackageName,
       List<String> toothpickRegistryChildrenPackageNameList) {
-    MemberInjectorProcessor factoryProcessor = new MemberInjectorProcessor();
-    factoryProcessor.setToothpickRegistryPackageName(toothpickRegistryPackageName);
-    factoryProcessor.setToothpickRegistryChildrenPackageNameList(toothpickRegistryChildrenPackageNameList);
-    return Arrays.asList(factoryProcessor);
+    return memberInjectorProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*");
+  }
+
+  static Iterable<? extends Processor> memberInjectorProcessors(String toothpickRegistryPackageName,
+      List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
+    MemberInjectorProcessor memberInjectorProcessor = new MemberInjectorProcessor();
+    memberInjectorProcessor.setToothpickRegistryPackageName(toothpickRegistryPackageName);
+    memberInjectorProcessor.setToothpickRegistryChildrenPackageNameList(toothpickRegistryChildrenPackageNameList);
+    memberInjectorProcessor.setToothpickExcludeFilters(toothpickExcludeFilters);
+    return Arrays.asList(memberInjectorProcessor);
   }
 }
