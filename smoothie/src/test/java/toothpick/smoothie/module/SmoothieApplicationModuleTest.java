@@ -1,7 +1,6 @@
 package toothpick.smoothie.module;
 
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -9,6 +8,7 @@ import android.app.DownloadManager;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -19,12 +19,12 @@ import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
@@ -40,7 +40,6 @@ public class SmoothieApplicationModuleTest {
   @Test
   public void testModule_shouldReturnApplicationBindings() throws Exception {
     //GIVEN
-    Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
@@ -67,7 +66,6 @@ public class SmoothieApplicationModuleTest {
   @Test
   public void testModule_shouldReturnSystemServices() throws Exception {
     //GIVEN
-    Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
@@ -107,5 +105,44 @@ public class SmoothieApplicationModuleTest {
     assertThat(telephonyManager, notNullValue());
     assertThat(audioManager, notNullValue());
     assertThat(downloadManager, notNullValue());
+  }
+
+  @Test
+  public void testModule_shouldReturnDefaultSharedPreferences() throws Exception {
+    //GIVEN
+    Application application = RuntimeEnvironment.application;
+
+    String itemKey = "isValid";
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
+    sharedPreferences.edit().putBoolean(itemKey, true).commit();
+
+    Scope appScope = Toothpick.openScope(application);
+    appScope.installModules(new SmoothieApplicationModule(application));
+
+    //WHEN
+    SharedPreferences sharedPreferencesFromScope = appScope.getInstance(SharedPreferences.class);
+
+    //THEN
+    assertThat(sharedPreferencesFromScope.getBoolean(itemKey, false), is(true));
+  }
+
+  @Test
+  public void testModule_shouldReturnNamedSharedPreferences() throws Exception {
+    //GIVEN
+    Application application = RuntimeEnvironment.application;
+
+    String sharedPreferencesName = "test";
+    String itemKey = "isValid";
+    SharedPreferences sharedPreferences = application.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
+    sharedPreferences.edit().putBoolean(itemKey, true).commit();
+
+    Scope appScope = Toothpick.openScope(application);
+    appScope.installModules(new SmoothieApplicationModule(application, sharedPreferencesName));
+
+    //WHEN
+    SharedPreferences sharedPreferencesFromScope = appScope.getInstance(SharedPreferences.class);
+
+    //THEN
+    assertThat(sharedPreferencesFromScope.getBoolean(itemKey, false), is(true));
   }
 }
