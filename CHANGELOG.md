@@ -1,5 +1,10 @@
 //Continue from top
 
+## Release version 1.0.0-RC5 (Jul 18th 2016)
+
+* Injecting named shared preferences is possible now
+* Registry getter method length warning removed
+
 ## Release version 1.0.0-RC4 (Jul 5th 2016)
 
 * fixing annotation processor compatibility issues with java 7
