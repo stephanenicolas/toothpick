@@ -55,6 +55,10 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class SmoothieApplicationModule extends Module {
   public SmoothieApplicationModule(Application application) {
+    this(application, null);
+  }
+
+  public SmoothieApplicationModule(Application application, String preferencesName) {
     bind(Application.class).toInstance(application);
     bind(AccountManager.class).toProviderInstance(new AccountManagerProvider(application));
     bind(AssetManager.class).toProviderInstance(new AssetManagerProvider(application));
@@ -62,7 +66,7 @@ public class SmoothieApplicationModule extends Module {
     bind(Handler.class).toProviderInstance(new HandlerProvider());
     bind(PackageManager.class).toProviderInstance(new PackageManagerProvider(application));
     bind(Resources.class).toProviderInstance(new ResourcesProvider(application));
-    bind(SharedPreferences.class).toProviderInstance(new SharedPreferencesProvider(application));
+    bind(SharedPreferences.class).toProviderInstance(new SharedPreferencesProvider(application, preferencesName));
     bindSystemServices(application);
     bindPackageInfo(application);
   }
