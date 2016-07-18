@@ -176,4 +176,9 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   void setToothpickRegistryChildrenPackageNameList(List<String> toothpickRegistryChildrenPackageNameList) {
     this.toothpickRegistryChildrenPackageNameList = toothpickRegistryChildrenPackageNameList;
   }
+
+  //used for testing only
+  void setToothpickExcludeFilters(String toothpickExcludeFilters) {
+    this.toothpickExcludeFilters = toothpickExcludeFilters;
+  }
 }

@@ -18,9 +18,14 @@ final class ProcessorTestUtilities {
   }
 
   static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName, List<String> toothpickRegistryChildrenPackageNameList) {
+    return factoryProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*");
+  }
+
+  static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName, List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
     FactoryProcessor factoryProcessor = new FactoryProcessor();
     factoryProcessor.setToothpickRegistryPackageName(toothpickRegistryPackageName);
     factoryProcessor.setToothpickRegistryChildrenPackageNameList(toothpickRegistryChildrenPackageNameList);
+    factoryProcessor.setToothpickExcludeFilters(toothpickExcludeFilters);
     return Arrays.asList(factoryProcessor);
   }
 }
