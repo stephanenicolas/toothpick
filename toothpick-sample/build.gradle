@@ -4,8 +4,8 @@ apply plugin: 'java'
 dependencies {
   compile project(':toothpick')
   compile project(':toothpick-runtime')
-  compile deps.inject
   compile project(':toothpick-compiler')
+  compile project(':toothpick-javax-annotations')
 
   testCompile project(':toothpick-testing')
   testCompile deps.easymock

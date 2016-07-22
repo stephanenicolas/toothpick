@@ -23,7 +23,7 @@ configurations {
 dependencies {
   compile project(':toothpick')
   processor  project(':toothpick-compiler')
-  compile deps.inject
+  compile project(':toothpick-javax-annotations')
   compile deps.android
   optional deps.supportv4
 
