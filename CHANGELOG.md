@@ -1,5 +1,11 @@
 //Continue from top
 
+## Release version 1.0.0-RC6 (Jul 22th 2016)
+
+* Decrease retention to classes for JSR 330 annotations. This implies to repackage them and use the new package 
+instead of JSR 330 pure annotations. It makes no differences for developers and TP can contribute to create slimer
+first dexes with it.
+
 ## Release version 1.0.0-RC5 (Jul 18th 2016)
 
 * Injecting named shared preferences is possible now
