@@ -52,6 +52,7 @@ import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
+import static android.content.Context.WIFI_SERVICE;
 
 public class SmoothieApplicationModule extends Module {
   public SmoothieApplicationModule(Application application) {
@@ -91,7 +92,7 @@ public class SmoothieApplicationModule extends Module {
     bindSystemService(application, KeyguardManager.class, KEYGUARD_SERVICE);
     bindSystemService(application, Vibrator.class, VIBRATOR_SERVICE);
     bindSystemService(application, ConnectivityManager.class, CONNECTIVITY_SERVICE);
-    bindSystemService(application, WifiManager.class, WINDOW_SERVICE);
+    bindSystemService(application, WifiManager.class, WIFI_SERVICE);
     bindSystemService(application, InputMethodManager.class, INPUT_METHOD_SERVICE);
     bindSystemService(application, SearchManager.class, SEARCH_SERVICE);
     bindSystemService(application, SensorManager.class, SENSOR_SERVICE);
