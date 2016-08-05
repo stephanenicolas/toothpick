@@ -14,7 +14,7 @@ import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
 import toothpick.Scope;
 import toothpick.Toothpick;
-import toothpick.smoothie.module.SmoothieActivityModule;
+import toothpick.smoothie.module.ToothpickActivityModule;
 
 public class LessSimpleActivity extends Activity {
 
@@ -33,7 +33,7 @@ public class LessSimpleActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     scope = Toothpick.openScopes(getApplication(), this);
-    scope.installModules(new SmoothieActivityModule(this));
+    scope.installModules(new ToothpickActivityModule(this));
     super.onCreate(savedInstanceState);
     Toothpick.inject(this, scope);
     setContentView(R.layout.simple_activity);

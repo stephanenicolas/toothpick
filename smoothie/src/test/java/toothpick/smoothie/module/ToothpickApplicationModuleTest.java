@@ -35,14 +35,14 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-public class SmoothieApplicationModuleTest {
+public class ToothpickApplicationModuleTest {
 
   @Test
   public void testModule_shouldReturnApplicationBindings() throws Exception {
     //GIVEN
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
-    appScope.installModules(new SmoothieApplicationModule(application));
+    appScope.installModules(new ToothpickApplicationModule(application));
 
     //WHEN
     Application injectedApp = appScope.getInstance(Application.class);
@@ -68,7 +68,7 @@ public class SmoothieApplicationModuleTest {
     //GIVEN
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
-    appScope.installModules(new SmoothieApplicationModule(application));
+    appScope.installModules(new ToothpickApplicationModule(application));
 
     //WHEN
     Application injectedApp = appScope.getInstance(Application.class);
@@ -117,7 +117,7 @@ public class SmoothieApplicationModuleTest {
     sharedPreferences.edit().putBoolean(itemKey, true).commit();
 
     Scope appScope = Toothpick.openScope(application);
-    appScope.installModules(new SmoothieApplicationModule(application));
+    appScope.installModules(new ToothpickApplicationModule(application));
 
     //WHEN
     SharedPreferences sharedPreferencesFromScope = appScope.getInstance(SharedPreferences.class);
@@ -137,7 +137,7 @@ public class SmoothieApplicationModuleTest {
     sharedPreferences.edit().putBoolean(itemKey, true).commit();
 
     Scope appScope = Toothpick.openScope(application);
-    appScope.installModules(new SmoothieApplicationModule(application, sharedPreferencesName));
+    appScope.installModules(new ToothpickApplicationModule(application, sharedPreferencesName));
 
     //WHEN
     SharedPreferences sharedPreferencesFromScope = appScope.getInstance(SharedPreferences.class);

@@ -6,7 +6,7 @@ import toothpick.Scope;
 import toothpick.Toothpick;
 import toothpick.registries.FactoryRegistryLocator;
 import toothpick.registries.MemberInjectorRegistryLocator;
-import toothpick.smoothie.module.SmoothieApplicationModule;
+import toothpick.smoothie.module.ToothpickApplicationModule;
 
 public class SimpleApp extends Application {
   @Override
@@ -23,6 +23,6 @@ public class SimpleApp extends Application {
     FactoryRegistryLocator.setRootRegistry(new com.example.smoothie.FactoryRegistry());
 
     Scope appScope = Toothpick.openScope(this);
-    appScope.installModules(new SmoothieApplicationModule(this));
+    appScope.installModules(new ToothpickApplicationModule(this));
   }
 }

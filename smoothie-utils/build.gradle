@@ -1,0 +1,42 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:2.1.2'
+  }
+}
+
+apply plugin: 'com.android.library'
+
+
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0.3"
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
+
+  defaultConfig {
+    minSdkVersion 15
+    targetSdkVersion 23
+    versionCode 1
+    versionName "1.0"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  compile project(':toothpick-runtime')
+  compile project(':smoothie')
+  compile deps.supportv7
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

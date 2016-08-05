@@ -121,6 +121,7 @@ ext.deps = [// Common
             // Android
             android             : 'com.google.android:android:4.1.1.4',
             supportv4           : 'com.google.android:support-v4:r7',
+            supportv7           : 'com.android.support:appcompat-v7:23.3.0',
             supportAnnotations  : 'com.android.support:support-annotations:23.3.0',
             butterknife         : 'com.jakewharton:butterknife:8.0.0',
             butterknife_compiler: 'com.jakewharton:butterknife-compiler:8.0.0',
