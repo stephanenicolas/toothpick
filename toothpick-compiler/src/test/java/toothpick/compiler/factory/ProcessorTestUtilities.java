@@ -1,9 +1,10 @@
 package toothpick.compiler.factory;
 
+import toothpick.compiler.memberinjector.MemberInjectorProcessor;
+
+import javax.annotation.processing.Processor;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.processing.Processor;
-import toothpick.compiler.memberinjector.MemberInjectorProcessor;
 
 final class ProcessorTestUtilities {
   private ProcessorTestUtilities() {
@@ -21,7 +22,8 @@ final class ProcessorTestUtilities {
     return factoryProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*");
   }
 
-  static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName, List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
+  static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName,
+                                                         List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
     FactoryProcessor factoryProcessor = new FactoryProcessor();
     factoryProcessor.setToothpickRegistryPackageName(toothpickRegistryPackageName);
     factoryProcessor.setToothpickRegistryChildrenPackageNameList(toothpickRegistryChildrenPackageNameList);

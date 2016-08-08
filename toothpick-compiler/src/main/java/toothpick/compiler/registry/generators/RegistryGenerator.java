@@ -7,17 +7,18 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import toothpick.compiler.common.generators.CodeGenerator;
+import toothpick.compiler.registry.targets.RegistryInjectionTarget;
+import toothpick.registries.FactoryRegistry;
+import toothpick.registries.MemberInjectorRegistry;
+
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import toothpick.compiler.common.generators.CodeGenerator;
-import toothpick.compiler.registry.targets.RegistryInjectionTarget;
-import toothpick.registries.FactoryRegistry;
-import toothpick.registries.MemberInjectorRegistry;
 
 /**
  * Generates a Registry for a given {@link RegistryInjectionTarget}.
@@ -26,7 +27,7 @@ import toothpick.registries.MemberInjectorRegistry;
  */
 public class RegistryGenerator extends CodeGenerator {
 
-  /* @VisibleForTesting */ static int INJECTION_TARGETS_PER_GETTER_METHOD = 200;
+  /* @VisibleForTesting */ static int injectionTargetsPerGetterMethod = 200;
 
   private RegistryInjectionTarget registryInjectionTarget;
 
@@ -141,7 +142,7 @@ public class RegistryGenerator extends CodeGenerator {
   }
 
   private int getNumberOfBuckets(List<TypeElement> injectionTargetList) {
-    int minNumOfBuckets = (injectionTargetList.size() + INJECTION_TARGETS_PER_GETTER_METHOD - 1) / INJECTION_TARGETS_PER_GETTER_METHOD;
+    int minNumOfBuckets = (injectionTargetList.size() + injectionTargetsPerGetterMethod - 1) / injectionTargetsPerGetterMethod;
     return roundUpToPowerOfTwo(minNumOfBuckets);
   }
 
