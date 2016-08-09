@@ -2,6 +2,7 @@ package com.example.smoothie.deps;
 
 import com.example.smoothie.RxMVPActivity;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -15,6 +16,7 @@ public class RxPresenter {
   private final ConnectableObservable<Long> timeObservable;
   private final Subscription connect;
 
+  @Inject
   public RxPresenter() {
     timeObservable = Observable.interval(1, TimeUnit.SECONDS) //
         .subscribeOn(Schedulers.newThread()) //

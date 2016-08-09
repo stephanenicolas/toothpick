@@ -47,16 +47,13 @@ public class RxMVPActivity extends Activity {
   protected void onDestroy() {
     Toothpick.closeScope(this);
     subscription.unsubscribe();
+    if (isFinishing()) {
+      //when we leave the presenter flow,
+      //we close its scope
+      rxPresenter.stop();
+      Toothpick.closeScope(PRESENTER_SCOPE);
+    }
     super.onDestroy();
-  }
-
-  @Override
-  public void onBackPressed() {
-    //when we leave the presenter flow,
-    //we close its scope
-    rxPresenter.stop();
-    Toothpick.closeScope(PRESENTER_SCOPE);
-    super.onBackPressed();
   }
 
   @javax.inject.Scope
