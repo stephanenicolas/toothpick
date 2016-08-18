@@ -95,8 +95,7 @@ public class FactoryGenerator extends CodeGenerator {
     for (ParamInjectionTarget paramInjectionTarget : constructorInjectionTarget.parameters) {
       CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget);
       String paramName = "param" + counter++;
-      TypeName paramType = TypeName.get(paramInjectionTarget.memberClass.asType());
-      createInstanceBuilder.addCode("$T $L = scope.", paramType, paramName);
+      createInstanceBuilder.addCode("$T $L = scope.", getParamType(paramInjectionTarget), paramName);
       createInstanceBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
       createInstanceBuilder.addCode(";");
       createInstanceBuilder.addCode(LINE_SEPARATOR);

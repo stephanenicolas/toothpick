@@ -111,7 +111,7 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .failsToCompile()
-        .withErrorContaining("Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid Lazy or Provider.");
+        .withErrorContaining("Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid toothpick.Lazy.");
   }
 
   @Test
@@ -129,7 +129,7 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .failsToCompile()
-        .withErrorContaining("Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid Lazy or Provider.");
+        .withErrorContaining("Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid javax.inject.Provider.");
   }
 
   @Test

@@ -466,7 +466,7 @@ public class FieldMemberInjectorTest {
         .that(source)
         .processedWith(memberInjectorProcessors())
         .failsToCompile()
-        .withErrorContaining("Field test.TestFieldInjection#foo is not a valid Lazy or Provider.");
+        .withErrorContaining("Field test.TestFieldInjection#foo is not a valid toothpick.Lazy.");
   }
 
   @Test
@@ -486,7 +486,7 @@ public class FieldMemberInjectorTest {
         .that(source)
         .processedWith(memberInjectorProcessors())
         .failsToCompile()
-        .withErrorContaining("Field test.TestFieldInjection#foo is not a valid Lazy or Provider.");
+        .withErrorContaining("Field test.TestFieldInjection#foo is not a valid javax.inject.Provider.");
   }
 
   @Test

@@ -214,7 +214,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   }
 
   protected boolean isValidInjectedType(VariableElement injectedTypeElement) {
-    if (!isValidInjectedKind(injectedTypeElement)) {
+    if (!isValidInjectedElementKind(injectedTypeElement)) {
       return false;
     }
     if (isProviderOrLazy(injectedTypeElement) && !isValidProviderOrLazy(injectedTypeElement)) {
@@ -223,7 +223,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return true;
   }
 
-  private boolean isValidInjectedKind(VariableElement injectedTypeElement) {
+  private boolean isValidInjectedElementKind(VariableElement injectedTypeElement) {
     Element typeElement = typeUtils.asElement(injectedTypeElement.asType());
     if (typeElement.getKind() != ElementKind.CLASS //
         && typeElement.getKind() != ElementKind.INTERFACE //
@@ -234,7 +234,9 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       Element enclosingElement = injectedTypeElement.getEnclosingElement();
       if (enclosingElement instanceof TypeElement) {
         error(injectedTypeElement, "Field %s#%s is of type %s which is not supported by Toothpick.",
-            ((TypeElement) enclosingElement).getQualifiedName(), injectedTypeElement.getSimpleName(), typeElement);
+            ((TypeElement) enclosingElement).getQualifiedName(),
+            injectedTypeElement.getSimpleName(),
+            typeElement);
       } else {
         Element methodOrConstructorElement = enclosingElement;
         enclosingElement = enclosingElement.getEnclosingElement();
@@ -256,13 +258,16 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     if (declaredType.getTypeArguments().isEmpty()) {
       Element enclosingElement = element.getEnclosingElement();
       if (enclosingElement instanceof TypeElement) {
-        error(element, "Field %s#%s is not a valid Lazy or Provider.",
-            ((TypeElement) enclosingElement).getQualifiedName(), element.getSimpleName());
+        error(element, "Field %s#%s is not a valid %s.",
+            ((TypeElement) enclosingElement).getQualifiedName(),
+            element.getSimpleName(),
+            declaredType);
       } else {
-        error(element, "Parameter %s in method/constructor %s#%s is not a valid Lazy or Provider.",
+        error(element, "Parameter %s in method/constructor %s#%s is not a valid %s.",
             element.getSimpleName(), //
             ((TypeElement) enclosingElement.getEnclosingElement()).getQualifiedName(), //
-            enclosingElement.getSimpleName());
+            enclosingElement.getSimpleName(),
+            declaredType);
       }
       return false;
     }

@@ -107,8 +107,7 @@ public class MemberInjectorGenerator extends CodeGenerator {
       for (ParamInjectionTarget paramInjectionTarget : methodInjectionTarget.parameters) {
         CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget);
         String paramName = "param" + counter++;
-        TypeName paramType = TypeName.get(paramInjectionTarget.memberClass.asType());
-        injectMethodBuilder.addCode("$T $L = scope.", paramType, paramName);
+        injectMethodBuilder.addCode("$T $L = scope.", getParamType(paramInjectionTarget), paramName);
         injectMethodBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
         injectMethodBuilder.addCode(";");
         injectMethodBuilder.addCode(LINE_SEPARATOR);
