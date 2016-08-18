@@ -209,7 +209,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     targetClassMap.put(enclosingElement, createConstructorInjectionTarget(constructorElement));
   }
 
-  private boolean isValidInjectAnnotatedConstructor(Element element) {
+  private boolean isValidInjectAnnotatedConstructor(ExecutableElement element) {
     TypeElement enclosingElement = (TypeElement) element.getEnclosingElement();
 
     // Verify modifiers.
@@ -228,6 +228,12 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     if (isNonStaticInnerClass(enclosingElement)) {
       return false;
+    }
+
+    for (VariableElement paramElement : element.getParameters()) {
+      if (!isValidInjectedType(paramElement)) {
+        return false;
+      }
     }
 
     return true;

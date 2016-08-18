@@ -66,6 +66,67 @@ public class MethodMemberInjectorTest {
   }
 
   @Test
+  public void testMethodInjection_shouldFail_whenContainingClassIsPrivate() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestMethodInjection {", //
+        "  private static class InnerClass {", //
+        "    @Inject", //
+        "    public void m(Foo foo) {}", //
+        "  }", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("@Injected fields in class InnerClass. The class must be non private.");
+  }
+
+  @Test
+  public void testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidLazy() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestMethodInjection {", //
+        "  @Inject", //
+        "  public void m(Lazy foo) {}", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter foo in method/constructor test.TestMethodInjection#m is not a valid Lazy or Provider.");
+  }
+
+  @Test
+  public void testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidProvider() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestMethodInjection {", //
+        "  @Inject", //
+        "  public void m(Provider foo) {}", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter foo in method/constructor test.TestMethodInjection#m is not a valid Lazy or Provider.");
+  }
+
+  @Test
   public void testOverrideMethodInjection() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjectionParent", Joiner.on('\n').join(//
         "package test;", //

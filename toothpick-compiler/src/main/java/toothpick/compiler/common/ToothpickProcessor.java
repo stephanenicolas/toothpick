@@ -181,7 +181,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       return false;
     }
 
-    if (!isValidInjectedType(typeUtils.asElement(variableElement.asType()))) {
+    if (!isValidInjectedType(variableElement)) {
       return false;
     }
     return true;
@@ -213,7 +213,17 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return true;
   }
 
-  protected boolean isValidInjectedType(Element injectedTypeElement) {
+  protected boolean isValidInjectedType(VariableElement injectedTypeElement) {
+    if (!isValidInjectedKind(injectedTypeElement)) {
+      return false;
+    }
+    if (isProviderOrLazy(injectedTypeElement) && !isValidProviderOrLazy(injectedTypeElement)) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isValidInjectedKind(VariableElement injectedTypeElement) {
     Element typeElement = typeUtils.asElement(injectedTypeElement.asType());
     if (typeElement.getKind() != ElementKind.CLASS //
         && typeElement.getKind() != ElementKind.INTERFACE //
@@ -225,7 +235,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       if (enclosingElement instanceof TypeElement) {
         error(injectedTypeElement, "Field %s#%s is of type %s which is not supported by Toothpick.",
             ((TypeElement) enclosingElement).getQualifiedName(), injectedTypeElement.getSimpleName(), typeElement);
-        return false;
       } else {
         Element methodOrConstructorElement = enclosingElement;
         enclosingElement = enclosingElement.getEnclosingElement();
@@ -234,8 +243,28 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
             ((TypeElement) enclosingElement).getQualifiedName(), //
             methodOrConstructorElement.getSimpleName(), //
             typeElement);
-        return false;
       }
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isValidProviderOrLazy(Element element) {
+    DeclaredType declaredType = (DeclaredType) element.asType();
+
+    // Contains type parameter
+    if (declaredType.getTypeArguments().isEmpty()) {
+      Element enclosingElement = element.getEnclosingElement();
+      if (enclosingElement instanceof TypeElement) {
+        error(element, "Field %s#%s is not a valid Lazy or Provider.",
+            ((TypeElement) enclosingElement).getQualifiedName(), element.getSimpleName());
+      } else {
+        error(element, "Parameter %s in method/constructor %s#%s is not a valid Lazy or Provider.",
+            element.getSimpleName(), //
+            ((TypeElement) enclosingElement.getEnclosingElement()).getQualifiedName(), //
+            enclosingElement.getSimpleName());
+      }
+      return false;
     }
     return true;
   }
@@ -391,6 +420,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
     }
     return result;
+  }
+
+  private boolean isProviderOrLazy(Element element) {
+    FieldInjectionTarget.Kind kind = getParamInjectionTargetKind(element);
+    return kind == ParamInjectionTarget.Kind.PROVIDER || kind == ParamInjectionTarget.Kind.LAZY;
   }
 
   private FieldInjectionTarget.Kind getParamInjectionTargetKind(Element variableElement) {
