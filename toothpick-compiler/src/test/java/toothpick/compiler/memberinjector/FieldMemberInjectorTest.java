@@ -429,6 +429,67 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void testFieldInjection_shouldFail_WhenContainingClassIsPrivate() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestFieldInjection {", //
+        "  private static class InnerClass {", //
+        "    @Inject Foo foo;", //
+        "    public InnerClass() {}", //
+        "  }", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("@Injected fields in class InnerClass. The class must be non private.");
+  }
+
+  @Test
+  public void testFieldInjection_shouldFail_WhenFieldIsInvalidLazy() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestFieldInjection {", //
+        "  @Inject Lazy foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Field test.TestFieldInjection#foo is not a valid toothpick.Lazy.");
+  }
+
+  @Test
+  public void testFieldInjection_shouldFail_WhenFieldIsInvalidProvider() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestFieldInjection {", //
+        "  @Inject Provider foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Field test.TestFieldInjection#foo is not a valid javax.inject.Provider.");
+  }
+
+  @Test
   public void testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestMemberInjection", Joiner.on('\n').join(//
         "package test;", //

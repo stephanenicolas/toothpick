@@ -306,6 +306,146 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
+  public void testNonEmptyConstructorWithLazy() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(Lazy<String> str, Integer n) {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Integer;", //
+        "import java.lang.Override;", //
+        "import java.lang.String;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Lazy;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    Lazy<String> param1 = scope.getLazy(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testNonEmptyConstructorWithProvider() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(Provider<String> str, Integer n) {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Integer;", //
+        "import java.lang.Override;", //
+        "import java.lang.String;", //
+        "import javax.inject.Provider;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    Provider<String> param1 = scope.getProvider(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeInstancesAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testNonEmptyConstructor_shouldFail_whenContainsInvalidLazyParameter() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(Lazy lazy, Integer n) {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter lazy in method/constructor test.TestNonEmptyConstructor#<init> is not a valid toothpick.Lazy.");
+  }
+
+  @Test
+  public void testNonEmptyConstructor_shouldFail_whenContainsInvalidProviderParameter() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(Provider provider, Integer n) {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter provider in method/constructor test.TestNonEmptyConstructor#<init> is not a valid javax.inject.Provider.");
+  }
+
+  @Test
   public void testAbstractClassWithInjectedConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestInvalidClassConstructor", Joiner.on('\n').join(//
         "package test;", //

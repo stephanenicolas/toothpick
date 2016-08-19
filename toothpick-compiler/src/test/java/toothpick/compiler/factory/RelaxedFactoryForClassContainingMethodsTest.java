@@ -14,7 +14,6 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ScopeInstances;", //
         "public class TestRelaxedFactoryCreationForInjectMethod {", //
         "  @Inject void m(Foo foo) {}", //
         "}", //
@@ -62,11 +61,10 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
   }
 
   @Test
-  public void testRelaxedFactoryCreationForInjectedMethod_shouldFail_WhenMethodIsInvalid() {
+  public void testRelaxedFactoryCreationForInjectedMethod_shouldFail_WhenMethodIsPrivate() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ScopeInstances;", //
         "public class TestRelaxedFactoryCreationForInjectMethod {", //
         "  @Inject private void m(Foo foo) {}", //
         "}", //
@@ -80,11 +78,65 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
   }
 
   @Test
+  public void testRelaxedFactoryCreationForInjectedMethod_shouldFail_WhenContainingClassIsInvalid() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestRelaxedFactoryCreationForInjectMethod {", //
+        "  private static class InnerClass {", //
+        "    @Inject void m(Foo foo) {}", //
+        "  }", //
+        "}", //
+        "  class Foo {}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("@Injected fields in class InnerClass. The class must be non private.");
+  }
+
+  @Test
+  public void testRelaxedFactoryCreationForInjectedMethod_shouldFail_WhenMethodParameterIsInvalidLazy() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestRelaxedFactoryCreationForInjectMethod {", //
+        "  @Inject void m(Lazy foo) {}", //
+        "}", //
+        "  class Foo {}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid toothpick.Lazy.");
+  }
+
+  @Test
+  public void testRelaxedFactoryCreationForInjectedMethod_shouldFail_WhenMethodParameterIsInvalidProvider() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestRelaxedFactoryCreationForInjectMethod {", //
+        "  @Inject void m(Provider foo) {}", //
+        "}", //
+        "  class Foo {}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid javax.inject.Provider.");
+  }
+
+  @Test
   public void testRelaxedFactoryCreationForInjectedMethod_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ScopeInstances;", //
         "public abstract class TestRelaxedFactoryCreationForInjectMethod {", //
         "  @Inject void m(Foo foo) {}", //
         "}", //
@@ -98,7 +150,6 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ScopeInstances;", //
         "public class TestRelaxedFactoryCreationForInjectMethod {", //
         "  @Inject void m(Foo foo) {}", //
         "  public TestRelaxedFactoryCreationForInjectMethod(String s) {}", //
@@ -113,7 +164,6 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestRelaxedFactoryCreationForInjectMethod", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ScopeInstances;", //
         "public class TestRelaxedFactoryCreationForInjectMethod {", //
         "  @Inject void m(Foo foo) {}", //
         "  private TestRelaxedFactoryCreationForInjectMethod() {}", //
