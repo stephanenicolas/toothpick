@@ -1,5 +1,12 @@
 //Continue from top
 
+## Release version 1.0.0-RC7 (Aug 19th 2016)
+
+* Fixing wrong binding for WifiManager.
+* Fixing Smoothie sample presenter crash
+* Catching error about untyped Lazy or Provider
+* Fixing Lazies & Providers injected through constructors or methods
+
 ## Release version 1.0.0-RC6 (Jul 22th 2016)
 
 * Decrease retention to classes for JSR 330 annotations. This implies to repackage them and use the new package 
