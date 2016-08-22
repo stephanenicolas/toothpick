@@ -1,6 +1,8 @@
 package toothpick;
 
 import java.util.concurrent.ConcurrentHashMap;
+import toothpick.configuration.Configuration;
+import toothpick.configuration.ConfigurationHolder;
 
 /**
  * Main class to access toothpick features.
@@ -122,8 +124,13 @@ public final class Toothpick {
     }
   }
 
+  /**
+   * Allows to pass custom configurations.
+   *
+   * @param configuration the configuration to use
+   */
   public static void setConfiguration(Configuration configuration) {
-    Configuration.setConfiguration(configuration);
+    ConfigurationHolder.configuration = configuration;
   }
 
   /*for testing.*/

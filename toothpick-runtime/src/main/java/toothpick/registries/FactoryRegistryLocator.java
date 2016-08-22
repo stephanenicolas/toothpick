@@ -1,7 +1,7 @@
 package toothpick.registries;
 
-import toothpick.Configuration;
 import toothpick.Factory;
+import toothpick.configuration.ConfigurationHolder;
 
 /**
  * Locates the {@link FactoryRegistry} instances.
@@ -35,7 +35,7 @@ public class FactoryRegistryLocator {
   }
 
   public static <T> Factory<T> getFactory(Class<T> clazz) {
-    return Configuration.instance.getFactory(clazz);
+    return ConfigurationHolder.configuration.getFactory(clazz);
   }
 
   public static <T> Factory<T> getFactoryUsingRegistries(Class<T> clazz) {

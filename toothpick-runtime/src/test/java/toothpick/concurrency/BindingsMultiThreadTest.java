@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import toothpick.Configuration;
+import toothpick.configuration.Configuration;
 import toothpick.Factory;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -32,7 +32,7 @@ public class BindingsMultiThreadTest {
 
   @Before
   public void setUp() throws Exception {
-    Toothpick.setConfiguration(Configuration.reflectionFree());
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
     Toothpick.openScope(ROOT_SCOPE);
     scopeNames.clear();
   }

@@ -1,4 +1,4 @@
-package toothpick;
+package toothpick.configuration;
 
 /**
  * Thrown when a binding is illegal.

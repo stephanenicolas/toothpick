@@ -1,7 +1,7 @@
 package toothpick.registries;
 
 import org.junit.Test;
-import toothpick.Configuration;
+import toothpick.configuration.Configuration;
 import toothpick.MemberInjector;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -18,7 +18,7 @@ public class MemberInjectorRegistryLocatorTest {
   @Test
   public void testGetMemberInjector_shouldReturnNull_whenThereAreNoRegistries() throws Exception {
     //GIVEN
-    Toothpick.setConfiguration(Configuration.reflectionFree());
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
     MemberInjectorRegistryLocator.setRootRegistry(null);
 
     //WHEN

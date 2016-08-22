@@ -1,7 +1,7 @@
 package com.example.smoothie;
 
 import android.app.Application;
-import toothpick.Configuration;
+import toothpick.configuration.Configuration;
 import toothpick.Scope;
 import toothpick.Toothpick;
 import toothpick.registries.FactoryRegistryLocator;
@@ -18,7 +18,7 @@ public class SimpleApp extends Application {
     // Please note that the fully qualified name should be used instead of an import.
     // (see https://github.com/stephanenicolas/toothpick/wiki/Factory-and-Member-Injector-registries)
     // If you're not using the reflection free configuration, the next 3 lines can be omitted
-    Configuration.setConfiguration(Configuration.reflectionFree());
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
     MemberInjectorRegistryLocator.setRootRegistry(new com.example.smoothie.MemberInjectorRegistry());
     FactoryRegistryLocator.setRootRegistry(new com.example.smoothie.FactoryRegistry());
 
