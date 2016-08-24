@@ -2,7 +2,7 @@ package toothpick.registries;
 
 import org.junit.Before;
 import org.junit.Test;
-import toothpick.Configuration;
+import toothpick.configuration.Configuration;
 import toothpick.Factory;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -18,7 +18,7 @@ public class FactoryRegistryLocatorTest {
 
   @Before
   public void setUp() throws Exception {
-    Toothpick.setConfiguration(Configuration.reflectionFree());
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
   }
 
   @Test(expected = RuntimeException.class)

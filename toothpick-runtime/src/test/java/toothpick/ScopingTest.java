@@ -2,6 +2,7 @@ package toothpick;
 
 import org.junit.Test;
 import toothpick.config.Module;
+import toothpick.configuration.IllegalBindingException;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
 import toothpick.data.CustomScope;
@@ -19,7 +20,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-import static toothpick.Configuration.development;
+import static toothpick.configuration.Configuration.forDevelopment;
 
 /*
  * Tests scopes related features of toothpick.
@@ -180,7 +181,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingIsSimple() throws Exception {
     //GIVEN
-    Toothpick.setConfiguration(development());
+    Toothpick.setConfiguration(forDevelopment());
     ScopeNode scopeParent = new ScopeImpl("");
     ScopeNode scope1 = new ScopeImpl("scope1");
     ScopeNode scope2 = new ScopeImpl("scope2");
@@ -201,7 +202,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAClass() throws Exception {
     //GIVEN
-    Toothpick.setConfiguration(development());
+    Toothpick.setConfiguration(forDevelopment());
     ScopeNode scopeParent = new ScopeImpl("");
     ScopeNode scope1 = new ScopeImpl("scope1");
     ScopeNode scope2 = new ScopeImpl("scope2");
@@ -222,7 +223,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAProvider() throws Exception {
     //GIVEN
-    Toothpick.setConfiguration(development());
+    Toothpick.setConfiguration(forDevelopment());
     ScopeNode scopeParent = new ScopeImpl("");
     ScopeNode scope1 = new ScopeImpl("");
     ScopeNode scope2 = new ScopeImpl("");
@@ -243,7 +244,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test
   public void binding_shouldCreateAnnotatedClassInRootScope_whenInjectingSingletonAnnotatedClass() throws Exception {
     //GIVEN
-    Toothpick.setConfiguration(development());
+    Toothpick.setConfiguration(forDevelopment());
     ScopeNode scopeParent = new ScopeImpl("root");
     ScopeNode scope1 = new ScopeImpl("child");
     scopeParent.addChild(scope1);
@@ -259,7 +260,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test
   public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotation_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
     //GIVEN
-    Toothpick.setConfiguration(development());
+    Toothpick.setConfiguration(forDevelopment());
     ScopeNode scopeParent = new ScopeImpl(CustomScope.class);
     ScopeNode scope1 = new ScopeImpl("child");
     scopeParent.addChild(scope1);

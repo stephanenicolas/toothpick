@@ -1,7 +1,7 @@
 package toothpick.registries;
 
-import toothpick.Configuration;
 import toothpick.MemberInjector;
+import toothpick.configuration.ConfigurationHolder;
 
 /**
  * Locates the {@link MemberInjectorRegistry} instances.
@@ -23,7 +23,7 @@ public class MemberInjectorRegistryLocator {
   }
 
   public static <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
-    return Configuration.instance.getMemberInjector(clazz);
+    return ConfigurationHolder.configuration.getMemberInjector(clazz);
   }
 
   public static <T> MemberInjector<T> getMemberInjectorUsingRegistries(Class<T> clazz) {

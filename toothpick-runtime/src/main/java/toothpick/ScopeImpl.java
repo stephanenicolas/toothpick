@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
+import toothpick.configuration.ConfigurationHolder;
 import toothpick.registries.FactoryRegistryLocator;
 
 import static java.lang.String.format;
@@ -44,17 +45,17 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    Configuration.instance.checkCyclesStart(clazz);
+    ConfigurationHolder.configuration.checkCyclesStart(clazz, null);
     T t = lookupProvider(clazz, null).get(this);
-    Configuration.instance.checkCyclesEnd(clazz);
+    ConfigurationHolder.configuration.checkCyclesEnd(clazz, null);
     return t;
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
-    Configuration.instance.checkCyclesStart(clazz);
+    ConfigurationHolder.configuration.checkCyclesStart(clazz, name);
     T t = lookupProvider(clazz, name).get(this);
-    Configuration.instance.checkCyclesEnd(clazz);
+    ConfigurationHolder.configuration.checkCyclesEnd(clazz, name);
     return t;
   }
 
@@ -201,7 +202,7 @@ public class ScopeImpl extends ScopeNode {
     if (binding == null) {
       throw new IllegalStateException("null binding are not allowed. Should not happen unless getBindingSet is overridden.");
     }
-    Configuration.instance.checkIllegalBinding(binding);
+    ConfigurationHolder.configuration.checkIllegalBinding(binding);
 
     switch (binding.getMode()) {
       case SIMPLE:
