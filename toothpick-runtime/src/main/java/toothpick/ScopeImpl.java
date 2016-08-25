@@ -45,24 +45,24 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    ConfigurationHolder.configuration.checkCyclesStart(clazz, null);
-    T t = lookupProvider(clazz, null).get(this);
-    ConfigurationHolder.configuration.checkCyclesEnd(clazz, null);
-    return t;
+    return getInstance(clazz, null);
   }
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
     ConfigurationHolder.configuration.checkCyclesStart(clazz, name);
-    T t = lookupProvider(clazz, name).get(this);
-    ConfigurationHolder.configuration.checkCyclesEnd(clazz, name);
+    T t;
+    try {
+      t = lookupProvider(clazz, name).get(this);
+    } finally {
+      ConfigurationHolder.configuration.checkCyclesEnd(clazz, name);
+    }
     return t;
   }
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz) {
-    InternalProviderImpl<? extends T> provider = lookupProvider(clazz, null);
-    return new ThreadSafeProviderImpl<>(this, provider, false);
+    return getProvider(clazz, null);
   }
 
   @Override
@@ -73,8 +73,7 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz) {
-    InternalProviderImpl<? extends T> provider = lookupProvider(clazz, null);
-    return new ThreadSafeProviderImpl<>(this, provider, true);
+    return getLazy(clazz, null);
   }
 
   @Override
