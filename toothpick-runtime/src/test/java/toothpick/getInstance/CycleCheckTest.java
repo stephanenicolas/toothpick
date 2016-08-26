@@ -11,6 +11,8 @@ import toothpick.config.Module;
 import toothpick.configuration.CyclicDependencyException;
 import toothpick.data.CyclicFoo;
 import toothpick.data.CyclicNamedFoo;
+import toothpick.data.IFoo;
+import toothpick.registries.NoFactoryFoundException;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -67,5 +69,24 @@ public class CycleCheckTest extends ToothpickBaseTest {
     // Should not crashed
     assertThat(instance2, notNullValue());
     assertThat(instance2.cyclicFoo, sameInstance(instance1));
+  }
+
+  @Test(expected = NoFactoryFoundException.class)
+  public void testCycleDetection_whenGetInstanceFails_shouldCloseCycle() throws Exception {
+    //GIVEN
+    Scope scope = new ScopeImpl("");
+
+    //WHEN
+    try {
+      scope.getInstance(IFoo.class);
+    } catch (NoFactoryFoundException nfe) {
+      // nothing
+    }
+
+    scope.getInstance(IFoo.class);
+
+    //THEN
+    fail("Should throw NoFactoryFoundException as IFoo does not have any implementation bound."
+        + "But It should not throw CyclicDependencyException as it was removed from the stack.");
   }
 }
