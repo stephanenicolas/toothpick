@@ -1,7 +1,8 @@
 //Continue from top
 
-## Release version 1.0.0-RC8 (Aug 24th 2016)
+## Release version 1.0.0-RC9 (Aug 26th 2016)
 
+* Fixing Runtime check bug: Cycle should end even if lookupProvider fails
 * Updating Configuration API.
 
 ## Release version 1.0.0-RC7 (Aug 19th 2016)
