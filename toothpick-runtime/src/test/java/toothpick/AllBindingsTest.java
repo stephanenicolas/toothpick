@@ -1,8 +1,11 @@
 package toothpick;
 
-import javax.inject.Provider;
 import org.junit.Test;
+
+import javax.inject.Provider;
+
 import toothpick.config.Module;
+import toothpick.configuration.Configuration;
 import toothpick.data.Bar;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
@@ -127,6 +130,28 @@ public class AllBindingsTest extends ToothpickBaseTest {
     scope.installModules(new Module() {
       {
         bind(IFooSingleton.class).to(FooSingleton.class);
+      }
+    });
+
+    //WHEN
+    FooSingleton foo = scope.getInstance(FooSingleton.class);
+    FooSingleton foo2 = scope.getInstance(FooSingleton.class);
+
+    //THEN
+    assertThat(foo, notNullValue());
+    assertThat(foo2, sameInstance(foo));
+    assertThat(foo.bar, notNullValue());
+    assertThat(foo.bar, isA(Bar.class));
+  }
+
+  @Test
+  public void bindToClass_shouldCreateInjectedSingletons_whenBoundClassAnnotatedSingletonAndRuntimeCheckOn() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment());
+    Scope scope = new ScopeImpl("");
+    scope.installModules(new Module() {
+      {
+        bind(FooSingleton.class);
       }
     });
 

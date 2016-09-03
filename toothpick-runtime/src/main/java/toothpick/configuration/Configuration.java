@@ -22,7 +22,7 @@ public class Configuration implements RuntimeCheckConfiguration, ReflectionConfi
    * <ul>
    * <li>cycle detection: check that not 2 classes depend on each other. Note that if of them uses a Lazy instance
    * of the other or a Producer, then there is no such cycle.</li>
-   * <li>illegal binding detection: check no scope annotated class is used as the target of a binding.</li>
+   * <li>illegal binding detection: check no scope annotated class (with the exception of Singleton) is used as the target of a binding.</li>
    * </ul>
    *
    * @return a development configuration.
