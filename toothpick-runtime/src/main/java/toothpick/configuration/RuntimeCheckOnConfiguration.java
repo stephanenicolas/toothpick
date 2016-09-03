@@ -1,12 +1,13 @@
 package toothpick.configuration;
 
 import java.lang.annotation.Annotation;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+
+import javax.inject.Singleton;
+
 import toothpick.config.Binding;
 
 import static java.lang.String.format;
@@ -39,6 +40,10 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
     }
 
     for (Annotation annotation : clazz.getAnnotations()) {
+      if (annotation instanceof Singleton) {
+        continue;
+      }
+
       if (annotation.annotationType().isAnnotationPresent(javax.inject.Scope.class)) {
         throw new IllegalBindingException(format("Class %s cannot be bound. It has an scope annotation", clazz.getName()));
       }
