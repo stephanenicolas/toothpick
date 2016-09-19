@@ -3,13 +3,14 @@ package toothpick;
 import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
+import toothpick.configuration.Configuration;
 import toothpick.data.Bar;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
 import toothpick.data.IFooProvider;
-import toothpick.data.IFooProviderAnnotatedProvidesSingleton;
+import toothpick.data.FooProviderAnnotatedProvidesSingleton;
 import toothpick.data.IFooProviderAnnotatedSingleton;
 import toothpick.data.IFooSingleton;
 import toothpick.data.IFooWithBarProvider;
@@ -240,7 +241,7 @@ public class AllBindingsTest extends ToothpickBaseTest {
     scope.bindScopeAnnotation(CustomScope.class);
     scope.installModules(new Module() {
       {
-        bind(IFoo.class).toProvider(IFooProviderAnnotatedProvidesSingleton.class);
+        bind(IFoo.class).toProvider(FooProviderAnnotatedProvidesSingleton.class);
       }
     });
 

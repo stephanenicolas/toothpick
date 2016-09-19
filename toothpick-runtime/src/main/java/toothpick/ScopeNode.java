@@ -192,8 +192,7 @@ public abstract class ScopeNode implements Scope {
   @Override
   public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
     if (scopeAnnotationClass == Singleton.class) {
-      throw new IllegalArgumentException(format("The annotation @Singleton is already bound "
-              + "to the root scope of any scope. It can't be tested dynamically."));
+      return parentScopes.isEmpty();
     }
 
     return scopeAnnotationClasses.contains(scopeAnnotationClass);

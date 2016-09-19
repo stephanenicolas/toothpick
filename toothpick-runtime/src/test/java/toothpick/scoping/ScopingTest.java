@@ -1,12 +1,12 @@
 package toothpick.scoping;
 
 import org.junit.Test;
-import toothpick.configuration.IllegalBindingException;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
 import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
+import toothpick.configuration.IllegalBindingException;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
 import toothpick.data.CustomScope;
@@ -14,7 +14,7 @@ import toothpick.data.Foo;
 import toothpick.data.FooChildWithoutInjectedFields;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
-import toothpick.data.IFooProviderAnnotatedProvidesSingleton;
+import toothpick.data.FooProviderAnnotatedProvidesSingleton;
 import toothpick.data.IFooProviderAnnotatedSingleton;
 import toothpick.data.IFooSingleton;
 
@@ -173,6 +173,64 @@ public class ScopingTest extends ToothpickBaseTest {
     assertThat(instance, sameInstance(instance2));
   }
 
+  @Test
+  public void singleton_shouldBeShared_whenBoundExplicitlyToSingletonAnnotatedClass() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(forDevelopment());
+    Scope root = Toothpick.openScopes("root");
+    root.installModules(new Module() {
+      {
+        bind(IFooSingleton.class).to(FooSingleton.class);
+      }
+    });
+
+    //WHEN
+    IFooSingleton instance = root.getInstance(IFooSingleton.class);
+    IFooSingleton instance2 = root.getInstance(IFooSingleton.class);
+
+    //THEN
+    assertThat(instance, sameInstance(instance2));
+  }
+
+  @Test
+  public void singleton_shouldBeShared_whenBoundingIsSimpleOnSingletonAnnotatedClass() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(forDevelopment());
+    Scope root = Toothpick.openScopes("root");
+    root.installModules(new Module() {
+      {
+        bind(FooSingleton.class);
+      }
+    });
+
+    //WHEN
+    FooSingleton instance = root.getInstance(FooSingleton.class);
+    FooSingleton instance2 = root.getInstance(FooSingleton.class);
+
+    //THEN
+    assertThat(instance, sameInstance(instance2));
+  }
+
+  @Test
+  public void singleton_shouldBeShared_whenBoundingIsSimpleOnScopeAnnotatedClass() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(forDevelopment());
+    Scope childScope = Toothpick.openScopes("root", "child");
+    childScope.bindScopeAnnotation(CustomScope.class);
+    childScope.installModules(new Module() {
+      {
+        bind(FooProviderAnnotatedProvidesSingleton.class);
+      }
+    });
+
+    //WHEN
+    FooProviderAnnotatedProvidesSingleton instance = childScope.getInstance(FooProviderAnnotatedProvidesSingleton.class);
+    FooProviderAnnotatedProvidesSingleton instance2 = childScope.getInstance(FooProviderAnnotatedProvidesSingleton.class);
+
+    //THEN
+    assertThat(instance, sameInstance(instance2));
+  }
+
   @Test(expected = IllegalBindingException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingIsSimple() throws Exception {
     //GIVEN
@@ -247,8 +305,8 @@ public class ScopingTest extends ToothpickBaseTest {
     Scope scope1 = Toothpick.openScopes(CustomScope.class, "child");
 
     //WHEN
-    IFooProviderAnnotatedProvidesSingleton instanceInParent = scopeParent.getInstance(IFooProviderAnnotatedProvidesSingleton.class);
-    IFooProviderAnnotatedProvidesSingleton instanceInChild = scope1.getInstance(IFooProviderAnnotatedProvidesSingleton.class);
+    FooProviderAnnotatedProvidesSingleton instanceInParent = scopeParent.getInstance(FooProviderAnnotatedProvidesSingleton.class);
+    FooProviderAnnotatedProvidesSingleton instanceInChild = scope1.getInstance(FooProviderAnnotatedProvidesSingleton.class);
 
     //THEN
     assertThat(instanceInParent, sameInstance(instanceInChild));

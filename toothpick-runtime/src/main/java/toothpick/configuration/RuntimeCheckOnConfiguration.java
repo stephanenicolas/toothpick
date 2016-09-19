@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import toothpick.Scope;
 import toothpick.config.Binding;
 
 import static java.lang.String.format;
@@ -21,8 +22,14 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
     }
   };
 
+  /**
+   * check that a binding's target annotation scope, if present, is supported
+   * by the scope {@code scope}.
+   * @param binding the binding being installed.
+   * @param scope the scope where the binding is installed.
+   */
   @Override
-  public void checkIllegalBinding(Binding binding) {
+  public void checkIllegalBinding(Binding binding, Scope scope) {
     Class<?> clazz;
     switch (binding.getMode()) {
       case SIMPLE:
@@ -39,8 +46,14 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
     }
 
     for (Annotation annotation : clazz.getAnnotations()) {
-      if (annotation.annotationType().isAnnotationPresent(javax.inject.Scope.class)) {
-        throw new IllegalBindingException(format("Class %s cannot be bound. It has an scope annotation", clazz.getName()));
+      Class<? extends Annotation> annotationType = annotation.annotationType();
+      if (annotationType.isAnnotationPresent(javax.inject.Scope.class)) {
+        if (!scope.isBoundToScopeAnnotation(annotationType)) {
+          throw new IllegalBindingException(
+              format("Class %s cannot be bound."
+                  + " It has a scope annotation: %s that is not supported by current scope: %s",
+                  clazz.getName(), annotationType.getName(), scope.getName()));
+        }
       }
     }
   }

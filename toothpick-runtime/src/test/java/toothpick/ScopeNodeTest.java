@@ -192,16 +192,28 @@ public class ScopeNodeTest {
     assertThat(isBoundToScopeAnnotation, is(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testBindScopeAnnotation_shouldFail_whenAskedForSingleton() {
+  @Test
+  public void testBindScopeAnnotation_shouldReturnTrue_whenRootScopeAskedForSingleton() {
     //GIVEN
     Scope parentScope = Toothpick.openScope("root");
 
     //WHEN
-    parentScope.isBoundToScopeAnnotation(Singleton.class);
+    boolean isBoundToSingleton = parentScope.isBoundToScopeAnnotation(Singleton.class);
 
     //THEN
-    fail("Should throw an exception");
+    assertThat(isBoundToSingleton, is(true));
+  }
+
+  @Test
+  public void testBindScopeAnnotation_shouldReturnFalse_whenNonRootScopeAskedForSingleton() {
+    //GIVEN
+    Scope childScope = Toothpick.openScopes("root", "child");
+
+    //WHEN
+    boolean isBoundToSingleton = childScope.isBoundToScopeAnnotation(Singleton.class);
+
+    //THEN
+    assertThat(isBoundToSingleton, is(false));
   }
 
   @Test
