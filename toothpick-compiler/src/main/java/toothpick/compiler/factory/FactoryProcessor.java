@@ -65,6 +65,8 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
+  private static final String SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE = "injectable";
+
   private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
 
   @Override
@@ -280,8 +282,11 @@ public class FactoryProcessor extends ToothpickProcessor {
     for (ExecutableElement constructorElement : constructorElements) {
       if (constructorElement.getParameters().isEmpty()) {
         if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
-          warning(constructorElement, "The class %s has a private default constructor, Toothpick can't create a factory for it.",
-              typeElement.getQualifiedName().toString());
+          if (!isInjectableWarningSuppressed(typeElement)) {
+            warning(constructorElement,
+                "The class %s has a private default constructor, Toothpick can't create a factory for it.",
+                typeElement.getQualifiedName().toString());
+          }
           return null;
         }
 
@@ -291,8 +296,12 @@ public class FactoryProcessor extends ToothpickProcessor {
       }
     }
 
-    warning(typeElement, "The class %s has injected fields but has no injected constructor, and no public default constructor."
-            + " Toothpick can't create a factory for it.", typeElement.getQualifiedName().toString());
+    if (!isInjectableWarningSuppressed(typeElement)) {
+      warning(typeElement,
+          "The class %s has injected fields but has no injected constructor, and no public default constructor."
+              + " Toothpick can't create a factory for it.",
+          typeElement.getQualifiedName().toString());
+    }
     return null;
   }
 
@@ -316,6 +325,25 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     return scopeName;
+  }
+
+  /**
+   * Checks if the injectable warning is suppressed for the TypeElement,
+   * through the usage of @SuppressWarning("Injectable").
+   *
+   * @param typeElement the element to check if the warning is suppressed.
+   * @return true is the injectable warning is suppressed, false otherwise.
+   */
+  private boolean isInjectableWarningSuppressed(TypeElement typeElement) {
+    SuppressWarnings suppressWarnings = typeElement.getAnnotation(SuppressWarnings.class);
+    if (suppressWarnings != null) {
+      for (String value : suppressWarnings.value()) {
+        if (value.equalsIgnoreCase(SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private boolean canTypeHaveAFactory(TypeElement typeElement) {
