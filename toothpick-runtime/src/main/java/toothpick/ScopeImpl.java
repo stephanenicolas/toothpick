@@ -201,7 +201,7 @@ public class ScopeImpl extends ScopeNode {
     if (binding == null) {
       throw new IllegalStateException("null binding are not allowed. Should not happen unless getBindingSet is overridden.");
     }
-    ConfigurationHolder.configuration.checkIllegalBinding(binding);
+    ConfigurationHolder.configuration.checkIllegalBinding(binding, this);
 
     switch (binding.getMode()) {
       case SIMPLE:

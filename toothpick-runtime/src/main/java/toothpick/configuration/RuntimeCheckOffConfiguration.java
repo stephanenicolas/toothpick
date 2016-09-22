@@ -1,10 +1,11 @@
 package toothpick.configuration;
 
+import toothpick.Scope;
 import toothpick.config.Binding;
 
 class RuntimeCheckOffConfiguration implements RuntimeCheckConfiguration {
   @Override
-  public void checkIllegalBinding(Binding binding) {
+  public void checkIllegalBinding(Binding binding, Scope scope) {
   }
 
   @Override

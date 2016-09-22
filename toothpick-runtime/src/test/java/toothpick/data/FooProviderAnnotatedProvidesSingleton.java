@@ -6,11 +6,11 @@ import toothpick.ScopeInstances;
 
 @ScopeInstances
 @CustomScope
-public class IFooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
+public class FooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
   @Inject Bar bar;
 
   @Inject
-  public IFooProviderAnnotatedProvidesSingleton() {
+  public FooProviderAnnotatedProvidesSingleton() {
   }
 
   @Override

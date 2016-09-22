@@ -2,6 +2,7 @@ package toothpick.configuration;
 
 import toothpick.Factory;
 import toothpick.MemberInjector;
+import toothpick.Scope;
 import toothpick.config.Binding;
 
 /**
@@ -73,8 +74,8 @@ public class Configuration implements RuntimeCheckConfiguration, ReflectionConfi
   }
 
   @Override
-  public void checkIllegalBinding(Binding binding) {
-    runtimeCheckConfiguration.checkIllegalBinding(binding);
+  public void checkIllegalBinding(Binding binding, Scope scope) {
+    runtimeCheckConfiguration.checkIllegalBinding(binding, scope);
   }
 
   @Override
