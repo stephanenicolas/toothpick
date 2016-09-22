@@ -1,8 +1,12 @@
 //Continue from top
 
+## Release version 1.0.0-RC10 (XXX 2016)
+
+* Adding support for the SuppressWarnings annotation to remove missing constructor warning.
+
 ## Release version 1.0.0-RC9 (Aug 26th 2016)
 
-* Fixing Runtime check bug: Cycle should end even if lookupProvider fails
+* Fixing Runtime check bug: Cycle should end even if lookupProvider fails.
 * Updating Configuration API.
 
 ## Release version 1.0.0-RC7 (Aug 19th 2016)
