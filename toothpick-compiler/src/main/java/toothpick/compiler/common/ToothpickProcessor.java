@@ -41,7 +41,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   /** The name of the {@link javax.inject.Inject} annotation class that triggers {@code ToothpickProcessor}s. */
   public static final String INJECT_ANNOTATION_CLASS_NAME = "javax.inject.Inject";
   public static final String SINGLETON_ANNOTATION_CLASS_NAME = "javax.inject.Singleton";
-  public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME = "toothpick.ScopeInstances";
+  public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME = "toothpick.ProvidesSingletonInScope";
 
   /**
    * The name of the annotation processor option to declare in which package a registry should be generated.

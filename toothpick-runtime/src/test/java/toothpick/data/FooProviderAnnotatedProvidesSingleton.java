@@ -2,13 +2,11 @@ package toothpick.data;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import toothpick.ScopeInstances;
+import toothpick.ProvidesSingletonInScope;
 
-@ScopeInstances
+@ProvidesSingletonInScope
 @CustomScope
 public class FooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
-  @Inject Bar bar;
-
   @Inject
   public FooProviderAnnotatedProvidesSingleton() {
   }

@@ -40,7 +40,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -138,7 +138,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -188,7 +188,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -239,7 +239,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -289,7 +289,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -341,7 +341,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -393,7 +393,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -498,7 +498,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -553,7 +553,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -573,8 +573,8 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Singleton;", //
-        "import toothpick.ScopeInstances;", //
-        "@ScopeInstances @Singleton", //
+        "import toothpick.ProvidesSingletonInScope;", //
+        "@ProvidesSingletonInScope @Singleton", //
         "public class TestNonEmptyConstructor {", //
         "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
         "}" //
@@ -606,7 +606,7 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return true;", //
         "  }", //
         "}" //

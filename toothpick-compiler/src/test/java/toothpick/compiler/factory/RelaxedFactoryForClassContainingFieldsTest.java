@@ -46,7 +46,7 @@ public class RelaxedFactoryForClassContainingFieldsTest extends BaseFactoryTest 
         "    return false;", //
         "  }", //
         "  @Override", //
-        "  public boolean hasScopeInstancesAnnotation() {", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //

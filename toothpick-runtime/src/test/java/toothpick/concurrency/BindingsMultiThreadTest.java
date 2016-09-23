@@ -175,7 +175,7 @@ public class BindingsMultiThreadTest {
     }
 
     @Override
-    public boolean hasScopeInstancesAnnotation() {
+    public boolean hasProvidesSingletonInScopeAnnotation() {
       return false;
     }
   }

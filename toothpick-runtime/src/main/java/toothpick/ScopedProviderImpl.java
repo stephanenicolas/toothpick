@@ -9,12 +9,19 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected Scope scope;
 
   public ScopedProviderImpl(Scope scope, Factory<?> factory, boolean isProviderFactory) {
-    super(factory, isProviderFactory);
+    super(factory,
+        isProviderFactory);
     this.scope = scope;
   }
 
-  public ScopedProviderImpl(Scope scope, Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
-    super(factoryKeyClass, isProviderFactoryClass);
+  public ScopedProviderImpl(Scope scope, Class<?> factoryKeyClass,
+      boolean isProviderFactoryClass,
+      boolean isCreatingSingletonInScope,
+      boolean isProvidingSingletonInScope) {
+    super(factoryKeyClass,
+        isProviderFactoryClass,
+        isCreatingSingletonInScope,
+        isProvidingSingletonInScope);
     this.scope = scope;
   }
 

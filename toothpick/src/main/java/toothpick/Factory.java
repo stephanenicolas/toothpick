@@ -53,9 +53,9 @@ public interface Factory<T> {
   boolean hasScopeAnnotation();
 
   /**
-   * Signals that the class is anotated with {@link ScopeInstances}.
+   * Signals that the class is anotated with {@link ProvidesSingletonInScope}.
    *
    * @return true iff the class is annotated as a producer class whose instances will produce a singleton.
    */
-  boolean hasScopeInstancesAnnotation();
+  boolean hasProvidesSingletonInScopeAnnotation();
 }

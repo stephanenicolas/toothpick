@@ -5,7 +5,9 @@ import javax.inject.Provider;
 import javax.inject.Qualifier;
 
 public class Binding<T> {
-  private boolean isScoped;
+  private boolean isCreatingInstancesInScope;
+  private boolean isCreatingSingletonInScope;
+  private boolean isProvidingSingletonInScope;
   private Class<T> key;
   private Mode mode;
   private Class<? extends T> implementationClass;
@@ -34,14 +36,19 @@ public class Binding<T> {
     return this;
   }
 
-  public void scope() {
-    isScoped = true;
+  public void instancesInScope() {
+    isCreatingInstancesInScope = true;
   }
 
-  public BoundState to(Class<? extends T> implClass) {
+  public void singletonInScope() {
+    isCreatingInstancesInScope = true;
+    isCreatingSingletonInScope = true;
+  }
+
+  public BoundStateForClassBinding to(Class<? extends T> implClass) {
     this.implementationClass = implClass;
     mode = Mode.CLASS;
-    return new BoundState();
+    return new BoundStateForClassBinding();
   }
 
   public void toInstance(T instance) {
@@ -49,15 +56,16 @@ public class Binding<T> {
     mode = Mode.INSTANCE;
   }
 
-  public BoundState toProvider(Class<? extends Provider<? extends T>> providerClass) {
+  public BoundStateForProviderClassBinding toProvider(Class<? extends Provider<? extends T>> providerClass) {
     this.providerClass = providerClass;
     mode = Mode.PROVIDER_CLASS;
-    return new BoundState();
+    return new BoundStateForProviderClassBinding();
   }
 
-  public void toProviderInstance(Provider<? extends T> providerInstance) {
+  public BoundStateForProviderInstanceBinding toProviderInstance(Provider<? extends T> providerInstance) {
     this.providerInstance = providerInstance;
     mode = Mode.PROVIDER_INSTANCE;
+    return new BoundStateForProviderInstanceBinding();
   }
 
   public Mode getMode() {
@@ -88,8 +96,16 @@ public class Binding<T> {
     return name;
   }
 
-  public boolean isScoped() {
-    return isScoped;
+  public boolean isCreatingInstancesInScope() {
+    return isCreatingInstancesInScope;
+  }
+
+  public boolean isCreatingSingletonInScope() {
+    return isCreatingSingletonInScope;
+  }
+
+  public boolean isProvidingSingletonInScope() {
+    return isProvidingSingletonInScope;
   }
 
   public enum Mode {
@@ -100,9 +116,45 @@ public class Binding<T> {
     PROVIDER_CLASS
   }
 
-  public class BoundState {
-    public void scope() {
-      isScoped = true;
+  //*************************
+  //***** DSL STATE MACHINE *
+  //*************************
+
+  public class BoundStateForClassBinding {
+    /**
+     * to create instances using the binding's scope
+     */
+    public void instancesInScope() {
+      Binding.this.instancesInScope();
+    }
+
+    /**
+     * to create a singleton using the binding's scope
+     * and reuse it inside the binding's scope
+     */
+    public void singletonInScope() {
+      Binding.this.singletonInScope();
+    }
+  }
+
+  public class BoundStateForProviderClassBinding extends BoundStateForClassBinding {
+    /**
+     * to provide a singleton using the binding's scope
+     * and reuse it inside the binding's scope
+     */
+    public void providesSingletonInScope() {
+      Binding.this.singletonInScope();
+      isProvidingSingletonInScope = true;
+    }
+  }
+
+  public class BoundStateForProviderInstanceBinding {
+    /**
+     * to provide a singleton using the binding's scope
+     * and reuse it inside the binding's scope
+     */
+    public void providesSingletonInScope() {
+      isProvidingSingletonInScope = true;
     }
   }
 }

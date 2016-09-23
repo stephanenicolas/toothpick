@@ -2,7 +2,6 @@ package toothpick.scoping;
 
 import org.junit.Test;
 import toothpick.Scope;
-import toothpick.ScopeImpl;
 import toothpick.Toothpick;
 import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
@@ -12,10 +11,11 @@ import toothpick.data.BarChild;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooChildWithoutInjectedFields;
+import toothpick.data.FooProviderAnnotatedProvidesSingleton;
+import toothpick.data.FooProviderAnnotatedSingletonImpl;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
-import toothpick.data.FooProviderAnnotatedProvidesSingleton;
-import toothpick.data.IFooProviderAnnotatedSingleton;
+import toothpick.data.IFooProvider;
 import toothpick.data.IFooSingleton;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -35,7 +35,7 @@ public class ScopingTest extends ToothpickBaseTest {
   public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope() throws Exception {
     //GIVEN
     final Foo foo1 = new Foo();
-    Scope scopeParent = new ScopeImpl("root");
+    Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(new Module() {
       {
         bind(Foo.class).toInstance(foo1);
@@ -81,7 +81,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test
   public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenParentHasKeyInHisScopeThroughModule() throws Exception {
     //GIVEN
-    Scope scopeParent = new ScopeImpl("root");
+    Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(new Module() {
       {
         bind(Foo.class).to(FooChildWithoutInjectedFields.class);
@@ -104,7 +104,7 @@ public class ScopingTest extends ToothpickBaseTest {
   @Test
   public void childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenChildOverridesBinding() throws Exception {
     //GIVEN
-    Scope scopeParent = new ScopeImpl("root");
+    Scope scopeParent = Toothpick.openScope("root");
     Scope scope = Toothpick.openScopes("root", "child");
     scope.installModules(new Module() {
       {
@@ -121,27 +121,147 @@ public class ScopingTest extends ToothpickBaseTest {
   }
 
   @Test
-  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenBindingIsScoped() throws Exception {
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenSimpleBindingIsCreatingInstancesInScope() throws Exception {
     //GIVEN
-    Scope scopeParent = new ScopeImpl("root");
+    Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(new Module() {
       {
-        bind(Foo.class).scope();
+        bind(Foo.class).instancesInScope();
       }
     });
     Scope scope = Toothpick.openScopes("root", "child");
     scope.installModules(new Module() {
       {
-        bind(Bar.class).to(BarChild.class).scope();
+        bind(Bar.class).to(BarChild.class);
       }
     });
 
     //WHEN
-    scopeParent.getInstance(Foo.class); // Create Foo internal provider in parent scope dynamically
     Foo instance = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance.bar, instanceOf(Bar.class));
+    assertThat(instance.bar, not(instanceOf(BarChild.class)));
+  }
+
+ @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenSimpleBindingIsCreatingSingletonInScope() throws Exception {
+    //GIVEN
+    Scope scopeParent = Toothpick.openScope("root");
+    scopeParent.installModules(new Module() {
+      {
+        bind(Foo.class).singletonInScope();
+      }
+    });
+    Scope scope = Toothpick.openScopes("root", "child");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+
+    //WHEN
+    Foo instance = scope.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance.bar, instanceOf(Bar.class));
+    assertThat(instance.bar, not(instanceOf(BarChild.class)));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenClassBindingIsCreatingInstancesInScope() throws Exception {
+    //GIVEN
+    Scope scopeParent = Toothpick.openScope("root");
+    scopeParent.installModules(new Module() {
+      {
+        bind(IFoo.class).to(Foo.class).instancesInScope();
+      }
+    });
+    Scope scope = Toothpick.openScopes("root", "child");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+
+    //WHEN
+    IFoo instance = scope.getInstance(IFoo.class);
+
+    //THEN
+    assertThat(((Foo)instance).bar, instanceOf(Bar.class));
+    assertThat(((Foo)instance).bar, not(instanceOf(BarChild.class)));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenClassBindingIsCreatingSingletonInScope() throws Exception {
+    //GIVEN
+    Scope scopeParent = Toothpick.openScope("root");
+    scopeParent.installModules(new Module() {
+      {
+        bind(IFoo.class).to(Foo.class).singletonInScope();
+      }
+    });
+    Scope scope = Toothpick.openScopes("root", "child");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+
+    //WHEN
+    IFoo instance = scope.getInstance(IFoo.class);
+
+    //THEN
+    assertThat(((Foo)instance).bar, instanceOf(Bar.class));
+    assertThat(((Foo)instance).bar, not(instanceOf(BarChild.class)));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenProviderClassBindingIsCreatingInstancesInScope() throws Exception {
+    //GIVEN
+    Scope scopeParent = Toothpick.openScope("root");
+    scopeParent.installModules(new Module() {
+      {
+        bind(IFoo.class).toProvider(IFooProvider.class).instancesInScope();
+      }
+    });
+    Scope scope = Toothpick.openScopes("root", "child");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+
+    //WHEN
+    IFoo instance = scope.getInstance(IFoo.class);
+
+    //THEN
+    assertThat(((Foo)instance).bar, instanceOf(Bar.class));
+    assertThat(((Foo)instance).bar, not(instanceOf(BarChild.class)));
+  }
+
+  @Test
+  public void childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenProviderClassBindingIsCreatingSingletonInScope() throws Exception {
+    //GIVEN
+    Scope scopeParent = Toothpick.openScope("root");
+    scopeParent.installModules(new Module() {
+      {
+        bind(IFoo.class).toProvider(IFooProvider.class).singletonInScope();
+      }
+    });
+    Scope scope = Toothpick.openScopes("root", "child");
+    scope.installModules(new Module() {
+      {
+        bind(Bar.class).to(BarChild.class);
+      }
+    });
+
+    //WHEN
+    IFoo instance = scope.getInstance(IFoo.class);
+
+    //THEN
+    assertThat(((Foo)instance).bar, instanceOf(Bar.class));
+    assertThat(((Foo)instance).bar, not(instanceOf(BarChild.class)));
   }
 
   @Test
@@ -274,7 +394,7 @@ public class ScopingTest extends ToothpickBaseTest {
     //WHEN
     scope1.installModules(new Module() {
       {
-        bind(IFoo.class).toProvider(IFooProviderAnnotatedSingleton.class);
+        bind(IFoo.class).toProvider(FooProviderAnnotatedSingletonImpl.class);
       }
     });
 
@@ -290,8 +410,8 @@ public class ScopingTest extends ToothpickBaseTest {
     Scope scope1 = Toothpick.openScopes("root", "scope1");
 
     //WHEN
-    IFooProviderAnnotatedSingleton instanceInParent = scopeParent.getInstance(IFooProviderAnnotatedSingleton.class);
-    IFooProviderAnnotatedSingleton instanceInChild = scope1.getInstance(IFooProviderAnnotatedSingleton.class);
+    FooProviderAnnotatedSingletonImpl instanceInParent = scopeParent.getInstance(FooProviderAnnotatedSingletonImpl.class);
+    FooProviderAnnotatedSingletonImpl instanceInChild = scope1.getInstance(FooProviderAnnotatedSingletonImpl.class);
 
     //THEN
     assertThat(instanceInParent, sameInstance(instanceInChild));

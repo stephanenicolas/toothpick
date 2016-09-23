@@ -141,7 +141,7 @@ public class FactoryGenerator extends CodeGenerator {
   }
 
   private void emitHasScopeInstancesAnnotation(TypeSpec.Builder builder) {
-    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasScopeInstancesAnnotation")
+    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProvidesSingletonInScopeAnnotation")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)

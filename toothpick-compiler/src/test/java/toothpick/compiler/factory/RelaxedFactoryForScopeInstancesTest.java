@@ -15,8 +15,8 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForHasScopeInstances", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "import toothpick.ScopeInstances;", //
-        "@ScopeInstances", //
+        "import toothpick.ProvidesSingletonInScope;", //
+        "@ProvidesSingletonInScope", //
         "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
         "}"));
 
@@ -25,7 +25,7 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
         .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .failsToCompile()
         .withErrorContaining(
-            "The type test.TestOptimisticFactoryCreationForHasScopeInstances" + " uses @ScopeInstances but doesn't have a scope annotation.");
+            "The type test.TestOptimisticFactoryCreationForHasScopeInstances" + " uses @ProvidesSingletonInScope but doesn't have a scope annotation.");
   }
 
   @Test
@@ -34,10 +34,10 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Scope;", //
-        "import toothpick.ScopeInstances;", //
+        "import toothpick.ProvidesSingletonInScope;", //
         "@Scope", //
         "@interface CustomScope {}", //
-        "@ScopeInstances @CustomScope", //
+        "@ProvidesSingletonInScope @CustomScope", //
         "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
         "}"));
 

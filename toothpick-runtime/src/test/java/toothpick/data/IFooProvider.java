@@ -10,6 +10,8 @@ public class IFooProvider implements Provider<IFoo> {
   }
 
   @Override public IFoo get() {
-    return new Foo();
+    Foo foo = new Foo();
+    foo.bar = bar;
+    return foo;
   }
 }
