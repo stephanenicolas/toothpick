@@ -134,6 +134,7 @@ For java:
 
 * Droidcon Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection)
 * Android Leaks 2016 - [podcast in French](http://androidleakspodcast.com/2016/09/25/episode-4-de-la-dague-au-cure-dent-en-passant-par-un-petit-jus/)
+
 # Wanna know more ?
 
 Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
