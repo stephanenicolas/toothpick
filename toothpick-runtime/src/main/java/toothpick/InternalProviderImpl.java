@@ -16,6 +16,9 @@ public class InternalProviderImpl<T> {
   private Factory<Provider<T>> providerFactory;
   private Class<Provider<T>> providerFactoryClass;
 
+  protected boolean isProvidingSingletonInScope;
+  private boolean isCreatingSingletonInScope;
+
   public InternalProviderImpl(T instance) {
     if (instance == null) {
       throw new IllegalArgumentException("The instance can't be null.");
@@ -24,12 +27,13 @@ public class InternalProviderImpl<T> {
     this.instance = instance;
   }
 
-  public InternalProviderImpl(Provider<? extends T> providerInstance) {
+  public InternalProviderImpl(Provider<? extends T> providerInstance, boolean isProvidingSingletonInScope) {
     if (providerInstance == null) {
       throw new IllegalArgumentException("The provider can't be null.");
     }
 
     this.providerInstance = providerInstance;
+    this.isProvidingSingletonInScope = isProvidingSingletonInScope;
   }
 
   public InternalProviderImpl(Factory<?> factory, boolean isProviderFactory) {
@@ -44,7 +48,10 @@ public class InternalProviderImpl<T> {
     }
   }
 
-  public InternalProviderImpl(Class<?> factoryKeyClass, boolean isProviderFactoryClass) {
+  public InternalProviderImpl(Class<?> factoryKeyClass,
+      boolean isProviderFactoryClass,
+      boolean isCreatingSingletonInScope,
+      boolean isProvidingSingletonInScope) {
     if (factoryKeyClass == null) {
       throw new IllegalArgumentException("The factory class can't be null.");
     }
@@ -54,6 +61,8 @@ public class InternalProviderImpl<T> {
     } else {
       this.factoryClass = (Class<T>) factoryKeyClass;
     }
+    this.isCreatingSingletonInScope = isCreatingSingletonInScope;
+    this.isProvidingSingletonInScope = isProvidingSingletonInScope;
   }
 
   //we lock on the unbound provider itself to prevent concurrent usage
@@ -64,6 +73,13 @@ public class InternalProviderImpl<T> {
     }
 
     if (providerInstance != null) {
+      if (isProvidingSingletonInScope) {
+        instance = providerInstance.get();
+        //gc
+        providerInstance = null;
+        return instance;
+      }
+
       return providerInstance.get();
     }
 
@@ -74,7 +90,7 @@ public class InternalProviderImpl<T> {
     }
 
     if (factory != null) {
-      if (!factory.hasScopeAnnotation()) {
+      if (!factory.hasScopeAnnotation() && !isCreatingSingletonInScope) {
         return factory.createInstance(scope);
       }
       instance = factory.createInstance(scope);
@@ -90,13 +106,13 @@ public class InternalProviderImpl<T> {
     }
 
     if (providerFactory != null) {
-      if (providerFactory.hasScopeInstancesAnnotation()) {
+      if (providerFactory.hasProvidesSingletonInScopeAnnotation() || isProvidingSingletonInScope) {
         instance = providerFactory.createInstance(scope).get();
         //gc
         providerFactory = null;
         return instance;
       }
-      if (providerFactory.hasScopeAnnotation()) {
+      if (providerFactory.hasScopeAnnotation() || isCreatingSingletonInScope) {
         providerInstance = providerFactory.createInstance(scope);
         //gc
         providerFactory = null;

@@ -183,7 +183,7 @@ public class ScopeImpl extends ScopeNode {
       String bindingName = binding.getName();
       if (!hasTestModules || getBoundProvider(clazz, bindingName) == null) {
         InternalProviderImpl provider = toProvider(binding);
-        if (binding.isScoped()) {
+        if (binding.isCreatingInstancesInScope()) {
           installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider);
         } else {
           installBoundProvider(clazz, bindingName, provider);
@@ -205,17 +205,32 @@ public class ScopeImpl extends ScopeNode {
 
     switch (binding.getMode()) {
       case SIMPLE:
-        return createInternalProvider(this, binding.getKey(), false, binding.isScoped());
+        return createInternalProvider(this,
+            binding.getKey(),
+            false,
+            binding.isCreatingInstancesInScope(),
+            binding.isCreatingSingletonInScope(),
+            false);
       case CLASS:
-        return createInternalProvider(this, binding.getImplementationClass(), false, binding.isScoped());
+        return createInternalProvider(this,
+            binding.getImplementationClass(),
+            false,
+            binding.isCreatingInstancesInScope(),
+            binding.isCreatingSingletonInScope(),
+            false);
       case INSTANCE:
         return new InternalProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
         // to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
         // We do not need to pass the scope here because the provider won't use any scope to create the instance
-        return new InternalProviderImpl<>(binding.getProviderInstance());
+        return new InternalProviderImpl<>(binding.getProviderInstance(), binding.isProvidingSingletonInScope());
       case PROVIDER_CLASS:
-        return createInternalProvider(this, binding.getProviderClass(), true, binding.isScoped());
+        return createInternalProvider(this,
+            binding.getProviderClass(),
+            true,
+            binding.isCreatingInstancesInScope(),
+            binding.isCreatingSingletonInScope(),
+            binding.isProvidingSingletonInScope());
       //JACOCO:OFF
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
@@ -223,11 +238,22 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
-  private <T> InternalProviderImpl<T> createInternalProvider(Scope scope, Class<?> factoryKeyClass, boolean isProviderClass, boolean isScoped) {
-    if (isScoped) {
-      return new ScopedProviderImpl<>(scope, factoryKeyClass, isProviderClass);
+  private <T> InternalProviderImpl<T> createInternalProvider(Scope scope, Class<?> factoryKeyClass,
+      boolean isProviderClass,
+      boolean isCreatingInstancesInScope,
+      boolean isCreatingSingletonInScope,
+      boolean isProvidingInstancesInScope) {
+    if (isCreatingInstancesInScope) {
+      return new ScopedProviderImpl<>(scope,
+          factoryKeyClass,
+          isProviderClass,
+          isCreatingSingletonInScope,
+          isProvidingInstancesInScope);
     } else {
-      return new InternalProviderImpl<>(factoryKeyClass, isProviderClass);
+      return new InternalProviderImpl<>(factoryKeyClass,
+          isProviderClass,
+          isCreatingSingletonInScope,
+          isProvidingInstancesInScope);
     }
   }
 
@@ -293,14 +319,17 @@ public class ScopeImpl extends ScopeNode {
     ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
     if (factory.hasScopeAnnotation()) {
       //the new provider will have to work in the current scope
-      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
+      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope,
+          factory,
+          false);
       //it is bound to its target scope only if it has a scope annotation.
       //lock free installing a provider means there could have been one set concurrently since last testing
       //its value. We allow to return it here
       return targetScopeImpl.installScopedProvider(clazz, null, newProvider);
     } else {
       //the provider is but in a pool of unbound providers for later reuse
-      final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
+      final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory,
+          false);
       //the pool is static as it is accessible from all scopes
       //lock free installing a provider means there could have been one set concurrently since last testing
       //its value. We allow to return it here

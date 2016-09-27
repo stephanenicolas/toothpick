@@ -133,7 +133,7 @@ public class FactoryRegistryLocatorTest {
     }
 
     @Override
-    public boolean hasScopeInstancesAnnotation() {
+    public boolean hasProvidesSingletonInScopeAnnotation() {
       return false;
     }
   }
