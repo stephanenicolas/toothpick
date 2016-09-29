@@ -1,6 +1,6 @@
 //Continue from top
 
-## Release version 1.0.0-RC10 (XXX 2016)
+## Release version 1.0.0-RC10 (Sep 29th 2016)
 
 * Solves issue [#110](https://github.com/stephanenicolas/toothpick/issues/110) Adding support for the SuppressWarnings annotation to remove missing constructor warning.
 * Solves issue [#111](https://github.com/stephanenicolas/toothpick/issues/111) Changing factory to get the target scope only when needed.
