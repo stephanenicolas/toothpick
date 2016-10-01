@@ -30,4 +30,15 @@ final class ProcessorTestUtilities {
     factoryProcessor.setToothpickExcludeFilters(toothpickExcludeFilters);
     return Arrays.asList(factoryProcessor);
   }
+
+  static Iterable<? extends Processor> factoryProcessorsWithAdditionalTypes(String... types) {
+    FactoryProcessor factoryProcessor = new FactoryProcessor();
+    for (String type : types) {
+      factoryProcessor.addSupportedAnnotationType(type);
+    }
+
+    return Arrays.asList(factoryProcessor);
+  }
+
+
 }

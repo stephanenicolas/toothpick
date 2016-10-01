@@ -3,6 +3,7 @@ package toothpick.compiler.common;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +57,16 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String PARAMETER_EXCLUDES = "toothpick_excludes";
 
   /**
+   * The name of the annotation processor option to let TP know about custom scope annotation classes.
+   * This option is needed only in the case where a custom scope annotation is used on a class, and this
+   * class doesn't use any annotation processed out of the box by TP (i.e. javax.inject.* annotations).
+   * If you use custom scope annotations, it is a good practice to always use this option so that
+   * developers can use the new scope annotation in a very free way without having to consider the annotation
+   * processing internals.
+   */
+  public static final String PARAMETER_ANNOTATION_TYPES = "toothpick_annotations";
+
+  /**
    * The name annotation processor option to declare in which packages reside the sub-registries used by the generated registry,
    * if it is created. Multiple entries are comma separated.
    *
@@ -70,6 +81,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected String toothpickRegistryPackageName;
   protected List<String> toothpickRegistryChildrenPackageNameList;
   protected String toothpickExcludeFilters = "java.*,android.*";
+  protected Set<String> supportedAnnotationTypes = new HashSet<>();
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -83,6 +95,10 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   @Override
   public SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latestSupported();
+  }
+
+  public void addSupportedAnnotationType(String typeFQN) {
+    supportedAnnotationTypes.add(typeFQN);
   }
 
   protected boolean writeToFile(CodeGenerator codeGenerator, String fileDescription, Element... originatingElements) {
@@ -112,21 +128,28 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   /**
    * Reads both annotation compilers {@link ToothpickProcessor#PARAMETER_REGISTRY_PACKAGE_NAME} and
-   * {@link ToothpickProcessor#PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES} options from the arguments
-   * passed to the processor.
+   * {@link ToothpickProcessor#PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES} and
+   * {@link ToothpickProcessor#PARAMETER_EXCLUDES}
+   * options from the arguments passed to the processor.
    */
-  protected void readProcessorOptions() {
-    Map<String, String> options = processingEnv.getOptions();
+  protected void readCommonProcessorOptions() {
+    readOptionRegistryPackageName();
+    readOptionRegistryChildrenPackageNames();
+    readOptionExcludes();
+  }
 
-    //we read options only if it's not defined. Allows tests to bypass options.
+  private void readOptionRegistryPackageName() {
+    Map<String, String> options = processingEnv.getOptions();
     if (toothpickRegistryPackageName == null) {
       toothpickRegistryPackageName = options.get(PARAMETER_REGISTRY_PACKAGE_NAME);
     }
     if (toothpickRegistryPackageName == null) {
       warning("No option -A%s to the compiler." + " No registries will be generated.", PARAMETER_REGISTRY_PACKAGE_NAME);
     }
+  }
 
-    //we read options only if it's not defined. Allows tests to bypass options.
+  private void readOptionRegistryChildrenPackageNames() {
+    Map<String, String> options = processingEnv.getOptions();
     if (toothpickRegistryChildrenPackageNameList == null) {
       toothpickRegistryChildrenPackageNameList = new ArrayList<>();
       String toothpickRegistryChildrenPackageNames = options.get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
@@ -140,10 +163,22 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     if (toothpickRegistryChildrenPackageNameList == null) {
       warning("No option -A%s was passed to the compiler." + " No sub registries will be used.", PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
     }
+  }
 
-    //getOrDefault could be used here, but it's ony available on jdk 7.
+  private void readOptionExcludes() {
+    Map<String, String> options = processingEnv.getOptions();
     if (options.containsKey(PARAMETER_EXCLUDES)) {
       toothpickExcludeFilters = options.get(PARAMETER_EXCLUDES);
+    }
+  }
+
+  protected void readOptionAnnotationTypes() {
+    Map<String, String> options = processingEnv.getOptions();
+    if (options.containsKey(PARAMETER_ANNOTATION_TYPES)) {
+      String additionalAnnotationTypes = options.get(PARAMETER_ANNOTATION_TYPES);
+      for (String additionalAnnotationType : additionalAnnotationTypes.split(",")) {
+        supportedAnnotationTypes.add(additionalAnnotationType.trim());
+      }
     }
   }
 
@@ -234,9 +269,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       Element enclosingElement = injectedTypeElement.getEnclosingElement();
       if (enclosingElement instanceof TypeElement) {
         error(injectedTypeElement, "Field %s#%s is of type %s which is not supported by Toothpick.",
-            ((TypeElement) enclosingElement).getQualifiedName(),
-            injectedTypeElement.getSimpleName(),
-            typeElement);
+            ((TypeElement) enclosingElement).getQualifiedName(), injectedTypeElement.getSimpleName(), typeElement);
       } else {
         Element methodOrConstructorElement = enclosingElement;
         enclosingElement = enclosingElement.getEnclosingElement();
@@ -258,16 +291,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     if (declaredType.getTypeArguments().isEmpty()) {
       Element enclosingElement = element.getEnclosingElement();
       if (enclosingElement instanceof TypeElement) {
-        error(element, "Field %s#%s is not a valid %s.",
-            ((TypeElement) enclosingElement).getQualifiedName(),
-            element.getSimpleName(),
-            declaredType);
+        error(element, "Field %s#%s is not a valid %s.", ((TypeElement) enclosingElement).getQualifiedName(), element.getSimpleName(), declaredType);
       } else {
-        error(element, "Parameter %s in method/constructor %s#%s is not a valid %s.",
-            element.getSimpleName(), //
+        error(element, "Parameter %s in method/constructor %s#%s is not a valid %s.", element.getSimpleName(), //
             ((TypeElement) enclosingElement.getEnclosingElement()).getQualifiedName(), //
-            enclosingElement.getSimpleName(),
-            declaredType);
+            enclosingElement.getSimpleName(), declaredType);
       }
       return false;
     }

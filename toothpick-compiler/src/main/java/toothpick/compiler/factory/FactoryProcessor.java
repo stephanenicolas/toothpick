@@ -1,16 +1,15 @@
 package toothpick.compiler.factory;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.inject.Scope;
-import javax.inject.Singleton;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -53,15 +52,11 @@ import static javax.lang.model.element.Modifier.PUBLIC;
  * Note that if a class is abstract, the relax mechanism doesn't generate a factory and raises no error.
  */
 //http://stackoverflow.com/a/2067863/693752
-@SupportedAnnotationTypes({
-    ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME, //
-    ToothpickProcessor.SINGLETON_ANNOTATION_CLASS_NAME, //
-    ToothpickProcessor.PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME
-})
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
-    ToothpickProcessor.PARAMETER_EXCLUDES
+    ToothpickProcessor.PARAMETER_EXCLUDES, //
+    ToothpickProcessor.PARAMETER_ANNOTATION_TYPES
 }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
@@ -70,10 +65,19 @@ public class FactoryProcessor extends ToothpickProcessor {
   private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
 
   @Override
+  public Set<String> getSupportedAnnotationTypes() {
+    supportedAnnotationTypes.add(ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME);
+    supportedAnnotationTypes.add(ToothpickProcessor.SINGLETON_ANNOTATION_CLASS_NAME);
+    supportedAnnotationTypes.add(ToothpickProcessor.PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME);
+    readOptionAnnotationTypes();
+    return supportedAnnotationTypes;
+  }
+
+  @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-    readProcessorOptions();
-    findAndParseTargets(roundEnv);
+    readCommonProcessorOptions();
+    findAndParseTargets(roundEnv, annotations);
 
     if (!roundEnv.processingOver()) {
       return false;
@@ -109,12 +113,20 @@ public class FactoryProcessor extends ToothpickProcessor {
     return false;
   }
 
-  private void findAndParseTargets(RoundEnvironment roundEnv) {
+  private void findAndParseTargets(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
-    createFactoriesForClassesAnnotatedScopeInstances(roundEnv);
-    createFactoriesForClassesAnnotatedSingleton(roundEnv);
+    createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingletonInScope.class);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedMethods(roundEnv);
+    createFactoriesForClassesAnnotatedWithScopeAnnotations(roundEnv, annotations);
+  }
+
+  private void createFactoriesForClassesAnnotatedWithScopeAnnotations(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
+    for (TypeElement annotation : annotations) {
+      if (annotation.getAnnotationsByType(Scope.class).length != 0) {
+        createFactoriesForClassesAnnotatedWith(roundEnv, annotation);
+      }
+    }
   }
 
   private void createFactoriesForClassesWithInjectAnnotatedMethods(RoundEnvironment roundEnv) {
@@ -129,16 +141,15 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
   }
 
-  private void createFactoriesForClassesAnnotatedScopeInstances(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(
-        ProvidesSingletonInScope.class))) {
+  private void createFactoriesForClassesAnnotatedWith(RoundEnvironment roundEnv, Class<? extends Annotation> annotationClass) {
+    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationClass))) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
-  private void createFactoriesForClassesAnnotatedSingleton(RoundEnvironment roundEnv) {
-    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(Singleton.class))) {
+  private void createFactoriesForClassesAnnotatedWith(RoundEnvironment roundEnv, TypeElement annotationType) {
+    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationType))) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
       processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
@@ -245,8 +256,8 @@ public class FactoryProcessor extends ToothpickProcessor {
   private ConstructorInjectionTarget createConstructorInjectionTarget(ExecutableElement constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final String scopeName = getScopeName(enclosingElement);
-    final boolean hasScopeInstancesAnnotation = enclosingElement.getAnnotation(
-        ProvidesSingletonInScope.class) != null;
+    final boolean hasScopeInstancesAnnotation = enclosingElement //
+        .getAnnotation(ProvidesSingletonInScope.class) != null;
     if (hasScopeInstancesAnnotation && scopeName == null) {
       error(enclosingElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           enclosingElement.getQualifiedName().toString());
@@ -264,7 +275,8 @@ public class FactoryProcessor extends ToothpickProcessor {
     final String scopeName = getScopeName(typeElement);
     final boolean hasScopeInstancesAnnotation = typeElement.getAnnotation(ProvidesSingletonInScope.class) != null;
     if (hasScopeInstancesAnnotation && scopeName == null) {
-      error(typeElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.", typeElement.getQualifiedName().toString());
+      error(typeElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
+          typeElement.getQualifiedName().toString());
     }
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(typeElement, false);
 
@@ -285,7 +297,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       if (constructorElement.getParameters().isEmpty()) {
         if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
           if (!isInjectableWarningSuppressed(typeElement)) {
-            warning(constructorElement,
+            warning(constructorElement, //
                 "The class %s has a private default constructor, Toothpick can't create a factory for it.",
                 typeElement.getQualifiedName().toString());
           }
@@ -299,10 +311,9 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     if (!isInjectableWarningSuppressed(typeElement)) {
-      warning(typeElement,
-          "The class %s has injected fields but has no injected constructor, and no public default constructor."
-              + " Toothpick can't create a factory for it.",
-          typeElement.getQualifiedName().toString());
+      warning(typeElement, //
+          "The class %s has injected fields but has no injected constructor, and no public default constructor." //
+          + " Toothpick can't create a factory for it.", typeElement.getQualifiedName().toString());
     }
     return null;
   }
