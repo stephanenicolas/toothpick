@@ -84,7 +84,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
       ConstructorInjectionTarget constructorInjectionTarget = entry.getValue();
-      FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget);
+      FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget, typeUtils);
       TypeElement typeElement = entry.getKey();
       String fileDescription = format("Factory for type %s", typeElement);
       boolean success = writeToFile(factoryGenerator, fileDescription, typeElement);
@@ -99,7 +99,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
-      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
+      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget, typeUtils);
 
       String fileDescription = "Factory registry";
       Element[] allTypes = elementsWithFactoryCreated.toArray(new Element[elementsWithFactoryCreated.size()]);

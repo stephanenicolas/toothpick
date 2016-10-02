@@ -373,6 +373,42 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void testLazyFieldInjectionOfGenericTypeButNotDeclaringLazyOfGenericType() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestFieldInjection {", //
+        "  @Inject Lazy<Foo> foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo<T> {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestFieldInjection$$MemberInjector implements MemberInjector<TestFieldInjection> {", //
+        "  @Override", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getLazy(Foo.class);", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
@@ -458,8 +494,7 @@ public class FieldMemberInjectorTest {
         "public class TestFieldInjection {", //
         "  @Inject Lazy foo;", //
         "  public TestFieldInjection() {}", //
-        "}", //
-        "class Foo {}" //
+        "}" //
     ));
 
     assert_().about(javaSource())
@@ -478,8 +513,7 @@ public class FieldMemberInjectorTest {
         "public class TestFieldInjection {", //
         "  @Inject Provider foo;", //
         "  public TestFieldInjection() {}", //
-        "}", //
-        "class Foo {}" //
+        "}" //
     ));
 
     assert_().about(javaSource())
@@ -487,6 +521,46 @@ public class FieldMemberInjectorTest {
         .processedWith(memberInjectorProcessors())
         .failsToCompile()
         .withErrorContaining("Field test.TestFieldInjection#foo is not a valid javax.inject.Provider.");
+  }
+
+  @Test
+  public void testFieldInjection_shouldFail_WhenFieldIsInvalidLazyGenerics() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestFieldInjection {", //
+        "  @Inject Lazy<Foo<String>> foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo<T> {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Lazy/Provider foo is not a valid in TestFieldInjection. Lazy/Provider cannot be used on generic types.");
+  }
+
+  @Test
+  public void testFieldInjection_shouldFail_WhenFieldIsInvalidProviderGenerics() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestFieldInjection {", //
+        "  @Inject Provider<Foo<String>> foo;", //
+        "  public TestFieldInjection() {}", //
+        "}", //
+        "class Foo<T> {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Lazy/Provider foo is not a valid in TestFieldInjection. Lazy/Provider cannot be used on generic types.");
   }
 
   @Test

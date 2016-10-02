@@ -7,6 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import javax.lang.model.util.Types;
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.FactoryRegistry;
@@ -31,7 +32,8 @@ public class RegistryGenerator extends CodeGenerator {
 
   private RegistryInjectionTarget registryInjectionTarget;
 
-  public RegistryGenerator(RegistryInjectionTarget registryInjectionTarget) {
+  public RegistryGenerator(RegistryInjectionTarget registryInjectionTarget, Types types) {
+    super(types);
     this.registryInjectionTarget = registryInjectionTarget;
   }
 

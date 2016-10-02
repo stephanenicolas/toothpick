@@ -67,7 +67,11 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       List<MethodInjectionTarget> methodInjectionTargetList = mapTypeElementToMethodInjectorTargetList.get(typeElement);
       TypeElement superClassThatNeedsInjection = mapTypeElementToSuperTypeElementThatNeedsInjection.get(typeElement);
       MemberInjectorGenerator memberInjectorGenerator =
-          new MemberInjectorGenerator(typeElement, superClassThatNeedsInjection, fieldInjectionTargetList, methodInjectionTargetList);
+          new MemberInjectorGenerator(typeElement, //
+              superClassThatNeedsInjection, //
+              fieldInjectionTargetList, //
+              methodInjectionTargetList, //
+              typeUtils);
       String fileDescription = String.format("MemberInjector for type %s", typeElement);
       boolean success = writeToFile(memberInjectorGenerator, fileDescription, typeElement);
       if (success) {
@@ -80,7 +84,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
-      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget);
+      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget, typeUtils);
 
       String fileDescription = "MemberInjector registry";
       Element[] allTypes = elementsWithMemberInjectorCreated.toArray(new Element[elementsWithMemberInjectorCreated.size()]);

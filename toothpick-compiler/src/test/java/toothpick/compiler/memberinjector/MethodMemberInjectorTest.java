@@ -123,6 +123,64 @@ public class MethodMemberInjectorTest {
   }
 
   @Test
+  public void testSimpleMethodInjectionWithLazyOfGenericTypeButNotLazyOfGenericType() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestMethodInjection {", //
+        "  @Inject", //
+        "  public void m(Lazy<Foo> foo) {}", //
+        "}", //
+        "class Foo<T> {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.Lazy;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestMethodInjection$$MemberInjector implements MemberInjector<TestMethodInjection> {", //
+        "  @Override", //
+        "  public void inject(TestMethodInjection target, Scope scope) {", //
+        "    Lazy<Foo> param1 = scope.getLazy(Foo.class);", //
+        "    target.m(param1);", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testSimpleMethodInjectionWithLazyOfGenericType_shouldFail_WithLazyOfGenericType() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestMethodInjection {", //
+        "  @Inject", //
+        "  public void m(Lazy<Foo<String>> foo) {}", //
+        "}", //
+        "class Foo<T> {}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Lazy/Provider foo is not a valid in m. Lazy/Provider cannot be used on generic types.");
+  }
+
+  @Test
   public void testMethodInjection_shouldFail_whenInjectedMethodIsPrivate() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestMethodInjection", Joiner.on('\n').join(//
         "package test;", //
