@@ -1,5 +1,6 @@
 package toothpick.compiler.factory.generators;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -9,6 +10,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Types;
 import toothpick.Factory;
 import toothpick.MemberInjector;
 import toothpick.Scope;
@@ -28,7 +30,8 @@ public class FactoryGenerator extends CodeGenerator {
 
   private ConstructorInjectionTarget constructorInjectionTarget;
 
-  public FactoryGenerator(ConstructorInjectionTarget constructorInjectionTarget) {
+  public FactoryGenerator(ConstructorInjectionTarget constructorInjectionTarget, Types types) {
+    super(types);
     this.constructorInjectionTarget = constructorInjectionTarget;
   }
 

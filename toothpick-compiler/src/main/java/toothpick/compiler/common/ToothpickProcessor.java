@@ -271,6 +271,19 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       }
       return false;
     }
+
+    TypeMirror firstParameterTypeMirror = declaredType.getTypeArguments().get(0);
+    if(firstParameterTypeMirror.getKind() == TypeKind.DECLARED) {
+      int size = ((DeclaredType) firstParameterTypeMirror).getTypeArguments().size();
+      if(size != 0) {
+        Element enclosingElement = element.getEnclosingElement();
+        error(element, "Lazy/Provider %s is not a valid in %s. Lazy/Provider cannot be used on generic types.",
+            element.getSimpleName(), //
+            enclosingElement.getSimpleName());
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -306,7 +319,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected TypeElement getInjectedType(VariableElement variableElement) {
     final TypeElement fieldType;
     if (getParamInjectionTargetKind(variableElement) == ParamInjectionTarget.Kind.INSTANCE) {
-      fieldType = (TypeElement) typeUtils.asElement(variableElement.asType());
+      fieldType = (TypeElement) typeUtils.asElement(typeUtils.erasure(variableElement.asType()));
     } else {
       fieldType = getKindParameter(variableElement);
     }
@@ -459,7 +472,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   private TypeElement getKindParameter(Element element) {
     TypeMirror elementTypeMirror = element.asType();
     TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
-    return (TypeElement) typeUtils.asElement(firstParameterTypeMirror);
+    return (TypeElement) typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror));
   }
 
   protected boolean isNonStaticInnerClass(TypeElement typeElement) {

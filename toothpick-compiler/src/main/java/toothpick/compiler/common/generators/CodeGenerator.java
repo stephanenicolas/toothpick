@@ -6,6 +6,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Types;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 
 /**
@@ -14,6 +15,11 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 public abstract class CodeGenerator {
 
   protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  protected Types typeUtil;
+
+  public CodeGenerator(Types typeUtil) {
+    this.typeUtil = typeUtil;
+  }
 
   /**
    * Creates all java code.
@@ -52,10 +58,10 @@ public abstract class CodeGenerator {
 
   protected TypeName getParamType(ParamInjectionTarget paramInjectionTarget) {
     if (paramInjectionTarget.kind == ParamInjectionTarget.Kind.INSTANCE) {
-      return TypeName.get(paramInjectionTarget.memberClass.asType());
+      return TypeName.get(typeUtil.erasure(paramInjectionTarget.memberClass.asType()));
     } else {
       return ParameterizedTypeName.get(ClassName.get(paramInjectionTarget.memberClass),
-          ClassName.get(paramInjectionTarget.kindParamClass));
+          ClassName.get(typeUtil.erasure(paramInjectionTarget.kindParamClass.asType())));
     }
   }
 

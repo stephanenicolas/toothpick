@@ -444,6 +444,93 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
+  public void testNonEmptyConstructorWithGenerics() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.util.List;", //
+        "import javax.inject.Inject;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(List<String> str) {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import java.util.List;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    List param1 = scope.getInstance(List.class);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1);", //
+        "    return testNonEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testNonEmptyConstructorWithLazyAndGenerics_shouldFail() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.util.List;", //
+        "import javax.inject.Inject;", //
+        "import toothpick.Lazy;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(Lazy<List<String>> str) {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("Lazy/Provider str is not a valid in <init>. Lazy/Provider cannot be used on generic types.");
+  }
+
+  @Test
+  public void testNonEmptyConstructorWithProviderAndGenerics_shouldFail() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.util.List;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Provider;", //
+        "public class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(Provider<List<String>> str) {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("Lazy/Provider str is not a valid in <init>. Lazy/Provider cannot be used on generic types.");
+  }
+
+  @Test
   public void testAbstractClassWithInjectedConstructor() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestInvalidClassConstructor", Joiner.on('\n').join(//
         "package test;", //

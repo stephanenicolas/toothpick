@@ -11,6 +11,7 @@ import com.squareup.javapoet.TypeSpec;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Types;
 import toothpick.MemberInjector;
 import toothpick.Scope;
 import toothpick.compiler.common.generators.CodeGenerator;
@@ -33,7 +34,9 @@ public class MemberInjectorGenerator extends CodeGenerator {
   private List<MethodInjectionTarget> methodInjectionTargetList;
 
   public MemberInjectorGenerator(TypeElement targetClass, TypeElement superClassThatNeedsInjection,
-      List<FieldInjectionTarget> fieldInjectionTargetList, List<MethodInjectionTarget> methodInjectionTargetList) {
+      List<FieldInjectionTarget> fieldInjectionTargetList, List<MethodInjectionTarget> methodInjectionTargetList,
+      Types types) {
+    super(types);
     this.targetClass = targetClass;
     this.superClassThatNeedsInjection = superClassThatNeedsInjection;
     this.fieldInjectionTargetList = fieldInjectionTargetList;
