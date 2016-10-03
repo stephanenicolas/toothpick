@@ -11,6 +11,7 @@ import toothpick.data.BarChild;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooChildWithoutInjectedFields;
+import toothpick.data.FooCustomScope;
 import toothpick.data.FooProviderAnnotatedProvidesSingleton;
 import toothpick.data.FooProviderAnnotatedSingletonImpl;
 import toothpick.data.FooSingleton;
@@ -418,7 +419,7 @@ public class ScopingTest extends ToothpickBaseTest {
   }
 
   @Test
-  public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotation_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
+  public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotationViaProvider_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
     //GIVEN
     Toothpick.setConfiguration(forDevelopment());
     Scope scopeParent = Toothpick.openScope(CustomScope.class);
@@ -427,6 +428,21 @@ public class ScopingTest extends ToothpickBaseTest {
     //WHEN
     FooProviderAnnotatedProvidesSingleton instanceInParent = scopeParent.getInstance(FooProviderAnnotatedProvidesSingleton.class);
     FooProviderAnnotatedProvidesSingleton instanceInChild = scope1.getInstance(FooProviderAnnotatedProvidesSingleton.class);
+
+    //THEN
+    assertThat(instanceInParent, sameInstance(instanceInChild));
+  }
+
+  @Test
+  public void binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotationViaFactory_whenParentScopeIsBoundToScopeAnnotation() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(forDevelopment());
+    Scope scopeParent = Toothpick.openScope(CustomScope.class);
+    Scope scope1 = Toothpick.openScopes(CustomScope.class, "child");
+
+    //WHEN
+    FooCustomScope instanceInParent = scopeParent.getInstance(FooCustomScope.class);
+    FooCustomScope instanceInChild = scope1.getInstance(FooCustomScope.class);
 
     //THEN
     assertThat(instanceInParent, sameInstance(instanceInChild));

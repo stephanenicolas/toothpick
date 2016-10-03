@@ -49,7 +49,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    readProcessorOptions();
+    readCommonProcessorOptions();
     findAndParseTargets(roundEnv);
 
     if (!roundEnv.processingOver()) {
