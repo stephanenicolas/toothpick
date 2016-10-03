@@ -49,12 +49,14 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    readCommonProcessorOptions();
-    findAndParseTargets(roundEnv);
 
-    if (!roundEnv.processingOver()) {
+    if (hasAlreadyRun()) {
       return false;
     }
+
+    wasRun();
+    readCommonProcessorOptions();
+    findAndParseTargets(roundEnv);
 
     // Generate member scopes
     Set<TypeElement> elementWithInjectionSet = new HashSet<>();

@@ -76,12 +76,14 @@ public class FactoryProcessor extends ToothpickProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
+    if (hasAlreadyRun()) {
+      return false;
+    }
+
+    wasRun();
     readCommonProcessorOptions();
     findAndParseTargets(roundEnv, annotations);
 
-    if (!roundEnv.processingOver()) {
-      return false;
-    }
 
     // Generate Factories
     List<TypeElement> elementsWithFactoryCreated = new ArrayList<>();

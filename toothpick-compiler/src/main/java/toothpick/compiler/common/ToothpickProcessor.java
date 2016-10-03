@@ -84,6 +84,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected List<String> toothpickRegistryChildrenPackageNameList;
   protected String toothpickExcludeFilters = "java.*,android.*";
   protected Set<String> supportedAnnotationTypes = new HashSet<>();
+  private boolean hasAlreadyRun;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -101,6 +102,14 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   public void addSupportedAnnotationType(String typeFQN) {
     supportedAnnotationTypes.add(typeFQN);
+  }
+
+  protected void wasRun() {
+    hasAlreadyRun = true;
+  }
+
+  protected boolean hasAlreadyRun() {
+    return hasAlreadyRun;
   }
 
   protected boolean writeToFile(CodeGenerator codeGenerator, String fileDescription, Element... originatingElements) {
