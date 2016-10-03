@@ -31,6 +31,8 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PROTECTED;
+import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
@@ -244,6 +246,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
       if (!isValidInjectedType(paramElement)) {
         return false;
       }
+    }
+
+    if (modifiers.contains(PUBLIC) || modifiers.contains(PROTECTED)) {
+      warning(methodElement, "@Inject annotated methods should have protect visibility: %s#%s", enclosingElement.getQualifiedName(),
+          methodElement.getSimpleName());
     }
     return true;
   }
