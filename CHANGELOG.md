@@ -1,5 +1,10 @@
 //Continue from top
 
+
+## Release version 1.0.0 (to be released)
+
+* Solves issue [#117](https://github.com/stephanenicolas/toothpick/issues/117) Factory code generator should strip the generic part of dependencies.
+
 ## Release version 1.0.0-RC10 (Sep 29th 2016)
 
 * Solves issue [#110](https://github.com/stephanenicolas/toothpick/issues/110) Adding support for the SuppressWarnings annotation to remove missing constructor warning.
