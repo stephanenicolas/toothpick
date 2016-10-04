@@ -1,7 +1,7 @@
 //Continue from top
 
 
-## Release version 1.0.0 (to be released)
+## Release version 1.0.0 (Oct 4th 2016)
 
 * Solves issue [#117](https://github.com/stephanenicolas/toothpick/issues/117) Factory code generator should strip the generic part of dependencies.
 * Solves issue [#118](https://github.com/stephanenicolas/toothpick/issues/118) Support custom annotations.
