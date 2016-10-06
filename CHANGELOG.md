@@ -5,7 +5,7 @@
 
 * Solves issue [#117](https://github.com/stephanenicolas/toothpick/issues/117) Factory code generator should strip the generic part of dependencies.
 * Solves issue [#118](https://github.com/stephanenicolas/toothpick/issues/118) Support custom annotations.
-* Solves issue [#119](https://github.com/stephanenicolas/toothpick/issues/119) Adding a warning when injected members have public or protected visibility
+* Solves issue [#119](https://github.com/stephanenicolas/toothpick/issues/119) Adding a warning when injected methods have public or protected visibility
 * Solved issue [#158](https://github.com/stephanenicolas/toothpick/issues/158) Removing last round warnings during annotation processing
 
 ## Release version 1.0.0-RC10 (Sep 29th 2016)
