@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.junit.After;
 import org.junit.Test;
+import toothpick.configuration.Configuration;
+import toothpick.configuration.MultipleRootException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -41,6 +43,7 @@ public class ToothpickTest extends ToothpickBaseTest {
   @Test
   public void createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() throws Exception {
     //GIVEN
+    Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("foo");
 
     //WHEN
@@ -66,6 +69,7 @@ public class ToothpickTest extends ToothpickBaseTest {
   @Test
   public void reset_shouldClear_WhenSomeScopesWereCreated() throws Exception {
     //GIVEN
+    Toothpick.setConfiguration(Configuration.forProduction());
     Scope scope0 = Toothpick.openScope("foo");
     Scope scope1 = Toothpick.openScope("bar");
 
@@ -82,6 +86,7 @@ public class ToothpickTest extends ToothpickBaseTest {
   @Test
   public void destroyScope_shouldClearThisScope_WhenThisScopesWasCreated() throws Exception {
     //GIVEN
+    Toothpick.setConfiguration(Configuration.forProduction());
     Scope scope = Toothpick.openScope("foo");
 
     //WHEN
@@ -90,6 +95,33 @@ public class ToothpickTest extends ToothpickBaseTest {
 
     //THEN
     assertThat(scopeAfterReset, not(sameInstance(scope)));
+  }
+
+  @Test(expected = MultipleRootException.class)
+  public void openingAClosedChildScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
+    Toothpick.openScopes("foo", "bar");
+    Toothpick.closeScope("bar");
+
+    //WHEN
+    Toothpick.openScope("bar");
+
+    //THEN
+    fail("Should throw an exception");
+  }
+
+  @Test(expected = MultipleRootException.class)
+  public void opening2rootScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() throws Exception {
+    //GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
+    Toothpick.openScope("foo");
+
+    //WHEN
+    Toothpick.openScope("bar");
+
+    //THEN
+    fail("Should throw an exception");
   }
 
   @Test
@@ -107,6 +139,7 @@ public class ToothpickTest extends ToothpickBaseTest {
   @Test
   public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() throws Exception {
     //GIVEN
+    Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("bar");
 
     //WHEN
