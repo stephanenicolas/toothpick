@@ -125,7 +125,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void createFactoriesForClassesAnnotatedWithScopeAnnotations(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     for (TypeElement annotation : annotations) {
-      if (annotation.getAnnotationsByType(Scope.class).length != 0) {
+      if (annotation.getAnnotation(Scope.class) != null) {
         createFactoriesForClassesAnnotatedWith(roundEnv, annotation);
       }
     }
