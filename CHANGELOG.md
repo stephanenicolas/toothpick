@@ -1,6 +1,11 @@
 //Continue from top
 
 
+## Release version 1.0.1 (Oct 26th 2016)
+
+* Solves issue [#163](https://github.com/stephanenicolas/toothpick/issues/163) getAnnotationsByType is available from java 8.
+* Adding configuration to detect multiple trees in the forest of scopes.
+
 ## Release version 1.0.0 (Oct 4th 2016)
 
 * Solves issue [#117](https://github.com/stephanenicolas/toothpick/issues/117) Factory code generator should strip the generic part of dependencies.
