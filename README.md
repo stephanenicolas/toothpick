@@ -132,7 +132,8 @@ For java:
 
 ## Talks
 
-* Droidcon Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection)
+* Mobile Era, Oslo 2016 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
+* Droidcon Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection) - [Sketch notes](https://twitter.com/TeresaHolfeld/status/743026908552663041)
 * Android Leaks 2016 - [podcast in French](http://androidleakspodcast.com/2016/09/25/episode-4-de-la-dague-au-cure-dent-en-passant-par-un-petit-jus/)
 
 # Wanna know more ?
