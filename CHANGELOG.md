@@ -1,6 +1,10 @@
 //Continue from top
 
 
+## Release version 1.0.2 (Nov 8th 2016)
+
+* Solves issue [#170](https://github.com/stephanenicolas/toothpick/issues/170) ToothPickRule should reset after test method is finished.
+
 ## Release version 1.0.1 (Oct 26th 2016)
 
 * Solves issue [#163](https://github.com/stephanenicolas/toothpick/issues/163) getAnnotationsByType is available from java 8.
