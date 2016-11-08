@@ -25,6 +25,11 @@ public class TestScopeName {
     toothPickRule.setScopeName("Bar");
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void testSetScopeName_shouldFail_whenScopeNameAlreadyContainsATestModule() throws Exception {
+    toothPickRuleWithoutScopeName.setScopeName("Foo");
+  }
+
   @Test
   public void testScopeNameSetByConstruction() throws Exception {
     assertThat(toothPickRule.getScope(), notNullValue());
@@ -34,9 +39,9 @@ public class TestScopeName {
 
   @Test
   public void testSetScopeName() throws Exception {
-    toothPickRuleWithoutScopeName.setScopeName("Foo");
+    toothPickRuleWithoutScopeName.setScopeName("Bar");
     assertThat(toothPickRuleWithoutScopeName.getScope(), notNullValue());
-    assertThat(toothPickRuleWithoutScopeName.getScope().getName(), is((Object) "Foo"));
-    assertThat(toothPickRule.getTestModule(), notNullValue());
+    assertThat(toothPickRuleWithoutScopeName.getScope().getName(), is((Object) "Bar"));
+    assertThat(toothPickRuleWithoutScopeName.getTestModule(), notNullValue());
   }
 }
