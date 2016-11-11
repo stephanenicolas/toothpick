@@ -83,6 +83,10 @@ buildscript {
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
   }
 }
+...
+apply plugin: 'com.neenbedankt.android-apt'
+...
+
 dependencies {
   compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:x.y.z') 
   //or 'com.github.stephanenicolas.toothpick:smoothie:x.y.z'
