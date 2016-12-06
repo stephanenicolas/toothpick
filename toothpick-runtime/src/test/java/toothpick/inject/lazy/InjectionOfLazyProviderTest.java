@@ -63,4 +63,19 @@ public class InjectionOfLazyProviderTest extends ToothpickBaseTest {
     assertThat(bar2, isA(Bar.class));
     assertThat(bar2, sameInstance(bar1));
   }
+
+  @Test(expected = IllegalStateException.class)
+  public void testLazyAfterClosingScope() throws Exception {
+    //GIVEN
+    String scopeName = "";
+    FooWithLazy fooWithLazy = new FooWithLazy();
+
+    //WHEN
+    Toothpick.inject(fooWithLazy, Toothpick.openScope(scopeName));
+    Toothpick.closeScope(scopeName);
+    System.gc();
+
+    //THEN
+    fooWithLazy.bar.get(); // should crash
+  }
 }
