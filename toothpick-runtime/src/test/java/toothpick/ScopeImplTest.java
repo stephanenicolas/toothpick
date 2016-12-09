@@ -1,5 +1,6 @@
 package toothpick;
 
+import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.data.Bar;
@@ -108,6 +109,94 @@ public class ScopeImplTest extends ToothpickBaseTest {
 
     //WHEN
     new ScopeImpl("").toProvider(null);
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void getInstance_shouldFail_whenScopeIsClosed() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+
+    //WHEN
+    scope.close();
+    scope.getInstance(Foo.class);
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void getLazy_shouldFail_whenScopeIsClosed() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+
+    //WHEN
+    scope.close();
+    scope.getLazy(Foo.class);
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void getProvider_shouldFail_whenScopeIsClosed() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+
+    //WHEN
+    scope.close();
+    scope.getProvider(Foo.class);
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void lazyGet_shouldFail_whenScopeIsClosed() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+    Lazy<Foo> lazy = scope.getLazy(Foo.class);
+
+    //WHEN
+    scope.close();
+    lazy.get();
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void providerGet_shouldFail_whenScopeIsClosed() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+    Provider<Foo> provider = scope.getProvider(Foo.class);
+
+    //WHEN
+    scope.close();
+    provider.get();
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void lazyGet_shouldFail_whenScopeIsClosed_andThereAreNoDependencies() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+    Lazy<Bar> lazy = scope.getLazy(Bar.class);
+
+    //WHEN
+    scope.close();
+    lazy.get();
+
+    //THEN
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void providerGet_shouldFail_whenScopeIsClosed_andThereAreNoDependencies() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+    Provider<Bar> provider = scope.getProvider(Bar.class);
+
+    //WHEN
+    scope.close();
+    provider.get();
 
     //THEN
   }

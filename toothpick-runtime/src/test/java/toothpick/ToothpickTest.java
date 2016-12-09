@@ -55,6 +55,17 @@ public class ToothpickTest extends ToothpickBaseTest {
     assertThat(scope.getParentScope(), sameInstance(scopeParent));
   }
 
+  @Test
+  public void createScope_shouldMarkThisScopeAsOpen() throws Exception {
+    //GIVEN
+
+    //WHEN
+    ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo");
+
+    //THEN
+    assertThat(scope.isOpen, is(true));
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void openScopes_shouldFail_whenScopeNamesAreNull() throws Exception {
     //GIVEN
@@ -63,7 +74,6 @@ public class ToothpickTest extends ToothpickBaseTest {
     Toothpick.openScopes((Object[]) null);
 
     //THEN
-    fail("Shoudl ahve thrown an exception");
   }
 
   @Test
@@ -97,6 +107,18 @@ public class ToothpickTest extends ToothpickBaseTest {
     assertThat(scopeAfterReset, not(sameInstance(scope)));
   }
 
+  @Test
+  public void closeScope_shouldMarkThisScopeAsClosed() throws Exception {
+    //GIVEN
+    ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo");
+
+    //WHEN
+    Toothpick.closeScope("foo");
+
+    //THEN
+    assertThat(scope.isOpen, is(false));
+  }
+
   @Test(expected = MultipleRootException.class)
   public void openingAClosedChildScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() throws Exception {
     //GIVEN
@@ -108,7 +130,6 @@ public class ToothpickTest extends ToothpickBaseTest {
     Toothpick.openScope("bar");
 
     //THEN
-    fail("Should throw an exception");
   }
 
   @Test(expected = MultipleRootException.class)
@@ -121,7 +142,6 @@ public class ToothpickTest extends ToothpickBaseTest {
     Toothpick.openScope("bar");
 
     //THEN
-    fail("Should throw an exception");
   }
 
   @Test
@@ -197,7 +217,6 @@ public class ToothpickTest extends ToothpickBaseTest {
     constructor.newInstance();
 
     //THEN
-    fail("default constructor should not be invokable even via reflection");
   }
 
   @After
