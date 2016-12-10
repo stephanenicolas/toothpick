@@ -1,5 +1,6 @@
 package toothpick;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.ConfigurationHolder;
@@ -121,7 +122,9 @@ public final class Toothpick {
    */
 
   public static void reset() {
-    MAP_KEY_TO_SCOPE.clear();
+    for (Object name : new ArrayList<>(MAP_KEY_TO_SCOPE.keySet())) {
+      closeScope(name);
+    }
     ConfigurationHolder.configuration.onScopeForestReset();
     ScopeImpl.reset();
   }
@@ -147,6 +150,7 @@ public final class Toothpick {
    */
   private static void removeScopeAndChildrenFromMap(ScopeNode scope) {
     MAP_KEY_TO_SCOPE.remove(scope.getName());
+    scope.close();
     for (ScopeNode childScope : scope.childrenScopes.values()) {
       removeScopeAndChildrenFromMap(childScope);
     }

@@ -78,6 +78,7 @@ public abstract class ScopeNode implements Scope {
   //as setting the parent is called only once when creating a node
   protected final List<ScopeNode> parentScopes = new CopyOnWriteArrayList<>();
   protected Object name;
+  protected boolean isOpen = true;
   //same here for lock free access
   protected final Set<Class<? extends Annotation>> scopeAnnotationClasses = new CopyOnWriteArraySet<>();
 
@@ -259,6 +260,10 @@ public abstract class ScopeNode implements Scope {
     childrenScopes.remove(child.getName());
     //make the ex-child a new root.
     child.parentScopes.clear();
+  }
+
+  void close() {
+    isOpen = false;
   }
 
   private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {

@@ -50,6 +50,7 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
+    crashIfClosed();
     ConfigurationHolder.configuration.checkCyclesStart(clazz, name);
     T t;
     try {
@@ -67,8 +68,8 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> Provider<T> getProvider(Class<T> clazz, String name) {
-    InternalProviderImpl<? extends T> provider = lookupProvider(clazz, name);
-    return new ThreadSafeProviderImpl<>(this, provider, false);
+    crashIfClosed();
+    return new ThreadSafeProviderImpl<>(this, clazz, name, false);
   }
 
   @Override
@@ -78,8 +79,8 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
-    InternalProviderImpl<? extends T> provider = lookupProvider(clazz, name);
-    return new ThreadSafeProviderImpl<>(this, provider, true);
+    crashIfClosed();
+    return new ThreadSafeProviderImpl<>(this, clazz, name, true);
   }
 
   @Override
@@ -500,6 +501,13 @@ public class ScopeImpl extends ScopeNode {
       } else {
         return previous;
       }
+    }
+  }
+
+  private void crashIfClosed() {
+    if (!isOpen) {
+      throw new IllegalStateException(String.format("The scope with name %s has been already closed."
+          + " It is not possible to use it to create new instances.", name));
     }
   }
 
