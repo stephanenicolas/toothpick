@@ -1,5 +1,8 @@
 //Continue from top
 
+## Release version 1.0.3 (Dec 19th 2016)
+
+* Solves issue [#178](https://github.com/stephanenicolas/toothpick/issues/178) Make closed scopes invalid.
 
 ## Release version 1.0.2 (Nov 8th 2016)
 
