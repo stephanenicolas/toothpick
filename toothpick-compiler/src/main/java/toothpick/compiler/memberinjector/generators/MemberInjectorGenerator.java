@@ -64,11 +64,10 @@ public class MemberInjectorGenerator extends CodeGenerator {
 
   private void emitSuperMemberInjectorFieldIfNeeded(TypeSpec.Builder scopeMemberTypeSpec) {
     if (superClassThatNeedsInjection != null) {
-      ClassName superTypeThatNeedsInjection = ClassName.get(superClassThatNeedsInjection);
       FieldSpec.Builder superMemberInjectorField =
           FieldSpec.builder(MemberInjector.class, "superMemberInjector", Modifier.PRIVATE)
               //TODO use proper typing here
-              .initializer("new $L$$$$MemberInjector()", superTypeThatNeedsInjection);
+              .initializer("new $L$$$$MemberInjector()", getGeneratedFQNClassName(superClassThatNeedsInjection));
       scopeMemberTypeSpec.addField(superMemberInjectorField.build());
     }
   }
