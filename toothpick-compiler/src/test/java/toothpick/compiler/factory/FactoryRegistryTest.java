@@ -33,7 +33,7 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
         "    switch(bucket) {", //
         "      case (0):", //
@@ -85,7 +85,7 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
         "    switch(bucket) {", //
         "      case (0):", //
@@ -134,7 +134,7 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & -1);", //
         "    switch(bucket) {", //
         "      default:", //
@@ -163,11 +163,9 @@ public class FactoryRegistryTest {
         "    }", //
         "  }", //
         "  public static class InnerClass2 {", //
-        "    @Inject public InnerClass2() {", //
-        "    }", //
-        "  }", //
-        "  public static class InnerClass3 {", //
-        "    @Inject public InnerClass3() {", //
+        "    public static class InnerClass3 {", //
+        "      @Inject public InnerClass3() {", //
+        "      }", //
         "    }", //
         "  }", //
         "}" //
@@ -185,7 +183,7 @@ public class FactoryRegistryTest {
         "  }", //
         "", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 3);", //
         "    switch(bucket) {", //
         "      case (0):", //
@@ -212,8 +210,8 @@ public class FactoryRegistryTest {
         "", //
         "  private <T> Factory<T> getFactoryBucket1(Class<T> clazz, String className) {", //
         "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket.InnerClass1\"):", //
-        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass1$$Factory();", //
+        "      case (\"test.TestARegistryWithMoreThanOneBucket$InnerClass2$InnerClass3\"):", //
+        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass2$InnerClass3$$Factory();", //
         "      default:", //
         "      return getFactoryInChildrenRegistries(clazz);", //
         "    }", //
@@ -221,8 +219,6 @@ public class FactoryRegistryTest {
         "", //
         "  private <T> Factory<T> getFactoryBucket2(Class<T> clazz, String className) {", //
         "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket.InnerClass2\"):", //
-        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass2$$Factory();", //
         "      default:", //
         "      return getFactoryInChildrenRegistries(clazz);", //
         "    }", //
@@ -230,8 +226,8 @@ public class FactoryRegistryTest {
         "", //
         "  private <T> Factory<T> getFactoryBucket3(Class<T> clazz, String className) {", //
         "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket.InnerClass3\"):", //
-        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass3$$Factory();", //
+        "      case (\"test.TestARegistryWithMoreThanOneBucket$InnerClass1\"):", //
+        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass1$$Factory();", //
         "      default:", //
         "      return getFactoryInChildrenRegistries(clazz);", //
         "    }", //

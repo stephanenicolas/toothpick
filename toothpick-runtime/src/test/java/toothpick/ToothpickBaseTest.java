@@ -14,7 +14,7 @@ public class ToothpickBaseTest {
   public static void setUp() throws Exception {
     MemberInjectorRegistryLocator.setRootRegistry(new toothpick.test.MemberInjectorRegistry());
     FactoryRegistryLocator.setRootRegistry(new toothpick.test.FactoryRegistry());
-    Configuration.forProduction();
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
   }
 
   @After

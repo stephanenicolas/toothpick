@@ -8,6 +8,7 @@ import toothpick.ScopeImpl;
 import toothpick.Toothpick;
 import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
+import toothpick.configuration.Configuration;
 import toothpick.configuration.CyclicDependencyException;
 import toothpick.data.CyclicFoo;
 import toothpick.data.CyclicNamedFoo;
@@ -18,8 +19,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static toothpick.configuration.Configuration.forDevelopment;
-import static toothpick.configuration.Configuration.forProduction;
 
 /*
  * Creates a instance in the simplest possible way
@@ -30,13 +29,12 @@ public class CycleCheckTest extends ToothpickBaseTest {
   @BeforeClass
   public static void setUp() throws Exception {
     ToothpickBaseTest.setUp();
-    Toothpick.setConfiguration(forDevelopment());
-    ToothpickBaseTest.setUp();
+    Toothpick.setConfiguration(Configuration.forDevelopment().disableReflection());
   }
 
   @AfterClass
   public static void staticTearDown() throws Exception {
-    Toothpick.setConfiguration(forProduction());
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
   }
 
   @Test(expected = CyclicDependencyException.class)
