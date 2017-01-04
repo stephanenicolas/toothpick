@@ -9,6 +9,7 @@ import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
 import toothpick.data.FooChildMaskingMember;
+import toothpick.data.FooNested;
 import toothpick.data.FooParentMaskingMember;
 
 import static org.hamcrest.CoreMatchers.isA;
@@ -35,6 +36,25 @@ public class InjectionWithoutModuleTest extends ToothpickBaseTest {
     //THEN
     assertThat(foo.bar, notNullValue());
     assertThat(foo.bar, isA(Bar.class));
+  }
+
+  @Test
+  public void testNestedClassInjection() throws Exception {
+    //GIVEN
+    Scope scope = new ScopeImpl("");
+
+    //WHEN
+    FooNested fooNested = scope.getInstance(FooNested.class);
+    FooNested.InnerClass1 innerClass1 = scope.getInstance(FooNested.InnerClass1.class);
+    FooNested.InnerClass1.InnerClass2 innerClass2 = scope.getInstance(FooNested.InnerClass1.InnerClass2.class);
+
+    //THEN
+    assertThat(fooNested.bar, notNullValue());
+    assertThat(fooNested.bar, isA(Bar.class));
+    assertThat(innerClass1.bar, notNullValue());
+    assertThat(innerClass1.bar, isA(Bar.class));
+    assertThat(innerClass2.bar, notNullValue());
+    assertThat(innerClass2.bar, isA(Bar.class));
   }
 
   @Test

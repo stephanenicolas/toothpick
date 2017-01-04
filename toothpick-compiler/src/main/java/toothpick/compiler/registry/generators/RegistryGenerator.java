@@ -74,9 +74,7 @@ public class RegistryGenerator extends CodeGenerator {
         .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), t), "clazz")
         .returns(ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), t));
 
-    //the ultimate part of the switch is about converting $ to .
-    //this is a bad hack, but the easiest workaroung to injectionTarget.getQualifiedName() using only . and not $ for FQN...
-    getMethod.addStatement("String className = clazz.getName().replace('$$','.')");
+    getMethod.addStatement("String className = clazz.getName()");
     int numOfBuckets = getNumberOfBuckets(registryInjectionTarget.injectionTargetList);
     getMethod.addStatement("int bucket = (className.hashCode() & $L)", numOfBuckets - 1);
     CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch(bucket)");
@@ -115,7 +113,7 @@ public class RegistryGenerator extends CodeGenerator {
     String typeSimpleName = registryInjectionTarget.type.getSimpleName();
 
     for (TypeElement injectionTarget : getterMethodBucket) {
-      switchBlockBuilder.add("case ($S):" + LINE_SEPARATOR, injectionTarget.getQualifiedName().toString());
+      switchBlockBuilder.add("case ($S):" + LINE_SEPARATOR, getGeneratedFQNClassName(injectionTarget));
       switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, getGeneratedFQNClassName(injectionTarget), typeSimpleName);
     }
 
@@ -131,7 +129,7 @@ public class RegistryGenerator extends CodeGenerator {
     Map<Integer, List<TypeElement>> getterMethodBuckets = new HashMap<>();
 
     for (TypeElement injectionTarget : injectionTargetList) {
-      int index = injectionTarget.getQualifiedName().toString().hashCode() & (numOfBuckets - 1);
+      int index = getGeneratedFQNClassName(injectionTarget).hashCode() & (numOfBuckets - 1);
       List<TypeElement> methodBucket = getterMethodBuckets.get(index);
       if (methodBucket == null) {
         methodBucket = new ArrayList<>();

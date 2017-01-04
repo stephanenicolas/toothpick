@@ -34,7 +34,7 @@ public class MemberInjectorRegistryTest {
         "  }", //
         "", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
         "    switch(bucket) {", //
         "      case (0):", //
@@ -87,7 +87,7 @@ public class MemberInjectorRegistryTest {
         "  }", //
         "", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
         "    switch(bucket) {", //
         "      case (0):", //
@@ -136,7 +136,7 @@ public class MemberInjectorRegistryTest {
         "  }", //
         "", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & -1);", //
         "    switch(bucket) {", //
         "      default:", //
@@ -164,10 +164,9 @@ public class MemberInjectorRegistryTest {
         "    @Inject String s;", //
         "  }", //
         "  public static class InnerClass2 {", //
-        "    @Inject String s;", //
-        "  }", //
-        "  public static class InnerClass3 {", //
-        "    @Inject String s;", //
+        "    public static class InnerClass3 {", //
+        "      @Inject String s;", //
+        "    }", //
         "  }", //
         "}" //
     ));
@@ -184,7 +183,7 @@ public class MemberInjectorRegistryTest {
         "  }", //
         "", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
-        "    String className = clazz.getName().replace('$','.');", //
+        "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 3);", //
         "    switch(bucket) {", //
         "      case (0):", //
@@ -211,8 +210,8 @@ public class MemberInjectorRegistryTest {
         "", //
         "  private <T> MemberInjector<T> getMemberInjectorBucket1(Class<T> clazz, String className) {", //
         "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket.InnerClass1\"):", //
-        "      return (MemberInjector<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass1$$MemberInjector();", //
+        "      case (\"test.TestARegistryWithMoreThanOneBucket$InnerClass2$InnerClass3\"):", //
+        "      return (MemberInjector<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass2$InnerClass3$$MemberInjector();", //
         "      default:", //
         "      return getMemberInjectorInChildrenRegistries(clazz);", //
         "    }", //
@@ -220,8 +219,6 @@ public class MemberInjectorRegistryTest {
         "", //
         "  private <T> MemberInjector<T> getMemberInjectorBucket2(Class<T> clazz, String className) {", //
         "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket.InnerClass2\"):", //
-        "      return (MemberInjector<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass2$$MemberInjector();", //
         "      default:", //
         "      return getMemberInjectorInChildrenRegistries(clazz);", //
         "    }", //
@@ -229,8 +226,8 @@ public class MemberInjectorRegistryTest {
         "", //
         "  private <T> MemberInjector<T> getMemberInjectorBucket3(Class<T> clazz, String className) {", //
         "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket.InnerClass3\"):", //
-        "      return (MemberInjector<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass3$$MemberInjector();", //
+        "      case (\"test.TestARegistryWithMoreThanOneBucket$InnerClass1\"):", //
+        "      return (MemberInjector<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass1$$MemberInjector();", //
         "      default:", //
         "      return getMemberInjectorInChildrenRegistries(clazz);", //
         "    }", //
