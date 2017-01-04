@@ -564,6 +564,50 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestMemberInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "class TestMemberInjection {", //
+        "  public static class InnerSuperClass {", //
+        "    @Inject Foo foo;", //
+        "    public InnerSuperClass() {}", //
+        "  }", //
+        "  public static class InnerClass extends InnerSuperClass {", //
+        "    @Inject Foo foo;", //
+        "    public InnerClass() {}", //
+        "  }", //
+        "}", //
+        "class Foo {}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMemberInjection$InnerClass$$MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestMemberInjection$InnerClass$$MemberInjector implements MemberInjector<TestMemberInjection.InnerClass> {", //
+        "  private MemberInjector superMemberInjector " + "= new test.TestMemberInjection$InnerSuperClass$$MemberInjector();",
+        //
+        "  @Override", //
+        "  public void inject(TestMemberInjection.InnerClass target, Scope scope) {", //
+        "    superMemberInjector.inject(target, scope);", //
+        "    target.foo = scope.getInstance(Foo.class);", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestMemberInjection", Joiner.on('\n').join(//
         "package test;", //

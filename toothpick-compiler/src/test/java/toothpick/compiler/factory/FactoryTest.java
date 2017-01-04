@@ -203,6 +203,111 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
+  public void testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestAInnerClassThatNeedsInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestAInnerClassThatNeedsInjection {", //
+        "  public static class InnerClass  {", //
+        "    @Inject String s;", //
+        "    public InnerClass() {}", //
+        "  }", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAInnerClassThatNeedsInjection$InnerClass$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestAInnerClassThatNeedsInjection$InnerClass$$Factory implements Factory<TestAInnerClassThatNeedsInjection.InnerClass> {", //
+        "  private MemberInjector<TestAInnerClassThatNeedsInjection.InnerClass> memberInjector = new test.TestAInnerClassThatNeedsInjection$InnerClass$$MemberInjector();", //
+        "  @Override", //
+        "  public TestAInnerClassThatNeedsInjection.InnerClass createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    TestAInnerClassThatNeedsInjection.InnerClass innerClass = new TestAInnerClassThatNeedsInjection.InnerClass();", //
+        "    memberInjector.inject(innerClass, scope);", //
+        "    return innerClass;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestAClassThatNeedsInjection extends SuperClassThatNeedsInjection {", //
+        "  @Inject public TestAClassThatNeedsInjection() {}", //
+        "}", //
+        "class SuperClassThatNeedsInjection {", //
+        "  @Inject String s;", //
+        "  public SuperClassThatNeedsInjection() {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  private MemberInjector<SuperClassThatNeedsInjection> memberInjector = new test.SuperClassThatNeedsInjection$$MemberInjector();", //
+        "  @Override", //
+        "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();", //
+        "    memberInjector.inject(testAClassThatNeedsInjection, scope);", //
+        "    return testAClassThatNeedsInjection;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestAClassThatNeedsInjection", Joiner.on('\n').join(//
         "package test;", //
