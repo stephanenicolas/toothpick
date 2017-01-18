@@ -152,6 +152,7 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 * ~~[RoboGuice](https://github.com/roboguice/roboguice)~~ (deprecated)
 * ~~[Dagger 1](https://github.com/square/dagger)~~ (deprecated)
 * [Dagger 2](https://github.com/google/dagger)
+* [transfuse](http://androidtransfuse.org/)
 * [lightsaber](https://github.com/MichaelRocks/lightsaber)
 * [tiger](https://github.com/google/tiger)
 * [feather](https://github.com/zsoltherpai/feather)
