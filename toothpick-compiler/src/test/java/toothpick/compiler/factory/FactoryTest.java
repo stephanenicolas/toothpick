@@ -756,7 +756,10 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
         "@Scope", //
+        "@Retention(RetentionPolicy.RUNTIME)", //
         "@interface CustomScope {}", //
         "@CustomScope", //
         "public final class TestNonEmptyConstructor {", //
@@ -811,7 +814,10 @@ public class FactoryTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
         "@Scope", //
+        "@Retention(RetentionPolicy.RUNTIME)", //
         "@interface CustomScope {}", //
         "@CustomScope", //
         "public final class TestEmptyConstructor {", //

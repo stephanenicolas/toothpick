@@ -12,12 +12,12 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 public class RelaxedFactoryForSingletonsTest extends BaseFactoryTest {
   @Test
   public void testOptimisticFactoryCreationForSingleton() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForInjectedField", Joiner.on('\n').join(//
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForSingleton", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Singleton;", //
         "@Singleton", //
-        "public class TestOptimisticFactoryCreationForInjectedField {", //
+        "public class TestOptimisticFactoryCreationForSingleton {", //
         "}"));
 
     assert_().about(javaSource())
@@ -25,6 +25,70 @@ public class RelaxedFactoryForSingletonsTest extends BaseFactoryTest {
         .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForInjectedField$$Factory.class");
+        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForSingleton$$Factory.class");
+  }
+
+  @Test
+  public void testOptimisticFactoryCreationForScopeAnnotation() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForScopeAnnotation", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
+        "@Scope", //
+        "@Retention(RetentionPolicy.RUNTIME)", //
+        "@interface CustomScope {}", //
+        "@CustomScope", //
+        "public class TestOptimisticFactoryCreationForScopeAnnotation {", //
+        "}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+        .compilesWithoutError()
+        .and()
+        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForScopeAnnotation$$Factory.class");
+  }
+
+  @Test
+  public void testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRetention() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForScopeAnnotation", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
+        "@Scope", //
+        "@interface CustomScope {}", //
+        "@CustomScope", //
+        "public class TestOptimisticFactoryCreationForScopeAnnotation {", //
+        "}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+        .failsToCompile();
+  }
+
+  @Test
+  public void testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRuntimeRetention() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForScopeAnnotation", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
+        "@Scope", //
+        "@Retention(RetentionPolicy.CLASS)", //
+        "@interface CustomScope {}", //
+        "@CustomScope", //
+        "public class TestOptimisticFactoryCreationForScopeAnnotation {", //
+        "}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+        .failsToCompile();
   }
 }
