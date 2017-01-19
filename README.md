@@ -80,23 +80,22 @@ Currently Toothpick has 2 sets of examples :
 ## Setup
 For Android : 
 ```groovy
-#android setup using apt 
+#android setup using gradle 2.2.3
 buildscript {
   repositories {
-    mavenCentral()
+    jcenter()
   }
   dependencies {
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    classpath 'com.android.tools.build:gradle:2.2.3'
   }
 }
-...
-apply plugin: 'com.neenbedankt.android-apt'
+
 ...
 
 dependencies {
   compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.0.3'
   // and for android -> compile 'com.github.stephanenicolas.toothpick:smoothie:1.0.3'
-  apt 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.0.3'
+  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.0.3'
 
   //highly recommended
   testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:1.0.3'
