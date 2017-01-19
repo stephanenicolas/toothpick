@@ -1,6 +1,8 @@
 package toothpick.compiler.factory;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -126,6 +128,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   private void createFactoriesForClassesAnnotatedWithScopeAnnotations(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     for (TypeElement annotation : annotations) {
       if (annotation.getAnnotation(Scope.class) != null) {
+        checkScopeAnnotationValidity(annotation);
         createFactoriesForClassesAnnotatedWith(roundEnv, annotation);
       }
     }
@@ -332,6 +335,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
       if (annotationTypeElement.getAnnotation(Scope.class) != null) {
+        checkScopeAnnotationValidity(annotationTypeElement);
         if (scopeName != null) {
           error(typeElement, "Only one @Scope qualified annotation is allowed : %s", scopeName);
         }
@@ -340,6 +344,18 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     return scopeName;
+  }
+
+  private void checkScopeAnnotationValidity(TypeElement annotation) {
+    if (annotation.getAnnotation(Scope.class) == null) {
+      error(annotation, "Scope Annotation %s does not contain Scope annotation.", annotation.getQualifiedName());
+      return;
+    }
+
+    Retention retention = annotation.getAnnotation(Retention.class);
+    if (retention == null || retention.value() != RetentionPolicy.RUNTIME) {
+      error(annotation, "Scope Annotation %s does not have RUNTIME retention policy.", annotation.getQualifiedName());
+    }
   }
 
   /**

@@ -34,8 +34,11 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
         "package test;", //
         "import javax.inject.Inject;", //
         "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
         "import toothpick.ProvidesSingletonInScope;", //
         "@Scope", //
+        "@Retention(RetentionPolicy.RUNTIME)", //
         "@interface CustomScope {}", //
         "@ProvidesSingletonInScope @CustomScope", //
         "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
@@ -47,5 +50,27 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForHasScopeInstances$$Factory.class");
+  }
+
+  @Test
+  public void testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsAScopeAnnotationWithWrongRetention() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestOptimisticFactoryCreationForHasScopeInstances", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
+        "import toothpick.ProvidesSingletonInScope;", //
+        "@Scope", //
+        "@Retention(RetentionPolicy.CLASS)", //
+        "@interface CustomScope {}", //
+        "@ProvidesSingletonInScope @CustomScope", //
+        "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
+        "}"));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .failsToCompile();
   }
 }
