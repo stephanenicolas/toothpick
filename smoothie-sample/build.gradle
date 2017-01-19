@@ -38,6 +38,8 @@ repositories {
 dependencies {
   compile project(':smoothie')
   compile project(':toothpick-runtime')
+  // We cannot update to annotationProcessor for the sample as we need to keep compatibility with Java 7.
+  // However, it is possible to use it instead of apt.
   apt project(':toothpick-compiler')
   apt deps.butterknife_compiler
   compile deps.butterknife
