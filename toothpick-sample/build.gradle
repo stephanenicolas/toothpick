@@ -5,7 +5,7 @@ dependencies {
   compile project(':toothpick')
   compile project(':toothpick-runtime')
   compile project(':toothpick-compiler')
-  compile project(':toothpick-javax-annotations')
+  compile deps.inject
 
   testCompile project(':toothpick-testing')
   testCompile deps.easymock

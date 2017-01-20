@@ -5,7 +5,7 @@ targetCompatibility = 1.7
 
 dependencies {
   compile project(':toothpick-generated-core')
-  compile project(':toothpick-javax-annotations')
+  compile deps.inject
   compile deps.javapoet
 
   testCompile deps.junit
