@@ -114,6 +114,7 @@ subprojects { project ->
 }
 
 ext.deps = [// Common
+            inject              : 'javax.inject:javax.inject:1',
 
             // Compiler
             javapoet            : 'com.squareup:javapoet:1.4.0',
