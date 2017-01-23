@@ -1,5 +1,13 @@
 //Continue from top
 
+## Release version 1.0.4 (Jan 23th 2017)
+
+* Solves issue [#161](https://github.com/stephanenicolas/toothpick/issues/161) Forcing custom Scope Annotations to use Runtime Retention.
+* Solves issue [#176](https://github.com/stephanenicolas/toothpick/issues/176) Making toothpick-javax-annotations optional.
+* Solves issue [#181](https://github.com/stephanenicolas/toothpick/issues/181) Code generated for the super MemberInjector field was not using the right FQN when super class is static.
+* Solves issue [#182](https://github.com/stephanenicolas/toothpick/issues/182) Removing usage of String.replace() inside Registries, it is not efficient.
+* Solves issue [#186](https://github.com/stephanenicolas/toothpick/issues/186) Solving JDK8-JDK7 compatibility issue with ConcurrentHashMap.keySet().
+
 ## Release version 1.0.3 (Dec 19th 2016)
 
 * Solves issue [#178](https://github.com/stephanenicolas/toothpick/issues/178) Make closed scopes invalid.
@@ -24,8 +32,8 @@
 
 * Solves issue [#110](https://github.com/stephanenicolas/toothpick/issues/110) Adding support for the SuppressWarnings annotation to remove missing constructor warning.
 * Solves issue [#111](https://github.com/stephanenicolas/toothpick/issues/111) Changing factory to get the target scope only when needed.
-* Solves issue [#150](https://github.com/stephanenicolas/toothpick/issues/150): bindings are now allowed when the target of the binding uses an annotation that is supported by the scope where the binding is installed.
 * Solves issue [#149](https://github.com/stephanenicolas/toothpick/issues/149): add methods to create singleton and producers producing singletons via binding programmatic API. Refine the meaning of the scope() method.
+* Solves issue [#150](https://github.com/stephanenicolas/toothpick/issues/150): bindings are now allowed when the target of the binding uses an annotation that is supported by the scope where the binding is installed.
 
 ## Release version 1.0.0-RC9 (Aug 26th 2016)
 
