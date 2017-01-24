@@ -1,5 +1,9 @@
 //Continue from top
 
+## Release version 1.0.5 (Jan 24th 2017)
+
+* Smoothie module, changing Android dependency scope to optional.
+
 ## Release version 1.0.4 (Jan 23th 2017)
 
 * Solves issue [#161](https://github.com/stephanenicolas/toothpick/issues/161) Forcing custom Scope Annotations to use Runtime Retention.
