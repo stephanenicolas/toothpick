@@ -24,7 +24,7 @@ dependencies {
   compile project(':toothpick')
   processor  project(':toothpick-compiler')
   compile deps.inject
-  compile deps.android
+  optional deps.android
   optional deps.supportv4
 
   testCompile project(':toothpick-testing')
