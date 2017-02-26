@@ -99,24 +99,36 @@ public class FactoryGenerator extends CodeGenerator {
     int counter = 1;
     String prefix = "";
 
+    CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+    if(constructorInjectionTarget.throwsThrowable) {
+      codeBlockBuilder.beginControlFlow("try");
+    }
+
     for (ParamInjectionTarget paramInjectionTarget : constructorInjectionTarget.parameters) {
       CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget);
       String paramName = "param" + counter++;
-      createInstanceBuilder.addCode("$T $L = scope.", getParamType(paramInjectionTarget), paramName);
-      createInstanceBuilder.addCode(invokeScopeGetMethodWithNameCodeBlock);
-      createInstanceBuilder.addCode(";");
-      createInstanceBuilder.addCode(LINE_SEPARATOR);
+      codeBlockBuilder.add("$T $L = scope.", getParamType(paramInjectionTarget), paramName);
+      codeBlockBuilder.add(invokeScopeGetMethodWithNameCodeBlock);
+      codeBlockBuilder.add(";");
+      codeBlockBuilder.add(LINE_SEPARATOR);
       localVarStatement.append(prefix);
       localVarStatement.append(paramName);
       prefix = ", ";
     }
 
     localVarStatement.append(")");
-    createInstanceBuilder.addStatement(localVarStatement.toString());
+    codeBlockBuilder.addStatement(localVarStatement.toString());
+
     if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      createInstanceBuilder.addStatement("memberInjector.inject($L, scope)", varName);
+      codeBlockBuilder.addStatement("memberInjector.inject($L, scope)", varName);
     }
-    createInstanceBuilder.addStatement("return $L", varName);
+    codeBlockBuilder.addStatement("return $L", varName);
+    if(constructorInjectionTarget.throwsThrowable) {
+      codeBlockBuilder.nextControlFlow("catch($L ex)", ClassName.get(Throwable.class));
+      codeBlockBuilder.addStatement("throw new $L(ex)", ClassName.get(RuntimeException.class));
+      codeBlockBuilder.endControlFlow();
+    }
+    createInstanceBuilder.addCode(codeBlockBuilder.build());
 
     builder.addMethod(createInstanceBuilder.build());
   }

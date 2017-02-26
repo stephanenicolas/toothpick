@@ -272,6 +272,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     ConstructorInjectionTarget constructorInjectionTarget =
         new ConstructorInjectionTarget(enclosingElement, scopeName, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
     constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
+    constructorInjectionTarget.throwsThrowable = !constructorElement.getThrownTypes().isEmpty();
 
     return constructorInjectionTarget;
   }

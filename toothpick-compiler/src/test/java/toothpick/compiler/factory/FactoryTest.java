@@ -653,6 +653,57 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
+  public void testClassWithInjectedConstructorThrowingException() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestClassConstructorThrowingException", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestClassConstructorThrowingException {", //
+        "  @Inject public TestClassConstructorThrowingException(String s) throws Exception {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestClassConstructorThrowingException$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import java.lang.String;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestClassConstructorThrowingException$$Factory implements Factory<TestClassConstructorThrowingException> {", //
+        "  @Override", //
+        "  public TestClassConstructorThrowingException createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    try {", //
+        "      String param1 = scope.getInstance(String.class);", //
+        "      TestClassConstructorThrowingException testClassConstructorThrowingException = new TestClassConstructorThrowingException(param1);", //
+        "      return testClassConstructorThrowingException;", //
+        "    } catch(java.lang.Throwable ex) {", //
+        "      throw new java.lang.RuntimeException(ex);", //
+        "    }", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);  }
+
+  @Test
   public void testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
