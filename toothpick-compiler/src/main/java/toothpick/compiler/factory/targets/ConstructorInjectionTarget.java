@@ -15,6 +15,7 @@ public final class ConstructorInjectionTarget {
   public final boolean hasScopeInstancesAnnotation;
   /** true if the class as @Injected members */
   public final TypeElement superClassThatNeedsMemberInjection;
+  public boolean throwsThrowable;
 
   public ConstructorInjectionTarget(TypeElement builtClass, String scopeName, boolean hasScopeInstancesAnnotation,
       TypeElement superClassThatNeedsMemberInjection) {
