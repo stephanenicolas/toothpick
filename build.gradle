@@ -83,6 +83,7 @@ subprojects { project ->
 
   checkstyle {
     configFile rootProject.file('checkstyle.xml')
+
   }
 
   task checkstyle(type: Checkstyle) {

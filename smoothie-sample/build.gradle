@@ -14,8 +14,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-  compileSdkVersion 23
-  buildToolsVersion '23.0.3'
+  compileSdkVersion 25
+  buildToolsVersion '25.0.2'
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -28,6 +28,10 @@ android {
     targetSdkVersion 23
     versionCode 1
     versionName '1.0.0'
+  }
+
+  lintOptions {
+    abortOnError false
   }
 }
 

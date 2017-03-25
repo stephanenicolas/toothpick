@@ -1,7 +1,6 @@
 package toothpick.configuration;
 
 import org.junit.Test;
-import toothpick.configuration.IllegalBindingException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

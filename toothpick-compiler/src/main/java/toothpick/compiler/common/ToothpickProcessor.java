@@ -317,9 +317,9 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     TypeMirror firstParameterTypeMirror = declaredType.getTypeArguments().get(0);
-    if(firstParameterTypeMirror.getKind() == TypeKind.DECLARED) {
+    if (firstParameterTypeMirror.getKind() == TypeKind.DECLARED) {
       int size = ((DeclaredType) firstParameterTypeMirror).getTypeArguments().size();
-      if(size != 0) {
+      if (size != 0) {
         Element enclosingElement = element.getEnclosingElement();
         error(element, "Lazy/Provider %s is not a valid in %s. Lazy/Provider cannot be used on generic types.",
             element.getSimpleName(), //
