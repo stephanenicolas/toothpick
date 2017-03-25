@@ -1,5 +1,9 @@
 //Continue from top
 
+## Release version 1.0.6 (Mar 25th 2017)
+
+* Allow @Inject annotated constructors to send Exceptions #199
+
 ## Release version 1.0.5 (Jan 24th 2017)
 
 * Smoothie module, changing Android dependency scope to optional.
