@@ -78,7 +78,7 @@ public class CycleCheckTest extends ToothpickBaseTest {
     try {
       scope.getInstance(IFoo.class);
     } catch (NoFactoryFoundException nfe) {
-      // nothing
+      nfe.printStackTrace();
     }
 
     scope.getInstance(IFoo.class);

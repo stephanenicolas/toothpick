@@ -1,6 +1,5 @@
 package toothpick.compiler.factory.generators;
 
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -100,7 +99,7 @@ public class FactoryGenerator extends CodeGenerator {
     String prefix = "";
 
     CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-    if(constructorInjectionTarget.throwsThrowable) {
+    if (constructorInjectionTarget.throwsThrowable) {
       codeBlockBuilder.beginControlFlow("try");
     }
 
@@ -123,7 +122,7 @@ public class FactoryGenerator extends CodeGenerator {
       codeBlockBuilder.addStatement("memberInjector.inject($L, scope)", varName);
     }
     codeBlockBuilder.addStatement("return $L", varName);
-    if(constructorInjectionTarget.throwsThrowable) {
+    if (constructorInjectionTarget.throwsThrowable) {
       codeBlockBuilder.nextControlFlow("catch($L ex)", ClassName.get(Throwable.class));
       codeBlockBuilder.addStatement("throw new $L(ex)", ClassName.get(RuntimeException.class));
       codeBlockBuilder.endControlFlow();

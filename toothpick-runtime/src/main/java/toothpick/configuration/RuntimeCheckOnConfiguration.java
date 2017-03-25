@@ -1,12 +1,10 @@
 package toothpick.configuration;
 
 import java.lang.annotation.Annotation;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
@@ -49,10 +47,9 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
       Class<? extends Annotation> annotationType = annotation.annotationType();
       if (annotationType.isAnnotationPresent(javax.inject.Scope.class)) {
         if (!scope.isBoundToScopeAnnotation(annotationType)) {
-          throw new IllegalBindingException(
-              format("Class %s cannot be bound."
+          throw new IllegalBindingException(format("Class %s cannot be bound."
                   + " It has a scope annotation: %s that is not supported by current scope: %s",
-                  clazz.getName(), annotationType.getName(), scope.getName()));
+              clazz.getName(), annotationType.getName(), scope.getName()));
         }
       }
     }
@@ -74,7 +71,7 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
     cycleDetectionStack.get().remove(new Pair(clazz, name));
   }
 
-  private static class Pair{
+  private static class Pair {
     public final Class clazz;
     public final String name;
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
-import toothpick.configuration.CyclicDependencyException;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
 import toothpick.data.CyclicFoo;
