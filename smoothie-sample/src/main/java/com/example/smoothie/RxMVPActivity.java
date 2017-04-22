@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import rx.Subscription;
 import toothpick.Scope;
 import toothpick.Toothpick;
-import toothpick.smoothie.module.SmoothieActivityModule;
+import toothpick.smoothie.module.ToothpickActivityModule;
 
 public class RxMVPActivity extends Activity {
 
@@ -32,7 +32,7 @@ public class RxMVPActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this);
-    scope.installModules(new SmoothieActivityModule(this));
+    scope.installModules(new ToothpickActivityModule(this));
     super.onCreate(savedInstanceState);
     Toothpick.inject(this, scope);
 

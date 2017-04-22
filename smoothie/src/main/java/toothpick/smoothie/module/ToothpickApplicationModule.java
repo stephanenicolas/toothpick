@@ -54,12 +54,12 @@ import static android.content.Context.VIBRATOR_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
 
-public class SmoothieApplicationModule extends Module {
-  public SmoothieApplicationModule(Application application) {
+public class ToothpickApplicationModule extends Module {
+  public ToothpickApplicationModule(Application application) {
     this(application, null);
   }
 
-  public SmoothieApplicationModule(Application application, String preferencesName) {
+  public ToothpickApplicationModule(Application application, String preferencesName) {
     bind(Application.class).toInstance(application);
     bind(AccountManager.class).toProviderInstance(new AccountManagerProvider(application));
     bind(AssetManager.class).toProviderInstance(new AssetManagerProvider(application));
