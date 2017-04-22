@@ -135,10 +135,14 @@ For java:
 
 ## Talks
 
-* Andevcon San Francisco 2016 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
-* DroidCon Krakow 2016 - TP Vs Dagger 2 Talk from Danny Preussler [slides](http://www.slideshare.net/dpreussler/demystifying-dependency-injection-dagger-and-toothpick)
+* Mobius, Saint Petersburg 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
+* Mobius, Saint Petersburg 2017 - DI frameworks & Internals [Slides](https://speakerdeck.com/stephanenicolas/comparing-di-frameworks)
+* Android Makers, Paris 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
+* DroidCon, Kaigi 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
+* Andevcon, San Francisco 2016 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
+* DroidCon, Krakow 2016 - TP Vs Dagger 2 Talk from Danny Preussler [slides](http://www.slideshare.net/dpreussler/demystifying-dependency-injection-dagger-and-toothpick)
 * Mobile Era, Oslo 2016 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
-* Droidcon Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection) - [Sketch notes](https://twitter.com/TeresaHolfeld/status/743026908552663041)
+* Droidcon, Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection) - [Sketch notes](https://twitter.com/TeresaHolfeld/status/743026908552663041)
 * Android Leaks 2016 - [podcast in French](http://androidleakspodcast.com/2016/09/25/episode-4-de-la-dague-au-cure-dent-en-passant-par-un-petit-jus/)
 * DevFest Belgium 2016 - [video in French](https://www.youtube.com/watch?v=ytBmu5ciPCQ)
 
