@@ -138,7 +138,7 @@ For java:
 * Migrating off RoboGuice 3 (to Toothpick) - [Part 1](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-1-cee0875f6620) & [Part 2](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-2-c06644d2d1ef)
 * Mobius, Saint Petersburg 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
 * Mobius, Saint Petersburg 2017 - DI frameworks & Internals [Slides](https://speakerdeck.com/stephanenicolas/comparing-di-frameworks)
-* Android Makers, Paris 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
+* Android Makers, Paris 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed) & [Video](https://www.youtube.com/watch?v=rn4EAzimslw)
 * DroidCon, Kaigi 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
 * Andevcon, San Francisco 2016 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
 * DroidCon, Krakow 2016 - TP Vs Dagger 2 Talk from Danny Preussler [slides](http://www.slideshare.net/dpreussler/demystifying-dependency-injection-dagger-and-toothpick)
