@@ -14,7 +14,6 @@ import rx.schedulers.Schedulers;
 public class RxPresenter {
 
   private final ConnectableObservable<Long> timeObservable;
-  private final Subscription connect;
 
   @Inject
   public RxPresenter() {
@@ -22,14 +21,12 @@ public class RxPresenter {
         .subscribeOn(Schedulers.newThread()) //
         .observeOn(AndroidSchedulers.mainThread()) //
         .publish();
-    connect = timeObservable.connect();
+    //no need to hold the subscription,
+    // the presenter will just be garbage collected
+    timeObservable.connect();
   }
 
   public Subscription subscribe(Action1<? super Long> action) {
     return timeObservable.subscribe(action);
-  }
-
-  public void stop() {
-    connect.unsubscribe();
   }
 }

@@ -21,7 +21,7 @@ configurations {
 }
 
 dependencies {
-  compile project(':toothpick')
+  compile project(':toothpick-runtime')
   processor  project(':toothpick-compiler')
   compile deps.inject
   optional deps.android

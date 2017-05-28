@@ -81,6 +81,7 @@ public abstract class ScopeNode implements Scope {
   protected boolean isOpen = true;
   //same here for lock free access
   protected final Set<Class<? extends Annotation>> scopeAnnotationClasses = new CopyOnWriteArraySet<>();
+  private ScopeClosedListener closeListener;
 
   public ScopeNode(Object name) {
     if (name == null) {
@@ -264,6 +265,9 @@ public abstract class ScopeNode implements Scope {
 
   void close() {
     isOpen = false;
+    if(this.closeListener != null) {
+      closeListener.onClosed();
+    }
   }
 
   private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
@@ -275,5 +279,10 @@ public abstract class ScopeNode implements Scope {
 
   private boolean isScopeAnnotationClass(Class<? extends Annotation> scopeAnnotationClass) {
     return scopeAnnotationClass.isAnnotationPresent(javax.inject.Scope.class);
+  }
+
+  @Override
+  public void setClosedListener(ScopeClosedListener closeListener) {
+    this.closeListener = closeListener;
   }
 }

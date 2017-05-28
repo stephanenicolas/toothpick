@@ -18,6 +18,9 @@ import toothpick.Scope;
 import toothpick.Toothpick;
 import toothpick.smoothie.module.SmoothieActivityModule;
 
+import static toothpick.Toothpick.openScopes;
+import static toothpick.smoothie.module.Smoothie.autoCloseActivityScopeAndParentScope;
+
 public class RxMVPActivity extends Activity {
 
   public static final Class PRESENTER_SCOPE = Presenter.class;
@@ -29,10 +32,11 @@ public class RxMVPActivity extends Activity {
   @BindView(R.id.hello) Button button;
   private Subscription subscription;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this);
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    scope = openScopes(getApplication(), PRESENTER_SCOPE, this);
     scope.installModules(new SmoothieActivityModule(this));
+    autoCloseActivityScopeAndParentScope(this);
+
     super.onCreate(savedInstanceState);
     Toothpick.inject(this, scope);
 
@@ -45,19 +49,11 @@ public class RxMVPActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    Toothpick.closeScope(this);
     subscription.unsubscribe();
-    if (isFinishing()) {
-      //when we leave the presenter flow,
-      //we close its scope
-      rxPresenter.stop();
-      Toothpick.closeScope(PRESENTER_SCOPE);
-    }
     super.onDestroy();
   }
 
-  @javax.inject.Scope
-  @Target(ElementType.TYPE)
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface Presenter {}
+  @javax.inject.Scope @Target(ElementType.TYPE) @Retention(RetentionPolicy.RUNTIME)
+  public @interface Presenter {
+  }
 }
