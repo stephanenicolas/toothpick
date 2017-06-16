@@ -43,7 +43,9 @@ public class RxMVPActivity extends Activity {
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
     title.setText("MVP");
-    subscription = rxPresenter.subscribe(aLong -> subTitle.setText(String.valueOf(aLong)));
+    subscription = rxPresenter
+        .getTimeObservable()
+        .subscribe(aLong -> subTitle.setText(String.valueOf(aLong)));
     button.setVisibility(View.GONE);
   }
 

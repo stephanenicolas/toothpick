@@ -26,7 +26,7 @@ public class RxPresenter {
     timeObservable.connect();
   }
 
-  public Subscription subscribe(Action1<? super Long> action) {
-    return timeObservable.subscribe(action);
+  public Observable<Long> getTimeObservable() {
+    return timeObservable;
   }
 }
