@@ -1,6 +1,8 @@
 //Continue from top
 
-## Release version 1.0.7 (XXX)
+## Release version 1.0.8 (To be released)
+
+## Release version 1.0.7 (June 19th 2017)
 
 * Solves issue [#222](https://github.com/stephanenicolas/toothpick/issues/222) installTestModules should override previous bindings in the same scope.
 
