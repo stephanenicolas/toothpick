@@ -1,10 +1,11 @@
 package toothpick;
 
-import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
+
+import javax.inject.Provider;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -20,6 +21,21 @@ public class ScopeImplTest extends ToothpickBaseTest {
     ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
     scope.installModules(new ProdModule());
+
+    //WHEN
+    Foo instance = scope.getInstance(Foo.class);
+
+    //THEN
+    assertThat(instance, sameInstance(testFoo));
+  }
+
+  @Test
+  public void installTestModules_shouldOverrideBindings_whenInstalledAfterProductionModules() {
+    //GIVEN
+    Foo testFoo = new Foo();
+    ScopeImpl scope = new ScopeImpl("");
+    scope.installModules(new ProdModule());
+    scope.installTestModules(new TestModule(testFoo));
 
     //WHEN
     Foo instance = scope.getInstance(Foo.class);

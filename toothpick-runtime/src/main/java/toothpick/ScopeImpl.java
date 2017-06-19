@@ -1,5 +1,11 @@
 package toothpick;
 
+import toothpick.config.Binding;
+import toothpick.config.Module;
+import toothpick.configuration.ConfigurationHolder;
+import toothpick.registries.FactoryRegistryLocator;
+
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,11 +13,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.inject.Provider;
-import toothpick.config.Binding;
-import toothpick.config.Module;
-import toothpick.configuration.ConfigurationHolder;
-import toothpick.registries.FactoryRegistryLocator;
 
 import static java.lang.String.format;
 
@@ -34,13 +35,13 @@ public class ScopeImpl extends ScopeNode {
 
   private static IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedUnBoundProviders = new IdentityHashMap<>();
   private IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders = new IdentityHashMap<>();
-  protected IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
+  private IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
 
   public ScopeImpl(Object name) {
     super(name);
-    //it's always possible to get access to the scope that conitains an injected object.
-    installBoundProvider(Scope.class, null, new InternalProviderImpl<>(this));
+    //it's always possible to get access to the scope that contains an injected object.
+    installBoundProvider(Scope.class, null, new InternalProviderImpl<>(this), false);
   }
 
   @Override
@@ -88,16 +89,13 @@ public class ScopeImpl extends ScopeNode {
     if (hasTestModules) {
       throw new IllegalStateException("TestModules can only be installed once per scope.");
     }
-    hasTestModules = false;
-    installModules(modules);
+    installModules(true, modules);
     hasTestModules = true;
   }
 
   @Override
   public void installModules(Module... modules) {
-    for (Module module : modules) {
-      installModule(module);
-    }
+    installModules(false, modules);
   }
 
   @Override
@@ -174,7 +172,13 @@ public class ScopeImpl extends ScopeNode {
     return builder.toString();
   }
 
-  private void installModule(Module module) {
+  private void installModules(boolean isTestModule, Module... modules) {
+    for (Module module : modules) {
+      installModule(isTestModule, module);
+    }
+  }
+
+  private void installModule(boolean isTestModule, Module module) {
     for (Binding binding : module.getBindingSet()) {
       if (binding == null) {
         throw new IllegalStateException("A module can't have a null binding : " + module);
@@ -182,12 +186,12 @@ public class ScopeImpl extends ScopeNode {
 
       Class clazz = binding.getKey();
       String bindingName = binding.getName();
-      if (!hasTestModules || getBoundProvider(clazz, bindingName) == null) {
+      if (isTestModule || getBoundProvider(clazz, bindingName) == null) {
         InternalProviderImpl provider = toProvider(binding);
         if (binding.isCreatingInstancesInScope()) {
-          installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider);
+          installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider, isTestModule);
         } else {
-          installBoundProvider(clazz, bindingName, provider);
+          installBoundProvider(clazz, bindingName, provider, isTestModule);
         }
       }
     }
@@ -316,17 +320,15 @@ public class ScopeImpl extends ScopeNode {
     //if not, they are place in the pool
     Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
 
-    Scope targetScope = factory.getTargetScope(this);
-    ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
     if (factory.hasScopeAnnotation()) {
       //the new provider will have to work in the current scope
-      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope,
-          factory,
-          false);
+      Scope targetScope = factory.getTargetScope(this);
+      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope, factory, false);
       //it is bound to its target scope only if it has a scope annotation.
       //lock free installing a provider means there could have been one set concurrently since last testing
       //its value. We allow to return it here
-      return targetScopeImpl.installScopedProvider(clazz, null, newProvider);
+      ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
+      return targetScopeImpl.installScopedProvider(clazz, null, newProvider, false);
     } else {
       //the provider is but in a pool of unbound providers for later reuse
       final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory,
@@ -410,12 +412,15 @@ public class ScopeImpl extends ScopeNode {
    *
    * @param clazz the class for which to install the scoped provider of this scope.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
+   * @param scopedProvider the internal provider to install.
+   * @param isTestProvider whether or not is a test provider, installed through a Test Module that should override
+   *                       existing providers for the same class-bindingname.
    * @param <T> the type of {@code clazz}.
    * @return the provider that will be installed, if one was previously installed, it is returned, in a lock-free way.
    */
   private <T> InternalProviderImpl<? extends T> installScopedProvider(Class<T> clazz, String bindingName,
-      ScopedProviderImpl<? extends T> scopedProvider) {
-    return installBoundProvider(clazz, bindingName, scopedProvider);
+      ScopedProviderImpl<? extends T> scopedProvider, boolean isTestProvider) {
+    return installBoundProvider(clazz, bindingName, scopedProvider, isTestProvider);
   }
 
   /**
@@ -424,11 +429,14 @@ public class ScopeImpl extends ScopeNode {
    *
    * @param clazz the class for which to install the scoped provider.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
+   * @param internalProvider the internal provider to install.
+   * @param isTestProvider whether or not is a test provider, installed through a Test Module that should override
+   *                       existing providers for the same class-bindingname.
    * @param <T> the type of {@code clazz}.
    */
   private <T> InternalProviderImpl<? extends T> installBoundProvider(Class<T> clazz, String bindingName,
-      InternalProviderImpl<? extends T> internalProvider) {
-    return installInternalProvider(clazz, bindingName, internalProvider, true);
+      InternalProviderImpl<? extends T> internalProvider, boolean isTestProvider) {
+    return installInternalProvider(clazz, bindingName, internalProvider, true, isTestProvider);
   }
 
   /**
@@ -437,11 +445,12 @@ public class ScopeImpl extends ScopeNode {
    *
    * @param clazz the class for which to install the provider.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
+   * @param internalProvider the internal provider to install.
    * @param <T> the type of {@code clazz}.
    */
   private <T> InternalProviderImpl<? extends T> installUnBoundProvider(Class<T> clazz, String bindingName,
       InternalProviderImpl<? extends T> internalProvider) {
-    return installInternalProvider(clazz, bindingName, internalProvider, false);
+    return installInternalProvider(clazz, bindingName, internalProvider, false, false);
   }
 
   /**
@@ -450,28 +459,30 @@ public class ScopeImpl extends ScopeNode {
    * @param clazz the class for which to install the provider.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param internalProvider the internal provider to install.
-   * @param isBound whether or not the provider is bound to the scope or belongs to the pool of unbound providers
+   * @param isBound whether or not the provider is bound to the scope or belongs to the pool of unbound providers.
+   * @param isTestProvider whether or not is a test provider, installed through a Test Module that should override
+   *                       existing providers for the same class-bindingname.
    * @param <T> the type of {@code clazz}.
    *
-   * Note to maintainers : we don't use this method directly, both {@link #installBoundProvider(Class, String, InternalProviderImpl)}
+   * Note to maintainers : we don't use this method directly, both {@link #installBoundProvider(Class, String, InternalProviderImpl, boolean)}
    * and {@link #installUnBoundProvider(Class, String, InternalProviderImpl)}
    * are a facade of this method and make the calls more clear.
    */
   private <T> InternalProviderImpl installInternalProvider(Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider,
-      boolean isBound) {
+      boolean isBound, boolean isTestProvider) {
     if (bindingName == null) {
       if (isBound) {
-        return installUnNamedProvider(mapClassesToUnNamedBoundProviders, clazz, internalProvider);
+        return installUnNamedProvider(mapClassesToUnNamedBoundProviders, clazz, internalProvider, isTestProvider);
       } else {
-        return installUnNamedProvider(mapClassesToUnNamedUnBoundProviders, clazz, internalProvider);
+        return installUnNamedProvider(mapClassesToUnNamedUnBoundProviders, clazz, internalProvider, isTestProvider);
       }
     } else {
-      return installNamedProvider(mapClassesToNamedBoundProviders, clazz, bindingName, internalProvider);
+      return installNamedProvider(mapClassesToNamedBoundProviders, clazz, bindingName, internalProvider, isTestProvider);
     }
   }
 
   private <T> InternalProviderImpl installNamedProvider(IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders,
-      Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider) {
+      Class<T> clazz, String bindingName, InternalProviderImpl<? extends T> internalProvider, boolean isTestProvider) {
     synchronized (mapClassesToNamedBoundProviders) {
       Map<String, InternalProviderImpl> mapNameToProvider = mapClassesToNamedBoundProviders.get(clazz);
       if (mapNameToProvider == null) {
@@ -482,7 +493,7 @@ public class ScopeImpl extends ScopeNode {
       }
 
       InternalProviderImpl previous = mapNameToProvider.get(bindingName);
-      if (previous == null) {
+      if (previous == null || isTestProvider) {
         mapNameToProvider.put(bindingName, internalProvider);
         return internalProvider;
       } else {
@@ -492,10 +503,10 @@ public class ScopeImpl extends ScopeNode {
   }
 
   private <T> InternalProviderImpl installUnNamedProvider(IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedProviders, Class<T> clazz,
-      InternalProviderImpl<? extends T> internalProvider) {
+      InternalProviderImpl<? extends T> internalProvider, boolean isTestProvider) {
     synchronized (mapClassesToUnNamedProviders) {
       InternalProviderImpl previous = mapClassesToUnNamedProviders.get(clazz);
-      if (previous == null) {
+      if (previous == null || isTestProvider) {
         mapClassesToUnNamedProviders.put(clazz, internalProvider);
         return internalProvider;
       } else {

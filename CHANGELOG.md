@@ -1,5 +1,9 @@
 //Continue from top
 
+## Release version 1.0.7 (XXX)
+
+* Solves issue [#222](https://github.com/stephanenicolas/toothpick/issues/222) installTestModules should override previous bindings in the same scope.
+
 ## Release version 1.0.6 (Mar 25th 2017)
 
 * Allow @Inject annotated constructors to send Exceptions #199
