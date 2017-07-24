@@ -165,4 +165,4 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 
 # Libs using TP
 
-* [okuki](https://github.com/wongcain/okuki): Okuki is a simple, hierarchical navigation bus and back stack for Android, with optional Rx bindings, and Toothpick DI integration.
+* [Okuki](https://github.com/wongcain/okuki) is a simple, hierarchical navigation bus and back stack for Android, with optional Rx bindings, and Toothpick DI integration.
