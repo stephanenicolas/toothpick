@@ -192,4 +192,6 @@ public interface Scope {
    * @param modules an array of modules that define test bindings.
    */
   void installTestModules(Module... modules);
+
+  void setClosedListener(ScopeClosedListener closeListener);
 }
