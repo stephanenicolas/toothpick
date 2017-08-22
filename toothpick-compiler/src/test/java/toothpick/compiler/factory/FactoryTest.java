@@ -72,12 +72,14 @@ public class FactoryTest extends BaseFactoryTest {
   }
 
   @Test
-  public void testInjectedConstructorInPrivateClass() {
+  public void testInjectedConstructorInPrivateClass_shouldNotAllowInjectionInPrivateClasses() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestConstructorInPrivateClass", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
-        "class TestConstructorInPrivateClass {", //
-        "  @Inject public TestConstructorInPrivateClass() {}", //
+        "class Wrapper {", //
+        "  private class TestConstructorInPrivateClass {", //
+        "    @Inject public TestConstructorInPrivateClass() {}", //
+        "  }", //
         "}" //
     ));
 
@@ -85,7 +87,99 @@ public class FactoryTest extends BaseFactoryTest {
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryProcessors())
         .failsToCompile()
-        .withErrorContaining("Class test.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in non public classes.");
+        .withErrorContaining("Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in private classes.");
+  }
+
+  @Test
+  public void testInjectedConstructorInProtectedClass_shouldWork() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestConstructorInProtectedClass", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "class Wrapper {", //
+        "  protected static class TestConstructorInProtectedClass {", //
+        "    @Inject public TestConstructorInProtectedClass() {}", //
+        "  }", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Wrapper$TestConstructorInProtectedClass$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class Wrapper$TestConstructorInProtectedClass$$Factory implements Factory<Wrapper.TestConstructorInProtectedClass> {", //
+        "  @Override", //
+        "  public Wrapper.TestConstructorInProtectedClass createInstance(Scope scope) {", //
+        "    Wrapper.TestConstructorInProtectedClass testConstructorInProtectedClass = new Wrapper.TestConstructorInProtectedClass();", //
+        "    return testConstructorInProtectedClass;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testInjectedConstructorInPackageClass_shouldWork() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestConstructorInPackageClass", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "class TestConstructorInPackageClass {", //
+        "  @Inject public TestConstructorInPackageClass() {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestConstructorInPackageClass$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestConstructorInPackageClass$$Factory implements Factory<TestConstructorInPackageClass> {", //
+        "  @Override", //
+        "  public TestConstructorInPackageClass createInstance(Scope scope) {", //
+        "    TestConstructorInPackageClass testConstructorInPackageClass = new TestConstructorInPackageClass();", //
+        "    return testConstructorInPackageClass;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
   }
 
   @Test

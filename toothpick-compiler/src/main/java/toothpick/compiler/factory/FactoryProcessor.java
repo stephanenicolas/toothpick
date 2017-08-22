@@ -240,8 +240,8 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     // Verify parentScope modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
-    if (!parentModifiers.contains(PUBLIC)) {
-      error(element, "Class %s is private. @Inject constructors are not allowed in non public classes.", enclosingElement.getQualifiedName());
+    if (parentModifiers.contains(PRIVATE)) {
+      error(element, "Class %s is private. @Inject constructors are not allowed in private classes.", enclosingElement.getQualifiedName());
       return false;
     }
 
