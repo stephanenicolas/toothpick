@@ -10,12 +10,102 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
 public class FactoryTest extends BaseFactoryTest {
   @Test
-  public void testEmptyConstructor() {
+  public void testEmptyConstructor_shouldWork_whenConstructorIsPublic() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestEmptyConstructor", Joiner.on('\n').join(//
         "package test;", //
         "import javax.inject.Inject;", //
         "public class TestEmptyConstructor {", //
         "  @Inject public TestEmptyConstructor() {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestEmptyConstructor createInstance(Scope scope) {", //
+        "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
+        "    return testEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testEmptyConstructor_shouldWork_whenConstructorIsPackage() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestEmptyConstructor {", //
+        "  @Inject TestEmptyConstructor() {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Override;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestEmptyConstructor createInstance(Scope scope) {", //
+        "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
+        "    return testEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testEmptyConstructor_shouldWork_whenConstructorIsProtected() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestEmptyConstructor {", //
+        "  @Inject protected TestEmptyConstructor() {}", //
         "}" //
     ));
 
