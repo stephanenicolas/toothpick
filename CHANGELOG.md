@@ -3,6 +3,8 @@
 ## Release version 1.0.8 (To be released)
 * Solves issue #228: Add scope name to error message: The instance provided by the lazy/provider...
 * Solves issue #229: Add parent scope names to error message: No binding was defined for class %s and name %s in scope %s and its parents.
+* Solves issue #196: Change ContextSingleton retention policy to RUNTIME & deprecate it.
+* Solves issue #227: Let TP use injection on non public classes.
 
 ## Release version 1.0.7 (June 19th 2017)
 
