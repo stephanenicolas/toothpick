@@ -14,6 +14,12 @@ final class ProcessorTestUtilities {
     return Arrays.asList(new FactoryProcessor());
   }
 
+  static Iterable<? extends Processor> factoryProcessorsFailingOnNonInjectableClasses() {
+    final FactoryProcessor factoryProcessor = new FactoryProcessor();
+    factoryProcessor.setCrashWhenNoFactoryCanBeCreated(true);
+    return Arrays.asList(factoryProcessor);
+  }
+
   static Iterable<? extends Processor> factoryAndMemberInjectorProcessors() {
     return Arrays.asList(new MemberInjectorProcessor(), new FactoryProcessor());
   }

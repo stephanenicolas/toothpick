@@ -76,6 +76,13 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    */
   public static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
 
+  /**
+   * The name of the annotation processor option to make the TP annotation processor crash when it can't generate
+   * a factory for a class. By default the behavior is not to crash but emit a warning. Passing the value {@code true}
+   * crashes the build instead.
+   */
+  public static final String PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED = "toothpick_crash_when_no_factory_can_be_created";
+
   protected Elements elementUtils;
   protected Types typeUtils;
   protected Filer filer;
