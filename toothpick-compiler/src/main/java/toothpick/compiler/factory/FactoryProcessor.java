@@ -317,8 +317,14 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     if (!isInjectableWarningSuppressed(typeElement)) {
       warning(typeElement, //
-          "The class %s has injected fields but has no injected constructor, and no non-private default constructor." //
-          + " Toothpick can't create a factory for it.", typeElement.getQualifiedName().toString());
+          "The class %s has injected fields but has no @Inject annotated (non-private) constructor " //
+              + " nor a non-private default constructor." //
+              + " Toothpick can't create a factory for it." //
+              + " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " //
+              + " then you can remove this warning by adding @SuppressWarnings(\"Injectable\") to the class." //
+              + " A typical example is a class using injection to assign its fields, that calls TP.inject(this)," //
+              + " but it needs a parameter for its constructor and this parameter is not injectable.",
+          typeElement.getQualifiedName().toString());
     }
     return null;
   }
