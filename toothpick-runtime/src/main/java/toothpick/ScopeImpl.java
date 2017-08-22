@@ -302,7 +302,7 @@ public class ScopeImpl extends ScopeNode {
     //as only unnamed bindings can be created dynamically
     if (bindingName != null) {
       throw new RuntimeException(format("No binding was defined for class %s and name %s " //
-          + "in scope %s and its parents", clazz.getName(), bindingName, getName()));
+          + "in scope %s and its parents %s", clazz.getName(), bindingName, getName(), getParentScopesNames()));
     }
 
     //we now look for an unnamed binding

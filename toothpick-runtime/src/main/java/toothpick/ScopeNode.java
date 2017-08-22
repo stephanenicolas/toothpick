@@ -1,6 +1,7 @@
 package toothpick;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -264,6 +265,14 @@ public abstract class ScopeNode implements Scope {
 
   void close() {
     isOpen = false;
+  }
+
+  List<Object> getParentScopesNames() {
+    List<Object> parentScopesNames = new ArrayList<>();
+    for (ScopeNode parentScope : parentScopes) {
+      parentScopesNames.add(parentScope.getName());
+    }
+    return parentScopesNames;
   }
 
   private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
