@@ -317,7 +317,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     if (!isInjectableWarningSuppressed(typeElement)) {
       warning(typeElement, //
-          "The class %s has injected fields but has no injected constructor, and no public default constructor." //
+          "The class %s has injected fields but has no injected constructor, and no non-private default constructor." //
           + " Toothpick can't create a factory for it.", typeElement.getQualifiedName().toString());
     }
     return null;
