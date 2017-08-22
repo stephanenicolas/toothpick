@@ -30,6 +30,7 @@ import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 
+import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -83,6 +84,17 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    */
   public static final String PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED = "toothpick_crash_when_no_factory_can_be_created";
 
+  /**
+   * The name of the annotation processor option to make the TP annotation processor crash when it can't generate
+   * a factory for a class. By default the behavior is not to crash but emit a warning. Passing the value {@code true}
+   * crashes the build instead.
+   */
+  public static final String PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE = "toothpick_crash_when_no_factory_can_be_created";
+
+  /**  Allows to suppress warning when an injected method is not package-private visible. */
+  private static final String SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE = "visible";
+
+
   protected Elements elementUtils;
   protected Types typeUtils;
   protected Filer filer;
@@ -90,6 +102,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected String toothpickRegistryPackageName;
   protected List<String> toothpickRegistryChildrenPackageNameList;
   protected String toothpickExcludeFilters = "java.*,android.*";
+  protected Boolean toothpickCrashWhenMethodIsNotPackageVisible;
   protected Set<String> supportedAnnotationTypes = new HashSet<>();
   private boolean hasAlreadyRun;
 
@@ -154,6 +167,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     readOptionRegistryPackageName();
     readOptionRegistryChildrenPackageNames();
     readOptionExcludes();
+    readOptionCrashWhenMethodIsNotPackageProtected();
   }
 
   private void readOptionRegistryPackageName() {
@@ -200,20 +214,35 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
+  private void readOptionCrashWhenMethodIsNotPackageProtected() {
+    Map<String, String> options = processingEnv.getOptions();
+    if(toothpickCrashWhenMethodIsNotPackageVisible == null) {
+      toothpickCrashWhenMethodIsNotPackageVisible = Boolean.parseBoolean(options.get(PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE));
+    }
+  }
+
   protected void error(String message, Object... args) {
-    processingEnv.getMessager().printMessage(ERROR, String.format(message, args));
+    processingEnv.getMessager().printMessage(ERROR, format(message, args));
   }
 
   protected void error(Element element, String message, Object... args) {
-    processingEnv.getMessager().printMessage(ERROR, String.format(message, args), element);
+    processingEnv.getMessager().printMessage(ERROR, format(message, args), element);
   }
 
   protected void warning(Element element, String message, Object... args) {
-    processingEnv.getMessager().printMessage(WARNING, String.format(message, args), element);
+    processingEnv.getMessager().printMessage(WARNING, format(message, args), element);
   }
 
   protected void warning(String message, Object... args) {
-    processingEnv.getMessager().printMessage(WARNING, String.format(message, args));
+    processingEnv.getMessager().printMessage(WARNING, format(message, args));
+  }
+
+  private void crashOrWarnWhenMethodIsNotPackageVisible(Element element, String message) {
+    if(toothpickCrashWhenMethodIsNotPackageVisible != null && toothpickCrashWhenMethodIsNotPackageVisible ) {
+      error(element, message);
+    } else {
+      warning(element, message);
+    }
   }
 
   protected boolean isValidInjectAnnotatedFieldOrParameter(VariableElement variableElement) {
@@ -265,8 +294,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     if (modifiers.contains(PUBLIC) || modifiers.contains(PROTECTED)) {
-      warning(methodElement, "@Inject annotated methods should have protect visibility: %s#%s", enclosingElement.getQualifiedName(),
-          methodElement.getSimpleName());
+      if(!hasWarningSuppressed(methodElement, SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
+        crashOrWarnWhenMethodIsNotPackageVisible(methodElement, //
+            format("@Inject annotated methods should have package visibility: %s#%s", //
+            enclosingElement.getQualifiedName(), methodElement.getSimpleName()));
+      }
     }
     return true;
   }
@@ -441,6 +473,37 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return null;
   }
 
+
+  protected boolean isNonStaticInnerClass(TypeElement typeElement) {
+    Element outerClassOrPackage = typeElement.getEnclosingElement();
+    if (outerClassOrPackage.getKind() != ElementKind.PACKAGE && !typeElement.getModifiers().contains(Modifier.STATIC)) {
+      error(typeElement, "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",
+          typeElement.getQualifiedName());
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Checks if {@code element} has a @SuppressWarning("{@code warningSuppressString}")
+   * annotation.
+   *
+   * @param element the element to check if the warning is suppressed.
+   * @param warningSuppressString the value of the SuppressWarning annotation.
+   * @return true is the injectable warning is suppressed, false otherwise.
+   */
+  protected boolean hasWarningSuppressed(Element element, String warningSuppressString) {
+    SuppressWarnings suppressWarnings = element.getAnnotation(SuppressWarnings.class);
+    if (suppressWarnings != null) {
+      for (String value : suppressWarnings.value()) {
+        if (value.equalsIgnoreCase(warningSuppressString)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /**
    * Lookup both {@link javax.inject.Qualifier} and {@link javax.inject.Named}
    * to provide the name of an injection.
@@ -467,7 +530,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return name;
   }
 
-  protected boolean isSameType(TypeElement typeElement, String typeName) {
+  private boolean isSameType(TypeElement typeElement, String typeName) {
     return isSameType(typeElement.asType(), typeName);
   }
 
@@ -481,7 +544,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
-  protected String getValueOfAnnotation(AnnotationMirror annotationMirror) {
+  private String getValueOfAnnotation(AnnotationMirror annotationMirror) {
     String result = null;
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationParamEntry : annotationMirror.getElementValues().entrySet()) {
       if (annotationParamEntry.getKey().getSimpleName().contentEquals("value")) {
@@ -524,15 +587,5 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     TypeMirror elementTypeMirror = element.asType();
     TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
     return (TypeElement) typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror));
-  }
-
-  protected boolean isNonStaticInnerClass(TypeElement typeElement) {
-    Element outerClassOrPackage = typeElement.getEnclosingElement();
-    if (outerClassOrPackage.getKind() != ElementKind.PACKAGE && !typeElement.getModifiers().contains(Modifier.STATIC)) {
-      error(typeElement, "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",
-          typeElement.getQualifiedName());
-      return true;
-    }
-    return false;
   }
 }

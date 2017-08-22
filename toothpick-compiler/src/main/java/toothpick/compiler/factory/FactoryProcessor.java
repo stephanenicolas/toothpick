@@ -393,15 +393,7 @@ public class FactoryProcessor extends ToothpickProcessor {
    * @return true is the injectable warning is suppressed, false otherwise.
    */
   private boolean isInjectableWarningSuppressed(TypeElement typeElement) {
-    SuppressWarnings suppressWarnings = typeElement.getAnnotation(SuppressWarnings.class);
-    if (suppressWarnings != null) {
-      for (String value : suppressWarnings.value()) {
-        if (value.equalsIgnoreCase(SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return hasWarningSuppressed(typeElement, SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE);
   }
 
   private boolean canTypeHaveAFactory(TypeElement typeElement) {
@@ -425,7 +417,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
   }
 
-  public void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
+  void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
     this.crashWhenNoFactoryCanBeCreated = crashWhenNoFactoryCanBeCreated;
   }
 }

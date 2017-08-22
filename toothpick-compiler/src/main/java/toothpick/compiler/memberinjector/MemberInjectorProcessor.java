@@ -187,4 +187,8 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   void setToothpickExcludeFilters(String toothpickExcludeFilters) {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
   }
+
+  void setCrashOrWarnWhenMethodIsNotPackageVisible(boolean crashOrWarnWhenMethodIsNotPackageVisible) {
+    this.toothpickCrashWhenMethodIsNotPackageVisible = crashOrWarnWhenMethodIsNotPackageVisible;
+  }
 }
