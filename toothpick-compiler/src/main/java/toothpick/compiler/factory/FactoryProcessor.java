@@ -30,7 +30,6 @@ import toothpick.registries.factory.AbstractFactoryRegistry;
 
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
  * This processor's role is to create {@link Factory}.
