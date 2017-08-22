@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import javax.inject.Scope;
 
 import static java.lang.annotation.RetentionPolicy.CLASS;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Identifies a type that the injector only instantiates once
@@ -15,6 +16,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 @Scope
 @Documented
-@Retention(CLASS)
+@Retention(RUNTIME)
 public @interface ContextSingleton {
 }
