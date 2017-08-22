@@ -11,12 +11,14 @@ import javax.inject.Provider;
 public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {
   private volatile T instance;
   private WeakReference<Scope> scope;
+  private String scopeName;
   private Class<T> clazz;
   private String name;
   private boolean isLazy;
 
   public ThreadSafeProviderImpl(Scope scope, Class<T> clazz, String name, boolean isLazy) {
     this.scope = new WeakReference<>(scope);
+    this.scopeName = scope.getName().toString();
     this.clazz = clazz;
     this.name = name;
     this.isLazy = isLazy;
@@ -49,7 +51,9 @@ public class ThreadSafeProviderImpl<T> implements Provider<T>, Lazy<T> {
     final Scope scope = this.scope.get();
     if (scope == null) {
       throw new IllegalStateException(String.format("The instance provided by the %s "
-              + "cannot be created when the associated scope has been closed", isLazy ? "lazy" : "provider"));
+              + "cannot be created when the associated scope: %s has been closed",
+          isLazy ? "lazy" : "provider",
+          scopeName));
     }
     return scope;
   }
