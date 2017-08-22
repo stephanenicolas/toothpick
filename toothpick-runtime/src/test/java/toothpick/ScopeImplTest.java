@@ -4,6 +4,8 @@ import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
+import toothpick.data.IFoo;
+import toothpick.registries.NoFactoryFoundException;
 
 import javax.inject.Provider;
 
@@ -215,6 +217,34 @@ public class ScopeImplTest extends ToothpickBaseTest {
     provider.get();
 
     //THEN
+  }
+
+  @Test(expected = NoFactoryFoundException.class)
+  public void reset_shouldResetBoundProviders_andFlagTheTestModuleToFalse() throws Exception {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("root");
+    scope.installTestModules(new Module() { {
+      bind(IFoo.class).to(Foo.class);
+    } });
+
+    //WHEN
+    scope.reset();
+
+    //THEN
+    scope.installTestModules(); // Should not crash
+    scope.getInstance(IFoo.class); // Should crash as we don't have the binding for IFoo anymore
+  }
+
+  @Test
+  public void reset_shouldRebindScope() throws Exception {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("root");
+
+    //WHEN
+    scope.reset();
+
+    //THEN
+    assertThat(scope.getInstance(Scope.class), notNullValue());
   }
 
   private static class TestModule extends Module {

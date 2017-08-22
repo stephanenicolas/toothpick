@@ -1,13 +1,14 @@
 package toothpick;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import javax.inject.Singleton;
 import org.junit.After;
 import org.junit.Test;
 import toothpick.data.CustomScope;
 import toothpick.data.NotAScope;
+
+import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -422,5 +423,32 @@ public class ScopeNodeTest {
 
     //THEN
     assertThat(parentScopesNames.size(), is(0));
+  }
+
+  @Test
+  public void testReset_shouldClearBoundAnnotations_andFlagTheScopeAsOpen() throws Exception {
+    //GIVEN
+    ScopeNode scope = new ScopeImpl("root");
+    scope.bindScopeAnnotation(CustomScope.class);
+    scope.close();
+
+    //WHEN
+    scope.reset();
+
+    //THEN
+    assertThat(scope.isBoundToScopeAnnotation(CustomScope.class), is(false));
+    assertThat(scope.isOpen, is(true));
+  }
+
+  @Test
+  public void testReset_shouldRebindScopeAnnotation() throws Exception {
+    //GIVEN
+    ScopeNode scope = new ScopeImpl(CustomScope.class);
+
+    //WHEN
+    scope.reset();
+
+    //THEN
+    assertThat(scope.isBoundToScopeAnnotation(CustomScope.class), is(true));
   }
 }

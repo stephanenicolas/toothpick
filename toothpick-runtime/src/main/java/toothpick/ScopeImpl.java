@@ -40,8 +40,7 @@ public class ScopeImpl extends ScopeNode {
 
   public ScopeImpl(Object name) {
     super(name);
-    //it's always possible to get access to the scope that contains an injected object.
-    installBoundProvider(Scope.class, null, new InternalProviderImpl<>(this), false);
+    installBindingForScope();
   }
 
   @Override
@@ -522,8 +521,29 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
-  static void reset() {
+  static void resetUnBoundProviders() {
     mapClassesToUnNamedUnBoundProviders.clear();
+  }
+
+  /**
+   * Resets the state of the scope.
+   * Useful for automation testing when we want to reset the scope used to install test modules.
+   */
+  @Override
+  protected void reset() {
+    super.reset();
+    mapClassesToNamedBoundProviders.clear();
+    mapClassesToUnNamedBoundProviders.clear();
+    hasTestModules = false;
+    installBindingForScope();
+  }
+
+  /**
+   * Install bindings for scope.
+   */
+  private void installBindingForScope() {
+    //it's always possible to get access to the scope that contains an injected object.
+    installBoundProvider(Scope.class, null, new InternalProviderImpl<>(this), false);
   }
 
   private static class ClassNameComparator implements Comparator<Class> {

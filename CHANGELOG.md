@@ -1,8 +1,11 @@
 //Continue from top
 
-## Release version 1.0.9 (To be released)
+## Release version 1.1.0 (To be released)
+
+* Solves issue #232: Make it possible to reset a single scope. Useful for automation testing when we want to reset the scope used to install test modules.
 
 ## Release version 1.0.8 (August 22nd 2017)
+
 A more debuggable release of TP with better error messages to help tracking bugs in TP usage. 
 We also allow devs to clean their builds by letting them fail the builds instead of issuing warnings.
 

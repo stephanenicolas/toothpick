@@ -2,11 +2,15 @@ package toothpick;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
 import org.junit.After;
 import org.junit.Test;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.MultipleRootException;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -216,6 +220,20 @@ public class ToothpickTest extends ToothpickBaseTest {
     constructor.newInstance();
 
     //THEN
+  }
+
+  @Test
+  public void reset_shouldCallResetForProvidedScope() throws Exception {
+    // GIVEN
+    ScopeNode mockScope = createMock(ScopeNode.class);
+    mockScope.reset();
+    replay(mockScope);
+
+    // WHEN
+    Toothpick.reset(mockScope);
+
+    // THEN
+    verify(mockScope);
   }
 
   @After
