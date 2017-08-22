@@ -18,10 +18,10 @@ public class BaseFactoryTest {
           .compilesWithoutError()
           .and()
           .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", noFactoryClass + "$$Factory.class");
-      fail("No optimistic factory should be created for an interface");
+      fail("A factory was created when it shouldn't.");
     } catch (AssertionError e) {
       assertThat(e.getMessage(), containsString(
-          String.format("Did not find a generated file corresponding to %s$$Factory.class in package %s;", noFactoryClass, noFactoryPackageName)));
+          String.format("generated the file named \"%s$$Factory.class\" in package \"%s\";", noFactoryClass, noFactoryPackageName)));
     }
   }
 }
