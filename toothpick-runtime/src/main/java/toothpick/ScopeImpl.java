@@ -518,7 +518,7 @@ public class ScopeImpl extends ScopeNode {
   private void crashIfClosed() {
     if (!isOpen) {
       throw new IllegalStateException(String.format("The scope with name %s has been already closed."
-          + " It is not possible to use it to create new instances.", name));
+          + " It can't be used to create new instances.", name));
     }
   }
 
