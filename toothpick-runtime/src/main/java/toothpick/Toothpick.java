@@ -1,9 +1,10 @@
 package toothpick;
 
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.ConfigurationHolder;
+
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Main class to access toothpick features.
@@ -102,7 +103,6 @@ public final class Toothpick {
    *
    * @param name the name of the scope to close.
    */
-
   public static void closeScope(Object name) {
     //we remove the scope first, so that other threads don't see it, and see the next snapshot of the tree
     ScopeNode scope = (ScopeNode) MAP_KEY_TO_SCOPE.remove(name);
@@ -120,13 +120,22 @@ public final class Toothpick {
   /**
    * Clears all scopes. Useful for testing and not getting any leak...
    */
-
   public static void reset() {
     for (Object name : Collections.list(MAP_KEY_TO_SCOPE.keys())) {
       closeScope(name);
     }
     ConfigurationHolder.configuration.onScopeForestReset();
-    ScopeImpl.reset();
+    ScopeImpl.resetUnBoundProviders();
+  }
+
+  /**
+   * Resets the state of a single scope. Useful for automation testing when we want to reset the scope used to install
+   * test modules.
+   * @param scope the scope we want to reset.
+   */
+  public static void reset(Scope scope) {
+    ScopeNode scopeNode = (ScopeNode) scope;
+    scopeNode.reset();
   }
 
   /**

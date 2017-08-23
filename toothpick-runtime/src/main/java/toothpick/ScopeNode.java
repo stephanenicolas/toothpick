@@ -1,5 +1,9 @@
 package toothpick;
 
+import toothpick.config.Module;
+
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,9 +13,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import javax.inject.Provider;
-import javax.inject.Singleton;
-import toothpick.config.Module;
 
 import static java.lang.String.format;
 
@@ -89,11 +90,7 @@ public abstract class ScopeNode implements Scope {
     }
 
     this.name = name;
-    if (name.getClass() == Class.class //
-        && Annotation.class.isAssignableFrom((Class) name) //
-        && isScopeAnnotationClass((Class<? extends Annotation>) name)) {
-      bindScopeAnnotation((Class<? extends Annotation>) name);
-    }
+    bindScopeAnnotationIfNameIsScopeAnnotation();
   }
 
   @Override
@@ -200,6 +197,16 @@ public abstract class ScopeNode implements Scope {
     return scopeAnnotationClasses.contains(scopeAnnotationClass);
   }
 
+  /**
+   * Resets the state of the scope.
+   * Useful for automation testing when we want to reset the scope used to install test modules.
+   */
+  protected void reset() {
+    scopeAnnotationClasses.clear();
+    isOpen = true;
+    bindScopeAnnotationIfNameIsScopeAnnotation();
+  }
+
   @SuppressWarnings({ "unused", "For the sake of completeness of the API." })
   Collection<ScopeNode> getChildrenScopes() {
     return childrenScopes.values();
@@ -207,7 +214,7 @@ public abstract class ScopeNode implements Scope {
 
   /**
    * Adds a child {@link ScopeNode} to a {@link ScopeNode}.
-   * Children sccopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
+   * Children scopes have access to all bindings of their parents, as well as their scoped instances, and can override them.
    * In a lock free way, this method returns the child scope : either {@code child} or a child scope that was already added.
    *
    * @param child the new child scope.
@@ -273,6 +280,18 @@ public abstract class ScopeNode implements Scope {
       parentScopesNames.add(parentScope.getName());
     }
     return parentScopesNames;
+  }
+
+  /**
+   * Bind Scope Annotation if the Scope name is a Scope Annotation.
+   * For example: Toothpick.openScope(MyScopeAnnotation.class)
+   */
+  private void bindScopeAnnotationIfNameIsScopeAnnotation() {
+    if (name.getClass() == Class.class //
+            && Annotation.class.isAssignableFrom((Class) name) //
+            && isScopeAnnotationClass((Class<? extends Annotation>) name)) {
+      bindScopeAnnotation((Class<? extends Annotation>) name);
+    }
   }
 
   private void checkIsAnnotationScope(Class<? extends Annotation> scopeAnnotationClass) {
