@@ -1,10 +1,16 @@
 //Continue from top
 
 ## Release version 1.0.8 (To be released)
+A more debuggable release of TP with better error messages to help tracking bugs in TP usage. 
+We also allow devs to clean their builds by letting them fail the builds instead of issuing warnings.
+
 * Solves issue #228: Add scope name to error message: The instance provided by the lazy/provider...
 * Solves issue #229: Add parent scope names to error message: No binding was defined for class %s and name %s in scope %s and its parents.
 * Solves issue #196: Change ContextSingleton retention policy to RUNTIME & deprecate it.
 * Solves issue #227: Let TP use injection on non public classes.
+* Solves issue #207: Add an option to fail the build if TP can't create a factory for a class.
+* Solves issue #202: Fix error message.
+* Solves issue #236: Add an option to fail the build if an injected method is not package private.
 
 ## Release version 1.0.7 (June 19th 2017)
 
