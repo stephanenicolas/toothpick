@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 apply plugin: 'java'
 
 sourceCompatibility = 1.7
@@ -12,7 +14,7 @@ dependencies {
   testCompile deps.easymock
   testCompile deps.powermock
   testCompile deps.hamcrest
-  testCompile files(System.getenv("JAVA_HOME") + "/lib/tools.jar")
+  testCompile files(Jvm.current().getToolsJar())
 }
 
 compileTestJava {
