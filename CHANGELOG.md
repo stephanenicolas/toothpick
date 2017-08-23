@@ -1,6 +1,8 @@
 //Continue from top
 
-## Release version 1.0.8 (To be released)
+## Release version 1.0.9 (To be released)
+
+## Release version 1.0.8 (August 22nd 2017)
 A more debuggable release of TP with better error messages to help tracking bugs in TP usage. 
 We also allow devs to clean their builds by letting them fail the builds instead of issuing warnings.
 
