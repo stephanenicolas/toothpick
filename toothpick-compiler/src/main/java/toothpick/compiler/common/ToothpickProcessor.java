@@ -85,11 +85,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED = "toothpick_crash_when_no_factory_can_be_created";
 
   /**
-   * The name of the annotation processor option to make the TP annotation processor crash when it can't generate
-   * a factory for a class. By default the behavior is not to crash but emit a warning. Passing the value {@code true}
+   * The name of the annotation processor option to make the TP annotation processor crash when it detects
+   * an annotated method but with a non package-private visibility.
+   * By default the behavior is not to crash but emit a warning. Passing the value {@code true}
    * crashes the build instead.
    */
-  public static final String PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE = "toothpick_crash_when_no_factory_can_be_created";
+  public static final String PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE = "toothpick_crash_when_injected_method_is_not_package";
 
   /**  Allows to suppress warning when an injected method is not package-private visible. */
   private static final String SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE = "visible";

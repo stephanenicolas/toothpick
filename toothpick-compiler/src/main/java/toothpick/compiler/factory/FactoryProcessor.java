@@ -343,7 +343,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void crashOrWarnWhenNoFactoryCanBeCreated(Element element, String message) {
-    if(crashWhenNoFactoryCanBeCreated != null && crashWhenNoFactoryCanBeCreated ) {
+    if (crashWhenNoFactoryCanBeCreated != null && crashWhenNoFactoryCanBeCreated) {
       error(element, message);
     } else {
       warning(element, message);
