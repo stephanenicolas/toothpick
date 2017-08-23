@@ -9,7 +9,7 @@ class FieldValueProvider implements Provider {
   private final Field field;
   private final Object test;
 
-  public FieldValueProvider(Field field, Object test) {
+  FieldValueProvider(Field field, Object test) {
     this.field = field;
     this.test = test;
     field.setAccessible(true);

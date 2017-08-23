@@ -3,7 +3,6 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 buildscript {
   repositories {
-    mavenCentral()
     jcenter()
   }
   dependencies {
@@ -12,50 +11,52 @@ buildscript {
 }
 
 repositories {
-  mavenCentral()
   jcenter()
 }
 
 //from https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac
-task jacocoTestReport << {
-  FileCollection executionData = files()
+task jacocoTestReport {
+  doLast {
+    FileCollection executionData = files()
 
-  subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
-  }.each { subproject -> executionData += subproject.tasks.jacocoTestReport.executionData
-  }
-
-  executionData = files(executionData.findAll {
-    it.exists()
-  })
-
-  ant.taskdef(name: 'jacocoReport', classname: 'org.jacoco.ant.ReportTask',
-      classpath: configurations.jacocoAnt.asPath)
-
-  ant.jacocoReport {
-    executiondata {
-      executionData.addToAntBuilder(ant, 'resources')
+    subprojects.findAll { subproject ->
+      subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
+    }.each { subproject -> executionData += subproject.tasks.jacocoTestReport.executionData
     }
-    structure(name: project.name) {
-      subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java')
-      }.each { subproject ->
-        group(name: subproject.name) {
-          classfiles {
-            ((FileCollection) subproject.sourceSets.main.output).filter {
-              it.exists()
-            }.addToAntBuilder(ant, 'resources')
-          }
-          sourcefiles {
-            files((Set<File>) subproject.sourceSets.main.allJava.srcDirs).filter {
-              it.exists()
-            }.addToAntBuilder(ant, 'resources')
+
+    executionData = files(executionData.findAll {
+      it.exists()
+    })
+
+    ant.taskdef(name: 'jacocoReport', classname: 'org.jacoco.ant.ReportTask',
+        classpath: configurations.jacocoAnt.asPath)
+
+    ant.jacocoReport {
+      executiondata {
+        executionData.addToAntBuilder(ant, 'resources')
+      }
+      structure(name: project.name) {
+        subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java')
+        }.each { subproject ->
+          group(name: subproject.name) {
+            classfiles {
+              ((FileCollection) subproject.sourceSets.main.output).filter {
+                it.exists()
+              }.addToAntBuilder(ant, 'resources')
+            }
+            sourcefiles {
+              files((Set<File>) subproject.sourceSets.main.allJava.srcDirs).filter {
+                it.exists()
+              }.addToAntBuilder(ant, 'resources')
+            }
           }
         }
       }
+      html(destdir: "${buildDir}/reports/jacoco/${name}/html")
+      xml(destfile: "${buildDir}/reports/jacoco/${name}/${name}.xml")
+      // Uncomment for CSV
+      //csv(destfile: "${buildDir}/reports/jacoco/${name}/${name}.csv")
     }
-    html(destdir: "${buildDir}/reports/jacoco/${name}/html")
-    xml(destfile: "${buildDir}/reports/jacoco/${name}/${name}.xml")
-    // Uncomment for CSV
-    //csv(destfile: "${buildDir}/reports/jacoco/${name}/${name}.csv")
   }
 }
 
@@ -73,7 +74,6 @@ subprojects { project ->
   version = VERSION_NAME
 
   repositories {
-    mavenCentral()
     jcenter()
   }
 
@@ -106,8 +106,8 @@ subprojects { project ->
           events "passed", "skipped", "failed"
         }
         // ensure tasks don't overwrite the default report directories used by the 'test' task
-        reports.html.destination = "${buildDir}/reports/${name}"
-        reports.junitXml.destination = "${buildDir}/reports/${name}/results"
+        reports.html.setDestination(new File("${buildDir}/reports/${name}"))
+        reports.junitXml.setDestination(new File("${buildDir}/reports/${name}/results"))
         binResultsDir = file("${buildDir}/reports/${name}/results/binary/${name}")
       }
     }
@@ -135,4 +135,4 @@ ext.deps = [// Common
             compiletesting      : 'com.google.testing.compile:compile-testing:0.11',
             easymock            : 'org.easymock:easymock:3.4',
             powermock           : 'org.powermock:powermock-easymock-release-full:1.6.4',
-            robolectric         : 'org.robolectric:robolectric:3.0',]
+            robolectric         : 'org.robolectric:robolectric:3.4.2',]

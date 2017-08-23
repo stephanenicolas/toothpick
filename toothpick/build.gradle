@@ -1,12 +1,12 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-  compile deps.inject
+  implementation deps.inject
 
-  testCompile deps.junit
+  testImplementation deps.junit
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

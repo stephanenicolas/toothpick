@@ -1,14 +1,17 @@
 apply plugin: 'java'
 
+configurations {
+  annotationProcessor
+}
 
 dependencies {
-  compile project(':toothpick')
-  compile project(':toothpick-runtime')
-  compile project(':toothpick-compiler')
-  compile deps.inject
+  implementation project(':toothpick-runtime')
 
-  testCompile project(':toothpick-testing')
-  testCompile deps.easymock
+  annotationProcessor project(':toothpick-compiler')
+
+  testImplementation project(':toothpick-testing')
+  testImplementation deps.junit
+  testImplementation deps.easymock
 }
 
 afterEvaluate {
@@ -23,8 +26,7 @@ afterEvaluate {
 }
 
 compileJava {
-  doFirst {
-    options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.sample',]
-  }
+  options.annotationProcessorPath = configurations.annotationProcessor
+  options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.sample',]
 }
 

@@ -161,7 +161,7 @@ public interface Scope {
    * scope, or its ancestors. If there is no such provider, the factory associated
    * to the clazz will be used to create one.
    * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
-   * If the {@param clazz} is annotated with {@link javax.inject.Singleton} then the created provider
+   * If the {@code clazz} is annotated with {@link javax.inject.Singleton} then the created provider
    * will be scoped in the root scope of the current scope.
    *
    * @param clazz the class for which to obtain a lazy in the scope of this scope.
@@ -177,7 +177,7 @@ public interface Scope {
    * Allows to install modules.
    *
    * @param modules an array of modules that define bindings.
-   * @See #installTestModules
+   * @see #installTestModules
    */
   void installModules(Module... modules);
 

@@ -98,13 +98,6 @@ public class SmoothieApplicationModule extends Module {
     bindSystemService(application, SensorManager.class, SENSOR_SERVICE);
     bindSystemService(application, TelephonyManager.class, TELEPHONY_SERVICE);
     bindSystemService(application, AudioManager.class, AUDIO_SERVICE);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-      bindForGingerBreadAndAbove(application);
-    }
-  }
-
-  @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-  private void bindForGingerBreadAndAbove(Application application) {
     bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
   }
 

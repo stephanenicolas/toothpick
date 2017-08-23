@@ -248,26 +248,26 @@ public class ScopeImplTest extends ToothpickBaseTest {
   }
 
   private static class TestModule extends Module {
-    public TestModule(Foo foo) {
+    TestModule(Foo foo) {
       bind(Foo.class).toInstance(foo);
     }
   }
 
   private static class ProdModule extends Module {
-    public ProdModule() {
+    ProdModule() {
       bind(Foo.class).toInstance(new Foo());
     }
   }
 
   private static class ProdModule2 extends Module {
-    public ProdModule2() {
+    ProdModule2() {
       bind(Foo.class).toInstance(new Foo());
       bind(Bar.class).toInstance(new Bar());
     }
   }
 
   private static class NullBindingModule extends Module {
-    public NullBindingModule() {
+    NullBindingModule() {
       getBindingSet().add(null);
     }
   }
