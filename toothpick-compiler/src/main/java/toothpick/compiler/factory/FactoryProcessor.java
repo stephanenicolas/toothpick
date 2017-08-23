@@ -57,13 +57,15 @@ import static javax.lang.model.element.Modifier.PRIVATE;
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
-    ToothpickProcessor.PARAMETER_ANNOTATION_TYPES
+    ToothpickProcessor.PARAMETER_ANNOTATION_TYPES, //
+    ToothpickProcessor.PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED, //
 }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
   private static final String SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE = "injectable";
 
   private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
+  private Boolean crashWhenNoFactoryCanBeCreated;
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -83,6 +85,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
     wasRun();
     readCommonProcessorOptions();
+    readCrashWhenNoFactoryCanBeCreatedOption();
     findAndParseTargets(roundEnv, annotations);
 
 
@@ -114,6 +117,13 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     return false;
+  }
+
+  private void readCrashWhenNoFactoryCanBeCreatedOption() {
+    Map<String, String> options = processingEnv.getOptions();
+    if (crashWhenNoFactoryCanBeCreated == null) {
+      crashWhenNoFactoryCanBeCreated = Boolean.parseBoolean(options.get(PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED));
+    }
   }
 
   private void findAndParseTargets(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
@@ -297,14 +307,21 @@ public class FactoryProcessor extends ToothpickProcessor {
       }
     }
 
+    final String cannotCreateAFactoryMessage = " Toothpick can't create a factory for it." //
+        + " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " //
+        + " then you can remove this warning by adding @SuppressWarnings(\"Injectable\") to the class." //
+        + " A typical example is a class using injection to assign its fields, that calls TP.inject(this)," //
+        + " but it needs a parameter for its constructor and this parameter is not injectable.";
+
     //search for default constructor
     for (ExecutableElement constructorElement : constructorElements) {
       if (constructorElement.getParameters().isEmpty()) {
         if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
           if (!isInjectableWarningSuppressed(typeElement)) {
-            warning(constructorElement, //
-                "The class %s has a private default constructor, Toothpick can't create a factory for it.",
-                typeElement.getQualifiedName().toString());
+              String message = format("The class %s has a private default constructor. "
+                      + cannotCreateAFactoryMessage, //
+                  typeElement.getQualifiedName().toString());
+            crashOrWarnWhenNoFactoryCanBeCreated(constructorElement, message);
           }
           return null;
         }
@@ -316,11 +333,21 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     if (!isInjectableWarningSuppressed(typeElement)) {
-      warning(typeElement, //
-          "The class %s has injected fields but has no injected constructor, and no public default constructor." //
-          + " Toothpick can't create a factory for it.", typeElement.getQualifiedName().toString());
+      String message = format("The class %s has injected members or a scope annotation "
+              + "but has no @Inject annotated (non-private) constructor " //
+              + " nor a non-private default constructor. " + cannotCreateAFactoryMessage, //
+          typeElement.getQualifiedName().toString());
+      crashOrWarnWhenNoFactoryCanBeCreated(typeElement, message);
     }
     return null;
+  }
+
+  private void crashOrWarnWhenNoFactoryCanBeCreated(Element element, String message) {
+    if (crashWhenNoFactoryCanBeCreated != null && crashWhenNoFactoryCanBeCreated) {
+      error(element, message);
+    } else {
+      warning(element, message);
+    }
   }
 
   /**
@@ -366,15 +393,7 @@ public class FactoryProcessor extends ToothpickProcessor {
    * @return true is the injectable warning is suppressed, false otherwise.
    */
   private boolean isInjectableWarningSuppressed(TypeElement typeElement) {
-    SuppressWarnings suppressWarnings = typeElement.getAnnotation(SuppressWarnings.class);
-    if (suppressWarnings != null) {
-      for (String value : suppressWarnings.value()) {
-        if (value.equalsIgnoreCase(SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return hasWarningSuppressed(typeElement, SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE);
   }
 
   private boolean canTypeHaveAFactory(TypeElement typeElement) {
@@ -396,5 +415,9 @@ public class FactoryProcessor extends ToothpickProcessor {
   //used for testing only
   void setToothpickExcludeFilters(String toothpickExcludeFilters) {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
+  }
+
+  void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
+    this.crashWhenNoFactoryCanBeCreated = crashWhenNoFactoryCanBeCreated;
   }
 }
