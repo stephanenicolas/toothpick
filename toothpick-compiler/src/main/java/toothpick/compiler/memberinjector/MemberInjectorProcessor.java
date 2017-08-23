@@ -39,7 +39,8 @@ import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
-    ToothpickProcessor.PARAMETER_EXCLUDES
+    ToothpickProcessor.PARAMETER_EXCLUDES, //
+    ToothpickProcessor.PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE
 }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
@@ -56,6 +57,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
     wasRun();
     readCommonProcessorOptions();
+    readOptionCrashWhenMethodIsNotPackageProtected();
     findAndParseTargets(roundEnv);
 
     // Generate member scopes
@@ -94,6 +96,14 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     }
 
     return false;
+  }
+
+  private void readOptionCrashWhenMethodIsNotPackageProtected() {
+    Map<String, String> options = processingEnv.getOptions();
+    if (toothpickCrashWhenMethodIsNotPackageVisible == null) {
+      toothpickCrashWhenMethodIsNotPackageVisible =
+          Boolean.parseBoolean(options.get(PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE));
+    }
   }
 
   private void findAndParseTargets(RoundEnvironment roundEnv) {
@@ -188,6 +198,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
   }
 
+  //used for testing only
   void setCrashOrWarnWhenMethodIsNotPackageVisible(boolean crashOrWarnWhenMethodIsNotPackageVisible) {
     this.toothpickCrashWhenMethodIsNotPackageVisible = crashOrWarnWhenMethodIsNotPackageVisible;
   }

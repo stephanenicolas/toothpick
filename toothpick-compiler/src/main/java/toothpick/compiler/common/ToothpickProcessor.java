@@ -168,7 +168,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     readOptionRegistryPackageName();
     readOptionRegistryChildrenPackageNames();
     readOptionExcludes();
-    readOptionCrashWhenMethodIsNotPackageProtected();
   }
 
   private void readOptionRegistryPackageName() {
@@ -215,13 +214,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
   }
 
-  private void readOptionCrashWhenMethodIsNotPackageProtected() {
-    Map<String, String> options = processingEnv.getOptions();
-    if(toothpickCrashWhenMethodIsNotPackageVisible == null) {
-      toothpickCrashWhenMethodIsNotPackageVisible = Boolean.parseBoolean(options.get(PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE));
-    }
-  }
-
   protected void error(String message, Object... args) {
     processingEnv.getMessager().printMessage(ERROR, format(message, args));
   }
@@ -239,7 +231,8 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   }
 
   private void crashOrWarnWhenMethodIsNotPackageVisible(Element element, String message) {
-    if(toothpickCrashWhenMethodIsNotPackageVisible != null && toothpickCrashWhenMethodIsNotPackageVisible ) {
+    if (toothpickCrashWhenMethodIsNotPackageVisible != null
+        && toothpickCrashWhenMethodIsNotPackageVisible) {
       error(element, message);
     } else {
       warning(element, message);
@@ -295,10 +288,9 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     }
 
     if (modifiers.contains(PUBLIC) || modifiers.contains(PROTECTED)) {
-      if(!hasWarningSuppressed(methodElement, SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
-        crashOrWarnWhenMethodIsNotPackageVisible(methodElement, //
-            format("@Inject annotated methods should have package visibility: %s#%s", //
-            enclosingElement.getQualifiedName(), methodElement.getSimpleName()));
+      if (!hasWarningSuppressed(methodElement, SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
+        crashOrWarnWhenMethodIsNotPackageVisible(methodElement, format("@Inject annotated methods should have package visibility: %s#%s", //
+                enclosingElement.getQualifiedName(), methodElement.getSimpleName()));
       }
     }
     return true;
