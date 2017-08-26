@@ -150,7 +150,7 @@ public class BindingsMultiThreadTest {
     private final Class<T> clazz;
     private boolean scoped;
 
-    public DynamicTestClassesFactory(Class<T> clazz, boolean scoped) {
+    DynamicTestClassesFactory(Class<T> clazz, boolean scoped) {
       this.clazz = clazz;
       this.scoped = scoped;
     }
@@ -183,7 +183,7 @@ public class BindingsMultiThreadTest {
   private static class DynamicTestClassesFactoryRegistry implements FactoryRegistry {
     private boolean scoped;
 
-    public DynamicTestClassesFactoryRegistry(boolean scoped) {
+    DynamicTestClassesFactoryRegistry(boolean scoped) {
       this.scoped = scoped;
     }
 

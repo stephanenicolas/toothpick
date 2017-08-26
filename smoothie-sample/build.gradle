@@ -1,21 +1,18 @@
 buildscript {
   repositories {
-    mavenCentral()
+    jcenter()
+    google()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.0.0'
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+    classpath ("com.android.tools.build:gradle:3.0.0-beta2")
   }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion '25.0.2'
+  compileSdkVersion 26
+  buildToolsVersion '26.0.1'
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -25,13 +22,30 @@ android {
   defaultConfig {
     applicationId 'com.example.smoothie'
     minSdkVersion 15
-    targetSdkVersion 23
+    targetSdkVersion 26
     versionCode 1
     versionName '1.0.0'
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments = [
+          'toothpick_registry_package_name': 'com.example.smoothie',
+        ]
+      }
+    }
   }
 
   lintOptions {
+    textReport true
+    textOutput 'stdout'
+    // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
+    checkReleaseBuilds false
     abortOnError false
+  }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+    }
   }
 }
 
@@ -40,24 +54,17 @@ repositories {
 }
 
 dependencies {
-  compile project(':smoothie')
-  compile project(':toothpick-runtime')
-  // We cannot update to annotationProcessor for the sample as we need to keep compatibility with Java 7.
-  // However, it is possible to use it instead of apt.
-  apt project(':toothpick-compiler')
-  apt deps.butterknife_compiler
-  compile deps.butterknife
-  compile deps.rxandroid
+  implementation project(path: ':smoothie', configuration: 'default')
+  implementation project(':toothpick-runtime')
+  implementation deps.butterknife
+  implementation deps.rxandroid
 
-  testCompile project(':toothpick-testing')
-  testCompile deps.easymock
-  testCompile deps.truth
-  testCompile deps.robolectric
-}
+  annotationProcessor project(':toothpick-compiler')
+  annotationProcessor deps.butterknife_compiler
 
-apt {
-  arguments {
-    'toothpick_registry_package_name' 'com.example.smoothie'
-    'toothpick_registry_children_package_names' 'toothpick.smoothie'
-  }
+  testImplementation project(':toothpick-testing')
+  testImplementation deps.junit
+  testImplementation deps.easymock
+  testImplementation deps.truth
+  testImplementation deps.robolectric
 }

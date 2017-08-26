@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Generates a Registry for a given {@link RegistryInjectionTarget}.
  *
- * @see {@link FactoryRegistry} and {@link MemberInjectorRegistry} for Registry types.
+ * See {@link FactoryRegistry} and {@link MemberInjectorRegistry} for Registry types.
  */
 public class RegistryGenerator extends CodeGenerator {
 

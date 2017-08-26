@@ -1,42 +1,52 @@
 buildscript {
   repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
+    jcenter()
+    google()
   }
   dependencies {
-    classpath "gradle.plugin.org.inferred:gradle-processors:1.2.1"
+    classpath ("com.android.tools.build:gradle:3.0.0-beta2")
   }
+
 }
 
-apply plugin: 'java'
-apply plugin: 'org.inferred.processors'
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-configurations {
-  optional
-  compile.extendsFrom optional
-}
+apply plugin: 'com.android.library'
 
 dependencies {
-  compile project(':toothpick')
-  processor  project(':toothpick-compiler')
-  compile deps.inject
-  optional deps.android
-  optional deps.supportv4
+  compileOnly project(':toothpick')
+  compileOnly deps.inject
+  compileOnly deps.supportv4
 
-  testCompile project(':toothpick-testing')
-  testCompile deps.easymock
-  testCompile deps.robolectric
+  testImplementation deps.supportv4
+  testImplementation project(':toothpick-testing')
+  testImplementation deps.junit
+  testImplementation deps.easymock
+  testImplementation deps.robolectric
 }
 
-compileJava {
-  doFirst {
-    options.compilerArgs = [
-        '-Atoothpick_registry_package_name=toothpick.smoothie',
-    ]
+android {
+  compileSdkVersion 26
+  buildToolsVersion '26.0.1'
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
+
+  defaultConfig {
+    minSdkVersion 15
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        includeCompileClasspath = true
+      }
+    }
+  }
+
+  lintOptions {
+    textReport true
+    textOutput 'stdout'
+    // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
+    checkReleaseBuilds false
   }
 }
 

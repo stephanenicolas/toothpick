@@ -9,7 +9,7 @@ import toothpick.registries.MemberInjectorRegistry;
 /**
  * Stores the information needed by {@link RegistryGenerator} to generate a Registry.
  *
- * @see {@link FactoryRegistry} and {@link MemberInjectorRegistry} for Registry types.
+ * See {@link FactoryRegistry} and {@link MemberInjectorRegistry} for Registry types.
  */
 public class RegistryInjectionTarget {
 

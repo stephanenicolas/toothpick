@@ -3,7 +3,7 @@ package toothpick;
 import javax.inject.Singleton;
 
 /**
- * Can only be used to annotate {@link Provider} classes (TODO check this).
+ * Can only be used to annotate {@link javax.inject.Provider} classes (TODO check this).
  * Indicates that the provider will create a singleton in a scope.
  *
  * The scope must be provided as a second annotation (Scope Annotation).

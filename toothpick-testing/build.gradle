@@ -1,20 +1,23 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-dependencies {
-  compile project(':toothpick-runtime')
-  compile deps.junit
+configurations {
+  testAnnotationProcessor
+}
 
-  testCompile deps.easymock
-  testCompile project(':toothpick-compiler')
+dependencies {
+  api project(':toothpick-runtime')
+  implementation deps.junit
+
+  testImplementation deps.easymock
+  testAnnotationProcessor project(':toothpick-compiler')
 }
 
 compileTestJava {
-  doFirst {
-    options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.testing',]
-  }
+  options.annotationProcessorPath = configurations.testAnnotationProcessor
+  options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.testing',]
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

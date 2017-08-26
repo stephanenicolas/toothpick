@@ -9,8 +9,6 @@ package toothpick;
  * a member scope is created. All classes that need to be injected via toothpick
  * need to be package private, otherwise we will fall back on reflection and emit
  * a warning at runtime.
- *
- * @See AbstractMemberInjectorRegistry
  */
 public interface MemberInjector<T> {
   /**

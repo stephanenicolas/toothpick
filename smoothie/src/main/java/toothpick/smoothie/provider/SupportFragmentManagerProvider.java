@@ -3,13 +3,11 @@ package toothpick.smoothie.provider;
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class SupportFragmentManagerProvider implements Provider<FragmentManager> {
   Activity activity;
 
-  @Inject
   public SupportFragmentManagerProvider(Activity activity) {
     this.activity = activity;
   }

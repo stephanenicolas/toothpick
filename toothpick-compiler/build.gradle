@@ -1,19 +1,19 @@
 import org.gradle.internal.jvm.Jvm
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-  compile project(':toothpick-generated-core')
-  compile deps.inject
-  compile deps.javapoet
+  api project(':toothpick-generated-core')
+  api deps.inject
+  api deps.javapoet
 
-  testCompile deps.junit
-  testCompile deps.truth
-  testCompile deps.compiletesting
-  testCompile files(Jvm.current().getToolsJar())
+  testImplementation deps.junit
+  testImplementation deps.truth
+  testImplementation deps.compiletesting
+  testImplementation files(Jvm.current().getToolsJar())
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

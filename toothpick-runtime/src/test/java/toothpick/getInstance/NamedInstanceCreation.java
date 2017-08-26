@@ -96,7 +96,7 @@ public class NamedInstanceCreation extends ToothpickBaseTest {
   }
 
   private static class SimpleModule extends Module {
-    public SimpleModule() {
+    SimpleModule() {
       bind(Foo.class).withName("bar").toInstance(namedFooInstance);
       bind(Foo.class).withName(FooName.class).toInstance(namedFooInstance);
       bind(Foo.class).to(Foo.class);

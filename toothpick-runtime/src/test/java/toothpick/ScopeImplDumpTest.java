@@ -33,7 +33,7 @@ public class ScopeImplDumpTest extends ToothpickBaseTest {
   }
 
   private static class TestModule1 extends Module {
-    public TestModule1() {
+    TestModule1() {
       bind(Foo.class).to(Foo.class);
     }
   }

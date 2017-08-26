@@ -9,8 +9,9 @@ public class SimpleEntryPoint {
   @Inject Computer computer;
   Computer2 computer2;
 
+  @SuppressWarnings("unused")
   @Inject
-  public void setComputer2(Computer2 computer2) {
+  void setComputer2(Computer2 computer2) {
     this.computer2 = computer2;
   }
 
