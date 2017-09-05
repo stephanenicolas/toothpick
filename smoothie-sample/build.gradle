@@ -4,7 +4,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath ("com.android.tools.build:gradle:3.0.0-beta2")
+    classpath ('com.android.tools.build:gradle:3.0.0-beta6')
   }
 }
 
@@ -25,6 +25,7 @@ android {
     targetSdkVersion 26
     versionCode 1
     versionName '1.0.0'
+    testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     javaCompileOptions {
       annotationProcessorOptions {
         arguments = [
@@ -67,4 +68,8 @@ dependencies {
   testImplementation deps.easymock
   testImplementation deps.truth
   testImplementation deps.robolectric
+
+  androidTestImplementation deps.espresso
+  androidTestImplementation deps.easymock
+  androidTestImplementation deps.dexmaker
 }

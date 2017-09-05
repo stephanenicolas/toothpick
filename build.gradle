@@ -135,4 +135,8 @@ ext.deps = [// Common
             compiletesting      : 'com.google.testing.compile:compile-testing:0.11',
             easymock            : 'org.easymock:easymock:3.4',
             powermock           : 'org.powermock:powermock-easymock-release-full:1.6.4',
-            robolectric         : 'org.robolectric:robolectric:3.4.2',]
+            robolectric         : 'org.robolectric:robolectric:3.4.2',
+
+            // Android Test Dependencies
+            espresso            : 'com.android.support.test.espresso:espresso-core:2.2.2',
+            dexmaker            : 'com.google.dexmaker:dexmaker:1.2',]
