@@ -5,7 +5,6 @@ import toothpick.Scope;
 import toothpick.Toothpick;
 import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
-import toothpick.configuration.IllegalBindingException;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
 import toothpick.data.CustomScope;
@@ -361,7 +360,7 @@ public class ScopingTest extends ToothpickBaseTest {
     assertThat(instance, sameInstance(instance2));
   }
 
-  @Test(expected = IllegalBindingException.class)
+  @Test(expected = IllegalStateException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingIsSimple() throws Exception {
     //GIVEN
     Toothpick.setConfiguration(forDevelopment());
@@ -378,7 +377,7 @@ public class ScopingTest extends ToothpickBaseTest {
     fail("This test should throw a IllegalBindingException.");
   }
 
-  @Test(expected = IllegalBindingException.class)
+  @Test(expected = IllegalStateException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAClass() throws Exception {
     //GIVEN
     Toothpick.setConfiguration(forDevelopment());
@@ -395,7 +394,7 @@ public class ScopingTest extends ToothpickBaseTest {
     fail("This test should throw a IllegalBindingException.");
   }
 
-  @Test(expected = IllegalBindingException.class)
+  @Test(expected = IllegalStateException.class)
   public void binding_shouldCrashForScopeAnnotatedClass_whenBindingToAProvider() throws Exception {
     //GIVEN
     Toothpick.setConfiguration(forDevelopment());
