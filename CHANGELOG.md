@@ -1,8 +1,15 @@
 //Continue from top
 
-## Release version 1.1.0 (To be released)
+## Release version 1.1.1 (To be released)
 
+## Release version 1.1.0 (Oct. 10th, 2017)
+
+* Welcome to Cody Henthorne and thanks for your first contributions !
 * Solves issue #232: Make it possible to reset a single scope. Useful for automation testing when we want to reset the scope used to install test modules.
+* Add sample for integration tests.
+* Modernisation of the build, JVM tools and CI
+* Fix issue #251. Give more details in errors when installing modules
+* Fix issue #253. Add Generated annotation to generated classes (for error prone)
 
 ## Release version 1.0.8 (August 22nd 2017)
 
