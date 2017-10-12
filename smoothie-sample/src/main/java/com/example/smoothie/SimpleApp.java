@@ -23,6 +23,10 @@ public class SimpleApp extends Application {
     FactoryRegistryLocator.setRootRegistry(new com.example.smoothie.FactoryRegistry());
 
     Scope appScope = Toothpick.openScope(this);
+    initToothpick(appScope);
+  }
+
+  public void initToothpick(Scope appScope) {
     appScope.installModules(new SmoothieApplicationModule(this));
   }
 }
