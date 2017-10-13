@@ -1,6 +1,9 @@
 //Continue from top
 
-## Release version 1.1.1 (To be released)
+## Release version 1.1.2 (To be released)
+
+## Release version 1.1.1 (Oct. 13th, 2017)
+* Fix issue #258, #256, #253: remove dependency to JSR 250 annotations, fix missing overrides.
 
 ## Release version 1.1.0 (Oct. 10th, 2017)
 
