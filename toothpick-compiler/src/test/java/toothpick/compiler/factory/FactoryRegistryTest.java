@@ -25,6 +25,7 @@ public class FactoryRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.registries.factory.AbstractFactoryRegistry;", //
         "", //
@@ -32,6 +33,7 @@ public class FactoryRegistryTest {
         "  public FactoryRegistry() {", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
@@ -75,6 +77,7 @@ public class FactoryRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.registries.factory.AbstractFactoryRegistry;", //
         "", //
@@ -84,6 +87,7 @@ public class FactoryRegistryTest {
         "    addChildRegistry(new toothpick.FactoryRegistry());", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
@@ -127,12 +131,14 @@ public class FactoryRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import toothpick.registries.factory.AbstractFactoryRegistry;", //
         "", //
         "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
         "  public FactoryRegistry() {", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & -1);", //
@@ -175,6 +181,7 @@ public class FactoryRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.registries.factory.AbstractFactoryRegistry;", //
         "", //
@@ -182,6 +189,7 @@ public class FactoryRegistryTest {
         "  public FactoryRegistry() {", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 3);", //

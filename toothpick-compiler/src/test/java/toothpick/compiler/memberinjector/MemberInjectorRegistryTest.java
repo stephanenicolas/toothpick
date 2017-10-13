@@ -26,6 +26,7 @@ public class MemberInjectorRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;", //
         "", //
@@ -33,6 +34,7 @@ public class MemberInjectorRegistryTest {
         "  public MemberInjectorRegistry() {", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
@@ -77,6 +79,7 @@ public class MemberInjectorRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;", //
         "", //
@@ -86,6 +89,7 @@ public class MemberInjectorRegistryTest {
         "    addChildRegistry(new toothpick.MemberInjectorRegistry());", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 0);", //
@@ -129,12 +133,14 @@ public class MemberInjectorRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;", //
         "", //
         "public final class MemberInjectorRegistry extends AbstractMemberInjectorRegistry {", //
         "  public MemberInjectorRegistry() {", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & -1);", //
@@ -175,6 +181,7 @@ public class MemberInjectorRegistryTest {
         "package toothpick;", //
         "", //
         "import java.lang.Class;", //
+        "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;", //
         "", //
@@ -182,6 +189,7 @@ public class MemberInjectorRegistryTest {
         "  public MemberInjectorRegistry() {", //
         "  }", //
         "", //
+        "  @Override", //
         "  public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {", //
         "    String className = clazz.getName();", //
         "    int bucket = (className.hashCode() & 3);", //
