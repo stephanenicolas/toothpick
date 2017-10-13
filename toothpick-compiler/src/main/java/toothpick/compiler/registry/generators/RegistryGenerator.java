@@ -70,6 +70,7 @@ public class RegistryGenerator extends CodeGenerator {
     TypeVariableName t = TypeVariableName.get("T");
     MethodSpec.Builder getMethod = MethodSpec.methodBuilder(registryInjectionTarget.getterName)
         .addTypeVariable(t)
+        .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), t), "clazz")
         .returns(ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), t));
