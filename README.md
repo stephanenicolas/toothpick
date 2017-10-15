@@ -135,6 +135,7 @@ For java:
 
 ## Talks & Articles
 
+* How I learned to love unit testing with Toothpick - [Groupon's medium blog article](https://medium.com/groupon-eng/how-i-learned-to-love-unit-testing-with-toothpick-13ad305b35d)
 * Droidcon, Boston 2017 - [Slides](https://speakerdeck.com/dlemures/toothpick-a-fresh-approach-to-di-including-unit-testing) & [Video](https://news.realm.io/news/droidcon-boston-daniel-molinero-toothpick-dependency-injection-android/)
 * Migrating off RoboGuice 3 (to Toothpick) - [Part 1](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-1-cee0875f6620) & [Part 2](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-2-c06644d2d1ef)
 * Mobius, Saint Petersburg 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
