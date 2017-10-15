@@ -1146,4 +1146,21 @@ public class FactoryTest extends BaseFactoryTest {
         .and()
         .generatesSources(expectedSource);
   }
+
+  @Test
+  public void testInjectedConstructor_withPrimitiveParam() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestPrimitiveConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestPrimitiveConstructor {", //
+        "  @Inject TestPrimitiveConstructor(int n) {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
+        .failsToCompile()
+        .withErrorContaining("Parameter n in method/constructor test.TestPrimitiveConstructor#<init> is of type int which is not supported by Toothpick.");
+  }
 }

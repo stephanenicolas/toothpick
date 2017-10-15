@@ -646,4 +646,22 @@ public class FieldMemberInjectorTest {
         .and()
         .generatesSources(expectedSource);
   }
+
+  @Test
+  public void testFieldInjection_shouldFail_WhenFieldIsPrimitive() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "public class TestFieldInjection {", //
+        "  @Inject int foo;", //
+        "  public TestFieldInjection() {}", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining("Field test.TestFieldInjection#foo is of type int which is not supported by Toothpick.");
+  }
 }
