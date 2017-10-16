@@ -1,6 +1,8 @@
 //Continue from top
 
 ## Release version 1.1.2 (To be released)
+* Fix issue #261. Better handling of non supported injected types (like primitives).
+Thx to Alexey Ershov for the detailed bug report.
 
 ## Release version 1.1.1 (Oct. 13th, 2017)
 * Fix issue #258, #256, #253: remove dependency to JSR 250 annotations, fix missing overrides.
