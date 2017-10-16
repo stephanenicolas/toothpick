@@ -132,6 +132,11 @@ For java:
     </dependency>
   </dependencies>
 ```
+## Support
+
+TP is actively maintained and we provide support to questions via the [Toothpick-di](https://stackoverflow.com/questions/tagged/toothpick-di) tag on Stack Over Flow. 
+
+Ask questions on Stack Over Flow while keeping the GitHub issue board for real issues. Thx in advance !
 
 ## Talks & Articles
 
