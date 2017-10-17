@@ -1,4 +1,4 @@
-//Continue from top
+<!-- Continue from top -->
 
 ## Release version 1.1.2 (To be released)
 * Fix issue #261. Better handling of non supported injected types (like primitives).
