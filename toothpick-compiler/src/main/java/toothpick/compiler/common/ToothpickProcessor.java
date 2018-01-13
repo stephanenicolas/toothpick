@@ -29,6 +29,9 @@ import javax.tools.JavaFileObject;
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
+import toothpick.compiler.registry.generators.ObfuscationFriendlyRegistryGenerator;
+import toothpick.compiler.registry.generators.RegistryGenerator;
+import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -52,6 +55,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    * If this parameter is not passed, no registry is generated.
    */
   public static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
+
+  /**
+   * Parameter to be set to true to ensure Toothpick works with obfuscation.
+   */
+  public static final String PARAMETER_SUPPORT_OBFUSCATION = "toothpick_obfuscation_support";
 
   /**
    * The name of the annotation processor option to exclude classes from the creation of member scopes & factories.
@@ -105,6 +113,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected String toothpickExcludeFilters = "java.*,android.*";
   protected Boolean toothpickCrashWhenMethodIsNotPackageVisible;
   protected Set<String> supportedAnnotationTypes = new HashSet<>();
+  protected boolean supportObfuscation;
   private boolean hasAlreadyRun;
 
   @Override
@@ -168,6 +177,19 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     readOptionRegistryPackageName();
     readOptionRegistryChildrenPackageNames();
     readOptionExcludes();
+    readOptionSupportObfuscation();
+  }
+
+  private void readOptionSupportObfuscation() {
+    Map<String, String> options = processingEnv.getOptions();
+    String supportsObfuscationOption = options.get(PARAMETER_SUPPORT_OBFUSCATION);
+    if (supportsObfuscationOption != null) {
+      supportObfuscation = "true".equals(supportsObfuscationOption);
+    }
+    if (supportObfuscation && !options.containsKey(PARAMETER_REGISTRY_PACKAGE_NAME)) {
+      warning("Option -A%s set to true, but option -A%s is not set. Obfuscation can only work in configuration with registries",
+              PARAMETER_SUPPORT_OBFUSCATION, PARAMETER_REGISTRY_PACKAGE_NAME);
+    }
   }
 
   private void readOptionRegistryPackageName() {
@@ -590,5 +612,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     TypeMirror elementTypeMirror = element.asType();
     TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
     return (TypeElement) typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror));
+  }
+
+  protected CodeGenerator createRegistryGenerator(RegistryInjectionTarget target) {
+    return supportObfuscation
+            ? new ObfuscationFriendlyRegistryGenerator(target, typeUtils)
+            : new RegistryGenerator(target, typeUtils);
   }
 }

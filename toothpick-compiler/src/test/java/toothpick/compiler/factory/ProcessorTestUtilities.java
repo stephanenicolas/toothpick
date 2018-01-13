@@ -25,15 +25,30 @@ final class ProcessorTestUtilities {
   }
 
   static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName, List<String> toothpickRegistryChildrenPackageNameList) {
-    return factoryProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*");
+    return factoryProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*", false);
   }
 
   static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName,
-                                                         List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
+                                                         List<String> toothpickRegistryChildrenPackageNameList,
+                                                         boolean supportObfuscation) {
+    return factoryProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*", supportObfuscation);
+  }
+
+  static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName,
+                                                         List<String> toothpickRegistryChildrenPackageNameList,
+                                                         String toothpickExcludeFilters) {
+    return factoryProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, toothpickExcludeFilters, false);
+  }
+
+  static Iterable<? extends Processor> factoryProcessors(String toothpickRegistryPackageName,
+                                                         List<String> toothpickRegistryChildrenPackageNameList,
+                                                         String toothpickExcludeFilters,
+                                                         boolean supportObfuscation) {
     FactoryProcessor factoryProcessor = new FactoryProcessor();
     factoryProcessor.setToothpickRegistryPackageName(toothpickRegistryPackageName);
     factoryProcessor.setToothpickRegistryChildrenPackageNameList(toothpickRegistryChildrenPackageNameList);
     factoryProcessor.setToothpickExcludeFilters(toothpickExcludeFilters);
+    factoryProcessor.setSupportObfuscation(supportObfuscation);
     return Arrays.asList(factoryProcessor);
   }
 

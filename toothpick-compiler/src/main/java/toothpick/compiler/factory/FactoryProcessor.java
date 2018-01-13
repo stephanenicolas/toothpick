@@ -24,7 +24,6 @@ import toothpick.ProvidesSingletonInScope;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
-import toothpick.compiler.registry.generators.RegistryGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
@@ -55,6 +54,7 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
+    ToothpickProcessor.PARAMETER_SUPPORT_OBFUSCATION, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
     ToothpickProcessor.PARAMETER_ANNOTATION_TYPES, //
@@ -109,11 +109,10 @@ public class FactoryProcessor extends ToothpickProcessor {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
-      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget, typeUtils);
 
       String fileDescription = "Factory registry";
       Element[] allTypes = elementsWithFactoryCreated.toArray(new Element[elementsWithFactoryCreated.size()]);
-      writeToFile(registryGenerator, fileDescription, allTypes);
+      writeToFile(createRegistryGenerator(registryInjectionTarget), fileDescription, allTypes);
     }
 
     return false;
@@ -420,4 +419,10 @@ public class FactoryProcessor extends ToothpickProcessor {
   void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
     this.crashWhenNoFactoryCanBeCreated = crashWhenNoFactoryCanBeCreated;
   }
+
+  //used for testing only
+  void setSupportObfuscation(boolean supportObfuscation) {
+    this.supportObfuscation = supportObfuscation;
+  }
+
 }

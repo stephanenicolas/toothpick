@@ -20,7 +20,6 @@ import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
-import toothpick.compiler.registry.generators.RegistryGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 
@@ -38,6 +37,7 @@ import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
+    ToothpickProcessor.PARAMETER_SUPPORT_OBFUSCATION, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
     ToothpickProcessor.PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE
@@ -88,11 +88,10 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
-      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget, typeUtils);
 
       String fileDescription = "MemberInjector registry";
       Element[] allTypes = elementsWithMemberInjectorCreated.toArray(new Element[elementsWithMemberInjectorCreated.size()]);
-      writeToFile(registryGenerator, fileDescription, allTypes);
+      writeToFile(createRegistryGenerator(registryInjectionTarget), fileDescription, allTypes);
     }
 
     return false;
@@ -201,5 +200,10 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   //used for testing only
   void setCrashOrWarnWhenMethodIsNotPackageVisible(boolean crashOrWarnWhenMethodIsNotPackageVisible) {
     this.toothpickCrashWhenMethodIsNotPackageVisible = crashOrWarnWhenMethodIsNotPackageVisible;
+  }
+
+  //used for testing only
+  void setSupportObfuscation(boolean supportObfuscation) {
+    this.supportObfuscation = supportObfuscation;
   }
 }
