@@ -1,6 +1,9 @@
 <!-- Continue from top -->
 
-## Release version 1.1.2 (To be released)
+## Release version 1.1.3 (To be released)
+
+## Release version 1.1.2 (Feb. 27th, 2018)
+* Fix issue #263: Registries are not deterministic and it breaks compilation caching (for gradle)
 * Fix issue #261. Better handling of non supported injected types (like primitives).
 Thx to Alexey Ershov for the detailed bug report.
 
