@@ -1,5 +1,7 @@
 package toothpick.compiler.registry.targets;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.lang.model.element.TypeElement;
 import toothpick.compiler.registry.generators.RegistryGenerator;
@@ -34,6 +36,7 @@ public class RegistryInjectionTarget {
     this.packageName = packageName;
     this.childrenRegistryPackageNameList = childrenRegistryPackageNameList;
     this.injectionTargetList = injectionTargetList;
+    Collections.sort(injectionTargetList, new TypeElementComparator());
 
     String typeSimpleName = type.getSimpleName();
     this.registryName = String.format(REGISTRY_NAME, typeSimpleName);
@@ -43,5 +46,12 @@ public class RegistryInjectionTarget {
 
   public String getFqcn() {
     return packageName + "." + registryName;
+  }
+
+  private static class TypeElementComparator implements Comparator<TypeElement> {
+    @Override
+    public int compare(TypeElement t0, TypeElement t1) {
+      return t0.getQualifiedName().toString().compareTo(t1.getQualifiedName().toString());
+    }
   }
 }
