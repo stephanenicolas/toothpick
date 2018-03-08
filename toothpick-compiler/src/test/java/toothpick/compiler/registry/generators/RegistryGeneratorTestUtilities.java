@@ -7,4 +7,8 @@ public final class RegistryGeneratorTestUtilities {
   public static void setInjectionTarjetsPerGetterMethod(int injectionTarjetsPerMethod) {
     RegistryGenerator.injectionTargetsPerGetterMethod = injectionTarjetsPerMethod;
   }
+
+  public static void setGroupSizeForObfuscationFriendlyGenerator(int groupSize) {
+    ObfuscationFriendlyRegistryGenerator.groupSize = groupSize;
+  }
 }
