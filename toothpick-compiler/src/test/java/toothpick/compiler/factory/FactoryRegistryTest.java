@@ -111,15 +111,14 @@ public class FactoryRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 3;", //
-                "    int indexInGroup = index % 3;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> Factory<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
                 "    }", //
                 "    return null;", //
@@ -178,15 +177,14 @@ public class FactoryRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 3;", //
-                "    int indexInGroup = index % 3;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> Factory<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
                 "      case 1: return (Factory<T>) new test.Class1$$Factory();", //
                 "      case 2: return (Factory<T>) new test.Class2$$Factory();", //
@@ -253,16 +251,15 @@ public class FactoryRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 3;", //
-                "    int indexInGroup = index % 3;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
-                "      case 1: return getFromGroup1(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
+                "      case 1: return getFromGroup1(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> Factory<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
                 "      case 1: return (Factory<T>) new test.Class1$$Factory();", //
                 "      case 2: return (Factory<T>) new test.Class2$$Factory();", //
@@ -270,10 +267,10 @@ public class FactoryRegistryTest {
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup1(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
-                "      case 0: return (Factory<T>) new test.Class3$$Factory();", //
-                "      case 1: return (Factory<T>) new test.Class4$$Factory();", //
+                "  private <T> Factory<T> getFromGroup1(int index) {", //
+                "    switch(index) {", //
+                "      case 3: return (Factory<T>) new test.Class3$$Factory();", //
+                "      case 4: return (Factory<T>) new test.Class4$$Factory();", //
                 "    }", //
                 "    return null;", //
                 "  }", //
@@ -338,16 +335,15 @@ public class FactoryRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 3;", //
-                "    int indexInGroup = index % 3;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
-                "      case 1: return getFromGroup1(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
+                "      case 1: return getFromGroup1(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> Factory<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
                 "      case 1: return (Factory<T>) new test.Class1$$Factory();", //
                 "      case 2: return (Factory<T>) new test.Class2$$Factory();", //
@@ -355,11 +351,11 @@ public class FactoryRegistryTest {
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup1(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
-                "      case 0: return (Factory<T>) new test.Class3$$Factory();", //
-                "      case 1: return (Factory<T>) new test.Class4$$Factory();", //
-                "      case 2: return (Factory<T>) new test.Class5$$Factory();", //
+                "  private <T> Factory<T> getFromGroup1(int index) {", //
+                "    switch(index) {", //
+                "      case 3: return (Factory<T>) new test.Class3$$Factory();", //
+                "      case 4: return (Factory<T>) new test.Class4$$Factory();", //
+                "      case 5: return (Factory<T>) new test.Class5$$Factory();", //
                 "    }", //
                 "    return null;", //
                 "  }", //
@@ -416,15 +412,14 @@ public class FactoryRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 3;", //
-                "    int indexInGroup = index % 3;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> Factory<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
                 "    }", //
                 "    return null;", //

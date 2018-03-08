@@ -100,15 +100,14 @@ public class MemberInjectorRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 200;", //
-                "    int indexInGroup = index % 200;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> MemberInjector<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> MemberInjector<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (MemberInjector<T>) new test.Class0$$MemberInjector();", //
                 "    }", //
                 "    return null;", //
@@ -166,15 +165,14 @@ public class MemberInjectorRegistryTest {
                 "      return null;", //
                 "    }", //
                 "    int groupIndex = index / 200;", //
-                "    int indexInGroup = index % 200;", //
                 "    switch(groupIndex) {", //
-                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 0: return getFromGroup0(index);", //
                 "    }", //
                 "    return null;", //
                 "  }", //
                 "", //
-                "  private <T> MemberInjector<T> getFromGroup0(int indexInGroup) {", //
-                "    switch(indexInGroup) {", //
+                "  private <T> MemberInjector<T> getFromGroup0(int index) {", //
+                "    switch(index) {", //
                 "      case 0: return (MemberInjector<T>) new test.Class0$$MemberInjector();", //
                 "    }", //
                 "    return null;", //

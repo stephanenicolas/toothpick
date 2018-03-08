@@ -164,11 +164,10 @@ public class RegistryGenerator extends CodeGenerator {
     methodBuilder.addCode(blockBuilder.build());
 
     methodBuilder.addStatement("int groupIndex = index / $L", groupSize);
-    methodBuilder.addStatement("int indexInGroup = index % $L", groupSize);
 
     CodeBlock.Builder switchBuilder = CodeBlock.builder().beginControlFlow("switch(groupIndex)");
     for (int i = 0; i < numGroups; i++) {
-      switchBuilder.addStatement("case $L: return $L(indexInGroup)", i, getFromGroupMethodName(i));
+      switchBuilder.addStatement("case $L: return $L(index)", i, getFromGroupMethodName(i));
     }
     switchBuilder.endControlFlow();
     methodBuilder.addCode(switchBuilder.build());
@@ -188,20 +187,16 @@ public class RegistryGenerator extends CodeGenerator {
     MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(getFromGroupMethodName(groupIndex))
             .addTypeVariable(typeVariable)
             .addModifiers(Modifier.PRIVATE)
-            .addParameter(TypeName.INT, "indexInGroup")
+            .addParameter(TypeName.INT, "index")
             .returns(factoryType);
 
     int groupStartIndex = groupIndex * groupSize;
     String typeSimpleName = registryInjectionTarget.type.getSimpleName();
-    CodeBlock.Builder switchBuilder = CodeBlock.builder().beginControlFlow("switch(indexInGroup)");
-    for (int indexInGroup = 0; indexInGroup < groupSize; indexInGroup++) {
-      int index = groupStartIndex + indexInGroup;
-      if (index >= classNameList.size()) {
-        break;
-      }
-      String className = classNameList.get(index);
+    CodeBlock.Builder switchBuilder = CodeBlock.builder().beginControlFlow("switch(index)");
+    for (int index = groupStartIndex;
+         index < groupStartIndex + groupSize && index < classNameList.size(); index++) {
       switchBuilder.addStatement("case $L: return ($L<T>) new $L$$$$$L()",
-              indexInGroup, typeSimpleName, className, typeSimpleName);
+              index, typeSimpleName, classNameList.get(index), typeSimpleName);
     }
     switchBuilder.endControlFlow();
     methodBuilder.addCode(switchBuilder.build());
