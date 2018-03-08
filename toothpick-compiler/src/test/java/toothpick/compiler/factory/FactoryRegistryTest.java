@@ -2,113 +2,406 @@ package toothpick.compiler.factory;
 
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
-import org.junit.Test;
-import toothpick.compiler.registry.generators.RegistryGeneratorTestUtilities;
+
+import toothpick.compiler.registry.generators.RegistryGeneratorGroupSizeRule;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
+import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 
 public class FactoryRegistryTest {
-  @Test public void testASimpleRegistry() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestASimpleRegistry", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "public class TestASimpleRegistry {", //
-        "  @Inject public TestASimpleRegistry() {}", //
-        "}" //
-    ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(//
-        "package toothpick;", //
-        "", //
-        "import java.lang.Class;", //
-        "import java.lang.Override;", //
-        "import java.lang.String;", //
-        "import toothpick.registries.factory.AbstractFactoryRegistry;", //
-        "", //
-        "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
-        "  public FactoryRegistry() {", //
-        "  }", //
-        "", //
-        "  @Override", //
-        "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName();", //
-        "    int bucket = (className.hashCode() & 0);", //
-        "    switch(bucket) {", //
-        "      case (0):", //
-        "      return getFactoryBucket0(clazz, className);", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "", //
-        "  private <T> Factory<T> getFactoryBucket0(Class<T> clazz, String className) {", //
-        "    switch(className) {", //
-        "      case (\"test.TestASimpleRegistry\"):", //
-        "      return (Factory<T>) new test.TestASimpleRegistry$$Factory();", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "}" //
+  @Rule
+  public final TestRule groupSizeRule = new RegistryGeneratorGroupSizeRule(3);
+
+  @Test
+  public void testRegistry_withNoFactories() {
+    JavaFileObject source = injectableClass("Class0");
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on("\n").join(
+                "package toothpick;", //
+                "", //
+                "import java.lang.Class;", //
+                "import java.lang.Integer;", //
+                "import java.lang.Override;", //
+                "import java.lang.String;", //
+                "import java.util.HashMap;", //
+                "import java.util.Map;", //
+                "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+                "", //
+                "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+                "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
+                "", //
+                "  public FactoryRegistry() {", //
+                "  }", //
+                "", //
+                "  @Override", //
+                "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+                "    Factory<T> factory = getFromThisRegistry(clazz);", //
+                "    if (factory == null) {", //
+                "      return getFactoryInChildrenRegistries(clazz);", //
+                "    }", //
+                "    return factory;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromThisRegistry(Class<T> clazz) {", //
+                "    return null;", //
+                "  }", //
+                "}"));
+
+    assert_().about(javaSource())
+            .that(source)
+            .processedWith(ProcessorTestUtilities.factoryProcessors("toothpick",
+                    Collections.EMPTY_LIST, "java.*,android.*,test.*"))
+            .compilesWithoutError()
+            .and()
+            .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testRegistry_WithOneFactory() {
+    JavaFileObject source = injectableClass("Class0");
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(
+                "package toothpick;", //
+                "", //
+                "import java.lang.Class;", //
+                "import java.lang.Integer;", //
+                "import java.lang.Override;", //
+                "import java.lang.String;", //
+                "import java.util.HashMap;", //
+                "import java.util.Map;", //
+                "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+                "", //
+                "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+                "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
+                "", //
+                "  public FactoryRegistry() {", //
+                "    classNameToIndex.put(\"test.Class0\", 0);", //
+                "  }", //
+                "", //
+                "  @Override", //
+                "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+                "    Factory<T> factory = getFromThisRegistry(clazz);", //
+                "    if (factory == null) {", //
+                "      return getFactoryInChildrenRegistries(clazz);", //
+                "    }", //
+                "    return factory;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromThisRegistry(Class<T> clazz) {", //
+                "    Integer index = classNameToIndex.get(clazz.getName());", //
+                "    if (index == null) {", //
+                "      return null;", //
+                "    }", //
+                "    int groupIndex = index / 3;", //
+                "    int indexInGroup = index % 3;", //
+                "    switch(groupIndex) {", //
+                "      case 0: return getFromGroup0(indexInGroup);", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "}"
     ));
 
     assert_().about(javaSource())
         .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors("toothpick", Collections.EMPTY_LIST))
+        .processedWith(defaultFactoryProcessor())
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);
   }
 
-  @Test public void testARegistry_withDependencies() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestARegistry", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "public class TestARegistry {", //
-        "  @Inject public TestARegistry() {}", //
-        "}" //
+  @Test
+  public void testRegistry_WithOneCompleteGroupOfFactories() {
+    Iterable<JavaFileObject> sources = injectableClasses("Class0", "Class1", "Class2");
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(
+                "package toothpick;", //
+                "", //
+                "import java.lang.Class;", //
+                "import java.lang.Integer;", //
+                "import java.lang.Override;", //
+                "import java.lang.String;", //
+                "import java.util.HashMap;", //
+                "import java.util.Map;", //
+                "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+                "", //
+                "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+                "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
+                "", //
+                "  public FactoryRegistry() {", //
+                "    classNameToIndex.put(\"test.Class0\", 0);", //
+                "    classNameToIndex.put(\"test.Class1\", 1);", //
+                "    classNameToIndex.put(\"test.Class2\", 2);", //
+                "  }", //
+                "", //
+                "  @Override", //
+                "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+                "    Factory<T> factory = getFromThisRegistry(clazz);", //
+                "    if (factory == null) {", //
+                "      return getFactoryInChildrenRegistries(clazz);", //
+                "    }", //
+                "    return factory;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromThisRegistry(Class<T> clazz) {", //
+                "    Integer index = classNameToIndex.get(clazz.getName());", //
+                "    if (index == null) {", //
+                "      return null;", //
+                "    }", //
+                "    int groupIndex = index / 3;", //
+                "    int indexInGroup = index % 3;", //
+                "    switch(groupIndex) {", //
+                "      case 0: return getFromGroup0(indexInGroup);", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
+                "      case 1: return (Factory<T>) new test.Class1$$Factory();", //
+                "      case 2: return (Factory<T>) new test.Class2$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "}"
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(//
-        "package toothpick;", //
-        "", //
-        "import java.lang.Class;", //
-        "import java.lang.Override;", //
-        "import java.lang.String;", //
-        "import toothpick.registries.factory.AbstractFactoryRegistry;", //
-        "", //
-        "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
-        "  public FactoryRegistry() {", //
-        "    addChildRegistry(new toothpick.FactoryRegistry());", //
-        "    addChildRegistry(new toothpick.FactoryRegistry());", //
-        "  }", //
-        "", //
-        "  @Override", //
-        "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName();", //
-        "    int bucket = (className.hashCode() & 0);", //
-        "    switch(bucket) {", //
-        "      case (0):", //
-        "      return getFactoryBucket0(clazz, className);", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "", //
-        "  private <T> Factory<T> getFactoryBucket0(Class<T> clazz, String className) {", //
-        "    switch(className) {", //
-        "      case (\"test.TestARegistry\"):", //
-        "      return (Factory<T>) new test.TestARegistry$$Factory();", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "}" //
+    assert_().about(javaSources())
+            .that(sources)
+            .processedWith(defaultFactoryProcessor())
+            .compilesWithoutError()
+            .and()
+            .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testRegistry_WithOneComplete_AndOneIncomplete_GroupOfFactories() {
+    Iterable<JavaFileObject> sources = injectableClasses("Class0", "Class1", "Class2", "Class3", "Class4");
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(
+                "package toothpick;", //
+                "", //
+                "import java.lang.Class;", //
+                "import java.lang.Integer;", //
+                "import java.lang.Override;", //
+                "import java.lang.String;", //
+                "import java.util.HashMap;", //
+                "import java.util.Map;", //
+                "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+                "", //
+                "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+                "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
+                "", //
+                "  public FactoryRegistry() {", //
+                "    classNameToIndex.put(\"test.Class0\", 0);", //
+                "    classNameToIndex.put(\"test.Class1\", 1);", //
+                "    classNameToIndex.put(\"test.Class2\", 2);", //
+                "    classNameToIndex.put(\"test.Class3\", 3);", //
+                "    classNameToIndex.put(\"test.Class4\", 4);", //
+                "  }", //
+                "", //
+                "  @Override", //
+                "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+                "    Factory<T> factory = getFromThisRegistry(clazz);", //
+                "    if (factory == null) {", //
+                "      return getFactoryInChildrenRegistries(clazz);", //
+                "    }", //
+                "    return factory;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromThisRegistry(Class<T> clazz) {", //
+                "    Integer index = classNameToIndex.get(clazz.getName());", //
+                "    if (index == null) {", //
+                "      return null;", //
+                "    }", //
+                "    int groupIndex = index / 3;", //
+                "    int indexInGroup = index % 3;", //
+                "    switch(groupIndex) {", //
+                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 1: return getFromGroup1(indexInGroup);", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
+                "      case 1: return (Factory<T>) new test.Class1$$Factory();", //
+                "      case 2: return (Factory<T>) new test.Class2$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup1(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class3$$Factory();", //
+                "      case 1: return (Factory<T>) new test.Class4$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "}"
     ));
+
+    assert_().about(javaSources())
+            .that(sources)
+            .processedWith(defaultFactoryProcessor())
+            .compilesWithoutError()
+            .and()
+            .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testRegistry_WithTwoComplete_GroupsOfFactories() {
+    Iterable<JavaFileObject> sources = injectableClasses("Class0", "Class1", "Class2", "Class3", "Class4", "Class5");
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(
+                "package toothpick;", //
+                "", //
+                "import java.lang.Class;", //
+                "import java.lang.Integer;", //
+                "import java.lang.Override;", //
+                "import java.lang.String;", //
+                "import java.util.HashMap;", //
+                "import java.util.Map;", //
+                "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+                "", //
+                "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+                "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
+                "", //
+                "  public FactoryRegistry() {", //
+                "    classNameToIndex.put(\"test.Class0\", 0);", //
+                "    classNameToIndex.put(\"test.Class1\", 1);", //
+                "    classNameToIndex.put(\"test.Class2\", 2);", //
+                "    classNameToIndex.put(\"test.Class3\", 3);", //
+                "    classNameToIndex.put(\"test.Class4\", 4);", //
+                "    classNameToIndex.put(\"test.Class5\", 5);", //
+                "  }", //
+                "", //
+                "  @Override", //
+                "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+                "    Factory<T> factory = getFromThisRegistry(clazz);", //
+                "    if (factory == null) {", //
+                "      return getFactoryInChildrenRegistries(clazz);", //
+                "    }", //
+                "    return factory;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromThisRegistry(Class<T> clazz) {", //
+                "    Integer index = classNameToIndex.get(clazz.getName());", //
+                "    if (index == null) {", //
+                "      return null;", //
+                "    }", //
+                "    int groupIndex = index / 3;", //
+                "    int indexInGroup = index % 3;", //
+                "    switch(groupIndex) {", //
+                "      case 0: return getFromGroup0(indexInGroup);", //
+                "      case 1: return getFromGroup1(indexInGroup);", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
+                "      case 1: return (Factory<T>) new test.Class1$$Factory();", //
+                "      case 2: return (Factory<T>) new test.Class2$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup1(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class3$$Factory();", //
+                "      case 1: return (Factory<T>) new test.Class4$$Factory();", //
+                "      case 2: return (Factory<T>) new test.Class5$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "}"
+    ));
+
+    assert_().about(javaSources())
+            .that(sources)
+            .processedWith(defaultFactoryProcessor())
+            .compilesWithoutError()
+            .and()
+            .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testRegistry_withDependencies() {
+    JavaFileObject source = injectableClass("Class0");
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(//
+                "package toothpick;", //
+                "", //
+                "import java.lang.Class;", //
+                "import java.lang.Integer;", //
+                "import java.lang.Override;", //
+                "import java.lang.String;", //
+                "import java.util.HashMap;", //
+                "import java.util.Map;", //
+                "import toothpick.registries.factory.AbstractFactoryRegistry;", //
+                "", //
+                "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
+                "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
+                "", //
+                "  public FactoryRegistry() {", //
+                "    addChildRegistry(new toothpick.FactoryRegistry());", //
+                "    addChildRegistry(new toothpick.FactoryRegistry());", //
+                "    classNameToIndex.put(\"test.Class0\", 0);", //
+                "  }", //
+                "", //
+                "  @Override", //
+                "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
+                "    Factory<T> factory = getFromThisRegistry(clazz);", //
+                "    if (factory == null) {", //
+                "      return getFactoryInChildrenRegistries(clazz);", //
+                "    }", //
+                "    return factory;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromThisRegistry(Class<T> clazz) {", //
+                "    Integer index = classNameToIndex.get(clazz.getName());", //
+                "    if (index == null) {", //
+                "      return null;", //
+                "    }", //
+                "    int groupIndex = index / 3;", //
+                "    int indexInGroup = index % 3;", //
+                "    switch(groupIndex) {", //
+                "      case 0: return getFromGroup0(indexInGroup);", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "", //
+                "  private <T> Factory<T> getFromGroup0(int indexInGroup) {", //
+                "    switch(indexInGroup) {", //
+                "      case 0: return (Factory<T>) new test.Class0$$Factory();", //
+                "    }", //
+                "    return null;", //
+                "  }", //
+                "}"));
 
     assert_().about(javaSource())
         .that(source)
@@ -118,138 +411,27 @@ public class FactoryRegistryTest {
         .generatesSources(expectedSource);
   }
 
-  @Test public void testARegistry_withNoFactories() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestARegistryWithNoFactories", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "public class TestARegistryWithNoFactories {", //
-        "  @Inject public TestARegistryWithNoFactories() {}", //
-        "}" //
-    ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(//
-        "package toothpick;", //
-        "", //
-        "import java.lang.Class;", //
-        "import java.lang.Override;", //
-        "import toothpick.registries.factory.AbstractFactoryRegistry;", //
-        "", //
-        "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
-        "  public FactoryRegistry() {", //
-        "  }", //
-        "", //
-        "  @Override", //
-        "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName();", //
-        "    int bucket = (className.hashCode() & -1);", //
-        "    switch(bucket) {", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "}" //
-    ));
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors("toothpick", Collections.EMPTY_LIST, "java.*,android.*,test.*"))
-        .compilesWithoutError()
-        .and()
-        .generatesSources(expectedSource);
+  private Iterable<JavaFileObject> injectableClasses(String... names) {
+    List<JavaFileObject> list = new ArrayList<>();
+    for (String name : names) {
+      list.add(injectableClass(name));
+    }
+    return list;
   }
 
-  @Test public void testARegistry_withMoreThanOneBucket() {
-    JavaFileObject source = JavaFileObjects.forSourceString("test.TestARegistryWithMoreThanOneBucket", Joiner.on('\n').join(//
-        "package test;", //
-        "import javax.inject.Inject;", //
-        "public class TestARegistryWithMoreThanOneBucket {", //
-        "  @Inject public TestARegistryWithMoreThanOneBucket() {}", //
-        "  public static class InnerClass1 {", //
-        "    @Inject public InnerClass1() {", //
-        "    }", //
-        "  }", //
-        "  public static class InnerClass2 {", //
-        "    public static class InnerClass3 {", //
-        "      @Inject public InnerClass3() {", //
-        "      }", //
-        "    }", //
-        "  }", //
-        "}" //
+
+  private JavaFileObject injectableClass(String name) {
+    return JavaFileObjects.forSourceString("test." + name, Joiner.on('\n').join(//
+            "package test;", //
+            "import javax.inject.Inject;", //
+            "public class " + name + " {", //
+            "  @Inject public " + name + "() {}", //
+            "}" //
     ));
+  }
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("toothpick/FactoryRegistry", Joiner.on('\n').join(//
-        "package toothpick;", //
-        "", //
-        "import java.lang.Class;", //
-        "import java.lang.Override;", //
-        "import java.lang.String;", //
-        "import toothpick.registries.factory.AbstractFactoryRegistry;", //
-        "", //
-        "public final class FactoryRegistry extends AbstractFactoryRegistry {", //
-        "  public FactoryRegistry() {", //
-        "  }", //
-        "", //
-        "  @Override", //
-        "  public <T> Factory<T> getFactory(Class<T> clazz) {", //
-        "    String className = clazz.getName();", //
-        "    int bucket = (className.hashCode() & 3);", //
-        "    switch(bucket) {", //
-        "      case (0):", //
-        "      return getFactoryBucket0(clazz, className);", //
-        "      case (1):", //
-        "      return getFactoryBucket1(clazz, className);", //
-        "      case (2):", //
-        "      return getFactoryBucket2(clazz, className);", //
-        "      case (3):", //
-        "      return getFactoryBucket3(clazz, className);", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "", //
-        "  private <T> Factory<T> getFactoryBucket0(Class<T> clazz, String className) {", //
-        "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket\"):", //
-        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$$Factory();", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "", //
-        "  private <T> Factory<T> getFactoryBucket1(Class<T> clazz, String className) {", //
-        "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket$InnerClass2$InnerClass3\"):", //
-        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass2$InnerClass3$$Factory();", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "", //
-        "  private <T> Factory<T> getFactoryBucket2(Class<T> clazz, String className) {", //
-        "    switch(className) {", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "", //
-        "  private <T> Factory<T> getFactoryBucket3(Class<T> clazz, String className) {", //
-        "    switch(className) {", //
-        "      case (\"test.TestARegistryWithMoreThanOneBucket$InnerClass1\"):", //
-        "      return (Factory<T>) new test.TestARegistryWithMoreThanOneBucket$InnerClass1$$Factory();", //
-        "      default:", //
-        "      return getFactoryInChildrenRegistries(clazz);", //
-        "    }", //
-        "  }", //
-        "}" //
-    ));
-
-    RegistryGeneratorTestUtilities.setInjectionTarjetsPerGetterMethod(1);
-
-    assert_().about(javaSource())
-        .that(source)
-        .processedWith(ProcessorTestUtilities.factoryProcessors("toothpick", Collections.EMPTY_LIST))
-        .compilesWithoutError()
-        .and()
-        .generatesSources(expectedSource);
+  private Iterable<Processor> defaultFactoryProcessor() {
+    return ProcessorTestUtilities.factoryProcessors("toothpick", Collections.EMPTY_LIST);
   }
 }

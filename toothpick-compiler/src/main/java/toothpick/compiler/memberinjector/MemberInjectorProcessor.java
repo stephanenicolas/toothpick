@@ -37,7 +37,6 @@ import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
-    ToothpickProcessor.PARAMETER_SUPPORT_OBFUSCATION, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
     ToothpickProcessor.PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE
@@ -200,10 +199,5 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   //used for testing only
   void setCrashOrWarnWhenMethodIsNotPackageVisible(boolean crashOrWarnWhenMethodIsNotPackageVisible) {
     this.toothpickCrashWhenMethodIsNotPackageVisible = crashOrWarnWhenMethodIsNotPackageVisible;
-  }
-
-  //used for testing only
-  void setSupportObfuscation(boolean supportObfuscation) {
-    this.supportObfuscation = supportObfuscation;
   }
 }

@@ -54,7 +54,6 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedOptions({
     ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
-    ToothpickProcessor.PARAMETER_SUPPORT_OBFUSCATION, //
     ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
     ToothpickProcessor.PARAMETER_ANNOTATION_TYPES, //
@@ -419,10 +418,4 @@ public class FactoryProcessor extends ToothpickProcessor {
   void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
     this.crashWhenNoFactoryCanBeCreated = crashWhenNoFactoryCanBeCreated;
   }
-
-  //used for testing only
-  void setSupportObfuscation(boolean supportObfuscation) {
-    this.supportObfuscation = supportObfuscation;
-  }
-
 }

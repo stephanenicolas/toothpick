@@ -2,24 +2,27 @@ package toothpick.compiler.registry.generators;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Types;
+
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.FactoryRegistry;
 import toothpick.registries.MemberInjectorRegistry;
-
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Generates a Registry for a given {@link RegistryInjectionTarget}.
@@ -28,32 +31,61 @@ import java.util.Map;
  */
 public class RegistryGenerator extends CodeGenerator {
 
-  /* @VisibleForTesting */ static int injectionTargetsPerGetterMethod = 200;
+  /* @VisibleForTesting */ static int groupSize = 200;
 
-  private RegistryInjectionTarget registryInjectionTarget;
+  private static final String MAP_FIELD_NAME = "classNameToIndex";
+  private static final String GET_FROM_THIS_REGISTRY_METHOD_NAME = "getFromThisRegistry";
+  private final RegistryInjectionTarget registryInjectionTarget;
+
+  private final TypeVariableName typeVariable = TypeVariableName.get("T");
+  private final ParameterizedTypeName factoryType;
+  private final ParameterizedTypeName clazzArgType;
+  private final int numGroups;
+
+  private final List<String> classNameList = new ArrayList<>();
 
   public RegistryGenerator(RegistryInjectionTarget registryInjectionTarget, Types types) {
     super(types);
     this.registryInjectionTarget = registryInjectionTarget;
+    factoryType = ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), typeVariable);
+    clazzArgType = ParameterizedTypeName.get(ClassName.get(Class.class), typeVariable);
+
+    List<TypeElement> targetList = registryInjectionTarget.injectionTargetList;
+    for (int i = 0; i < targetList.size(); i++) {
+      classNameList.add(getGeneratedFQNClassName(targetList.get(i)));
+    }
+    numGroups = (classNameList.size() + groupSize - 1) / groupSize;
   }
 
   @Override
   public String brewJava() {
-    TypeSpec.Builder registryTypeSpec = TypeSpec.classBuilder(registryInjectionTarget.registryName)
+    TypeSpec.Builder classBuilder = TypeSpec.classBuilder(registryInjectionTarget.registryName)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         .superclass(ClassName.get(registryInjectionTarget.superClass));
 
-    emitConstructor(registryTypeSpec);
-    emitGetterMethods(registryTypeSpec);
+    emitMapField(classBuilder);
+    emitConstructor(classBuilder);
+    emitPublicGetterMethod(classBuilder);
+    emitGetFromThisRegistryMethod(classBuilder);
+    emitGetFromGroupMethods(classBuilder);
 
-    JavaFile javaFile = JavaFile.builder(registryInjectionTarget.packageName, registryTypeSpec.build())
+    JavaFile javaFile = JavaFile.builder(registryInjectionTarget.packageName, classBuilder.build())
         .addFileComment("Generated code from Toothpick. Do not modify!")
         .build();
 
     return javaFile.toString();
   }
 
-  private void emitConstructor(TypeSpec.Builder registryTypeSpec) {
+  private void emitMapField(TypeSpec.Builder classBuilder) {
+    FieldSpec fieldSpec = FieldSpec.builder(ParameterizedTypeName.get(Map.class, String.class, Integer.class),
+                              MAP_FIELD_NAME,
+                              Modifier.PRIVATE, Modifier.FINAL)
+                              .initializer("new $T<>()", HashMap.class)
+                              .build();
+    classBuilder.addField(fieldSpec);
+  }
+
+  private void emitConstructor(TypeSpec.Builder classBuilder) {
     MethodSpec.Builder constructor = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
 
     CodeBlock.Builder iterateChildAddRegistryBlock = CodeBlock.builder();
@@ -61,100 +93,103 @@ public class RegistryGenerator extends CodeGenerator {
       ClassName registryClassName = ClassName.get(childPackageName, registryInjectionTarget.registryName);
       iterateChildAddRegistryBlock.addStatement("addChildRegistry(new $L())", registryClassName);
     }
-
     constructor.addCode(iterateChildAddRegistryBlock.build());
-    registryTypeSpec.addMethod(constructor.build());
+
+    for (int i = 0; i < classNameList.size(); i++) {
+      constructor.addStatement("$L.put($S, $L)", MAP_FIELD_NAME, classNameList.get(i), i);
+    }
+    classBuilder.addMethod(constructor.build());
   }
 
-  private void emitGetterMethods(TypeSpec.Builder registryTypeSpec) {
-    TypeVariableName t = TypeVariableName.get("T");
-    MethodSpec.Builder getMethod = MethodSpec.methodBuilder(registryInjectionTarget.getterName)
-        .addTypeVariable(t)
+  private void emitPublicGetterMethod(TypeSpec.Builder classBuilder) {
+    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(registryInjectionTarget.getterName)
+        .addTypeVariable(typeVariable)
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
-        .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), t), "clazz")
-        .returns(ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), t));
+        .addParameter(clazzArgType, "clazz")
+        .returns(factoryType);
 
-    getMethod.addStatement("String className = clazz.getName()");
-    int numOfBuckets = getNumberOfBuckets(registryInjectionTarget.injectionTargetList);
-    getMethod.addStatement("int bucket = (className.hashCode() & $L)", numOfBuckets - 1);
-    CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch(bucket)");
+    methodBuilder.addStatement("$T factory = $L(clazz)", factoryType, GET_FROM_THIS_REGISTRY_METHOD_NAME);
 
-    List<MethodSpec> getterMethodForBucketList = new ArrayList<>(numOfBuckets);
-    Map<Integer, List<TypeElement>> getterMethodBuckets = getGetterMethodBuckets(registryInjectionTarget.injectionTargetList);
-    for (int i = 0; i < numOfBuckets; i++) {
-      List<TypeElement> methodBucket = getterMethodBuckets.get(i);
-      if (methodBucket == null) {
-        methodBucket = Collections.emptyList();
-      }
-      MethodSpec getterMethodForBucket = generateGetterMethod(methodBucket, i);
-      getterMethodForBucketList.add(getterMethodForBucket);
-      switchBlockBuilder.add("case ($L):" + LINE_SEPARATOR, i);
-      switchBlockBuilder.addStatement("return $L(clazz, className)", getterMethodForBucket.name);
-    }
+    CodeBlock.Builder blockBuilder = CodeBlock.builder().beginControlFlow("if (factory == null)");
+    blockBuilder.addStatement("return $L(clazz)", registryInjectionTarget.childrenGetterName);
+    blockBuilder.endControlFlow();
+    methodBuilder.addCode(blockBuilder.build());
 
-    switchBlockBuilder.add("default:" + LINE_SEPARATOR);
-    switchBlockBuilder.addStatement("return $L(clazz)", registryInjectionTarget.childrenGetterName);
-    switchBlockBuilder.endControlFlow();
-    getMethod.addCode(switchBlockBuilder.build());
-    registryTypeSpec.addMethod(getMethod.build());
-    registryTypeSpec.addMethods(getterMethodForBucketList);
+    methodBuilder.addStatement("return factory");
+
+    classBuilder.addMethod(methodBuilder.build());
   }
 
-  private MethodSpec generateGetterMethod(List<TypeElement> getterMethodBucket, int index) {
-    TypeVariableName t = TypeVariableName.get("T");
-    MethodSpec.Builder getMethod = MethodSpec.methodBuilder(registryInjectionTarget.getterName + "Bucket" + index)
-        .addTypeVariable(t)
-        .addModifiers(Modifier.PRIVATE)
-        .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), t), "clazz")
-        .addParameter(String.class, "className")
-        .returns(ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), t));
+  private void emitGetFromThisRegistryMethod(TypeSpec.Builder classBuilder) {
+    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(GET_FROM_THIS_REGISTRY_METHOD_NAME)
+            .addTypeVariable(typeVariable)
+            .addModifiers(Modifier.PRIVATE)
+            .addParameter(clazzArgType, "clazz")
+            .returns(factoryType);
 
-    CodeBlock.Builder switchBlockBuilder = CodeBlock.builder().beginControlFlow("switch(className)");
+    if (classNameList.isEmpty()) {
+      methodBuilder.addStatement("return null");
+      classBuilder.addMethod(methodBuilder.build());
+      return;
+    }
+
+    methodBuilder.addStatement("$T index = $L.get(clazz.getName())", Integer.class, MAP_FIELD_NAME);
+
+    CodeBlock.Builder blockBuilder = CodeBlock.builder().beginControlFlow("if (index == null)");
+    blockBuilder.addStatement("return null");
+    blockBuilder.endControlFlow();
+    methodBuilder.addCode(blockBuilder.build());
+
+    methodBuilder.addStatement("int groupIndex = index / $L", groupSize);
+    methodBuilder.addStatement("int indexInGroup = index % $L", groupSize);
+
+    CodeBlock.Builder switchBuilder = CodeBlock.builder().beginControlFlow("switch(groupIndex)");
+    for (int i = 0; i < numGroups; i++) {
+      switchBuilder.addStatement("case $L: return $L(indexInGroup)", i, getFromGroupMethodName(i));
+    }
+    switchBuilder.endControlFlow();
+    methodBuilder.addCode(switchBuilder.build());
+
+    methodBuilder.addStatement("return null");
+
+    classBuilder.addMethod(methodBuilder.build());
+  }
+
+  private void emitGetFromGroupMethods(TypeSpec.Builder classBuilder) {
+    for (int i = 0; i < numGroups; i++) {
+      emitGetFromGroupMethod(classBuilder, i);
+    }
+  }
+
+  private void emitGetFromGroupMethod(TypeSpec.Builder classBuilder, int groupIndex) {
+    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(getFromGroupMethodName(groupIndex))
+            .addTypeVariable(typeVariable)
+            .addModifiers(Modifier.PRIVATE)
+            .addParameter(TypeName.INT, "indexInGroup")
+            .returns(factoryType);
+
+    int groupStartIndex = groupIndex * groupSize;
     String typeSimpleName = registryInjectionTarget.type.getSimpleName();
-
-    for (TypeElement injectionTarget : getterMethodBucket) {
-      switchBlockBuilder.add("case ($S):" + LINE_SEPARATOR, getGeneratedFQNClassName(injectionTarget));
-      switchBlockBuilder.addStatement("return ($L<T>) new $L$$$$$L()", typeSimpleName, getGeneratedFQNClassName(injectionTarget), typeSimpleName);
-    }
-
-    switchBlockBuilder.add("default:" + LINE_SEPARATOR);
-    switchBlockBuilder.addStatement("return $L(clazz)", registryInjectionTarget.childrenGetterName);
-    switchBlockBuilder.endControlFlow();
-    getMethod.addCode(switchBlockBuilder.build());
-    return getMethod.build();
-  }
-
-  private Map<Integer, List<TypeElement>> getGetterMethodBuckets(List<TypeElement> injectionTargetList) {
-    int numOfBuckets = getNumberOfBuckets(injectionTargetList);
-    Map<Integer, List<TypeElement>> getterMethodBuckets = new HashMap<>();
-
-    for (TypeElement injectionTarget : injectionTargetList) {
-      int index = getGeneratedFQNClassName(injectionTarget).hashCode() & (numOfBuckets - 1);
-      List<TypeElement> methodBucket = getterMethodBuckets.get(index);
-      if (methodBucket == null) {
-        methodBucket = new ArrayList<>();
-        getterMethodBuckets.put(index, methodBucket);
+    CodeBlock.Builder switchBuilder = CodeBlock.builder().beginControlFlow("switch(indexInGroup)");
+    for (int indexInGroup = 0; indexInGroup < groupSize; indexInGroup++) {
+      int index = groupStartIndex + indexInGroup;
+      if (index >= classNameList.size()) {
+        break;
       }
-      methodBucket.add(injectionTarget);
+      String className = classNameList.get(index);
+      switchBuilder.addStatement("case $L: return ($L<T>) new $L$$$$$L()",
+              indexInGroup, typeSimpleName, className, typeSimpleName);
     }
+    switchBuilder.endControlFlow();
+    methodBuilder.addCode(switchBuilder.build());
+    methodBuilder.addStatement("return null");
 
-    return getterMethodBuckets;
+    classBuilder.addMethod(methodBuilder.build());
   }
 
-  private int getNumberOfBuckets(List<TypeElement> injectionTargetList) {
-    int minNumOfBuckets = (injectionTargetList.size() + injectionTargetsPerGetterMethod - 1) / injectionTargetsPerGetterMethod;
-    return roundUpToPowerOfTwo(minNumOfBuckets);
-  }
-
-  private int roundUpToPowerOfTwo(int i) {
-    i--;
-    i |= i >>>  1;
-    i |= i >>>  2;
-    i |= i >>>  4;
-    i |= i >>>  8;
-    i |= i >>> 16;
-    return i + 1;
+  private String getFromGroupMethodName(int groupIndex) {
+    return "getFromGroup" + groupIndex;
   }
 
   @Override

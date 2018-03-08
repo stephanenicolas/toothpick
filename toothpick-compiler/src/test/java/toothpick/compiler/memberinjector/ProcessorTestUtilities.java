@@ -19,28 +19,16 @@ final class ProcessorTestUtilities {
   }
 
   static Iterable<? extends Processor> memberInjectorProcessors(String toothpickRegistryPackageName,
-                                                                List<String> toothpickRegistryChildrenPackageNameList) {
-    return memberInjectorProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*", false);
+      List<String> toothpickRegistryChildrenPackageNameList) {
+    return memberInjectorProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*");
   }
 
   static Iterable<? extends Processor> memberInjectorProcessors(String toothpickRegistryPackageName,
-      List<String> toothpickRegistryChildrenPackageNameList, boolean supportObfuscation) {
-    return memberInjectorProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList, "java.*,android.*", supportObfuscation);
-  }
-
-  static Iterable<? extends Processor> memberInjectorProcessors(String toothpickRegistryPackageName,
-                                                                List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
-    return memberInjectorProcessors(toothpickRegistryPackageName, toothpickRegistryChildrenPackageNameList,
-            toothpickExcludeFilters, false);
-  }
-
-  static Iterable<? extends Processor> memberInjectorProcessors(String toothpickRegistryPackageName,
-      List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters, boolean supportObfuscation) {
+      List<String> toothpickRegistryChildrenPackageNameList, String toothpickExcludeFilters) {
     MemberInjectorProcessor memberInjectorProcessor = new MemberInjectorProcessor();
     memberInjectorProcessor.setToothpickRegistryPackageName(toothpickRegistryPackageName);
     memberInjectorProcessor.setToothpickRegistryChildrenPackageNameList(toothpickRegistryChildrenPackageNameList);
     memberInjectorProcessor.setToothpickExcludeFilters(toothpickExcludeFilters);
-    memberInjectorProcessor.setSupportObfuscation(supportObfuscation);
     return Arrays.asList(memberInjectorProcessor);
   }
 }
