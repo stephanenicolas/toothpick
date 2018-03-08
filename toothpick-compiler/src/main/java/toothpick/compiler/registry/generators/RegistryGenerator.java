@@ -65,6 +65,7 @@ public class RegistryGenerator extends CodeGenerator {
 
     emitMapField(classBuilder);
     emitConstructor(classBuilder);
+    emitRegisterMethods(classBuilder);
     emitPublicGetterMethod(classBuilder);
     emitGetFromThisRegistryMethod(classBuilder);
     emitGetFromGroupMethods(classBuilder);
@@ -86,19 +87,40 @@ public class RegistryGenerator extends CodeGenerator {
   }
 
   private void emitConstructor(TypeSpec.Builder classBuilder) {
-    MethodSpec.Builder constructor = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
+    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
 
-    CodeBlock.Builder iterateChildAddRegistryBlock = CodeBlock.builder();
     for (String childPackageName : registryInjectionTarget.childrenRegistryPackageNameList) {
       ClassName registryClassName = ClassName.get(childPackageName, registryInjectionTarget.registryName);
-      iterateChildAddRegistryBlock.addStatement("addChildRegistry(new $L())", registryClassName);
+      constructorBuilder.addStatement("addChildRegistry(new $L())", registryClassName);
     }
-    constructor.addCode(iterateChildAddRegistryBlock.build());
 
-    for (int i = 0; i < classNameList.size(); i++) {
-      constructor.addStatement("$L.put($S, $L)", MAP_FIELD_NAME, classNameList.get(i), i);
+    for (int i = 0; i < numGroups; i++) {
+      constructorBuilder.addStatement("$L()", registerGroupMethodName(i));
     }
-    classBuilder.addMethod(constructor.build());
+
+    classBuilder.addMethod(constructorBuilder.build());
+  }
+
+  private void emitRegisterMethods(TypeSpec.Builder classBuilder) {
+    for (int i = 0; i < numGroups; i++) {
+      emitRegisterGroupMethod(classBuilder, i);
+    }
+  }
+
+  private void emitRegisterGroupMethod(TypeSpec.Builder classBuilder, int groupIndex) {
+    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(registerGroupMethodName(groupIndex))
+            .addModifiers(Modifier.PRIVATE);
+
+    int groupStartIndex = groupIndex * groupSize;
+    for (int indexInGroup = 0; indexInGroup < groupSize; indexInGroup++) {
+      int index = groupStartIndex + indexInGroup;
+      if (index >= classNameList.size()) {
+        break;
+      }
+      methodBuilder.addStatement("$L.put($S, $L)",
+              MAP_FIELD_NAME, classNameList.get(index), index);
+    }
+    classBuilder.addMethod(methodBuilder.build());
   }
 
   private void emitPublicGetterMethod(TypeSpec.Builder classBuilder) {
@@ -186,6 +208,10 @@ public class RegistryGenerator extends CodeGenerator {
     methodBuilder.addStatement("return null");
 
     classBuilder.addMethod(methodBuilder.build());
+  }
+
+  private String registerGroupMethodName(int groupIndex) {
+    return "registerGroup" + groupIndex;
   }
 
   private String getFromGroupMethodName(int groupIndex) {

@@ -89,6 +89,10 @@ public class FactoryRegistryTest {
                 "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
                 "", //
                 "  public FactoryRegistry() {", //
+                "    registerGroup0();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "  }", //
                 "", //
@@ -150,6 +154,10 @@ public class FactoryRegistryTest {
                 "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
                 "", //
                 "  public FactoryRegistry() {", //
+                "    registerGroup0();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "    classNameToIndex.put(\"test.Class1\", 1);", //
                 "    classNameToIndex.put(\"test.Class2\", 2);", //
@@ -215,9 +223,17 @@ public class FactoryRegistryTest {
                 "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
                 "", //
                 "  public FactoryRegistry() {", //
+                "    registerGroup0();", //
+                "    registerGroup1();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "    classNameToIndex.put(\"test.Class1\", 1);", //
                 "    classNameToIndex.put(\"test.Class2\", 2);", //
+                "  }", //
+                "", //
+                "  private void registerGroup1() {", //
                 "    classNameToIndex.put(\"test.Class3\", 3);", //
                 "    classNameToIndex.put(\"test.Class4\", 4);", //
                 "  }", //
@@ -291,9 +307,17 @@ public class FactoryRegistryTest {
                 "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
                 "", //
                 "  public FactoryRegistry() {", //
+                "    registerGroup0();", //
+                "    registerGroup1();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "    classNameToIndex.put(\"test.Class1\", 1);", //
                 "    classNameToIndex.put(\"test.Class2\", 2);", //
+                "  }", //
+                "", //
+                "  private void registerGroup1() {", //
                 "    classNameToIndex.put(\"test.Class3\", 3);", //
                 "    classNameToIndex.put(\"test.Class4\", 4);", //
                 "    classNameToIndex.put(\"test.Class5\", 5);", //
@@ -370,6 +394,10 @@ public class FactoryRegistryTest {
                 "  public FactoryRegistry() {", //
                 "    addChildRegistry(new toothpick.FactoryRegistry());", //
                 "    addChildRegistry(new toothpick.FactoryRegistry());", //
+                "    registerGroup0();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "  }", //
                 "", //

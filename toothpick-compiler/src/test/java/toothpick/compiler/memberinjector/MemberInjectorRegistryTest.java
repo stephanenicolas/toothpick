@@ -78,6 +78,10 @@ public class MemberInjectorRegistryTest {
                 "  private final Map<String, Integer> classNameToIndex = new HashMap<>();", //
                 "", //
                 "  public MemberInjectorRegistry() {", //
+                "    registerGroup0();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "  }", //
                 "", //
@@ -140,6 +144,10 @@ public class MemberInjectorRegistryTest {
                 "  public MemberInjectorRegistry() {", //
                 "    addChildRegistry(new toothpick.MemberInjectorRegistry());", //
                 "    addChildRegistry(new toothpick.MemberInjectorRegistry());", //
+                "    registerGroup0();", //
+                "  }", //
+                "", //
+                "  private void registerGroup0() {", //
                 "    classNameToIndex.put(\"test.Class0\", 0);", //
                 "  }", //
                 "", //
