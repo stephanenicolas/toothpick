@@ -24,6 +24,7 @@ import toothpick.ProvidesSingletonInScope;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
+import toothpick.compiler.registry.generators.RegistryGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.factory.AbstractFactoryRegistry;
 
@@ -111,7 +112,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
       String fileDescription = "Factory registry";
       Element[] allTypes = elementsWithFactoryCreated.toArray(new Element[elementsWithFactoryCreated.size()]);
-      writeToFile(createRegistryGenerator(registryInjectionTarget), fileDescription, allTypes);
+      writeToFile(new RegistryGenerator(registryInjectionTarget, typeUtils), fileDescription, allTypes);
     }
 
     return false;

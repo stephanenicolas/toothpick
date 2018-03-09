@@ -50,10 +50,10 @@ public class RegistryGenerator extends CodeGenerator {
     factoryType = ParameterizedTypeName.get(ClassName.get(registryInjectionTarget.type), typeVariable);
     clazzArgType = ParameterizedTypeName.get(ClassName.get(Class.class), typeVariable);
 
-    List<TypeElement> targetList = registryInjectionTarget.injectionTargetList;
-    for (int i = 0; i < targetList.size(); i++) {
-      classNameList.add(getGeneratedFQNClassName(targetList.get(i)));
+    for (TypeElement element : registryInjectionTarget.injectionTargetList) {
+      classNameList.add(getGeneratedFQNClassName(element));
     }
+
     numGroups = (classNameList.size() + groupSize - 1) / groupSize;
   }
 
@@ -94,21 +94,21 @@ public class RegistryGenerator extends CodeGenerator {
       constructorBuilder.addStatement("addChildRegistry(new $L())", registryClassName);
     }
 
-    for (int i = 0; i < numGroups; i++) {
-      constructorBuilder.addStatement("$L()", registerGroupMethodName(i));
+    for (int groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+      constructorBuilder.addStatement("$L()", nameOfRegisterGroupMethod(groupIndex));
     }
 
     classBuilder.addMethod(constructorBuilder.build());
   }
 
   private void emitRegisterMethods(TypeSpec.Builder classBuilder) {
-    for (int i = 0; i < numGroups; i++) {
-      emitRegisterGroupMethod(classBuilder, i);
+    for (int groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+      emitRegisterGroupMethod(classBuilder, groupIndex);
     }
   }
 
   private void emitRegisterGroupMethod(TypeSpec.Builder classBuilder, int groupIndex) {
-    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(registerGroupMethodName(groupIndex))
+    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(nameOfRegisterGroupMethod(groupIndex))
             .addModifiers(Modifier.PRIVATE);
 
     int groupStartIndex = groupIndex * groupSize;
@@ -166,8 +166,9 @@ public class RegistryGenerator extends CodeGenerator {
     methodBuilder.addStatement("int groupIndex = index / $L", groupSize);
 
     CodeBlock.Builder switchBuilder = CodeBlock.builder().beginControlFlow("switch(groupIndex)");
-    for (int i = 0; i < numGroups; i++) {
-      switchBuilder.addStatement("case $L: return $L(index)", i, getFromGroupMethodName(i));
+    for (int groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+      switchBuilder.addStatement("case $L: return $L(index)",
+              groupIndex, nameOfGetFromGroupMethod(groupIndex));
     }
     switchBuilder.endControlFlow();
     methodBuilder.addCode(switchBuilder.build());
@@ -178,13 +179,13 @@ public class RegistryGenerator extends CodeGenerator {
   }
 
   private void emitGetFromGroupMethods(TypeSpec.Builder classBuilder) {
-    for (int i = 0; i < numGroups; i++) {
-      emitGetFromGroupMethod(classBuilder, i);
+    for (int groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+      emitGetFromGroupMethod(classBuilder, groupIndex);
     }
   }
 
   private void emitGetFromGroupMethod(TypeSpec.Builder classBuilder, int groupIndex) {
-    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(getFromGroupMethodName(groupIndex))
+    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(nameOfGetFromGroupMethod(groupIndex))
             .addTypeVariable(typeVariable)
             .addModifiers(Modifier.PRIVATE)
             .addParameter(TypeName.INT, "index")
@@ -205,11 +206,11 @@ public class RegistryGenerator extends CodeGenerator {
     classBuilder.addMethod(methodBuilder.build());
   }
 
-  private String registerGroupMethodName(int groupIndex) {
+  private String nameOfRegisterGroupMethod(int groupIndex) {
     return "registerGroup" + groupIndex;
   }
 
-  private String getFromGroupMethodName(int groupIndex) {
+  private String nameOfGetFromGroupMethod(int groupIndex) {
     return "getFromGroup" + groupIndex;
   }
 

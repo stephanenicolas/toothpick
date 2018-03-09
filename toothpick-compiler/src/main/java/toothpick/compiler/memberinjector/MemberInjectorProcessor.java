@@ -20,6 +20,7 @@ import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
+import toothpick.compiler.registry.generators.RegistryGenerator;
 import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 
@@ -90,7 +91,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
 
       String fileDescription = "MemberInjector registry";
       Element[] allTypes = elementsWithMemberInjectorCreated.toArray(new Element[elementsWithMemberInjectorCreated.size()]);
-      writeToFile(createRegistryGenerator(registryInjectionTarget), fileDescription, allTypes);
+      writeToFile(new RegistryGenerator(registryInjectionTarget, typeUtils), fileDescription, allTypes);
     }
 
     return false;

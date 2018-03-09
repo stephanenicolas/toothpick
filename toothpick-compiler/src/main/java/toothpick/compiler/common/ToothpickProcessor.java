@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -26,11 +27,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
+
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
-import toothpick.compiler.registry.generators.RegistryGenerator;
-import toothpick.compiler.registry.targets.RegistryInjectionTarget;
 
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -594,7 +594,4 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return (TypeElement) typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror));
   }
 
-  protected CodeGenerator createRegistryGenerator(RegistryInjectionTarget target) {
-    return new RegistryGenerator(target, typeUtils);
-  }
 }
