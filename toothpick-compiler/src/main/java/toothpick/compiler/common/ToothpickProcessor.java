@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -26,6 +27,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
+
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
@@ -591,4 +593,5 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
     return (TypeElement) typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror));
   }
+
 }

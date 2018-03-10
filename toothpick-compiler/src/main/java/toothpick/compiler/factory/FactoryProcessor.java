@@ -109,11 +109,10 @@ public class FactoryProcessor extends ToothpickProcessor {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
-      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget, typeUtils);
 
       String fileDescription = "Factory registry";
       Element[] allTypes = elementsWithFactoryCreated.toArray(new Element[elementsWithFactoryCreated.size()]);
-      writeToFile(registryGenerator, fileDescription, allTypes);
+      writeToFile(new RegistryGenerator(registryInjectionTarget, typeUtils), fileDescription, allTypes);
     }
 
     return false;

@@ -88,11 +88,10 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
       RegistryInjectionTarget registryInjectionTarget =
           new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
               toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
-      RegistryGenerator registryGenerator = new RegistryGenerator(registryInjectionTarget, typeUtils);
 
       String fileDescription = "MemberInjector registry";
       Element[] allTypes = elementsWithMemberInjectorCreated.toArray(new Element[elementsWithMemberInjectorCreated.size()]);
-      writeToFile(registryGenerator, fileDescription, allTypes);
+      writeToFile(new RegistryGenerator(registryInjectionTarget, typeUtils), fileDescription, allTypes);
     }
 
     return false;
