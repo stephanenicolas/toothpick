@@ -1,6 +1,11 @@
 <!-- Continue from top -->
 
-## Release version 1.1.3 (To be released)
+## Release version 1.1.4 (To be released)
+
+## Release version 1.1.3 (March 10th, 2018)
+
+* Fix issue 146: generate registries in a way that is compatible with obfuscation.
+Obfuscated apps can now use TP registries. Thx to Pavel Shmakov for this contribution !
 
 ## Release version 1.1.2 (Feb. 27th, 2018)
 * Fix issue #283: Registries are not deterministic and it breaks compilation caching (for gradle)
