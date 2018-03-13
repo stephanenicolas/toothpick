@@ -153,6 +153,8 @@ Ask questions on Stack Over Flow while keeping the GitHub issue board for real i
 * Droidcon, Berlin 2016 - [Slides](https://speakerdeck.com/dlemures/toothpick-and-dependency-injection) - [Sketch notes](https://twitter.com/TeresaHolfeld/status/743026908552663041)
 * Android Leaks 2016 - [podcast in French](http://androidleakspodcast.com/2016/09/25/episode-4-de-la-dague-au-cure-dent-en-passant-par-un-petit-jus/)
 * DevFest Belgium 2016 - [video in French](https://www.youtube.com/watch?v=ytBmu5ciPCQ)
+* DevFest Siberia 2017 - [video in Russian](https://www.youtube.com/watch?v=EOFrA-MHbjU)
+* DevFest North 2017 - [video in Russian](https://www.youtube.com/watch?v=t55nFVurCHw)
 
 # Wanna know more ?
 
