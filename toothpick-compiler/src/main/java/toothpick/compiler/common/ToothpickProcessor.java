@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -26,6 +27,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
+
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
@@ -308,24 +310,34 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   private boolean isValidInjectedElementKind(VariableElement injectedTypeElement) {
     Element typeElement = typeUtils.asElement(injectedTypeElement.asType());
-    if (typeElement.getKind() != ElementKind.CLASS //
+    //typeElement can be null for primitives. https://github.com/stephanenicolas/toothpick/issues/261
+    if (typeElement == null //
+        || typeElement.getKind() != ElementKind.CLASS //
         && typeElement.getKind() != ElementKind.INTERFACE //
         && typeElement.getKind() != ElementKind.ENUM) {
 
       //find the class containing the element
       //the element can be a field or a parameter
       Element enclosingElement = injectedTypeElement.getEnclosingElement();
+      final String typeName;
+      if (typeElement != null) {
+        typeName = typeElement.toString();
+      } else {
+        typeName = injectedTypeElement.asType().toString();
+      }
       if (enclosingElement instanceof TypeElement) {
         error(injectedTypeElement, "Field %s#%s is of type %s which is not supported by Toothpick.",
-            ((TypeElement) enclosingElement).getQualifiedName(), injectedTypeElement.getSimpleName(), typeElement);
+            ((TypeElement) enclosingElement).getQualifiedName(),
+            injectedTypeElement.getSimpleName(), typeName);
       } else {
         Element methodOrConstructorElement = enclosingElement;
         enclosingElement = enclosingElement.getEnclosingElement();
-        error(injectedTypeElement, "Parameter %s in method/constructor %s#%s is of type %s which is not supported by Toothpick.",
+        error(injectedTypeElement,
+            "Parameter %s in method/constructor %s#%s is of type %s which is not supported by Toothpick.",
             injectedTypeElement.getSimpleName(), //
             ((TypeElement) enclosingElement).getQualifiedName(), //
             methodOrConstructorElement.getSimpleName(), //
-            typeElement);
+            typeName);
       }
       return false;
     }
@@ -581,4 +593,5 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     TypeMirror firstParameterTypeMirror = ((DeclaredType) elementTypeMirror).getTypeArguments().get(0);
     return (TypeElement) typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror));
   }
+
 }

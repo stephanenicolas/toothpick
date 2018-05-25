@@ -3,6 +3,7 @@ package toothpick;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.configuration.ConfigurationHolder;
+import toothpick.configuration.IllegalBindingException;
 import toothpick.registries.FactoryRegistryLocator;
 
 import javax.inject.Provider;
@@ -173,7 +174,11 @@ public class ScopeImpl extends ScopeNode {
 
   private void installModules(boolean isTestModule, Module... modules) {
     for (Module module : modules) {
-      installModule(isTestModule, module);
+      try {
+        installModule(isTestModule, module);
+      } catch (Exception e) {
+        throw new IllegalStateException(format("Module %s couldn't be installed", module.getClass().getName()), e);
+      }
     }
   }
 
@@ -185,13 +190,17 @@ public class ScopeImpl extends ScopeNode {
 
       Class clazz = binding.getKey();
       String bindingName = binding.getName();
-      if (isTestModule || getBoundProvider(clazz, bindingName) == null) {
-        InternalProviderImpl provider = toProvider(binding);
-        if (binding.isCreatingInstancesInScope()) {
-          installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider, isTestModule);
-        } else {
-          installBoundProvider(clazz, bindingName, provider, isTestModule);
+      try {
+        if (isTestModule || getBoundProvider(clazz, bindingName) == null) {
+          InternalProviderImpl provider = toProvider(binding);
+          if (binding.isCreatingInstancesInScope()) {
+            installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider, isTestModule);
+          } else {
+            installBoundProvider(clazz, bindingName, provider, isTestModule);
+          }
         }
+      } catch (Exception e) {
+        throw new IllegalBindingException(format("Binding %s couldn't be installed", bindingName), e);
       }
     }
   }

@@ -93,7 +93,7 @@ public class ScopeImplTest extends ToothpickBaseTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void installModule_shouldThrowAnException_whenModuleHasANullBinding() {
+  public void installModules_shouldThrowAnException_whenModuleHasANullBinding() {
     //GIVEN
     ScopeImpl scope = new ScopeImpl("");
 
@@ -102,6 +102,18 @@ public class ScopeImplTest extends ToothpickBaseTest {
 
     //THEN
     fail("Should throw an exception.");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void installModules_shouldFailWhenModuleHasIssues() {
+    //GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+
+    //WHEN
+    scope.installModules(new BuggyModule());
+
+    //THEN
+    fail();
   }
 
   /* TODO we should have unit tests for this and all this class
@@ -269,6 +281,12 @@ public class ScopeImplTest extends ToothpickBaseTest {
   private static class NullBindingModule extends Module {
     NullBindingModule() {
       getBindingSet().add(null);
+    }
+  }
+
+  private static class BuggyModule extends Module {
+    {
+      bind(Foo.class).toInstance(null);
     }
   }
 }

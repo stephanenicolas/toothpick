@@ -28,6 +28,7 @@ android {
     targetSdkVersion 27
     versionCode 1
     versionName '1.0.0'
+    testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     javaCompileOptions {
       annotationProcessorOptions {
         arguments = [
@@ -71,4 +72,8 @@ dependencies {
   testImplementation deps.easymock
   testImplementation deps.truth
   testImplementation deps.robolectric
+
+  androidTestImplementation deps.espresso
+  androidTestImplementation deps.easymock
+  androidTestImplementation deps.dexmaker
 }

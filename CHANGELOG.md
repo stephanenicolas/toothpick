@@ -1,8 +1,28 @@
-//Continue from top
+<!-- Continue from top -->
 
-## Release version 1.1.0 (To be released)
+## Release version 1.1.4 (To be released)
 
+## Release version 1.1.3 (March 10th, 2018)
+
+* Fix issue 146: generate registries in a way that is compatible with obfuscation.
+Obfuscated apps can now use TP registries. Thx to Pavel Shmakov for this contribution !
+
+## Release version 1.1.2 (Feb. 27th, 2018)
+* Fix issue #283: Registries are not deterministic and it breaks compilation caching (for gradle)
+* Fix issue #261. Better handling of non supported injected types (like primitives).
+Thx to Alexey Ershov for the detailed bug report.
+
+## Release version 1.1.1 (Oct. 13th, 2017)
+* Fix issue #258, #256, #253: remove dependency to JSR 250 annotations, fix missing overrides.
+
+## Release version 1.1.0 (Oct. 10th, 2017)
+
+* Welcome to Cody Henthorne and thanks for your first contributions !
 * Solves issue #232: Make it possible to reset a single scope. Useful for automation testing when we want to reset the scope used to install test modules.
+* Add sample for integration tests.
+* Modernisation of the build, JVM tools and CI
+* Fix issue #251. Give more details in errors when installing modules
+* Fix issue #253. Add Generated annotation to generated classes (for error prone)
 
 ## Release version 1.0.8 (August 22nd 2017)
 

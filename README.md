@@ -59,7 +59,7 @@ Fragment 1
 ```
 
 Toothpick is :
-* pure java
+* pure java (and Android helped is provided: "Smoothie")
 * [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but [annotation processing](https://github.com/stephanenicolas/toothpick/wiki/Factories-and-Member-Injectors)
 * simple, flexible, extensible & powerful, [robust & tested](https://coveralls.io/github/stephanenicolas/toothpick?branch=master)
 * thread safe
@@ -93,12 +93,12 @@ buildscript {
 ...
 
 dependencies {
-  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.0.8'
-  // and for android -> compile 'com.github.stephanenicolas.toothpick:smoothie:1.0.8'
-  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.0.8'
+  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.3'
+  // and for android -> compile 'com.github.stephanenicolas.toothpick:smoothie:1.1.3'
+  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.3'
 
   //highly recommended
-  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:1.0.8'
+  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:1.1.3'
   testCompile 'mockito or easymock'
 }
 ```
@@ -110,13 +110,13 @@ For java:
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-compiler</artifactId>
-      <version>1.0.8</version>
+      <version>1.1.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-runtime</artifactId>
-      <version>1.0.8</version>
+      <version>1.1.3</version>
       <scope>compile</scope>
     </dependency>
     
@@ -124,7 +124,7 @@ For java:
     <dependency> 
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-testing</artifactId>
-      <version>1.0.8</version>
+      <version>1.1.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -132,9 +132,15 @@ For java:
     </dependency>
   </dependencies>
 ```
+## Support
+
+TP is actively maintained and we provide support to questions via the [Toothpick-di](https://stackoverflow.com/questions/tagged/toothpick-di) tag on Stack Over Flow. 
+
+Ask questions on Stack Over Flow while keeping the GitHub issue board for real issues. Thx in advance !
 
 ## Talks & Articles
 
+* How I learned to love unit testing with Toothpick - [Groupon's medium blog article](https://medium.com/groupon-eng/how-i-learned-to-love-unit-testing-with-toothpick-13ad305b35d)
 * Droidcon, Boston 2017 - [Slides](https://speakerdeck.com/dlemures/toothpick-a-fresh-approach-to-di-including-unit-testing) & [Video](https://news.realm.io/news/droidcon-boston-daniel-molinero-toothpick-dependency-injection-android/)
 * Migrating off RoboGuice 3 (to Toothpick) - [Part 1](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-1-cee0875f6620) & [Part 2](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-2-c06644d2d1ef)
 * Mobius, Saint Petersburg 2017 - [Slides](https://speakerdeck.com/stephanenicolas/tp-mobile-era-2016-final-compressed)
@@ -166,3 +172,4 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 # Libs using TP
 
 * [Okuki](https://github.com/wongcain/okuki) is a simple, hierarchical navigation bus and back stack for Android, with optional Rx bindings, and Toothpick DI integration.
+* [KotlinWeather](https://github.com/ekamp/KotlinWeather) is a simple example of using ToothPick with Kotlin and gradle integration using kapt.
