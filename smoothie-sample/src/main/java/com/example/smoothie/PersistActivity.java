@@ -36,7 +36,7 @@ public class PersistActivity extends Activity {
 
     setContentView(R.layout.simple_activity);
     ButterKnife.bind(this);
-    title.setText("MVP");
+    title.setText(R.string.mvp);
     subTitle.setText(contextNamer.getInstanceCount());
     button.setVisibility(View.GONE);
   }

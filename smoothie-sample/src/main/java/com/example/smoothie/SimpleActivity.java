@@ -33,7 +33,7 @@ public class SimpleActivity extends Activity {
     ButterKnife.bind(this);
     title.setText(contextNamer.getApplicationName());
     subTitle.setText(contextNamer.getActivityName());
-    button.setText("click me !");
+    button.setText(R.string.click_me);
   }
 
   @OnClick(R.id.hello)

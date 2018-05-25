@@ -16,20 +16,20 @@ import static org.junit.Assert.assertThat;
 public class MemberInjectorRegistryLocatorTest {
 
   @Test
-  public void testGetMemberInjector_shouldReturnNull_whenThereAreNoRegistries() throws Exception {
+  public void getMemberInjectorUsingRegistries_shouldReturnNull_whenThereAreNoRegistries() throws Exception {
     //GIVEN
     Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
     MemberInjectorRegistryLocator.setRootRegistry(null);
 
     //WHEN
-    MemberInjector<Foo> memberInjector = MemberInjectorRegistryLocator.getMemberInjector(Foo.class);
+    MemberInjector<Foo> memberInjector = MemberInjectorRegistryLocator.getMemberInjectorUsingRegistries(Foo.class);
 
     //THEN
     assertThat(memberInjector, nullValue());
   }
 
   @Test
-  public void testGetMemberInjector_shouldFindTheMemberInjector_whenThereIsARegistryThatKnowsTheMemberInjector() throws Exception {
+  public void getMemberInjectorUsingRegistries_shouldFindTheMemberInjector_whenThereIsARegistryThatKnowsTheMemberInjector() throws Exception {
     //GIVEN
     MemberInjectorRegistryLocator.setRootRegistry(new AbstractMemberInjectorRegistry() {
       @Override
@@ -43,14 +43,14 @@ public class MemberInjectorRegistryLocatorTest {
     });
 
     //WHEN
-    MemberInjector<Foo> memberInjector = MemberInjectorRegistryLocator.getMemberInjector(Foo.class);
+    MemberInjector<Foo> memberInjector = MemberInjectorRegistryLocator.getMemberInjectorUsingRegistries(Foo.class);
 
     //THEN
     assertThat(memberInjector, instanceOf(FooMemberInjector.class));
   }
 
   @Test
-  public void testGetMemberInjector_shouldFindTheMemberInjector_whenAChildRegistryKnowsTheMemberInjector() throws Exception {
+  public void getMemberInjectorUsingRegistries_shouldFindTheMemberInjector_whenAChildRegistryKnowsTheMemberInjector() throws Exception {
     //GIVEN
     AbstractMemberInjectorRegistry rootRegistry = new AbstractMemberInjectorRegistry() {
       @Override
@@ -72,14 +72,14 @@ public class MemberInjectorRegistryLocatorTest {
     MemberInjectorRegistryLocator.setRootRegistry(rootRegistry);
 
     //WHEN
-    MemberInjector<Foo> memberInjector = MemberInjectorRegistryLocator.getMemberInjector(Foo.class);
+    MemberInjector<Foo> memberInjector = MemberInjectorRegistryLocator.getMemberInjectorUsingRegistries(Foo.class);
 
     //THEN
     assertThat(memberInjector, instanceOf(FooMemberInjector.class));
   }
 
   @Test
-  public void testGetMemberInjector_shouldReturnNull_whenThereIsNoRegistryThatKnowsTheMemberInjector() throws Exception {
+  public void getMemberInjectorUsingRegistries_shouldReturnNull_whenThereIsNoRegistryThatKnowsTheMemberInjector() throws Exception {
     //GIVEN
     AbstractMemberInjectorRegistry rootRegistry = new AbstractMemberInjectorRegistry() {
       @Override
@@ -105,7 +105,7 @@ public class MemberInjectorRegistryLocatorTest {
     MemberInjectorRegistryLocator.setRootRegistry(rootRegistry);
 
     //WHEN
-    MemberInjector<Bar> memberInjector = MemberInjectorRegistryLocator.getMemberInjector(Bar.class);
+    MemberInjector<Bar> memberInjector = MemberInjectorRegistryLocator.getMemberInjectorUsingRegistries(Bar.class);
 
     //THEN
     assertThat(memberInjector, nullValue());

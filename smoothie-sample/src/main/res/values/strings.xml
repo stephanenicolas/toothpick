@@ -2,4 +2,6 @@
 
 <resources>
   <string name="app_name">Smoothie sample</string>
+  <string name="mvp">MVP</string>
+  <string name="click_me">click me !</string>
 </resources>

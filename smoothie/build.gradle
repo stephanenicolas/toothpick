@@ -4,12 +4,16 @@ buildscript {
     google()
   }
   dependencies {
-    classpath ("com.android.tools.build:gradle:3.0.0-beta2")
+    classpath ("com.android.tools.build:gradle:3.1.2")
   }
 
 }
 
 apply plugin: 'com.android.library'
+
+repositories {
+    google()
+}
 
 dependencies {
   compileOnly project(':toothpick')
@@ -24,8 +28,7 @@ dependencies {
 }
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion '26.0.1'
+  compileSdkVersion 27
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
