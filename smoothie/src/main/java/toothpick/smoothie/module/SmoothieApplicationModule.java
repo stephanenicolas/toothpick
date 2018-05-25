@@ -9,6 +9,7 @@ import android.app.DownloadManager;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.app.SearchManager;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -40,6 +41,7 @@ import toothpick.smoothie.provider.SystemServiceProvider;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.AUDIO_SERVICE;
+import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.content.Context.CONNECTIVITY_SERVICE;
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.content.Context.INPUT_METHOD_SERVICE;
@@ -99,6 +101,7 @@ public class SmoothieApplicationModule extends Module {
     bindSystemService(application, TelephonyManager.class, TELEPHONY_SERVICE);
     bindSystemService(application, AudioManager.class, AUDIO_SERVICE);
     bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
+    bindSystemService(application, ClipboardManager.class, CLIPBOARD_SERVICE);
   }
 
   private <T> void bindSystemService(Application application, Class<T> serviceClass, String serviceName) {
