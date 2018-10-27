@@ -93,13 +93,13 @@ buildscript {
 ...
 
 dependencies {
-  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.3'
+  implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.3'
   // and for android -> compile 'com.github.stephanenicolas.toothpick:smoothie:1.1.3'
   annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.3'
 
   //highly recommended
-  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:1.1.3'
-  testCompile 'mockito or easymock'
+  testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing:1.1.3'
+  testImplementation 'mockito or easymock'
 }
 ```
 
