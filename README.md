@@ -80,13 +80,13 @@ Currently Toothpick has 2 sets of examples :
 ## Setup
 For Android : 
 ```groovy
-#android setup using gradle 2.2.3
+#android setup using gradle 3.1.1
 buildscript {
   repositories {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.2.3'
+    classpath 'com.android.tools.build:gradle:3.1.1'
   }
 }
 
