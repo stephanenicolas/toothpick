@@ -31,6 +31,7 @@ public class MemberInjectorRegistryLocatorTest {
   @Test
   public void testGetMemberInjector_shouldFindTheMemberInjector_whenThereIsARegistryThatKnowsTheMemberInjector() throws Exception {
     //GIVEN
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
     MemberInjectorRegistryLocator.setRootRegistry(new AbstractMemberInjectorRegistry() {
       @Override
       public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
@@ -52,6 +53,7 @@ public class MemberInjectorRegistryLocatorTest {
   @Test
   public void testGetMemberInjector_shouldFindTheMemberInjector_whenAChildRegistryKnowsTheMemberInjector() throws Exception {
     //GIVEN
+    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
     AbstractMemberInjectorRegistry rootRegistry = new AbstractMemberInjectorRegistry() {
       @Override
       public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {

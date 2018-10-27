@@ -4,7 +4,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath ('com.android.tools.build:gradle:3.1.1')
+    classpath ('com.android.tools.build:gradle:3.2.1')
   }
 }
 
@@ -16,7 +16,7 @@ repositories {
 
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion 28
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -26,7 +26,7 @@ android {
   defaultConfig {
     applicationId 'com.example.smoothie'
     minSdkVersion 15
-    targetSdkVersion 26
+    targetSdkVersion 28
     versionCode 1
     versionName '1.0.0'
     testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
