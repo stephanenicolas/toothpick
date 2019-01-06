@@ -38,6 +38,7 @@ public class ScopeImpl extends ScopeNode {
   private IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders = new IdentityHashMap<>();
   private IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
+  private boolean hasInstalledModules = false;
 
   public ScopeImpl(Object name) {
     super(name);
@@ -96,6 +97,11 @@ public class ScopeImpl extends ScopeNode {
   @Override
   public void installModules(Module... modules) {
     installModules(false, modules);
+  }
+
+  @Override
+  public boolean hasInstalledModules() {
+    return hasInstalledModules;
   }
 
   @Override
@@ -176,6 +182,7 @@ public class ScopeImpl extends ScopeNode {
     for (Module module : modules) {
       try {
         installModule(isTestModule, module);
+        hasInstalledModules = true;
       } catch (Exception e) {
         throw new IllegalStateException(format("Module %s couldn't be installed", module.getClass().getName()), e);
       }
@@ -544,6 +551,7 @@ public class ScopeImpl extends ScopeNode {
     mapClassesToNamedBoundProviders.clear();
     mapClassesToUnNamedBoundProviders.clear();
     hasTestModules = false;
+    hasInstalledModules = false;
     installBindingForScope();
   }
 

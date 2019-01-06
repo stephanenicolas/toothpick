@@ -192,4 +192,11 @@ public interface Scope {
    * @param modules an array of modules that define test bindings.
    */
   void installTestModules(Module... modules);
+
+  /**
+   * @return true - if {@link #installModules(Module...)} or {@link #installTestModules(Module...)}
+   * method was called at least once with not empty modules.
+   * May be useful for check scope initialisation.
+   */
+  boolean hasInstalledModules();
 }
