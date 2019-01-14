@@ -29,6 +29,19 @@ public final class Toothpick {
   }
 
   /**
+   * Find scope by this {@code name} in current scopes tree.
+   * @return true if scope is exist.
+   */
+  public static boolean hasScope(Object name) {
+    if (name == null) {
+      throw new IllegalArgumentException("null scope names are not allowed.");
+    }
+
+    Scope scope = MAP_KEY_TO_SCOPE.get(name);
+    return scope != null;
+  }
+
+  /**
    * Opens multiple scopes in a row.
    * Opened scopes will be children of each other in left to right order (e.g. {@code
    * openScopes(a,b)} opens scopes {@code a} and {@code b}
