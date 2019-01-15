@@ -30,15 +30,14 @@ public final class Toothpick {
 
   /**
    * Find scope by this {@code name} in current scopes tree.
-   * @return true if scope is exist.
+   * @return true if scope exist.
    */
   public static boolean hasScope(Object name) {
     if (name == null) {
       throw new IllegalArgumentException("null scope names are not allowed.");
     }
 
-    Scope scope = MAP_KEY_TO_SCOPE.get(name);
-    return scope != null;
+    return MAP_KEY_TO_SCOPE.containsKey(name);
   }
 
   /**
