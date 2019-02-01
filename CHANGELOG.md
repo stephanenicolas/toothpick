@@ -1,6 +1,6 @@
 <!-- Continue from top -->
 
-## Release version 2.0.0 (To be released)
+## Release version 2.0.0 (Feb 1st, 2019)
 
 * support incremental annotation processing. All processors are now incremental and isolating.
 * remove all registries, TP 2.x doesn't use registries any more. They were actually slower than not using them after
