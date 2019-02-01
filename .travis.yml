@@ -4,8 +4,8 @@ android:
   components:
     # https://github.com/travis-ci/travis-ci/issues/5036
     - tools
-    - build-tools-26.0.2
-    - android-26
+    - build-tools-28.0.3
+    - android-28
     - extra-android-m2repository
 
 jdk:
@@ -37,7 +37,9 @@ cache:
   - $HOME/.android/build-cache
 
 script:
-  - ./gradlew clean check -x :smoothie-sample:lint
+  - ./gradlew clean check
+  - ./gradlew -b toothpick-sample/build.gradle clean check
+  - ./gradlew -b smoothie-sample/build.gradle clean check -x lint
 
 after_success:
   - ./gradlew jacocoTestReport coveralls

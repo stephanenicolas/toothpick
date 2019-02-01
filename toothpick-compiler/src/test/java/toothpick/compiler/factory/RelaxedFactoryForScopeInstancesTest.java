@@ -49,7 +49,7 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
         .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForHasScopeInstances$$Factory.class");
+        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForHasScopeInstances__Factory.class");
   }
 
   @Test

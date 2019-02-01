@@ -5,7 +5,6 @@ import toothpick.Lazy;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
-import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.FooWithLazy;
@@ -19,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /*
  * Test injection of {@code Lazy}s.
  */
-public class InjectionOfLazyProviderTest extends ToothpickBaseTest {
+public class InjectionOfLazyProviderTest {
 
   @Test
   public void testSimpleInjection() throws Exception {

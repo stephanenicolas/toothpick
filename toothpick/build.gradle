@@ -6,7 +6,7 @@ targetCompatibility = 1.7
 dependencies {
   implementation deps.inject
 
-  testImplementation deps.junit
+  testImplementation deps.junit4
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

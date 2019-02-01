@@ -1,37 +1,23 @@
 package toothpick.sample;
 
-import org.easymock.EasyMockRule;
-import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import toothpick.Toothpick;
-import toothpick.registries.FactoryRegistryLocator;
-import toothpick.registries.MemberInjectorRegistryLocator;
+import javax.inject.Inject;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import toothpick.testing.ToothPickExtension;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ComputerTest {
+class ComputerTest {
 
-  @Rule public EasyMockRule mocks = new EasyMockRule(this);
-  @TestSubject private Computer computerUnderTest = Toothpick.openScope("Computer").getInstance(Computer.class);
+  @RegisterExtension ToothPickExtension toothPickExtension = new ToothPickExtension(this, "MyScope");
 
-  @BeforeClass
-  public static void setUp() throws Exception {
-    MemberInjectorRegistryLocator.setRootRegistry(new toothpick.sample.MemberInjectorRegistry());
-    FactoryRegistryLocator.setRootRegistry(new toothpick.sample.FactoryRegistry());
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    Toothpick.reset();
-  }
+  @Inject Computer computerUnderTest;
 
   @Test
-  public void testMultiply() throws Exception {
+  void testMultiply() {
     //GIVEN
+    toothPickExtension.inject(this);
 
     //WHEN
     int result = computerUnderTest.compute();

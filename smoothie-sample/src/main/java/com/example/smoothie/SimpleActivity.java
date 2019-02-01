@@ -1,10 +1,10 @@
 package com.example.smoothie;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import androidx.fragment.app.FragmentActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -12,9 +12,9 @@ import com.example.smoothie.deps.ContextNamer;
 import javax.inject.Inject;
 import toothpick.Scope;
 import toothpick.Toothpick;
-import toothpick.smoothie.module.SmoothieActivityModule;
+import toothpick.smoothie.module.SmoothieAndroidXActivityModule;
 
-public class SimpleActivity extends Activity {
+public class SimpleActivity extends FragmentActivity {
 
   private Scope scope;
 
@@ -26,7 +26,7 @@ public class SimpleActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     scope = Toothpick.openScopes(getApplication(), this);
-    scope.installModules(new SmoothieActivityModule(this));
+    scope.installModules(new SmoothieAndroidXActivityModule(this));
     super.onCreate(savedInstanceState);
     Toothpick.inject(this, scope);
     setContentView(R.layout.simple_activity);

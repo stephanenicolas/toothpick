@@ -1,20 +1,16 @@
 package toothpick.configuration;
 
-import toothpick.Factory;
-import toothpick.MemberInjector;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
 /**
  * Strategy pattern that allows to change various behaviors of Toothpick.
- * The default configuration is {@link #forProduction()} and {@link #enableReflection()}.
+ * The default configuration is {@link #forProduction()}.
  * A custom configuration can be created and used by toothpick,
  * it is even possible to use a composition of the built-in configurations.
  */
-public class Configuration implements RuntimeCheckConfiguration, ReflectionConfiguration,
-    MultipleRootScopeCheckConfiguration {
+public class Configuration implements RuntimeCheckConfiguration, MultipleRootScopeCheckConfiguration {
 
-  private ReflectionConfiguration reflectionConfiguration = new ReflectionOnConfiguration();
   private RuntimeCheckConfiguration runtimeCheckConfiguration = new RuntimeCheckOffConfiguration();
   private MultipleRootScopeCheckConfiguration multipleRootScopeCheckConfiguration =
       new MultipleRootScopeCheckOffConfiguration();
@@ -52,32 +48,6 @@ public class Configuration implements RuntimeCheckConfiguration, ReflectionConfi
   }
 
   /**
-   * Set enableReflection mode.
-   * It is slower than {@link #disableReflection()} but it does not
-   * need any additional setup of the annotation processors.
-   * It can be used in production or development.
-   *
-   * @return a configuration set up to use reflection.
-   */
-  public Configuration enableReflection() {
-    this.reflectionConfiguration = new ReflectionOnConfiguration();
-    return this;
-  }
-
-  /**
-   * Set reflection free mode.
-   * It is faster than {@link #enableReflection()} but it needs
-   * some additional setup of the annotation processors.
-   * It can be used in production or development.
-   *
-   * @return an optimized reflection free configuration.
-   */
-  public Configuration disableReflection() {
-    this.reflectionConfiguration = new ReflectionOffConfiguration();
-    return this;
-  }
-
-  /**
    * Allows multiple root scopes in the scope forest.
    * @return a configuration that allows multiple root scopes.
    */
@@ -107,14 +77,6 @@ public class Configuration implements RuntimeCheckConfiguration, ReflectionConfi
 
   @Override public void checkCyclesEnd(Class clazz, String name) {
     runtimeCheckConfiguration.checkCyclesEnd(clazz, name);
-  }
-
-  @Override public <T> Factory<T> getFactory(Class<T> clazz) {
-    return reflectionConfiguration.getFactory(clazz);
-  }
-
-  @Override public <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
-    return reflectionConfiguration.getMemberInjector(clazz);
   }
 
   @Override public void checkMultipleRootScopes(Scope scope) {

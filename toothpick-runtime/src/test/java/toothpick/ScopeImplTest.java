@@ -5,7 +5,7 @@ import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
 import toothpick.data.IFoo;
-import toothpick.registries.NoFactoryFoundException;
+import toothpick.locators.NoFactoryFoundException;
 
 import javax.inject.Provider;
 
@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class ScopeImplTest extends ToothpickBaseTest {
+public class ScopeImplTest {
 
   @Test
   public void installOverrideModules_shouldInstallOverrideBindings_whenCalledOnce() {

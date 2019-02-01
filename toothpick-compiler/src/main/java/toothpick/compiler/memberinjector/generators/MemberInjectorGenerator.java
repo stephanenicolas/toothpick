@@ -25,7 +25,7 @@ import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
  */
 public class MemberInjectorGenerator extends CodeGenerator {
 
-  private static final String MEMBER_INJECTOR_SUFFIX = "$$MemberInjector";
+  private static final String MEMBER_INJECTOR_SUFFIX = "__MemberInjector";
 
   private TypeElement targetClass;
   private TypeElement superClassThatNeedsInjection;
@@ -66,7 +66,7 @@ public class MemberInjectorGenerator extends CodeGenerator {
       FieldSpec.Builder superMemberInjectorField =
           FieldSpec.builder(MemberInjector.class, "superMemberInjector", Modifier.PRIVATE)
               //TODO use proper typing here
-              .initializer("new $L$$$$MemberInjector()", getGeneratedFQNClassName(superClassThatNeedsInjection));
+              .initializer("new $L__MemberInjector()", getGeneratedFQNClassName(superClassThatNeedsInjection));
       scopeMemberTypeSpec.addField(superMemberInjectorField.build());
     }
   }

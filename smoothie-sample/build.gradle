@@ -1,18 +1,19 @@
 buildscript {
+  apply from: '../deps.gradle'
   repositories {
-    jcenter()
     google()
+    jcenter()
   }
   dependencies {
-    classpath ('com.android.tools.build:gradle:3.0.0-beta7')
+    classpath deps.androidPlugin
   }
 }
 
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion '26.0.2'
+  compileSdkVersion 28
+  buildToolsVersion '28.0.3'
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -26,13 +27,6 @@ android {
     versionCode 1
     versionName '1.0.0'
     testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
-    javaCompileOptions {
-      annotationProcessorOptions {
-        arguments = [
-          'toothpick_registry_package_name': 'com.example.smoothie',
-        ]
-      }
-    }
   }
 
   lintOptions {
@@ -51,20 +45,23 @@ android {
 }
 
 repositories {
+  google()
+  jcenter()
   maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
-  implementation project(path: ':smoothie', configuration: 'default')
-  implementation project(':toothpick-runtime')
+  implementation deps.tp_smoothie_androidx
+  implementation deps.tp_runtime
   implementation deps.butterknife
   implementation deps.rxandroid
+  implementation deps.androidxv4
 
-  annotationProcessor project(':toothpick-compiler')
+  annotationProcessor deps.tp_compiler
   annotationProcessor deps.butterknife_compiler
 
-  testImplementation project(':toothpick-testing')
-  testImplementation deps.junit
+  testImplementation deps.tp_testing_junit4
+  testImplementation deps.junit4
   testImplementation deps.easymock
   testImplementation deps.truth
   testImplementation deps.robolectric

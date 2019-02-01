@@ -1,0 +1,2 @@
+toothpick.compiler.factory.FactoryProcessor,isolating
+toothpick.compiler.memberinjector.MemberInjectorProcessor,isolating

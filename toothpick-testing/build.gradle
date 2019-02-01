@@ -3,21 +3,10 @@ apply plugin: 'java-library'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-configurations {
-  testAnnotationProcessor
-}
-
 dependencies {
   api project(':toothpick-runtime')
-  implementation deps.junit
-
-  testImplementation deps.easymock
-  testAnnotationProcessor project(':toothpick-compiler')
-}
-
-compileTestJava {
-  options.annotationProcessorPath = configurations.testAnnotationProcessor
-  options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.testing',]
+  
+  testImplementation deps.junit4
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

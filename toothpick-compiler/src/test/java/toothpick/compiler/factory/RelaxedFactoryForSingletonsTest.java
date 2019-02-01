@@ -25,7 +25,7 @@ public class RelaxedFactoryForSingletonsTest extends BaseFactoryTest {
         .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForSingleton$$Factory.class");
+        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForSingleton__Factory.class");
   }
 
   @Test
@@ -48,7 +48,7 @@ public class RelaxedFactoryForSingletonsTest extends BaseFactoryTest {
         .processedWith(ProcessorTestUtilities.factoryProcessorsWithAdditionalTypes("test.CustomScope"))
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForScopeAnnotation$$Factory.class");
+        .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", "TestOptimisticFactoryCreationForScopeAnnotation__Factory.class");
   }
 
   @Test

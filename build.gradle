@@ -2,11 +2,13 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 buildscript {
+  apply from: 'deps.gradle'
   repositories {
+    google()
     jcenter()
   }
   dependencies {
-    classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
+    classpath deps.coverallPlugin
   }
 }
 
@@ -113,30 +115,3 @@ subprojects { project ->
     }
   }
 }
-
-ext.deps = [// Common
-            inject              : 'javax.inject:javax.inject:1',
-
-            // Compiler
-            javapoet            : 'com.squareup:javapoet:1.4.0',
-
-            // Android
-            android             : 'com.google.android:android:4.1.1.4',
-            supportv4           : 'com.google.android:support-v4:r7',
-            supportAnnotations  : 'com.android.support:support-annotations:23.3.0',
-            butterknife         : 'com.jakewharton:butterknife:8.0.0',
-            butterknife_compiler: 'com.jakewharton:butterknife-compiler:8.0.0',
-            rxandroid           : 'io.reactivex:rxandroid:0.23.0',
-
-            // Test dependencies
-            junit               : 'junit:junit:4.12',
-            hamcrest            : 'org.hamcrest:java-hamcrest:2.0.0.0',
-            truth               : 'com.google.truth:truth:0.34',
-            compiletesting      : 'com.google.testing.compile:compile-testing:0.11',
-            easymock            : 'org.easymock:easymock:3.4',
-            powermock           : 'org.powermock:powermock-easymock-release-full:1.6.4',
-            robolectric         : 'org.robolectric:robolectric:3.4.2',
-
-            // Android Test Dependencies
-            espresso            : 'com.android.support.test.espresso:espresso-core:2.2.2',
-            dexmaker            : 'com.google.dexmaker:dexmaker:1.2',]

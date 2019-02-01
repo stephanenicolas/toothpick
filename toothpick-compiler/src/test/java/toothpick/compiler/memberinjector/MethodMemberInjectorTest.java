@@ -22,14 +22,14 @@ public class MethodMemberInjectorTest {
         "class Foo {}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection$$MemberInjector", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection__MemberInjector", Joiner.on('\n').join(//
         "package test;", //
         "", //
         "import java.lang.Override;", //
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestMethodInjection$$MemberInjector implements MemberInjector<TestMethodInjection> {", //
+        "public final class TestMethodInjection__MemberInjector implements MemberInjector<TestMethodInjection> {", //
         "  @Override", //
         "  public void inject(TestMethodInjection target, Scope scope) {", //
         "    Foo param1 = scope.getInstance(Foo.class);", //
@@ -59,7 +59,7 @@ public class MethodMemberInjectorTest {
         "class Foo {}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection$$MemberInjector", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection__MemberInjector", Joiner.on('\n').join(//
         "package test;", //
         "", //
         "import java.lang.Override;", //
@@ -67,7 +67,7 @@ public class MethodMemberInjectorTest {
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestMethodInjection$$MemberInjector implements MemberInjector<TestMethodInjection> {", //
+        "public final class TestMethodInjection__MemberInjector implements MemberInjector<TestMethodInjection> {", //
         "  @Override", //
         "  public void inject(TestMethodInjection target, Scope scope) {", //
         "    Lazy<Foo> param1 = scope.getLazy(Foo.class);", //
@@ -97,7 +97,7 @@ public class MethodMemberInjectorTest {
         "class Foo {}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection$$MemberInjector", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection__MemberInjector", Joiner.on('\n').join(//
         "package test;", //
         "", //
         "import java.lang.Override;", //
@@ -105,7 +105,7 @@ public class MethodMemberInjectorTest {
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestMethodInjection$$MemberInjector implements MemberInjector<TestMethodInjection> {", //
+        "public final class TestMethodInjection__MemberInjector implements MemberInjector<TestMethodInjection> {", //
         "  @Override", //
         "  public void inject(TestMethodInjection target, Scope scope) {", //
         "    Provider<Foo> param1 = scope.getProvider(Foo.class);", //
@@ -135,7 +135,7 @@ public class MethodMemberInjectorTest {
         "class Foo<T> {}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection$$MemberInjector", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestMethodInjection__MemberInjector", Joiner.on('\n').join(//
         "package test;", //
         "", //
         "import java.lang.Override;", //
@@ -143,7 +143,7 @@ public class MethodMemberInjectorTest {
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestMethodInjection$$MemberInjector implements MemberInjector<TestMethodInjection> {", //
+        "public final class TestMethodInjection__MemberInjector implements MemberInjector<TestMethodInjection> {", //
         "  @Override", //
         "  public void inject(TestMethodInjection target, Scope scope) {", //
         "    Lazy<Foo> param1 = scope.getLazy(Foo.class);", //
@@ -277,17 +277,17 @@ public class MethodMemberInjectorTest {
     ));
 
     JavaFileObject expectedSource =
-        JavaFileObjects.forSourceString("test/TestMethodInjectionParent$TestMethodInjection$$MemberInjector", Joiner.on('\n').join(//
+        JavaFileObjects.forSourceString("test/TestMethodInjectionParent$TestMethodInjection__MemberInjector", Joiner.on('\n').join(//
             "package test;", //
             "", //
             "import java.lang.Override;", //
             "import toothpick.MemberInjector;", //
             "import toothpick.Scope;", //
             "", //
-            "public final class TestMethodInjectionParent$TestMethodInjection$$MemberInjector "
+            "public final class TestMethodInjectionParent$TestMethodInjection__MemberInjector "
                 + "implements MemberInjector<TestMethodInjectionParent.TestMethodInjection> {",
             //
-            "  private MemberInjector superMemberInjector = new test.TestMethodInjectionParent$$MemberInjector();\n", //
+            "  private MemberInjector superMemberInjector = new test.TestMethodInjectionParent__MemberInjector();\n", //
             "  @Override", //
             "  public void inject(TestMethodInjectionParent.TestMethodInjection target, Scope scope) {", //
             "    superMemberInjector.inject(target, scope);", //

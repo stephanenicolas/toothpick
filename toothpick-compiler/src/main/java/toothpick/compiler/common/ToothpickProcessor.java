@@ -50,12 +50,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME = "toothpick.ProvidesSingletonInScope";
 
   /**
-   * The name of the annotation processor option to declare in which package a registry should be generated.
-   * If this parameter is not passed, no registry is generated.
-   */
-  public static final String PARAMETER_REGISTRY_PACKAGE_NAME = "toothpick_registry_package_name";
-
-  /**
    * The name of the annotation processor option to exclude classes from the creation of member scopes & factories.
    * Exclude filters are java regex, multiple entries are comma separated.
    */
@@ -70,14 +64,6 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
    * processing internals.
    */
   public static final String PARAMETER_ANNOTATION_TYPES = "toothpick_annotations";
-
-  /**
-   * The name annotation processor option to declare in which packages reside the sub-registries used by the generated registry,
-   * if it is created. Multiple entries are comma separated.
-   *
-   * @see #PARAMETER_REGISTRY_PACKAGE_NAME
-   */
-  public static final String PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES = "toothpick_registry_children_package_names";
 
   /**
    * The name of the annotation processor option to make the TP annotation processor crash when it can't generate
@@ -102,12 +88,9 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   protected Types typeUtils;
   protected Filer filer;
 
-  protected String toothpickRegistryPackageName;
-  protected List<String> toothpickRegistryChildrenPackageNameList;
   protected String toothpickExcludeFilters = "java.*,android.*";
   protected Boolean toothpickCrashWhenMethodIsNotPackageVisible;
   protected Set<String> supportedAnnotationTypes = new HashSet<>();
-  private boolean hasAlreadyRun;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -127,20 +110,12 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     supportedAnnotationTypes.add(typeFQN);
   }
 
-  protected void wasRun() {
-    hasAlreadyRun = true;
-  }
-
-  protected boolean hasAlreadyRun() {
-    return hasAlreadyRun;
-  }
-
-  protected boolean writeToFile(CodeGenerator codeGenerator, String fileDescription, Element... originatingElements) {
+  protected boolean writeToFile(CodeGenerator codeGenerator, String fileDescription, Element originatingElement) {
     Writer writer = null;
     boolean success = true;
 
     try {
-      JavaFileObject jfo = filer.createSourceFile(codeGenerator.getFqcn(), originatingElements);
+      JavaFileObject jfo = filer.createSourceFile(codeGenerator.getFqcn(), originatingElement);
       writer = jfo.openWriter();
       writer.write(codeGenerator.brewJava());
     } catch (IOException e) {
@@ -161,42 +136,11 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   }
 
   /**
-   * Reads both annotation compilers {@link ToothpickProcessor#PARAMETER_REGISTRY_PACKAGE_NAME} and
-   * {@link ToothpickProcessor#PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES} and
-   * {@link ToothpickProcessor#PARAMETER_EXCLUDES}
-   * options from the arguments passed to the processor.
+   * Reads both annotation compilers {@link ToothpickProcessor#PARAMETER_EXCLUDES}
+   * option from the arguments passed to the processor.
    */
   protected void readCommonProcessorOptions() {
-    readOptionRegistryPackageName();
-    readOptionRegistryChildrenPackageNames();
     readOptionExcludes();
-  }
-
-  private void readOptionRegistryPackageName() {
-    Map<String, String> options = processingEnv.getOptions();
-    if (toothpickRegistryPackageName == null) {
-      toothpickRegistryPackageName = options.get(PARAMETER_REGISTRY_PACKAGE_NAME);
-    }
-    if (toothpickRegistryPackageName == null) {
-      warning("No option -A%s to the compiler." + " No registries will be generated.", PARAMETER_REGISTRY_PACKAGE_NAME);
-    }
-  }
-
-  private void readOptionRegistryChildrenPackageNames() {
-    Map<String, String> options = processingEnv.getOptions();
-    if (toothpickRegistryChildrenPackageNameList == null) {
-      toothpickRegistryChildrenPackageNameList = new ArrayList<>();
-      String toothpickRegistryChildrenPackageNames = options.get(PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
-      if (toothpickRegistryChildrenPackageNames != null) {
-        String[] registryPackageNames = toothpickRegistryChildrenPackageNames.split(",");
-        for (String registryPackageName : registryPackageNames) {
-          toothpickRegistryChildrenPackageNameList.add(registryPackageName.trim());
-        }
-      }
-    }
-    if (toothpickRegistryChildrenPackageNameList == null) {
-      warning("No option -A%s was passed to the compiler." + " No sub registries will be used.", PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES);
-    }
   }
 
   private void readOptionExcludes() {

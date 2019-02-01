@@ -19,13 +19,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
@@ -64,13 +64,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
@@ -109,13 +109,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
@@ -192,13 +192,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Wrapper$TestConstructorInProtectedClass$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Wrapper$TestConstructorInProtectedClass__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class Wrapper$TestConstructorInProtectedClass$$Factory implements Factory<Wrapper.TestConstructorInProtectedClass> {", //
+        "public final class Wrapper$TestConstructorInProtectedClass__Factory implements Factory<Wrapper.TestConstructorInProtectedClass> {", //
         "  @Override", //
         "  public Wrapper.TestConstructorInProtectedClass createInstance(Scope scope) {", //
         "    Wrapper.TestConstructorInProtectedClass testConstructorInProtectedClass = new Wrapper.TestConstructorInProtectedClass();", //
@@ -237,13 +237,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestConstructorInPackageClass$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestConstructorInPackageClass__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestConstructorInPackageClass$$Factory implements Factory<TestConstructorInPackageClass> {", //
+        "public final class TestConstructorInPackageClass__Factory implements Factory<TestConstructorInPackageClass> {", //
         "  @Override", //
         "  public TestConstructorInPackageClass createInstance(Scope scope) {", //
         "    TestConstructorInPackageClass testConstructorInPackageClass = new TestConstructorInPackageClass();", //
@@ -301,13 +301,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Test2Constructors$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/Test2Constructors__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class Test2Constructors$$Factory implements Factory<Test2Constructors> {", //
+        "public final class Test2Constructors__Factory implements Factory<Test2Constructors> {", //
         "  @Override", //
         "  public Test2Constructors createInstance(Scope scope) {", //
         "    Test2Constructors test2Constructors = new Test2Constructors();", //
@@ -347,15 +347,15 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
-        "  private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection$$MemberInjector();", //
+        "public final class TestAClassThatNeedsInjection__Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection__MemberInjector();", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -399,15 +399,15 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAInnerClassThatNeedsInjection$InnerClass$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAInnerClassThatNeedsInjection$InnerClass__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestAInnerClassThatNeedsInjection$InnerClass$$Factory implements Factory<TestAInnerClassThatNeedsInjection.InnerClass> {", //
-        "  private MemberInjector<TestAInnerClassThatNeedsInjection.InnerClass> memberInjector = new test.TestAInnerClassThatNeedsInjection$InnerClass$$MemberInjector();", //
+        "public final class TestAInnerClassThatNeedsInjection$InnerClass__Factory implements Factory<TestAInnerClassThatNeedsInjection.InnerClass> {", //
+        "  private MemberInjector<TestAInnerClassThatNeedsInjection.InnerClass> memberInjector = new test.TestAInnerClassThatNeedsInjection$InnerClass__MemberInjector();", //
         "  @Override", //
         "  public TestAInnerClassThatNeedsInjection.InnerClass createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -452,15 +452,15 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
-        "  private MemberInjector<SuperClassThatNeedsInjection> memberInjector = new test.SuperClassThatNeedsInjection$$MemberInjector();", //
+        "public final class TestAClassThatNeedsInjection__Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  private MemberInjector<SuperClassThatNeedsInjection> memberInjector = new test.SuperClassThatNeedsInjection__MemberInjector();", //
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -502,15 +502,15 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestAClassThatNeedsInjection__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestAClassThatNeedsInjection$$Factory implements Factory<TestAClassThatNeedsInjection> {", //
-        "  private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection$$MemberInjector();", //
+        "public final class TestAClassThatNeedsInjection__Factory implements Factory<TestAClassThatNeedsInjection> {", //
+        "  private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection__MemberInjector();", //
 
         "  @Override", //
         "  public TestAClassThatNeedsInjection createInstance(Scope scope) {", //
@@ -552,7 +552,7 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //
@@ -560,7 +560,7 @@ public class FactoryTest extends BaseFactoryTest {
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -603,7 +603,7 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //
@@ -612,7 +612,7 @@ public class FactoryTest extends BaseFactoryTest {
         "import toothpick.Lazy;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -655,7 +655,7 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //
@@ -664,7 +664,7 @@ public class FactoryTest extends BaseFactoryTest {
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -743,14 +743,14 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestNonEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import java.util.List;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -846,14 +846,14 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestClassConstructorThrowingException$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestClassConstructorThrowingException__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import java.lang.String;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestClassConstructorThrowingException$$Factory implements Factory<TestClassConstructorThrowingException> {", //
+        "public final class TestClassConstructorThrowingException__Factory implements Factory<TestClassConstructorThrowingException> {", //
         "  @Override", //
         "  public TestClassConstructorThrowingException createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -899,7 +899,7 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //
@@ -907,7 +907,7 @@ public class FactoryTest extends BaseFactoryTest {
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -950,13 +950,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
@@ -1003,7 +1003,7 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //
@@ -1011,7 +1011,7 @@ public class FactoryTest extends BaseFactoryTest {
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //
@@ -1059,13 +1059,13 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestEmptyConstructor$$Factory implements Factory<TestEmptyConstructor> {", //
+        "public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {", //
         "  @Override", //
         "  public TestEmptyConstructor createInstance(Scope scope) {", //
         "    TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();", //
@@ -1107,7 +1107,7 @@ public class FactoryTest extends BaseFactoryTest {
         "}" //
     ));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Integer;", //
         "import java.lang.Override;", //
@@ -1115,7 +1115,7 @@ public class FactoryTest extends BaseFactoryTest {
         "import toothpick.Factory;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestNonEmptyConstructor$$Factory implements Factory<TestNonEmptyConstructor> {", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
         "  @Override", //
         "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
         "    scope = getTargetScope(scope);", //

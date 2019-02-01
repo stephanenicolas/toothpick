@@ -4,9 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.easymock.Capture;
+import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import toothpick.configuration.Configuration;
 import toothpick.Factory;
 import toothpick.Scope;
@@ -17,36 +23,47 @@ import toothpick.concurrency.threads.ScopeToStringThread;
 import toothpick.concurrency.threads.TestableThread;
 import toothpick.concurrency.utils.ClassCreator;
 import toothpick.concurrency.utils.ThreadTestUtil;
-import toothpick.registries.FactoryRegistry;
-import toothpick.registries.FactoryRegistryLocator;
-import toothpick.registries.MemberInjectorRegistryLocator;
+import toothpick.locators.FactoryLocator;
 
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertTrue;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
+@PrepareForTest(FactoryLocator.class)
 public class BindingsMultiThreadTest {
+
+  public @Rule PowerMockRule rule = new PowerMockRule();
 
   static final String ROOT_SCOPE = "ROOT_SCOPE";
   final List<Object> scopeNames = new CopyOnWriteArrayList<>();
   private static ClassCreator classCreator = new ClassCreator();
 
   @Before
-  public void setUp() throws Exception {
-    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
+  public void setUp() {
+
+    PowerMock.mockStatic(FactoryLocator.class);
+    final Capture<Class> capturedClass = Capture.newInstance();
+    expect(FactoryLocator.getFactory(capture(capturedClass))).andAnswer(new IAnswer<Factory>() {
+      @Override public Factory answer() throws Throwable {
+        return new DynamicTestClassesFactory(capturedClass.getValue(), true);
+      }
+    }).anyTimes();
+    PowerMock.replay(FactoryLocator.class);
+    Toothpick.setConfiguration(Configuration.forProduction());
     Toothpick.openScope(ROOT_SCOPE);
     scopeNames.clear();
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     Toothpick.reset();
-    FactoryRegistryLocator.setRootRegistry(null);
-    MemberInjectorRegistryLocator.setRootRegistry(null);
     ThreadTestUtil.shutdown();
+    PowerMock.verify(FactoryLocator.class);
   }
 
   @Test
-  public void concurrentBindingInstall_shouldNotCrash() throws InterruptedException {
+  public void concurrentBindingInstall_shouldNotCrash() {
     //GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
@@ -67,7 +84,7 @@ public class BindingsMultiThreadTest {
   }
 
   @Test
-  public void concurrentBindingInstallAndToString_shouldNotCrash() throws InterruptedException {
+  public void concurrentBindingInstallAndToString_shouldNotCrash() {
     //GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
@@ -94,12 +111,11 @@ public class BindingsMultiThreadTest {
   }
 
   @Test
-  public void concurrentBindingInstallAndGetInstance_shouldNotCrash() throws InterruptedException {
+  public void concurrentBindingInstallAndGetInstance_shouldNotCrash() {
     //GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
-    FactoryRegistryLocator.setRootRegistry(new DynamicTestClassesFactoryRegistry(true));
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
@@ -123,12 +139,11 @@ public class BindingsMultiThreadTest {
   }
 
   @Test
-  public void concurrentScopedGetInstance_shouldNotCrash() throws InterruptedException {
+  public void concurrentScopedGetInstance_shouldNotCrash() {
     //GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
-    FactoryRegistryLocator.setRootRegistry(new DynamicTestClassesFactoryRegistry(true));
 
     //WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
@@ -177,22 +192,6 @@ public class BindingsMultiThreadTest {
     @Override
     public boolean hasProvidesSingletonInScopeAnnotation() {
       return false;
-    }
-  }
-
-  private static class DynamicTestClassesFactoryRegistry implements FactoryRegistry {
-    private boolean scoped;
-
-    DynamicTestClassesFactoryRegistry(boolean scoped) {
-      this.scoped = scoped;
-    }
-
-    @Override
-    public <T> Factory<T> getFactory(final Class<T> clazz) {
-      if (clazz.getName().startsWith("Class_")) {
-        return new DynamicTestClassesFactory<>(clazz, scoped);
-      }
-      return null;
     }
   }
 }

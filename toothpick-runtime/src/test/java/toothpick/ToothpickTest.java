@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ToothpickTest extends ToothpickBaseTest {
+public class ToothpickTest {
 
   @Test
   public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() throws Exception {

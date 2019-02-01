@@ -1,7 +1,7 @@
 package toothpick;
 
 import javax.inject.Provider;
-import toothpick.registries.FactoryRegistryLocator;
+import toothpick.locators.FactoryLocator;
 
 /**
  * A non thread safe internal provider. It should never be exposed outside of Toothpick.
@@ -84,7 +84,7 @@ public class InternalProviderImpl<T> {
     }
 
     if (factoryClass != null && factory == null) {
-      factory = FactoryRegistryLocator.getFactory(factoryClass);
+      factory = FactoryLocator.getFactory(factoryClass);
       //gc
       factoryClass = null;
     }
@@ -100,7 +100,7 @@ public class InternalProviderImpl<T> {
     }
 
     if (providerFactoryClass != null && providerFactory == null) {
-      providerFactory = FactoryRegistryLocator.getFactory(providerFactoryClass);
+      providerFactory = FactoryLocator.getFactory(providerFactoryClass);
       //gc
       providerFactoryClass = null;
     }

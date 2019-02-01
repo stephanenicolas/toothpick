@@ -25,7 +25,7 @@ import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
  */
 public class FactoryGenerator extends CodeGenerator {
 
-  private static final String FACTORY_SUFFIX = "$$Factory";
+  private static final String FACTORY_SUFFIX = "__Factory";
 
   private ConstructorInjectionTarget constructorInjectionTarget;
 
@@ -61,7 +61,7 @@ public class FactoryGenerator extends CodeGenerator {
       FieldSpec.Builder superMemberInjectorField =
           FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "memberInjector", Modifier.PRIVATE)
               //TODO use proper typing here
-              .initializer("new $L$$$$MemberInjector()", getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection));
+              .initializer("new $L__MemberInjector()", getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection));
       scopeMemberTypeSpec.addField(superMemberInjectorField.build());
     }
   }

@@ -19,16 +19,16 @@ public class RelaxedFactoryForClassContainingFieldsTest extends BaseFactoryTest 
         "}", //
         "  class Foo {}"));
 
-    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestRelaxedFactoryCreationForInjectField$$Factory", Joiner.on('\n').join(//
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestRelaxedFactoryCreationForInjectField__Factory", Joiner.on('\n').join(//
         "package test;", //
         "import java.lang.Override;", //
         "import toothpick.Factory;", //
         "import toothpick.MemberInjector;", //
         "import toothpick.Scope;", //
         "", //
-        "public final class TestRelaxedFactoryCreationForInjectField$$Factory implements Factory<TestRelaxedFactoryCreationForInjectField> {", //
+        "public final class TestRelaxedFactoryCreationForInjectField__Factory implements Factory<TestRelaxedFactoryCreationForInjectField> {", //
         "  private MemberInjector<TestRelaxedFactoryCreationForInjectField> memberInjector = "
-            + "new test.TestRelaxedFactoryCreationForInjectField$$MemberInjector();",
+            + "new test.TestRelaxedFactoryCreationForInjectField__MemberInjector();",
         //
         "  @Override", //
         "  public TestRelaxedFactoryCreationForInjectField createInstance(Scope scope) {", //

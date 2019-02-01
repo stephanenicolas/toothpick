@@ -1,0 +1,52 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath deps.androidPlugin
+  }
+
+}
+
+apply plugin: 'com.android.library'
+
+repositories {
+  google()
+}
+
+dependencies {
+  compileOnly project(':toothpick')
+  api project(':smoothie')
+  compileOnly deps.inject
+  compileOnly deps.supportv4
+
+  testImplementation deps.supportv4
+  testImplementation project(':toothpick-testing')
+  testImplementation deps.junit4
+  testImplementation deps.easymock
+  testImplementation deps.robolectric
+}
+
+android {
+  compileSdkVersion 28
+  buildToolsVersion '28.0.3'
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
+
+  defaultConfig {
+    minSdkVersion 15
+  }
+
+  lintOptions {
+    textReport true
+    textOutput 'stdout'
+    // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
+    checkReleaseBuilds false
+  }
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
