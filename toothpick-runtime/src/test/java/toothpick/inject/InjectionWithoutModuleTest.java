@@ -4,7 +4,6 @@ import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
-import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.Foo;
@@ -22,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Creates a instance in the simplest possible way
   * without any module.
  */
-public class InjectionWithoutModuleTest extends ToothpickBaseTest {
+public class InjectionWithoutModuleTest {
 
   @Test
   public void testSimpleInjection() throws Exception {

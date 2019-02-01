@@ -1,28 +1,26 @@
 package toothpick.compiler.memberinjector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
-import javax.inject.Inject;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
 import toothpick.MemberInjector;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget;
-import toothpick.compiler.registry.generators.RegistryGenerator;
-import toothpick.compiler.registry.targets.RegistryInjectionTarget;
-import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
+
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
+import javax.inject.Inject;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.ElementFilter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This processor's role is to create {@link MemberInjector}.
@@ -37,34 +35,32 @@ import toothpick.registries.memberinjector.AbstractMemberInjectorRegistry;
 //http://stackoverflow.com/a/2067863/693752
 @SupportedAnnotationTypes({ ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME })
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
-    ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
     ToothpickProcessor.PARAMETER_CRASH_WHEN_INJECTED_METHOD_IS_NOT_PACKAGE
 }) //
 public class MemberInjectorProcessor extends ToothpickProcessor {
 
-  private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToFieldInjectorTargetList = new LinkedHashMap<>();
-  private Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMethodInjectorTargetList = new LinkedHashMap<>();
-  private Map<TypeElement, TypeElement> mapTypeElementToSuperTypeElementThatNeedsInjection = new LinkedHashMap<>();
+  private Map<TypeElement, List<FieldInjectionTarget>> mapTypeElementToFieldInjectorTargetList;
+  private Map<TypeElement, List<MethodInjectionTarget>> mapTypeElementToMethodInjectorTargetList;
+  private Map<TypeElement, TypeElement> mapTypeElementToSuperTypeElementThatNeedsInjection;
+
+  private Map<String, TypeElement> allRoundsGeneratedToTypeElement = new HashMap<>();
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-    if (hasAlreadyRun()) {
-      return false;
-    }
-
-    wasRun();
     readCommonProcessorOptions();
     readOptionCrashWhenMethodIsNotPackageProtected();
+
+    mapTypeElementToFieldInjectorTargetList = new LinkedHashMap<>();
+    mapTypeElementToMethodInjectorTargetList = new LinkedHashMap<>();
+    mapTypeElementToSuperTypeElementThatNeedsInjection = new LinkedHashMap<>();
     findAndParseTargets(roundEnv);
 
     // Generate member scopes
     Set<TypeElement> elementWithInjectionSet = new HashSet<>();
     elementWithInjectionSet.addAll(mapTypeElementToFieldInjectorTargetList.keySet());
     elementWithInjectionSet.addAll(mapTypeElementToMethodInjectorTargetList.keySet());
-    List<TypeElement> elementsWithMemberInjectorCreated = new ArrayList<>();
 
     for (TypeElement typeElement : elementWithInjectionSet) {
       List<FieldInjectionTarget> fieldInjectionTargetList = mapTypeElementToFieldInjectorTargetList.get(typeElement);
@@ -77,21 +73,8 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
               methodInjectionTargetList, //
               typeUtils);
       String fileDescription = String.format("MemberInjector for type %s", typeElement);
-      boolean success = writeToFile(memberInjectorGenerator, fileDescription, typeElement);
-      if (success) {
-        elementsWithMemberInjectorCreated.add(typeElement);
-      }
-    }
-
-    // Generate Registry
-    if (toothpickRegistryPackageName != null) {
-      RegistryInjectionTarget registryInjectionTarget =
-          new RegistryInjectionTarget(MemberInjector.class, AbstractMemberInjectorRegistry.class, toothpickRegistryPackageName,
-              toothpickRegistryChildrenPackageNameList, elementsWithMemberInjectorCreated);
-
-      String fileDescription = "MemberInjector registry";
-      Element[] allTypes = elementsWithMemberInjectorCreated.toArray(new Element[elementsWithMemberInjectorCreated.size()]);
-      writeToFile(new RegistryGenerator(registryInjectionTarget, typeUtils), fileDescription, allTypes);
+      writeToFile(memberInjectorGenerator, fileDescription, typeElement);
+      allRoundsGeneratedToTypeElement.put(memberInjectorGenerator.getFqcn(), typeElement);
     }
 
     return false;
@@ -183,16 +166,6 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   }
 
   //used for testing only
-  void setToothpickRegistryPackageName(String toothpickRegistryPackageName) {
-    this.toothpickRegistryPackageName = toothpickRegistryPackageName;
-  }
-
-  //used for testing only
-  void setToothpickRegistryChildrenPackageNameList(List<String> toothpickRegistryChildrenPackageNameList) {
-    this.toothpickRegistryChildrenPackageNameList = toothpickRegistryChildrenPackageNameList;
-  }
-
-  //used for testing only
   void setToothpickExcludeFilters(String toothpickExcludeFilters) {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
   }
@@ -200,5 +173,10 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
   //used for testing only
   void setCrashOrWarnWhenMethodIsNotPackageVisible(boolean crashOrWarnWhenMethodIsNotPackageVisible) {
     this.toothpickCrashWhenMethodIsNotPackageVisible = crashOrWarnWhenMethodIsNotPackageVisible;
+  }
+
+  //used for testing only
+  TypeElement getOriginatingElement(String generatedQualifiedName) {
+    return allRoundsGeneratedToTypeElement.get(generatedQualifiedName);
   }
 }

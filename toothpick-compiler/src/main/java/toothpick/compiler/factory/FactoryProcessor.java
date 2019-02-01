@@ -1,13 +1,11 @@
 package toothpick.compiler.factory;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import toothpick.Factory;
+import toothpick.ProvidesSingletonInScope;
+import toothpick.compiler.common.ToothpickProcessor;
+import toothpick.compiler.factory.generators.FactoryGenerator;
+import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
+
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
@@ -19,14 +17,14 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
-import toothpick.Factory;
-import toothpick.ProvidesSingletonInScope;
-import toothpick.compiler.common.ToothpickProcessor;
-import toothpick.compiler.factory.generators.FactoryGenerator;
-import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
-import toothpick.compiler.registry.generators.RegistryGenerator;
-import toothpick.compiler.registry.targets.RegistryInjectionTarget;
-import toothpick.registries.factory.AbstractFactoryRegistry;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -54,8 +52,6 @@ import static javax.lang.model.element.Modifier.PRIVATE;
  */
 //http://stackoverflow.com/a/2067863/693752
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_REGISTRY_PACKAGE_NAME, //
-    ToothpickProcessor.PARAMETER_REGISTRY_CHILDREN_PACKAGE_NAMES, //
     ToothpickProcessor.PARAMETER_EXCLUDES, //
     ToothpickProcessor.PARAMETER_ANNOTATION_TYPES, //
     ToothpickProcessor.PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED, //
@@ -64,8 +60,10 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private static final String SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE = "injectable";
 
-  private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
+  private Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget;
   private Boolean crashWhenNoFactoryCanBeCreated;
+
+  private Map<String, TypeElement> allRoundsGeneratedToTypeElement = new HashMap<>();
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -79,40 +77,20 @@ public class FactoryProcessor extends ToothpickProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-    if (hasAlreadyRun()) {
-      return false;
-    }
-
-    wasRun();
     readCommonProcessorOptions();
     readCrashWhenNoFactoryCanBeCreatedOption();
+
+    mapTypeElementToConstructorInjectionTarget = new LinkedHashMap<>();
     findAndParseTargets(roundEnv, annotations);
 
-
     // Generate Factories
-    List<TypeElement> elementsWithFactoryCreated = new ArrayList<>();
-
     for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
       ConstructorInjectionTarget constructorInjectionTarget = entry.getValue();
       FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget, typeUtils);
       TypeElement typeElement = entry.getKey();
       String fileDescription = format("Factory for type %s", typeElement);
-      boolean success = writeToFile(factoryGenerator, fileDescription, typeElement);
-      if (success) {
-        elementsWithFactoryCreated.add(typeElement);
-      }
-    }
-
-    // Generate Registry
-    //this allows tests to by pass the option mechanism in processors
-    if (toothpickRegistryPackageName != null) {
-      RegistryInjectionTarget registryInjectionTarget =
-          new RegistryInjectionTarget(Factory.class, AbstractFactoryRegistry.class, toothpickRegistryPackageName,
-              toothpickRegistryChildrenPackageNameList, elementsWithFactoryCreated);
-
-      String fileDescription = "Factory registry";
-      Element[] allTypes = elementsWithFactoryCreated.toArray(new Element[elementsWithFactoryCreated.size()]);
-      writeToFile(new RegistryGenerator(registryInjectionTarget, typeUtils), fileDescription, allTypes);
+      writeToFile(factoryGenerator, fileDescription, typeElement);
+      allRoundsGeneratedToTypeElement.put(factoryGenerator.getFqcn(), typeElement);
     }
 
     return false;
@@ -402,21 +380,17 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   //used for testing only
-  void setToothpickRegistryPackageName(String toothpickRegistryPackageName) {
-    this.toothpickRegistryPackageName = toothpickRegistryPackageName;
-  }
-
-  //used for testing only
-  void setToothpickRegistryChildrenPackageNameList(List<String> toothpickRegistryChildrenPackageNameList) {
-    this.toothpickRegistryChildrenPackageNameList = toothpickRegistryChildrenPackageNameList;
-  }
-
-  //used for testing only
   void setToothpickExcludeFilters(String toothpickExcludeFilters) {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
   }
 
+  //used for testing only
   void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
     this.crashWhenNoFactoryCanBeCreated = crashWhenNoFactoryCanBeCreated;
+  }
+
+  //used for testing only
+  TypeElement getOriginatingElement(String generatedQualifiedName) {
+    return allRoundsGeneratedToTypeElement.get(generatedQualifiedName);
   }
 }

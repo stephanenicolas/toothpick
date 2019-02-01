@@ -1,17 +1,16 @@
 package toothpick.sample;
 
-import org.easymock.TestSubject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class Computer2Test {
+class Computer2Test {
 
-  @TestSubject private Computer2 computer2UnderTest = new Computer2();
+  private Computer2 computer2UnderTest = new Computer2();
 
   @Test
-  public void testMultiply() throws Exception {
+  void testMultiply() {
     //GIVEN
 
     //WHEN

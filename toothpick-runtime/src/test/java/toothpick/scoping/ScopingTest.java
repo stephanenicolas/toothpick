@@ -1,9 +1,9 @@
 package toothpick.scoping;
 
+import org.junit.After;
 import org.junit.Test;
 import toothpick.Scope;
 import toothpick.Toothpick;
-import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
@@ -29,9 +29,14 @@ import static toothpick.configuration.Configuration.forDevelopment;
 /*
  * Tests scopes related features of toothpick.
  */
-public class ScopingTest extends ToothpickBaseTest {
+public class ScopingTest {
 
-  @Test
+    @After
+    public void tearDown() throws Exception {
+        Toothpick.reset();
+    }
+
+    @Test
   public void childInjector_shouldReturnInstancesInItsScope_whenParentAlsoHasSameKeyInHisScope()
       throws Exception {
     //GIVEN

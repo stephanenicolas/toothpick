@@ -1,5 +1,3 @@
-import org.gradle.internal.jvm.Jvm
-
 apply plugin: 'java-library'
 
 sourceCompatibility = 1.7
@@ -10,22 +8,23 @@ configurations {
 }
 
 dependencies {
-  api project(':toothpick-generated-core')
+  api project(':toothpick')
   api deps.inject
 
-  testImplementation deps.junit
-  testImplementation project(':toothpick-generated-core')
+  testImplementation deps.junit4
   testImplementation deps.easymock
   testImplementation deps.powermock
   testImplementation deps.hamcrest
-  testImplementation files(Jvm.current().getToolsJar())
+  testImplementation deps.powermock_rule
   testAnnotationProcessor project(':toothpick-compiler')
 }
 
+test {
+  jvmArgs '-noverify'
+}
+
 compileTestJava {
-  options.annotationProcessorPath = configurations.testAnnotationProcessor
-  options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.test',
-                          '-Atoothpick_annotations=toothpick.data.CustomScope',]
+  options.compilerArgs = ['-Atoothpick_annotations=toothpick.data.CustomScope',]
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

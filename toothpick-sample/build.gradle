@@ -1,32 +1,21 @@
 apply plugin: 'java'
 
-configurations {
-  annotationProcessor
+repositories {
+  google()
+  jcenter()
 }
+
+apply from: '../deps.gradle'
 
 dependencies {
-  implementation project(':toothpick-runtime')
+  implementation deps.tp_runtime
 
-  annotationProcessor project(':toothpick-compiler')
+  annotationProcessor deps.tp_compiler
 
-  testImplementation project(':toothpick-testing')
-  testImplementation deps.junit
+  testImplementation deps.tp_testing_junit5
+  testImplementation deps.junit5_api
+  testRuntimeOnly deps.junit5_engine
   testImplementation deps.easymock
+  testImplementation deps.hamcrest
+  testAnnotationProcessor deps.tp_compiler
 }
-
-afterEvaluate {
-  if (project.tasks.findByName('check')) {
-    jacocoTestReport {
-      reports {
-        xml.enabled = false
-        html.enabled = false
-      }
-    }
-  }
-}
-
-compileJava {
-  options.annotationProcessorPath = configurations.annotationProcessor
-  options.compilerArgs = ['-Atoothpick_registry_package_name=toothpick.sample',]
-}
-

@@ -78,28 +78,32 @@ Currently Toothpick has 2 sets of examples :
 * one [for Android](https://github.com/stephanenicolas/toothpick/tree/master/smoothie-sample)
 
 ## Setup
+
+The latest version of TP is provided by a badge at the top of this page.
+
 For Android : 
 ```groovy
-#android setup using gradle 2.2.3
+#android setup using gradle 3.3.0
 buildscript {
   repositories {
+    google()
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.2.3'
+    classpath 'com.android.tools.build:gradle:3.3.0'
   }
 }
 
 ...
 
 dependencies {
-  compile 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.3'
-  // and for android -> compile 'com.github.stephanenicolas.toothpick:smoothie:1.1.3'
-  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.3'
+  implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.x'
+  // and for android -> implementation 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.x'
+  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:2.x'
 
   //highly recommended
-  testCompile 'com.github.stephanenicolas.toothpick:toothpick-testing:1.1.3'
-  testCompile 'mockito or easymock'
+  testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:2.x'
+  testImplementation 'mockito or easymock'
 }
 ```
 
@@ -110,13 +114,13 @@ For java:
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-compiler</artifactId>
-      <version>1.1.3</version>
+      <version>2.x</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-runtime</artifactId>
-      <version>1.1.3</version>
+      <version>2.x</version>
       <scope>compile</scope>
     </dependency>
     
@@ -124,7 +128,7 @@ For java:
     <dependency> 
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-testing</artifactId>
-      <version>1.1.3</version>
+      <version>2.x</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -173,3 +177,7 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 
 * [Okuki](https://github.com/wongcain/okuki) is a simple, hierarchical navigation bus and back stack for Android, with optional Rx bindings, and Toothpick DI integration.
 * [KotlinWeather](https://github.com/ekamp/KotlinWeather) is a simple example of using ToothPick with Kotlin and gradle integration using kapt.
+
+# Credits
+
+Most of the effort on version 2 has been actively supported by Groupon. Thanks for this awesome OSS commitment !

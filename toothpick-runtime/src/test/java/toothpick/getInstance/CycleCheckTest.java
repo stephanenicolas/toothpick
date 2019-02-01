@@ -1,19 +1,19 @@
 package toothpick.getInstance;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import toothpick.Scope;
 import toothpick.ScopeImpl;
 import toothpick.Toothpick;
-import toothpick.ToothpickBaseTest;
 import toothpick.config.Module;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.CyclicDependencyException;
 import toothpick.data.CyclicFoo;
 import toothpick.data.CyclicNamedFoo;
 import toothpick.data.IFoo;
-import toothpick.registries.NoFactoryFoundException;
+import toothpick.locators.NoFactoryFoundException;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -24,21 +24,25 @@ import static org.junit.Assert.fail;
  * Creates a instance in the simplest possible way
   * without any module.
  */
-public class CycleCheckTest extends ToothpickBaseTest {
+public class CycleCheckTest {
 
   @BeforeClass
-  public static void setUp() throws Exception {
-    ToothpickBaseTest.setUp();
-    Toothpick.setConfiguration(Configuration.forDevelopment().disableReflection());
+  public static void setUp() {
+    Toothpick.setConfiguration(Configuration.forDevelopment());
   }
 
   @AfterClass
-  public static void staticTearDown() throws Exception {
-    Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
+  public static void staticTearDown() {
+    Toothpick.setConfiguration(Configuration.forProduction());
+  }
+
+  @After
+  public void tearDown() {
+    Toothpick.reset();
   }
 
   @Test(expected = CyclicDependencyException.class)
-  public void testSimpleCycleDetection() throws Exception {
+  public void testSimpleCycleDetection() {
     //GIVEN
     Scope scope = new ScopeImpl("");
 
@@ -50,7 +54,7 @@ public class CycleCheckTest extends ToothpickBaseTest {
   }
 
   @Test
-  public void testCycleDetection_whenSameClass_and_differentName_shouldNotCrash() throws Exception {
+  public void testCycleDetection_whenSameClass_and_differentName_shouldNotCrash() {
     //GIVEN
     final CyclicNamedFoo instance1 = new CyclicNamedFoo();
     Scope scope = new ScopeImpl("");
@@ -70,7 +74,7 @@ public class CycleCheckTest extends ToothpickBaseTest {
   }
 
   @Test(expected = NoFactoryFoundException.class)
-  public void testCycleDetection_whenGetInstanceFails_shouldCloseCycle() throws Exception {
+  public void testCycleDetection_whenGetInstanceFails_shouldCloseCycle() {
     //GIVEN
     Scope scope = new ScopeImpl("");
 

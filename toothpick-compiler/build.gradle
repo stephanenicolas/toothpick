@@ -6,11 +6,11 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-  api project(':toothpick-generated-core')
+  api project(':toothpick')
   api deps.inject
   api deps.javapoet
 
-  testImplementation deps.junit
+  testImplementation deps.junit4
   testImplementation deps.truth
   testImplementation deps.compiletesting
   testImplementation files(Jvm.current().getToolsJar())

@@ -1,6 +1,19 @@
 <!-- Continue from top -->
 
-## Release version 1.1.4 (To be released)
+## Release version 2.0.0 (To be released)
+
+* support incremental annotation processing. All processors are now incremental and isolating.
+* remove all registries, TP 2.x doesn't use registries any more. They were actually slower than not using them after
+we reworked on registries to enable obfuscation. Reflection is now used to load the factories and member injectors,
+this is normal (and all other annotation processor based libs do that too) and there is no impact on performance.
+* support multiple rounds of annotation processing.
+* generated classes now use `__` instead of `$$` to make TP more compliant with some tools.
+* removed the generate ContextSingleton annotation
+* smoothie now binds the ClipClipboardManager service. Thx to Cody Henthrone for this. Sorry we were late merging this !
+* smoothie now contains non support and non android x bindings. We have introduced 2 new artifacts:
+smoothie-support and smoothie-androidx that respectively support the old legacy support library and the new android X libs).
+* toothpick-testing now only contains core testing classes. New artifacts have been introduced to support junit 4 nd junit 5 (resp. : toothpick-testing-junit4, toothpick-testing-junit5)
+* added a consumer proguard file
 
 ## Release version 1.1.3 (March 10th, 2018)
 

@@ -1,0 +1,20 @@
+apply plugin: 'java-library'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+  api project(':toothpick-testing')
+  implementation deps.junit5_api
+
+  testRuntimeOnly deps.junit5_engine
+  testImplementation deps.easymock
+  testImplementation deps.hamcrest
+  testAnnotationProcessor project(':toothpick-compiler')
+}
+
+test {
+  useJUnitPlatform()
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

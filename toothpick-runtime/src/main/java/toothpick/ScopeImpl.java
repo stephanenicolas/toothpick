@@ -4,7 +4,7 @@ import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.configuration.ConfigurationHolder;
 import toothpick.configuration.IllegalBindingException;
-import toothpick.registries.FactoryRegistryLocator;
+import toothpick.locators.FactoryLocator;
 
 import javax.inject.Provider;
 import java.util.ArrayList;
@@ -326,7 +326,7 @@ public class ScopeImpl extends ScopeNode {
     //they will be a bit slower as we need to get the factory first
     //we need to know whether they are scoped or not, if so we scope them
     //if not, they are place in the pool
-    Factory<T> factory = FactoryRegistryLocator.getFactory(clazz);
+    Factory<T> factory = FactoryLocator.getFactory(clazz);
 
     if (factory.hasScopeAnnotation()) {
       //the new provider will have to work in the current scope

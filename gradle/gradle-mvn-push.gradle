@@ -138,7 +138,6 @@ afterEvaluate { project ->
     task androidJavadocs(type: Javadoc) {
       source = android.sourceSets.main.java.source
       classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-      classpath += configurations.debugCompileClasspath
     }
 
     task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {

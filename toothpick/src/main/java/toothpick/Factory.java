@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 /**
  * Creates instances of classes.
- * Factories are discovered via a {@code FactoryRegistry}.
+ * Factories are discovered via the {@code FactoryLocator}.
  * Implementations are generated during annotation processing.
  * As soon as a class as an {@link javax.inject.Inject} annotated constructor,
  * a factory is created. All classes that need to be created via toothpick

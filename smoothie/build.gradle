@@ -1,31 +1,33 @@
 buildscript {
   repositories {
-    jcenter()
     google()
+    jcenter()
   }
   dependencies {
-    classpath ('com.android.tools.build:gradle:3.0.0-beta7')
+    classpath deps.androidPlugin
   }
 
 }
 
 apply plugin: 'com.android.library'
 
+repositories {
+  google()
+}
+
 dependencies {
   compileOnly project(':toothpick')
   compileOnly deps.inject
-  compileOnly deps.supportv4
 
-  testImplementation deps.supportv4
   testImplementation project(':toothpick-testing')
-  testImplementation deps.junit
+  testImplementation deps.junit4
   testImplementation deps.easymock
   testImplementation deps.robolectric
 }
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion '26.0.2'
+  compileSdkVersion 28
+  buildToolsVersion '28.0.3'
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
@@ -35,11 +37,7 @@ android {
   defaultConfig {
     minSdkVersion 15
 
-    javaCompileOptions {
-      annotationProcessorOptions {
-        includeCompileClasspath = true
-      }
-    }
+    consumerProguardFiles 'proguard-rules.txt'
   }
 
   lintOptions {

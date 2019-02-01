@@ -1,6 +1,5 @@
 package toothpick;
 
-import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.data.Bar;
@@ -8,13 +7,15 @@ import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooProvider;
 import toothpick.data.FooProviderAnnotatedProvidesSingleton;
+import toothpick.data.FooProviderAnnotatedSingletonImpl;
 import toothpick.data.FooProviderReusingInstance;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
 import toothpick.data.IFooProvider;
-import toothpick.data.FooProviderAnnotatedSingletonImpl;
 import toothpick.data.IFooSingleton;
 import toothpick.data.IFooWithBarProvider;
+
+import javax.inject.Provider;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.not;
@@ -31,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * from guice that toothpick honors as well.
  * All things created by toothpick are injected.
  */
-public class AllBindingsTestWithDefaultConfiguration extends ToothpickBaseTest {
+public class AllBindingsTestWithDefaultConfiguration {
 
   @Test
   public void simpleBinding_shouldCreateInjectedInstances_whenNotSingleton() {

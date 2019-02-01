@@ -17,11 +17,11 @@ public class BaseFactoryTest {
           .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
           .compilesWithoutError()
           .and()
-          .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", noFactoryClass + "$$Factory.class");
+          .generatesFileNamed(StandardLocation.locationFor("CLASS_OUTPUT"), "test", noFactoryClass + "__Factory.class");
       fail("A factory was created when it shouldn't.");
     } catch (AssertionError e) {
       assertThat(e.getMessage(), containsString(
-          String.format("generated the file named \"%s$$Factory.class\" in package \"%s\";", noFactoryClass, noFactoryPackageName)));
+          String.format("generated the file named \"%s__Factory.class\" in package \"%s\";", noFactoryClass, noFactoryPackageName)));
     }
   }
 }

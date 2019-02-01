@@ -20,6 +20,7 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import android.content.ClipboardManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -53,6 +54,7 @@ import static android.content.Context.TELEPHONY_SERVICE;
 import static android.content.Context.VIBRATOR_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 import static android.content.Context.WIFI_SERVICE;
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class SmoothieApplicationModule extends Module {
   public SmoothieApplicationModule(Application application) {
@@ -99,6 +101,7 @@ public class SmoothieApplicationModule extends Module {
     bindSystemService(application, TelephonyManager.class, TELEPHONY_SERVICE);
     bindSystemService(application, AudioManager.class, AUDIO_SERVICE);
     bindSystemService(application, DownloadManager.class, DOWNLOAD_SERVICE);
+    bindSystemService(application, ClipboardManager.class, CLIPBOARD_SERVICE);
   }
 
   private <T> void bindSystemService(Application application, Class<T> serviceClass, String serviceName) {
