@@ -32,7 +32,7 @@ public final class Toothpick {
    * Find scope by this {@code name} in current scopes tree.
    * @return true if scope exist.
    */
-  public static boolean hasScope(Object name) {
+  public static boolean isScopeOpen(Object name) {
     if (name == null) {
       throw new IllegalArgumentException("null scope names are not allowed.");
     }
