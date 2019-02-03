@@ -29,8 +29,10 @@ public final class Toothpick {
   }
 
   /**
-   * Find scope by this {@code name} in current scopes tree.
-   * @return true if scope exist.
+   * Indicates whether a scope is open.
+   *
+   * @param name the name of the scope.
+   * @return true if the scope has been opened and not yet closed.
    */
   public static boolean isScopeOpen(Object name) {
     if (name == null) {
