@@ -241,7 +241,7 @@ public class ToothpickTest extends ToothpickBaseTest {
     //GIVEN
 
     //WHEN
-    Boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
+    boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
 
     //THEN
     assertThat(isFooScopeOpen, is(false));
@@ -253,7 +253,7 @@ public class ToothpickTest extends ToothpickBaseTest {
     Toothpick.openScope("foo");
 
     //WHEN
-    Boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
+    boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
 
     //THEN
     assertThat(isFooScopeOpen, is(true));
@@ -266,7 +266,7 @@ public class ToothpickTest extends ToothpickBaseTest {
 
     //WHEN
     Toothpick.closeScope("foo");
-    Boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
+    boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
 
     //THEN
     assertThat(isFooScopeOpen, is(false));
@@ -279,7 +279,7 @@ public class ToothpickTest extends ToothpickBaseTest {
 
     //WHEN
     Toothpick.closeScope("foo");
-    Boolean isBarScopeOpen = Toothpick.isScopeOpen("bar");
+    boolean isBarScopeOpen = Toothpick.isScopeOpen("bar");
 
     //THEN
     assertThat(isBarScopeOpen, is(false));
