@@ -29,6 +29,20 @@ public final class Toothpick {
   }
 
   /**
+   * Indicates whether a scope is open.
+   *
+   * @param name the name of the scope.
+   * @return true if the scope has been opened and not yet closed.
+   */
+  public static boolean isScopeOpen(Object name) {
+    if (name == null) {
+      throw new IllegalArgumentException("null scope names are not allowed.");
+    }
+
+    return MAP_KEY_TO_SCOPE.containsKey(name);
+  }
+
+  /**
    * Opens multiple scopes in a row.
    * Opened scopes will be children of each other in left to right order (e.g. {@code
    * openScopes(a,b)} opens scopes {@code a} and {@code b}

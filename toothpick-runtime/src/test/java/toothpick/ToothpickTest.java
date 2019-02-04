@@ -236,6 +236,55 @@ public class ToothpickTest {
     verify(mockScope);
   }
 
+  @Test
+  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasNotCreated() throws Exception {
+    //GIVEN
+
+    //WHEN
+    boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
+
+    //THEN
+    assertThat(isFooScopeOpen, is(false));
+  }
+
+  @Test
+  public void isScopeOpen_shouldReturnTrue_WhenThisScopesWasCreated() throws Exception {
+    //GIVEN
+    Toothpick.openScope("foo");
+
+    //WHEN
+    boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
+
+    //THEN
+    assertThat(isFooScopeOpen, is(true));
+  }
+
+  @Test
+  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasClosed() throws Exception {
+    //GIVEN
+    Toothpick.openScope("foo");
+
+    //WHEN
+    Toothpick.closeScope("foo");
+    boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
+
+    //THEN
+    assertThat(isFooScopeOpen, is(false));
+  }
+
+  @Test
+  public void isScopeOpen_shouldReturnFalse_WhenParentScopesWasClosed() throws Exception {
+    //GIVEN
+    Toothpick.openScopes("foo", "bar");
+
+    //WHEN
+    Toothpick.closeScope("foo");
+    boolean isBarScopeOpen = Toothpick.isScopeOpen("bar");
+
+    //THEN
+    assertThat(isBarScopeOpen, is(false));
+  }
+
   @After
   public void tearDown() throws Exception {
     Toothpick.reset();
