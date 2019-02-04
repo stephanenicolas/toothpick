@@ -1,5 +1,9 @@
 <!-- Continue from top -->
 
+## Release version 2.1.0 (Feb 4th, 2019)
+
+* Add Toothpick.isScopeOpen method to check whether a scope is already open. Thx to terrakok for this.
+
 ## Release version 2.0.0 (Feb 1st, 2019)
 
 * support incremental annotation processing. All processors are now incremental and isolating.
