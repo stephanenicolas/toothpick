@@ -1,6 +1,8 @@
 include ':toothpick'
 include ':toothpick-javax-annotations'
 include ':toothpick-compiler'
+include ':toothpick-kotlin'
+include ':toothpick-kotlin-androidx'
 include ':toothpick-runtime'
 include ':toothpick-testing'
 include ':toothpick-testing-junit4'

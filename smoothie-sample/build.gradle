@@ -6,10 +6,13 @@ buildscript {
   }
   dependencies {
     classpath deps.androidPlugin
+    classpath deps.kotlin_plugin
   }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
   compileSdkVersion 28
@@ -53,11 +56,16 @@ repositories {
 dependencies {
   implementation deps.tp_smoothie_androidx
   implementation deps.tp_runtime
+  implementation deps.tp_kotlin
+  implementation deps.tp_kotlin_androidx
   implementation deps.butterknife
   implementation deps.rxandroid
   implementation deps.androidxv4
 
-  annotationProcessor deps.tp_compiler
+  implementation deps.kotlin_stdlib
+  implementation deps.kotlin_reflect
+
+  kapt deps.tp_compiler
   annotationProcessor deps.butterknife_compiler
 
   testImplementation deps.tp_testing_junit4
@@ -69,4 +77,10 @@ dependencies {
   androidTestImplementation deps.espresso
   androidTestImplementation deps.easymock
   androidTestImplementation deps.dexmaker
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
 }

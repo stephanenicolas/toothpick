@@ -26,5 +26,14 @@
         android:name=".PersistActivity"/>
     <activity
         android:name=".LessSimpleActivity"/>
+
+    <activity
+        android:name=".kotlin.SimpleActivity"/>
+    <activity
+        android:name=".kotlin.RxMVPActivity"/>
+    <activity
+        android:name=".kotlin.PersistActivity"/>
+    <activity
+        android:name=".kotlin.LessSimpleActivity"/>
   </application>
 </manifest>

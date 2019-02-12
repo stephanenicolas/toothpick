@@ -1,0 +1,52 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+
+  dependencies {
+    classpath deps.androidPlugin
+    classpath deps.kotlin_plugin
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+repositories {
+  google()
+}
+
+android {
+  compileSdkVersion 28
+  buildToolsVersion '28.0.3'
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  defaultConfig {
+    minSdkVersion 15
+  }
+
+  lintOptions {
+    textReport true
+    textOutput 'stdout'
+    // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
+    checkReleaseBuilds false
+  }
+}
+
+dependencies {
+  api project(':toothpick-kotlin')
+  compileOnly deps.inject
+  compileOnly deps.androidxv4
+
+  implementation deps.androidxAppCompat
+  implementation deps.kotlin_stdlib
+
+//  testImplementation deps.junit4
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

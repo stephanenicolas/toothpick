@@ -10,20 +10,28 @@ ext.deps = [// Common
             coverallPlugin      : 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3',
             supportv4           : 'com.android.support:support-v4:28.0.0',
             androidxv4          : 'androidx.legacy:legacy-support-v4:1.0.0',
+            androidxAppCompat   : 'androidx.appcompat:appcompat:1.1.0-alpha01',
             butterknife         : 'com.jakewharton:butterknife:10.0.0',
             butterknife_compiler: 'com.jakewharton:butterknife-compiler:10.0.0',
             rxandroid           : 'io.reactivex:rxandroid:1.2.1',
 
+            // Kotlin
+            kotlin_plugin       : 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20',
+            kotlin_stdlib       : 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.20',
+            kotlin_reflect      : 'org.jetbrains.kotlin:kotlin-reflect:1.3.20',
+
             // TP artifacts for composite builds
-            tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:2.0.0',
-            tp_smoothie_androidx: 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.0.0',
-            tp_smoothie_support : 'com.github.stephanenicolas.toothpick:smoothie-support:2.0.0',
-            tp                  : 'com.github.stephanenicolas.toothpick:toothpick:2.0.0',
-            tp_runtime          : 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.0.0',
-            tp_compiler         : 'com.github.stephanenicolas.toothpick:toothpick-compiler:2.0.0',
-            tp_testing          : 'com.github.stephanenicolas.toothpick:toothpick-testing:2.0.0',
-            tp_testing_junit4   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit4:2.0.0',
-            tp_testing_junit5   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:2.0.0',
+            tp_smoothie         : "com.github.stephanenicolas.toothpick:smoothie:${project.findProperty('VERSION_NAME')}",
+            tp_smoothie_androidx: "com.github.stephanenicolas.toothpick:smoothie-androidx:${project.findProperty('VERSION_NAME')}",
+            tp_smoothie_support : "com.github.stephanenicolas.toothpick:smoothie-support:${project.findProperty('VERSION_NAME')}",
+            tp                  : "com.github.stephanenicolas.toothpick:toothpick:${project.findProperty('VERSION_NAME')}",
+            tp_runtime          : "com.github.stephanenicolas.toothpick:toothpick-runtime:${project.findProperty('VERSION_NAME')}",
+            tp_compiler         : "com.github.stephanenicolas.toothpick:toothpick-compiler:${project.findProperty('VERSION_NAME')}",
+            tp_kotlin           : "com.github.stephanenicolas.toothpick:toothpick-kotlin:${project.findProperty('VERSION_NAME')}",
+            tp_kotlin_androidx  : "com.github.stephanenicolas.toothpick:toothpick-kotlin-androidx:${project.findProperty('VERSION_NAME')}",
+            tp_testing          : "com.github.stephanenicolas.toothpick:toothpick-testing:${project.findProperty('VERSION_NAME')}",
+            tp_testing_junit4   : "com.github.stephanenicolas.toothpick:toothpick-testing-junit4:${project.findProperty('VERSION_NAME')}",
+            tp_testing_junit5   : "com.github.stephanenicolas.toothpick:toothpick-testing-junit5:${project.findProperty('VERSION_NAME')}",
 
             // Test dependencies
             junit4              : 'junit:junit:4.12',
