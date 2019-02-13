@@ -66,7 +66,7 @@ dependencies {
   implementation deps.kotlin_reflect
 
   kapt deps.tp_compiler
-  annotationProcessor deps.butterknife_compiler
+  kapt deps.butterknife_compiler
 
   testImplementation deps.tp_testing_junit4
   testImplementation deps.junit4
