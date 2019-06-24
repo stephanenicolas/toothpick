@@ -465,6 +465,6 @@ public class ScopingTest {
     FooCustomScope instanceInChild = scope1.getInstance(FooCustomScope.class);
 
     //THEN
-    assertThat(instanceInParent, sameInstance(instanceInChild));
+    assertThat(instanceInParent, not(sameInstance(instanceInChild)));
   }
 }
