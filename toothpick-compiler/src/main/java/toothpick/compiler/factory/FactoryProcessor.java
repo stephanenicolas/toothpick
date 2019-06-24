@@ -1,5 +1,6 @@
 package toothpick.compiler.factory;
 
+import javax.inject.Singleton;
 import toothpick.Factory;
 import toothpick.ProvidesSingletonInScope;
 import toothpick.compiler.common.ToothpickProcessor;
@@ -247,8 +248,8 @@ public class FactoryProcessor extends ToothpickProcessor {
   private ConstructorInjectionTarget createConstructorInjectionTarget(ExecutableElement constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final String scopeName = getScopeName(enclosingElement);
-    final boolean hasScopeInstancesAnnotation = enclosingElement //
-        .getAnnotation(ProvidesSingletonInScope.class) != null;
+    final boolean hasSingletonAnnotation = hasSingletonAnnotation(enclosingElement);
+    final boolean hasScopeInstancesAnnotation = hasScopeInstancesAnnotation(enclosingElement);
     if (hasScopeInstancesAnnotation && scopeName == null) {
       error(enclosingElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           enclosingElement.getQualifiedName().toString());
@@ -256,7 +257,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     ConstructorInjectionTarget constructorInjectionTarget =
-        new ConstructorInjectionTarget(enclosingElement, scopeName, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
+        new ConstructorInjectionTarget(enclosingElement, scopeName, hasSingletonAnnotation, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
     constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
     constructorInjectionTarget.throwsThrowable = !constructorElement.getThrownTypes().isEmpty();
 
@@ -265,7 +266,9 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private ConstructorInjectionTarget createConstructorInjectionTarget(TypeElement typeElement) {
     final String scopeName = getScopeName(typeElement);
-    final boolean hasScopeInstancesAnnotation = typeElement.getAnnotation(ProvidesSingletonInScope.class) != null;
+    final boolean hasScopeInstancesAnnotation = hasScopeInstancesAnnotation(typeElement);
+    final boolean hasSingletonAnnotation = typeElement.getAnnotation(Singleton.class) != null;
+
     if (hasScopeInstancesAnnotation && scopeName == null) {
       error(typeElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           typeElement.getQualifiedName().toString());
@@ -304,7 +307,7 @@ public class FactoryProcessor extends ToothpickProcessor {
         }
 
         ConstructorInjectionTarget constructorInjectionTarget =
-            new ConstructorInjectionTarget(typeElement, scopeName, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
+            new ConstructorInjectionTarget(typeElement, scopeName, hasSingletonAnnotation, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
         return constructorInjectionTarget;
       }
     }
@@ -336,18 +339,33 @@ public class FactoryProcessor extends ToothpickProcessor {
    */
   private String getScopeName(TypeElement typeElement) {
     String scopeName = null;
+    boolean hasScopeAnnotation = false;
     for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
       TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-      if (annotationTypeElement.getAnnotation(Scope.class) != null) {
+      boolean isSingletonAnnotation = annotationTypeElement.getQualifiedName().contentEquals("javax.inject.Singleton");
+      if (!isSingletonAnnotation && annotationTypeElement.getAnnotation(Scope.class) != null) {
         checkScopeAnnotationValidity(annotationTypeElement);
         if (scopeName != null) {
           error(typeElement, "Only one @Scope qualified annotation is allowed : %s", scopeName);
         }
         scopeName = annotationTypeElement.getQualifiedName().toString();
       }
+      if (isSingletonAnnotation) {
+        hasScopeAnnotation = true;
+      }
     }
-
+    if (hasScopeAnnotation && scopeName == null) {
+      scopeName = "javax.inject.Singleton";
+    }
     return scopeName;
+  }
+
+  private boolean hasSingletonAnnotation(TypeElement typeElement) {
+    return typeElement.getAnnotation(Singleton.class) != null;
+  }
+
+  private boolean hasScopeInstancesAnnotation(TypeElement typeElement) {
+    return typeElement.getAnnotation(ProvidesSingletonInScope.class) != null;
   }
 
   private void checkScopeAnnotationValidity(TypeElement annotation) {

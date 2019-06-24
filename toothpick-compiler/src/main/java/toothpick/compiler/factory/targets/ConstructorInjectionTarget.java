@@ -12,16 +12,20 @@ public final class ConstructorInjectionTarget {
   public final List<ParamInjectionTarget> parameters = new ArrayList<>();
   public final TypeElement builtClass;
   public String scopeName;
+  public boolean hasSingletonAnnotation;
   public final boolean hasScopeInstancesAnnotation;
   /** true if the class as @Injected members */
   public final TypeElement superClassThatNeedsMemberInjection;
   public boolean throwsThrowable;
 
-  public ConstructorInjectionTarget(TypeElement builtClass, String scopeName, boolean hasScopeInstancesAnnotation,
+  public ConstructorInjectionTarget(TypeElement builtClass, String scopeName,
+                                    boolean hasSingletonAnnotation,
+                                    boolean hasScopeInstancesAnnotation,
       TypeElement superClassThatNeedsMemberInjection) {
     this.builtClass = builtClass;
     this.scopeName = scopeName;
-    this.hasScopeInstancesAnnotation = hasScopeInstancesAnnotation;
+      this.hasSingletonAnnotation = hasSingletonAnnotation;
+      this.hasScopeInstancesAnnotation = hasScopeInstancesAnnotation;
     this.superClassThatNeedsMemberInjection = superClassThatNeedsMemberInjection;
   }
 }

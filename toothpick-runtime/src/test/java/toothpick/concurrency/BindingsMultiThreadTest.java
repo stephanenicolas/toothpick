@@ -190,6 +190,11 @@ public class BindingsMultiThreadTest {
     }
 
     @Override
+    public boolean hasSingletonAnnotation() {
+      return false;
+    }
+
+    @Override
     public boolean hasProvidesSingletonInScopeAnnotation() {
       return false;
     }

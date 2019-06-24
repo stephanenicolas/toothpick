@@ -40,6 +40,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -85,6 +89,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -127,6 +135,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -213,6 +225,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -255,6 +271,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -322,6 +342,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -369,6 +393,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -421,6 +449,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -477,6 +509,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -528,6 +564,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -575,6 +615,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -630,6 +674,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -679,6 +727,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -764,6 +816,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return false;", //
         "  }", //
         "  @Override", //
@@ -874,6 +930,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -925,6 +985,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -968,6 +1032,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return true;", //
         "  }", //
         "  @Override", //
@@ -1029,6 +1097,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -1080,6 +1152,10 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return false;", //
         "  }", //
@@ -1089,6 +1165,70 @@ public class FactoryTest extends BaseFactoryTest {
     assert_().about(javaSource())
         .that(source)
         .processedWith(ProcessorTestUtilities.factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+
+  @Test
+  public void testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestNonEmptyConstructor", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Scope;", //
+        "import javax.inject.Singleton;", //
+        "import java.lang.annotation.Retention;", //
+        "import java.lang.annotation.RetentionPolicy;", //
+        "@Scope", //
+        "@Retention(RetentionPolicy.RUNTIME)", //
+        "@interface CustomScope {}", //
+        "@CustomScope @Singleton", //
+        "public final class TestNonEmptyConstructor {", //
+        "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
+        "  public @interface FooScope {}", //
+        "}" //
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestEmptyNonConstructor__Factory", Joiner.on('\n').join(//
+        "package test;", //
+        "import java.lang.Integer;", //
+        "import java.lang.Override;", //
+        "import java.lang.String;", //
+        "import toothpick.Factory;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
+        "  @Override", //
+        "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+        "    scope = getTargetScope(scope);", //
+        "    String param1 = scope.getInstance(String.class);", //
+        "    Integer param2 = scope.getInstance(Integer.class);", //
+        "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+        "    return testNonEmptyConstructor;", //
+        "  }", //
+        "  @Override", //
+        "  public Scope getTargetScope(Scope scope) {", //
+        "    return scope.getParentScope(test.CustomScope.class);", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryProcessors())
         .compilesWithoutError()
         .and()
         .generatesSources(expectedSource);
@@ -1130,6 +1270,10 @@ public class FactoryTest extends BaseFactoryTest {
         "  }", //
         "  @Override", //
         "  public boolean hasScopeAnnotation() {", //
+        "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasSingletonAnnotation() {", //
         "    return true;", //
         "  }", //
         "  @Override", //

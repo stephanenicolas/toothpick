@@ -47,6 +47,7 @@ public class FactoryGenerator extends CodeGenerator {
     emitCreateInstance(factoryTypeSpec);
     emitGetTargetScope(factoryTypeSpec);
     emitHasScopeAnnotation(factoryTypeSpec);
+    emitHasSingletonAnnotation(factoryTypeSpec);
     emitHasScopeInstancesAnnotation(factoryTypeSpec);
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), factoryTypeSpec.build()).build();
@@ -151,6 +152,16 @@ public class FactoryGenerator extends CodeGenerator {
         .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)
         .addStatement("return $L", hasScopeAnnotation);
+    builder.addMethod(hasScopeAnnotationBuilder.build());
+  }
+
+  private void emitHasSingletonAnnotation(TypeSpec.Builder builder) {
+    boolean hasSingletonAnnotation = constructorInjectionTarget.hasSingletonAnnotation;
+    MethodSpec.Builder hasScopeAnnotationBuilder = MethodSpec.methodBuilder("hasSingletonAnnotation")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return $L", hasSingletonAnnotation);
     builder.addMethod(hasScopeAnnotationBuilder.build());
   }
 

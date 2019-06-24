@@ -27,14 +27,15 @@ public interface Factory<T> {
   T createInstance(Scope scope);
 
   /**
-   * This method will return the scope where {@code T} instances will be created and
-   * where instances of {@code T} will be recycled if {@link #hasScopeAnnotation()}
-   * return {@code true}.
+   * This method will return the scope where {@code T} instances will be created. In TP2,
+   * it used to be denote where instances of {@code T} will be recycled. In TP3, this is not true
+   * anymore. To recycle instances of a class, one should use {@link javax.inject.Singleton}.
    *
    * Given a {@code currentScope}, the factory can return either :
    * <ul>
    * <li> the scope itself (if class {@code T} is not annotated.
-   * <li> the root scope if the class {@code T} is annotated with {@link javax.inject.Singleton}.
+   * <li> the root scope if the class {@code T} is annotated with {@link javax.inject.Singleton}
+   * and no other scope annotation is present.
    * <li> a parent scope if the class {@code T} is annotated with an different scope annotation
    * (i.e. an annotation qualified by {@link javax.inject.Scope}).
    * </ul>
@@ -46,11 +47,20 @@ public interface Factory<T> {
   Scope getTargetScope(Scope currentScope);
 
   /**
-   * Signals that the class is annotated with an annotation that is qualified by {@link javax.inject.Scope}.
+   * Signals that the class is annotated with an annotation that is qualified by {@link javax.inject.Scope} or
+   * the class is annotated with {@link javax.inject.Singleton}.
    *
-   * @return true iff the class is annotated with an annotation that is qualified by {@link javax.inject.Scope}.
+   * @return true iff the class is annotated with an annotation that is qualified by {@link javax.inject.Scope} or
+   * the class is annotated with {@link javax.inject.Singleton}.
    */
   boolean hasScopeAnnotation();
+
+  /**
+   * Signals that the class is annotated with {@link javax.inject.Singleton}.
+   *
+   * @return true iff the class is annotated with {@link javax.inject.Singleton}.
+   */
+  boolean hasSingletonAnnotation();
 
   /**
    * Signals that the class is anotated with {@link ProvidesSingletonInScope}.

@@ -90,7 +90,7 @@ public class InternalProviderImpl<T> {
     }
 
     if (factory != null) {
-      if (!factory.hasScopeAnnotation() && !isCreatingSingletonInScope) {
+      if (!factory.hasSingletonAnnotation() && !isCreatingSingletonInScope) {
         return factory.createInstance(scope);
       }
       instance = factory.createInstance(scope);
@@ -112,7 +112,7 @@ public class InternalProviderImpl<T> {
         providerFactory = null;
         return instance;
       }
-      if (providerFactory.hasScopeAnnotation() || isCreatingSingletonInScope) {
+      if (providerFactory.hasSingletonAnnotation() || isCreatingSingletonInScope) {
         providerInstance = providerFactory.createInstance(scope);
         //gc
         providerFactory = null;

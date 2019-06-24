@@ -343,7 +343,7 @@ public class ScopingTest {
     assertThat(instance, sameInstance(instance2));
   }
 
-  @Test public void singleton_shouldBeShared_whenBoundingIsSimpleOnScopeAnnotatedClass()
+  @Test public void singleton_shouldNotBeShared_whenBoundingIsSimpleOnScopeAnnotatedClass()
       throws Exception {
     //GIVEN
     Toothpick.setConfiguration(forDevelopment());
@@ -362,7 +362,7 @@ public class ScopingTest {
         childScope.getInstance(FooProviderAnnotatedProvidesSingleton.class);
 
     //THEN
-    assertThat(instance, sameInstance(instance2));
+    assertThat(instance, not(sameInstance(instance2)));
   }
 
   @Test(expected = IllegalStateException.class)
@@ -449,7 +449,7 @@ public class ScopingTest {
         scope1.getInstance(FooProviderAnnotatedProvidesSingleton.class);
 
     //THEN
-    assertThat(instanceInParent, sameInstance(instanceInChild));
+    assertThat(instanceInParent, not(sameInstance(instanceInChild)));
   }
 
   @Test
