@@ -13,19 +13,25 @@ public final class ConstructorInjectionTarget {
   public final TypeElement builtClass;
   public String scopeName;
   public boolean hasSingletonAnnotation;
-  public final boolean hasScopeInstancesAnnotation;
+  public boolean hasReleasableAnnotation;
+  public final boolean hasProvidesSingletonInScopeAnnotation;
+  public final boolean hasProvidesReleasableAnnotation;
   /** true if the class as @Injected members */
   public final TypeElement superClassThatNeedsMemberInjection;
   public boolean throwsThrowable;
 
   public ConstructorInjectionTarget(TypeElement builtClass, String scopeName,
                                     boolean hasSingletonAnnotation,
-                                    boolean hasScopeInstancesAnnotation,
+                                    boolean hasReleasableAnnotation,
+                                    boolean hasProvidesSingletonInScopeAnnotation,
+                                    boolean hasProvidesReleasableAnnotation,
       TypeElement superClassThatNeedsMemberInjection) {
     this.builtClass = builtClass;
     this.scopeName = scopeName;
-      this.hasSingletonAnnotation = hasSingletonAnnotation;
-      this.hasScopeInstancesAnnotation = hasScopeInstancesAnnotation;
+    this.hasSingletonAnnotation = hasSingletonAnnotation;
+    this.hasReleasableAnnotation = hasReleasableAnnotation;
+    this.hasProvidesSingletonInScopeAnnotation = hasProvidesSingletonInScopeAnnotation;
+    this.hasProvidesReleasableAnnotation = hasProvidesReleasableAnnotation;
     this.superClassThatNeedsMemberInjection = superClassThatNeedsMemberInjection;
   }
 }

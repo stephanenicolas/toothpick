@@ -48,7 +48,7 @@ public class FactoryGenerator extends CodeGenerator {
     emitGetTargetScope(factoryTypeSpec);
     emitHasScopeAnnotation(factoryTypeSpec);
     emitHasSingletonAnnotation(factoryTypeSpec);
-    emitHasScopeInstancesAnnotation(factoryTypeSpec);
+    emitHasProvidesSingletonInScopeAnnotation(factoryTypeSpec);
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), factoryTypeSpec.build()).build();
     return javaFile.toString();
@@ -165,12 +165,31 @@ public class FactoryGenerator extends CodeGenerator {
     builder.addMethod(hasScopeAnnotationBuilder.build());
   }
 
-  private void emitHasScopeInstancesAnnotation(TypeSpec.Builder builder) {
+  private void emitHasReleasableAnnotation(TypeSpec.Builder builder) {
+    boolean hasReleasableAnnotation = constructorInjectionTarget.hasReleasableAnnotation;
+    MethodSpec.Builder hasScopeAnnotationBuilder = MethodSpec.methodBuilder("hasReleasableAnnotation")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return $L", hasReleasableAnnotation);
+    builder.addMethod(hasScopeAnnotationBuilder.build());
+  }
+
+  private void emitHasProvidesSingletonInScopeAnnotation(TypeSpec.Builder builder) {
     MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProvidesSingletonInScopeAnnotation")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", constructorInjectionTarget.hasScopeInstancesAnnotation);
+        .addStatement("return $L", constructorInjectionTarget.hasProvidesSingletonInScopeAnnotation);
+    builder.addMethod(hasProducesSingletonBuilder.build());
+  }
+
+  private void emitHasProvidesReleaseableAnnotation(TypeSpec.Builder builder) {
+    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProvidesReleasableAnnotation")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return $L", constructorInjectionTarget.hasProvidesReleasableAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 

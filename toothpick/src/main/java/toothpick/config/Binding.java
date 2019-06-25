@@ -7,7 +7,9 @@ import javax.inject.Qualifier;
 public class Binding<T> {
   private boolean isCreatingInstancesInScope;
   private boolean isCreatingSingletonInScope;
+  private boolean isCreatingReleasable;
   private boolean isProvidingSingletonInScope;
+  private boolean isProvidingReleasable;
   private Class<T> key;
   private Mode mode;
   private Class<? extends T> implementationClass;
@@ -108,6 +110,14 @@ public class Binding<T> {
     return isProvidingSingletonInScope;
   }
 
+  public boolean isCreatingReleasable() {
+    return isCreatingReleasable;
+  }
+
+  public boolean isProvidingReleasable() {
+    return isProvidingReleasable;
+  }
+
   public enum Mode {
     SIMPLE,
     CLASS,
@@ -132,8 +142,9 @@ public class Binding<T> {
      * to create a singleton using the binding's scope
      * and reuse it inside the binding's scope
      */
-    public void singletonInScope() {
+    public CanBeMarkedAsReleasableClassBinding singletonInScope() {
       Binding.this.singletonInScope();
+      return new CanBeMarkedAsReleasableClassBinding();
     }
   }
 
@@ -142,9 +153,31 @@ public class Binding<T> {
      * to provide a singleton using the binding's scope
      * and reuse it inside the binding's scope
      */
-    public void providesSingletonInScope() {
+    public CanBeMarkedAsProvidesReleasableClassBinding providesSingletonInScope() {
       Binding.this.singletonInScope();
       isProvidingSingletonInScope = true;
+      return new CanBeMarkedAsProvidesReleasableClassBinding();
+    }
+  }
+
+  public class CanBeMarkedAsReleasableClassBinding {
+    /**
+     * to provide a singleton using the binding's scope
+     * and reuse it inside the binding's scope
+     */
+    public void releasable() {
+      Binding.this.isCreatingReleasable = true;
+    }
+  }
+
+  public class CanBeMarkedAsProvidesReleasableClassBinding extends CanBeMarkedAsReleasableClassBinding {
+    /**
+     * to provide a singleton using the binding's scope
+     * and reuse it inside the binding's scope
+     */
+    public CanBeMarkedAsReleasableClassBinding providesReleasable() {
+      Binding.this.isProvidingReleasable = true;
+      return this;
     }
   }
 

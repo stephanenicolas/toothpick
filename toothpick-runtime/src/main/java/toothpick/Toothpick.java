@@ -147,9 +147,9 @@ public final class Toothpick {
    * test modules.
    * @param scope the scope we want to reset.
    */
-  public static void reset(Scope scope) {
+  public static void release(Scope scope) {
     ScopeNode scopeNode = (ScopeNode) scope;
-    scopeNode.reset();
+    scopeNode.release();
   }
 
   /**

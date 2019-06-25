@@ -17,11 +17,15 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   public ScopedProviderImpl(Scope scope, Class<?> factoryKeyClass,
       boolean isProviderFactoryClass,
       boolean isCreatingSingletonInScope,
-      boolean isProvidingSingletonInScope) {
+      boolean isCreatingReleasableInScope,
+      boolean isProvidingInstancesInScope,
+      boolean isProvidingReleasable) {
     super(factoryKeyClass,
         isProviderFactoryClass,
         isCreatingSingletonInScope,
-        isProvidingSingletonInScope);
+        isCreatingReleasableInScope,
+        isProvidingInstancesInScope,
+        isProvidingReleasable);
     this.scope = scope;
   }
 

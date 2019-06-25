@@ -230,6 +230,8 @@ public class ScopeImpl extends ScopeNode {
             false,
             binding.isCreatingInstancesInScope(),
             binding.isCreatingSingletonInScope(),
+            binding.isCreatingReleasable(),
+            false,
             false);
       case CLASS:
         return createInternalProvider(this,
@@ -237,20 +239,26 @@ public class ScopeImpl extends ScopeNode {
             false,
             binding.isCreatingInstancesInScope(),
             binding.isCreatingSingletonInScope(),
+            binding.isCreatingReleasable(),
+            false,
             false);
       case INSTANCE:
         return new InternalProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
         // to ensure providers do not have to deal with concurrency, we wrap them in a thread safe provider
         // We do not need to pass the scope here because the provider won't use any scope to create the instance
-        return new InternalProviderImpl<>(binding.getProviderInstance(), binding.isProvidingSingletonInScope());
+        return new InternalProviderImpl<>(binding.getProviderInstance(),
+                                          binding.isProvidingSingletonInScope(),
+                                          binding.isProvidingReleasable());
       case PROVIDER_CLASS:
         return createInternalProvider(this,
             binding.getProviderClass(),
             true,
             binding.isCreatingInstancesInScope(),
             binding.isCreatingSingletonInScope(),
-            binding.isProvidingSingletonInScope());
+            binding.isCreatingReleasable(),
+            binding.isProvidingSingletonInScope(),
+            binding.isProvidingReleasable());
       //JACOCO:OFF
       default:
         throw new IllegalStateException(format("mode is not handled: %s. This should not happen.", binding.getMode()));
@@ -262,18 +270,24 @@ public class ScopeImpl extends ScopeNode {
       boolean isProviderClass,
       boolean isCreatingInstancesInScope,
       boolean isCreatingSingletonInScope,
-      boolean isProvidingInstancesInScope) {
+      boolean isCreatingReleasable,
+      boolean isProvidingInstancesInScope,
+      boolean isProvidingReleasable) {
     if (isCreatingInstancesInScope) {
       return new ScopedProviderImpl<>(scope,
           factoryKeyClass,
           isProviderClass,
           isCreatingSingletonInScope,
-          isProvidingInstancesInScope);
+          isCreatingReleasable,
+          isProvidingInstancesInScope,
+          isProvidingReleasable);
     } else {
       return new InternalProviderImpl<>(factoryKeyClass,
           isProviderClass,
           isCreatingSingletonInScope,
-          isProvidingInstancesInScope);
+          isCreatingReleasable,
+          isProvidingInstancesInScope,
+          isProvidingReleasable);
     }
   }
 
@@ -552,6 +566,27 @@ public class ScopeImpl extends ScopeNode {
     mapClassesToUnNamedBoundProviders.clear();
     hasTestModules = false;
     installBindingForScope();
+  }
+
+  @Override
+  public void release() {
+    Toothpick.release(this);
+    synchronized (mapClassesToUnNamedBoundProviders) {
+      for (InternalProviderImpl internalProvider : mapClassesToUnNamedBoundProviders.values()) {
+        if(internalProvider.isReleasable()) {
+          internalProvider.release();
+        }
+      }
+    }
+    synchronized (mapClassesToNamedBoundProviders) {
+      for (Map<String, InternalProviderImpl> mapNameToInternalProvider : mapClassesToNamedBoundProviders.values()) {
+        for (InternalProviderImpl internalProvider : mapNameToInternalProvider.values()) {
+          if (internalProvider.isReleasable()) {
+            internalProvider.release();
+          }
+        }
+      }
+    }
   }
 
   /**

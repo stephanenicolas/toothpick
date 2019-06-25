@@ -63,9 +63,23 @@ public interface Factory<T> {
   boolean hasSingletonAnnotation();
 
   /**
+   * Signals that the class is annotated with {@link toothpick.Releasable}.
+   *
+   * @return true iff the class is annotated with {@link toothpick.Releasable}.
+   */
+  boolean hasReleasableAnnotation();
+
+  /**
    * Signals that the class is anotated with {@link ProvidesSingletonInScope}.
    *
    * @return true iff the class is annotated as a producer class whose instances will produce a singleton.
    */
   boolean hasProvidesSingletonInScopeAnnotation();
+
+  /**
+   * Signals that the class is anotated with {@link ProvidesReleasable}.
+   *
+   * @return true iff the class is annotated as a producer class whose instances will produce releasable singletons.
+   */
+  boolean hasProvidesReleasableAnnotation();
 }

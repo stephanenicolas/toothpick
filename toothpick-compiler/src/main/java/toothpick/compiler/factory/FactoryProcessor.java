@@ -2,7 +2,9 @@ package toothpick.compiler.factory;
 
 import javax.inject.Singleton;
 import toothpick.Factory;
+import toothpick.ProvidesReleasable;
 import toothpick.ProvidesSingletonInScope;
+import toothpick.Releasable;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
@@ -249,15 +251,25 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final String scopeName = getScopeName(enclosingElement);
     final boolean hasSingletonAnnotation = hasSingletonAnnotation(enclosingElement);
-    final boolean hasScopeInstancesAnnotation = hasScopeInstancesAnnotation(enclosingElement);
-    if (hasScopeInstancesAnnotation && scopeName == null) {
+    final boolean hasReleasableAnnotation = hasReleasableAnnotation(enclosingElement);
+    final boolean hasProvidesSingletonInScopeAnnotation = hasProvidesSingletonInScopeAnnotation(enclosingElement);
+    final boolean hasProvidesReleasableAnnotation = hasProvidesReleasableAnnotation(enclosingElement);
+    checkReleasableAnnotationValidity(enclosingElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    checkProvidesReleasableAnnotationValidity(enclosingElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    if (hasProvidesSingletonInScopeAnnotation && scopeName == null) {
       error(enclosingElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           enclosingElement.getQualifiedName().toString());
     }
     TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     ConstructorInjectionTarget constructorInjectionTarget =
-        new ConstructorInjectionTarget(enclosingElement, scopeName, hasSingletonAnnotation, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
+        new ConstructorInjectionTarget(enclosingElement,
+                                       scopeName,
+                                       hasSingletonAnnotation,
+                                       hasReleasableAnnotation,
+                                       hasProvidesSingletonInScopeAnnotation,
+                                       hasProvidesReleasableAnnotation,
+                                       superClassWithInjectedMembers);
     constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
     constructorInjectionTarget.throwsThrowable = !constructorElement.getThrownTypes().isEmpty();
 
@@ -266,10 +278,13 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private ConstructorInjectionTarget createConstructorInjectionTarget(TypeElement typeElement) {
     final String scopeName = getScopeName(typeElement);
-    final boolean hasScopeInstancesAnnotation = hasScopeInstancesAnnotation(typeElement);
-    final boolean hasSingletonAnnotation = typeElement.getAnnotation(Singleton.class) != null;
-
-    if (hasScopeInstancesAnnotation && scopeName == null) {
+    final boolean hasSingletonAnnotation = hasSingletonAnnotation(typeElement);
+    final boolean hasReleasableAnnotation = hasReleasableAnnotation(typeElement);
+    final boolean hasProvidesSingletonInScopeAnnotation = hasProvidesSingletonInScopeAnnotation(typeElement);
+    final boolean hasProvidesReleasableAnnotation = hasProvidesReleasableAnnotation(typeElement);
+    checkReleasableAnnotationValidity(typeElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    checkProvidesReleasableAnnotationValidity(typeElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    if (hasProvidesSingletonInScopeAnnotation && scopeName == null) {
       error(typeElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           typeElement.getQualifiedName().toString());
     }
@@ -307,7 +322,13 @@ public class FactoryProcessor extends ToothpickProcessor {
         }
 
         ConstructorInjectionTarget constructorInjectionTarget =
-            new ConstructorInjectionTarget(typeElement, scopeName, hasSingletonAnnotation, hasScopeInstancesAnnotation, superClassWithInjectedMembers);
+            new ConstructorInjectionTarget(typeElement,
+                                           scopeName,
+                                           hasSingletonAnnotation,
+                                           hasReleasableAnnotation,
+                                           hasProvidesSingletonInScopeAnnotation,
+                                           hasProvidesReleasableAnnotation,
+                                           superClassWithInjectedMembers);
         return constructorInjectionTarget;
       }
     }
@@ -364,8 +385,36 @@ public class FactoryProcessor extends ToothpickProcessor {
     return typeElement.getAnnotation(Singleton.class) != null;
   }
 
-  private boolean hasScopeInstancesAnnotation(TypeElement typeElement) {
+ private boolean hasReleasableAnnotation(TypeElement typeElement) {
+    return typeElement.getAnnotation(Releasable.class) != null;
+  }
+
+  private boolean hasProvidesSingletonInScopeAnnotation(TypeElement typeElement) {
     return typeElement.getAnnotation(ProvidesSingletonInScope.class) != null;
+  }
+
+  private boolean hasProvidesReleasableAnnotation(TypeElement typeElement) {
+    return typeElement.getAnnotation(ProvidesReleasable.class) != null;
+  }
+
+  private void checkReleasableAnnotationValidity(TypeElement typeElement,
+                                                 boolean hasReleasableAnnotation,
+                                                 boolean hasSingletonAnnotation) {
+    if (hasReleasableAnnotation && !hasSingletonAnnotation) {
+      error(typeElement, "Class %s is annotated with @Releasable, "
+          + "it should also be annotated with either @Singleton.",
+            typeElement.getQualifiedName());
+    }
+  }
+
+  private void checkProvidesReleasableAnnotationValidity(TypeElement typeElement,
+                                                         boolean hasProvidesReleasableAnnotation,
+                                                         boolean hasProvideSingletonInScopeAnnotation) {
+    if (hasProvidesReleasableAnnotation && !hasProvideSingletonInScopeAnnotation) {
+      error(typeElement, "Class %s is annotated with @ProvidesReleasable, "
+                + "it should also be annotated with either @ProvidesSingletonInScope.",
+            typeElement.getQualifiedName());
+    }
   }
 
   private void checkScopeAnnotationValidity(TypeElement annotation) {

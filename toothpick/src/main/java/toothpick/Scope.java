@@ -200,4 +200,10 @@ public interface Scope {
    * @param obj the object to be injected.
    */
   void inject(Object obj);
+
+  /**
+   * Release all releasable singletons. Factories and internal providers won't be released.
+   * Typically, on Android, this method is called when the app is under memory pressure.
+   */
+  void release();
 }
