@@ -179,7 +179,7 @@ public interface Scope {
    * @param modules an array of modules that define bindings.
    * @see #installTestModules
    */
-  void installModules(Module... modules);
+  Scope installModules(Module... modules);
 
   /**
    * <em>DO NOT USE IT IN PRODUCTION.</em><br/>
@@ -191,7 +191,7 @@ public interface Scope {
    *
    * @param modules an array of modules that define test bindings.
    */
-  void installTestModules(Module... modules);
+  Scope installTestModules(Module... modules);
 
   /**
    * Injects all dependencies (transitively) in {@code obj}, dependencies will be obtained in the
