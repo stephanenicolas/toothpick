@@ -61,8 +61,8 @@ public class InternalProviderImpl<T> {
   public InternalProviderImpl(Class<?> factoryKeyClass,
       boolean isProviderFactoryClass,
       boolean isCreatingSingletonInScope,
-      boolean isProvidingSingletonInScope,
       boolean isProviderReleasable,
+      boolean isProvidingSingletonInScope,
       boolean isProvidingReleasable) {
     if (factoryKeyClass == null) {
       throw new IllegalArgumentException("The factory class can't be null.");
