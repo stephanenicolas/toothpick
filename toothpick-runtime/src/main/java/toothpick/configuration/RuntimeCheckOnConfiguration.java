@@ -46,7 +46,7 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
     for (Annotation annotation : clazz.getAnnotations()) {
       Class<? extends Annotation> annotationType = annotation.annotationType();
       if (annotationType.isAnnotationPresent(javax.inject.Scope.class)) {
-        if (!scope.isBoundToScopeAnnotation(annotationType)) {
+        if (!scope.isScopeAnnotationSupported(annotationType)) {
           throw new IllegalBindingException(format("Class %s cannot be bound."
                   + " It has a scope annotation: %s that is not supported by current scope: %s",
               clazz.getName(), annotationType.getName(), scope.getName()));

@@ -348,7 +348,7 @@ public class ScopingTest {
     //GIVEN
     Toothpick.setConfiguration(forDevelopment());
     Scope childScope = Toothpick.openScopes("root", "child");
-    childScope.bindScopeAnnotation(CustomScope.class);
+    childScope.supportScopeAnnotation(CustomScope.class);
     childScope.installModules(new Module() {
       {
         bind(FooProviderAnnotatedProvidesSingleton.class);

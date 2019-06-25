@@ -144,7 +144,7 @@ public abstract class ScopeNode implements Scope {
 
     ScopeNode currentScope = this;
     while (currentScope != null) {
-      if (currentScope.isBoundToScopeAnnotation(scopeAnnotationClass)) {
+      if (currentScope.isScopeAnnotationSupported(scopeAnnotationClass)) {
         return currentScope;
       }
       currentScope = currentScope.getParentScope();
@@ -178,7 +178,7 @@ public abstract class ScopeNode implements Scope {
    * @see #getParentScope(Class)
    */
   @Override
-  public void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+  public void supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
     if (scopeAnnotationClass == Singleton.class) {
       throw new IllegalArgumentException(format("The annotation @Singleton is already bound "
@@ -189,7 +189,7 @@ public abstract class ScopeNode implements Scope {
   }
 
   @Override
-  public boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+  public boolean isScopeAnnotationSupported(Class<? extends Annotation> scopeAnnotationClass) {
     if (scopeAnnotationClass == Singleton.class) {
       return parentScopes.isEmpty();
     }
@@ -290,7 +290,7 @@ public abstract class ScopeNode implements Scope {
     if (name.getClass() == Class.class //
             && Annotation.class.isAssignableFrom((Class) name) //
             && isScopeAnnotationClass((Class<? extends Annotation>) name)) {
-      bindScopeAnnotation((Class<? extends Annotation>) name);
+      supportScopeAnnotation((Class<? extends Annotation>) name);
     }
   }
 

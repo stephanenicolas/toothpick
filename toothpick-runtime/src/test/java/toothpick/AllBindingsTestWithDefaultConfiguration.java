@@ -246,7 +246,7 @@ public class AllBindingsTestWithDefaultConfiguration {
   public void providerClassBinding_shouldCreateNonInjectedSingleton_whenProviderClassIsAnnotatedProvidesSingleton() {
     //GIVEN
     Scope scope = new ScopeImpl("");
-    scope.bindScopeAnnotation(CustomScope.class);
+    scope.supportScopeAnnotation(CustomScope.class);
     scope.installModules(new Module() {
       {
         bind(IFoo.class).toProvider(FooProviderAnnotatedProvidesSingleton.class);

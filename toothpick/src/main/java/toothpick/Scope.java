@@ -99,9 +99,9 @@ public interface Scope {
    * Note that the {@link Singleton} scope annotation class doesn't need to be bound, it's built-in.
    * @see #getParentScope(Class)
    */
-  void bindScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);
+  void supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);
 
-  boolean isBoundToScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);
+  boolean isScopeAnnotationSupported(Class<? extends Annotation> scopeAnnotationClass);
 
   /**
    * Requests an instance via an unnamed binding.

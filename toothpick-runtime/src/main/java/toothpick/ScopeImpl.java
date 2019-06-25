@@ -91,11 +91,13 @@ public class ScopeImpl extends ScopeNode {
     }
     installModules(true, modules);
     hasTestModules = true;
+    return this;
   }
 
   @Override
   public Scope installModules(Module... modules) {
     installModules(false, modules);
+    return this;
   }
 
   @Override
