@@ -99,6 +99,11 @@ public class ScopeImpl extends ScopeNode {
   }
 
   @Override
+  public void inject(Object obj) {
+    Toothpick.inject(obj, this);
+  }
+
+  @Override
   public String toString() {
     final String branch = "---";
     final char lastNode = '\\';

@@ -192,4 +192,12 @@ public interface Scope {
    * @param modules an array of modules that define test bindings.
    */
   void installTestModules(Module... modules);
+
+  /**
+   * Injects all dependencies (transitively) in {@code obj}, dependencies will be obtained in the
+   * scope {@code scope}.
+   *
+   * @param obj the object to be injected.
+   */
+  void inject(Object obj);
 }
