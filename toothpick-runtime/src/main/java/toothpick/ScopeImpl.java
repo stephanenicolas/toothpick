@@ -35,8 +35,8 @@ public class ScopeImpl extends ScopeNode {
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
   private static IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedUnBoundProviders = new IdentityHashMap<>();
-  private IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders = new IdentityHashMap<>();
-  private IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
+  private final IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders = new IdentityHashMap<>();
+  private final IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
 
   public ScopeImpl(Object name) {
@@ -573,7 +573,7 @@ public class ScopeImpl extends ScopeNode {
     Toothpick.release(this);
     synchronized (mapClassesToUnNamedBoundProviders) {
       for (InternalProviderImpl internalProvider : mapClassesToUnNamedBoundProviders.values()) {
-        if(internalProvider.isReleasable()) {
+        if (internalProvider.isReleasable()) {
           internalProvider.release();
         }
       }

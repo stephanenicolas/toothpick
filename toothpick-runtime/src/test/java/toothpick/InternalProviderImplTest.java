@@ -21,7 +21,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenProviderInstanceIsNull() {
     //GIVEN
     //WHEN
-    new InternalProviderImpl((Provider<String>) null, false);
+    new InternalProviderImpl((Provider<String>) null, false, false);
 
     //THEN
     fail("Should throw an exception");
@@ -51,7 +51,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenFactoryClassIsNull() {
     //GIVEN
     //WHEN
-    new InternalProviderImpl((Class) null, false, false, false);
+    new InternalProviderImpl((Class) null, false, false, false, false, false);
 
     //THEN
     fail("Should throw an exception");
@@ -61,7 +61,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenProviderFactoryClassIsNull() {
     //GIVEN
     //WHEN
-    new InternalProviderImpl((Class) null, true, false, false);
+    new InternalProviderImpl((Class) null, true, false, false, false, false);
 
     //THEN
     fail("Should throw an exception");

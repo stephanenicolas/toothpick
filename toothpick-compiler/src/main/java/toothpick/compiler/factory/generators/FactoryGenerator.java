@@ -48,7 +48,9 @@ public class FactoryGenerator extends CodeGenerator {
     emitGetTargetScope(factoryTypeSpec);
     emitHasScopeAnnotation(factoryTypeSpec);
     emitHasSingletonAnnotation(factoryTypeSpec);
+    emitHasReleasableAnnotation(factoryTypeSpec);
     emitHasProvidesSingletonInScopeAnnotation(factoryTypeSpec);
+    emitHasProvidesReleasableAnnotation(factoryTypeSpec);
 
     JavaFile javaFile = JavaFile.builder(className.packageName(), factoryTypeSpec.build()).build();
     return javaFile.toString();
@@ -184,7 +186,7 @@ public class FactoryGenerator extends CodeGenerator {
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 
-  private void emitHasProvidesReleaseableAnnotation(TypeSpec.Builder builder) {
+  private void emitHasProvidesReleasableAnnotation(TypeSpec.Builder builder) {
     MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProvidesReleasableAnnotation")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)

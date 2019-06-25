@@ -50,7 +50,15 @@ public class RelaxedFactoryForClassContainingMethodsTest extends BaseFactoryTest
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //

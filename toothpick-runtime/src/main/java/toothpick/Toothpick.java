@@ -147,6 +147,16 @@ public final class Toothpick {
    * test modules.
    * @param scope the scope we want to reset.
    */
+  public static void reset(Scope scope) {
+    ScopeNode scopeNode = (ScopeNode) scope;
+    scopeNode.reset();
+  }
+
+  /**
+   * Resets the state of a single scope. Useful for automation testing when we want to reset the scope used to install
+   * test modules.
+   * @param scope the scope we want to reset.
+   */
   public static void release(Scope scope) {
     ScopeNode scopeNode = (ScopeNode) scope;
     scopeNode.release();

@@ -44,7 +44,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -93,7 +101,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -142,7 +158,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -229,7 +253,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -278,7 +310,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -346,7 +386,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -400,7 +448,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -456,7 +512,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -513,7 +577,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -568,7 +640,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -622,7 +702,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -678,7 +766,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -734,7 +830,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -823,7 +927,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -934,7 +1046,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -989,7 +1109,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -1039,7 +1167,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -1101,7 +1237,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -1156,7 +1300,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return false;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -1220,7 +1372,15 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
         "    return false;", //
         "  }", //
         "}" //
@@ -1277,8 +1437,16 @@ public class FactoryTest extends BaseFactoryTest {
         "    return true;", //
         "  }", //
         "  @Override", //
+        "  public boolean hasReleasableAnnotation() {", //
+        "    return false;", //
+        "  }", //
+        "  @Override", //
         "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
         "    return true;", //
+        "  }", //
+        "  @Override", //
+        "  public boolean hasProvidesReleasableAnnotation() {", //
+        "    return false;", //
         "  }", //
         "}" //
     ));
