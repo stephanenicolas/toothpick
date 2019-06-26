@@ -3,6 +3,7 @@ package com.example.smoothie.deps;
 import com.example.smoothie.RxMVPActivity;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -10,7 +11,7 @@ import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
-@RxMVPActivity.Presenter
+@RxMVPActivity.Presenter @Singleton
 public class RxPresenter {
 
   private final ConnectableObservable<Long> timeObservable;
