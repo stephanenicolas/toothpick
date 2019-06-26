@@ -3,6 +3,7 @@ package com.example.toothpick.kotlin.deps
 import com.example.toothpick.kotlin.RxMVPActivity
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
@@ -10,9 +11,8 @@ import rx.functions.Action1
 import rx.observables.ConnectableObservable
 import rx.schedulers.Schedulers
 
-@RxMVPActivity.Presenter
-class RxPresenter @Inject
-constructor() {
+@RxMVPActivity.Presenter @Singleton
+class RxPresenter {
 
     private val timeObservable: ConnectableObservable<Long>
     private val connect: Subscription

@@ -3,6 +3,7 @@ package com.example.toothpick.kotlin
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import butterknife.BindView
@@ -42,6 +43,7 @@ class RxMVPActivity : Activity() {
     }
 
     override fun onDestroy() {
+        Log.d("", Toothpick.openScope(application).toString())
         Toothpick.closeScope(this)
         subscription.unsubscribe()
         if (isFinishing()) {
