@@ -19,3 +19,8 @@ dependencies {
   testImplementation deps.hamcrest
   testAnnotationProcessor deps.tp_compiler
 }
+
+test {
+  // enable JUnit Platform (a.k.a. JUnit 5) support
+  useJUnitPlatform()
+}
