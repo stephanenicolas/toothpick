@@ -8,6 +8,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.PresenterContextNamer
+import com.example.toothpick.ktp.KTP
 import javax.inject.Inject
 import toothpick.Scope
 import toothpick.Toothpick
@@ -16,8 +17,8 @@ import toothpick.smoothie.module.SmoothieActivityModule
 class PersistActivity : Activity() {
     private lateinit var scope: Scope
 
-    @Inject
-    lateinit var contextNamer: PresenterContextNamer
+    val contextNamer: PresenterContextNamer by KTP.inject()
+
     @BindView(R.id.title)
     lateinit var title: TextView
     @BindView(R.id.subtitle)
@@ -26,10 +27,11 @@ class PersistActivity : Activity() {
     lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this)
-        scope.installModules(SmoothieActivityModule(this))
+        KTP.openScopes(application, PRESENTER_SCOPE, this)
+                .installModules(SmoothieActivityModule(this))
+                .inject(this)
+
         super.onCreate(savedInstanceState)
-        Toothpick.inject(this, scope)
 
         setContentView(R.layout.simple_activity)
         ButterKnife.bind(this)
@@ -39,7 +41,7 @@ class PersistActivity : Activity() {
     }
 
     override fun onDestroy() {
-        Toothpick.closeScope(this)
+        KTP.closeScope(this)
         super.onDestroy()
     }
 

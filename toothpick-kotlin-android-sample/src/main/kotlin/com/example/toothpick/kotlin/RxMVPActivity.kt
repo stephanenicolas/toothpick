@@ -9,18 +9,20 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.RxPresenter
+import com.example.toothpick.ktp.KTP
 import javax.inject.Inject
 import rx.Subscription
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.smoothie.module.SmoothieActivityModule
 import rx.functions.Action1
+import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
 class RxMVPActivity : Activity() {
     private lateinit var scope: Scope
 
-    @Inject
-    lateinit var rxPresenter: RxPresenter
+    val rxPresenter: RxPresenter by KTP.inject()
+
     @BindView(R.id.title)
     lateinit var title: TextView
     @BindView(R.id.subtitle)
@@ -30,10 +32,11 @@ class RxMVPActivity : Activity() {
     private lateinit var subscription: Subscription
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        scope = Toothpick.openScopes(getApplication(), PRESENTER_SCOPE, this)
-        scope.installModules(SmoothieActivityModule(this))
+        KTP.openScopes(application, PRESENTER_SCOPE, this)
+                .installModules(SmoothieActivityModule(this))
+                .inject(this)
+
         super.onCreate(savedInstanceState)
-        Toothpick.inject(this, scope)
 
         setContentView(R.layout.simple_activity)
         ButterKnife.bind(this)
@@ -44,12 +47,13 @@ class RxMVPActivity : Activity() {
 
     override fun onDestroy() {
         Log.d("", Toothpick.openScope(application).toString())
-        Toothpick.closeScope(this)
+        KTP.closeScope(this)
         subscription.unsubscribe()
         if (isFinishing()) {
             //when we leave the presenter flow,
             //we close its scope
             rxPresenter.stop()
+            KTP.closeScope(PRESENTER_SCOPE)
             Toothpick.closeScope(PRESENTER_SCOPE)
         }
         super.onDestroy()

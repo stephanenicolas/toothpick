@@ -4,10 +4,6 @@ import toothpick.Toothpick
 
 class KTP {
 
-    inline fun <reified T: Any> inject(name: String? = null): DelegateProvider<T> {
-        return DelegateProvider(T::class.java, name)
-    }
-
     companion object {
         val delegateNotifier = DelegateNotifier()
 
@@ -17,6 +13,10 @@ class KTP {
 
         fun closeScope(name: Any) {
             Toothpick.closeScope(name)
+        }
+
+        inline fun <reified T: Any> inject(name: String? = null): DelegateProvider<T> {
+            return DelegateProvider(T::class.java, name)
         }
     }
 }
