@@ -14,7 +14,8 @@ class DelegateNotifier {
 
     fun notifyDelegates(container: Any, scope: Scope) {
         delegatesMap[container]?.forEach {
-            it.scopeReady(scope)
+            it.onEntryPointInjected(scope)
         }
+        delegatesMap.remove(container)
     }
 }

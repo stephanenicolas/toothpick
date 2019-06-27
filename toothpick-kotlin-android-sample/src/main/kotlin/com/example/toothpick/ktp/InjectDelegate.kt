@@ -4,11 +4,11 @@ import toothpick.Scope
 import java.lang.IllegalStateException
 import kotlin.reflect.KProperty
 
-class InjectDelegate<T: Any>(val clz: Class<T>, val name: String?) {
+class InjectDelegate<T: Any>(private val clz: Class<T>, private val name: String?) {
 
     lateinit var instance: T
 
-    fun scopeReady(scope: Scope) {
+    fun onEntryPointInjected(scope: Scope) {
         instance = scope.getInstance(clz, name)
     }
 
