@@ -11,13 +11,9 @@ class KTP {
     companion object {
         val delegateNotifier = DelegateNotifier()
 
-        fun openScope(name: Any) {
-            Toothpick.openScope(name)
-        }
+        fun openScope(name: Any) = KTPScope(Toothpick.openScope(name))
 
-        fun openScopes(vararg names: Any) {
-            Toothpick.openScopes(names)
-        }
+        fun openScopes(vararg names: Any) = KTPScope(Toothpick.openScopes(names))
 
         fun closeScope(name: Any) {
             Toothpick.closeScope(name)
