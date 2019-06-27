@@ -16,6 +16,10 @@ ext.deps = [// Common
             butterknife_compiler: 'com.jakewharton:butterknife-compiler:10.0.0',
             rxandroid           : 'io.reactivex:rxandroid:1.2.1',
 
+            // Kotlin
+            kotlin_plugin       : 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.40',
+            kotlin_runtime      : 'org.jetbrains.kotlin:kotlin-stdlib:1.3.40',
+
             // TP artifacts for composite builds
             tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:2.0.0',
             tp_smoothie_androidx: 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.0.0',

@@ -5,7 +5,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.11"
+    classpath deps.kotlin_plugin
   }
 }
 
@@ -14,10 +14,8 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'application'
 
 dependencies {
-  api project(':toothpick')
   api project(':toothpick-runtime')
-  api deps.inject
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.11"
+  implementation deps.kotlin_runtime
 
   testImplementation project(':toothpick-testing-junit4')
   testImplementation deps.junit4

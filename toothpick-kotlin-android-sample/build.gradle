@@ -1,6 +1,3 @@
-ext {
-  var = '1.8'
-}
 buildscript {
   apply from: '../deps.gradle'
   repositories {
@@ -9,7 +6,7 @@ buildscript {
   }
   dependencies {
     classpath deps.androidPlugin
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.11"
+    classpath deps.kotlin_plugin
   }
 }
 
@@ -23,8 +20,8 @@ android {
   buildToolsVersion '28.0.3'
 
   compileOptions {
-    sourceCompatibility '1.8'
-    targetCompatibility '1.8'
+    sourceCompatibility '1.7'
+    targetCompatibility '1.7'
   }
 
   defaultConfig {
@@ -70,7 +67,7 @@ dependencies {
   implementation deps.rxandroid
   implementation deps.androidxv4
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.40"
+  implementation deps.kotlin_runtime
   kapt deps.tp_compiler
   kapt deps.butterknife_compiler
 
