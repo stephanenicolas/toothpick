@@ -1,45 +1,45 @@
-package com.example.smoothie;
+package com.example.toothpick.kotlin;
 
-import com.example.smoothie.deps.ContextNamer;
-import org.easymock.EasyMockRule;
-import org.easymock.Mock;
-import org.junit.Rule;
+import com.example.toothpick.kotlin.deps.ContextNamer;
+import org.junit.After;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import toothpick.testing.ToothPickRule;
+import org.robolectric.android.controller.ActivityController;
+import toothpick.Scope;
+import toothpick.Toothpick;
+import toothpick.config.Module;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class SimpleActivityTestWithRules {
+public class SimpleActivityTest {
 
-  //do not use @Rule here, we use a chain below
-  public ToothPickRule toothPickRule = new ToothPickRule(this);
-
-  @Rule public TestRule chain = RuleChain.outerRule(toothPickRule).around(new EasyMockRule(this));
-
-  @Mock ContextNamer mockContextNamer;
+  @After
+  public void tearDown() throws Exception {
+    Toothpick.reset();
+  }
 
   @Test
   public void verifyInjectionAtOnCreate() {
     //GIVEN
+    final ContextNamer mockContextNamer = createMock(ContextNamer.class);
     expect(mockContextNamer.getApplicationName()).andReturn("foo");
     expect(mockContextNamer.getActivityName()).andReturn("bar");
-    replay(mockContextNamer);
 
     ActivityController<SimpleActivity> controllerSimpleActivity = Robolectric.buildActivity(SimpleActivity.class);
     SimpleActivity activity = controllerSimpleActivity.get();
-    toothPickRule.setScopeName(activity);
+    Scope scope = Toothpick.openScope(activity);
+    //or new ToothPickTestModule(this)
+    scope.installTestModules(new TestModule(mockContextNamer));
+    replay(mockContextNamer);
 
     //WHEN
     controllerSimpleActivity.create();
@@ -48,5 +48,11 @@ public class SimpleActivityTestWithRules {
     assertThat(activity.title.getText()).isEqualTo("foo");
     assertThat(activity.subTitle.getText()).isEqualTo("bar");
     verify(mockContextNamer);
+  }
+
+  private class TestModule extends Module {
+    public TestModule(ContextNamer mockContextNamer) {
+      bind(ContextNamer.class).toInstance(mockContextNamer);
+    }
   }
 }
