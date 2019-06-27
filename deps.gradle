@@ -22,6 +22,7 @@ ext.deps = [// Common
             tp_smoothie_support : 'com.github.stephanenicolas.toothpick:smoothie-support:2.0.0',
             tp                  : 'com.github.stephanenicolas.toothpick:toothpick:2.0.0',
             tp_runtime          : 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.0.0',
+            tp_kotlin           : 'com.github.stephanenicolas.toothpick:toothpick-kotlin:2.0.0',
             tp_compiler         : 'com.github.stephanenicolas.toothpick:toothpick-compiler:2.0.0',
             tp_testing          : 'com.github.stephanenicolas.toothpick:toothpick-testing:2.0.0',
             tp_testing_junit4   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit4:2.0.0',
