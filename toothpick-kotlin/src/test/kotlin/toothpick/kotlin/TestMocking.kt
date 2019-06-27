@@ -19,11 +19,23 @@ import org.junit.Assert.assertThat
 import toothpick.Scope
 import toothpick.testing.ToothPickRule
 
+/*
++ Lazy
++ Provider
++ Named and qualifiers
++ Tests ^
++ Concurrency
+
++ Default scope
++ Compiler -> @InjectAnnotation for class ???
++ Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
++ Optionals
+ */
 class TestMocking {
     @Rule @JvmField
     var toothPickRule = ToothPickRule(this, "Foo")
     @Rule @JvmField
-    var chain: TestRule = RuleChain.outerRule(toothPickRule).around(EasyMockRule(this))
+    var easyMockRule = EasyMockRule(this)
 
     @Mock lateinit var dependency: Dependency
 
@@ -114,7 +126,7 @@ class TestMocking {
         get() = Toothpick.openScope("Foo")
     }
 
-    class NonEntryPointByFields @Inject constructor(scope: Scope) {
+    class NonEntryPointByFields(scope: Scope) {
         val dependency: Dependency by KTP.inject()
     }
 
