@@ -11,14 +11,14 @@ import butterknife.OnClick
 import com.example.toothpick.kotlin.deps.ContextNamer
 import com.example.toothpick.ktp.KTP
 import toothpick.Scope
-import toothpick.Toothpick
+import toothpick.kotlin.inject
 import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
 class SimpleActivity : FragmentActivity() {
 
     private lateinit var scope: Scope
 
-    val contextNamer: ContextNamer by KTP.inject()
+    val contextNamer: ContextNamer by inject()
 
     @BindView(R.id.title)
     lateinit var title: TextView

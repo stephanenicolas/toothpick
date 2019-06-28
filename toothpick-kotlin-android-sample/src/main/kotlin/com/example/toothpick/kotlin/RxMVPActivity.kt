@@ -2,26 +2,25 @@ package com.example.toothpick.kotlin
 
 import android.app.Activity
 import android.os.Bundle
-import android.view.View
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.RxPresenter
 import com.example.toothpick.ktp.KTP
-import javax.inject.Inject
 import rx.Subscription
+import rx.functions.Action1
 import toothpick.Scope
 import toothpick.Toothpick
+import toothpick.kotlin.inject
 import toothpick.smoothie.module.SmoothieActivityModule
-import rx.functions.Action1
-import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
 class RxMVPActivity : Activity() {
     private lateinit var scope: Scope
 
-    val rxPresenter: RxPresenter by KTP.inject()
+    val rxPresenter: RxPresenter by inject()
 
     @BindView(R.id.title)
     lateinit var title: TextView

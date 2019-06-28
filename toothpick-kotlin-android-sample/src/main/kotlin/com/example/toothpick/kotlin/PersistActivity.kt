@@ -9,15 +9,15 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.PresenterContextNamer
 import com.example.toothpick.ktp.KTP
-import javax.inject.Inject
 import toothpick.Scope
 import toothpick.Toothpick
+import toothpick.kotlin.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class PersistActivity : Activity() {
     private lateinit var scope: Scope
 
-    val contextNamer: PresenterContextNamer by KTP.inject()
+    val contextNamer: PresenterContextNamer by inject()
 
     @BindView(R.id.title)
     lateinit var title: TextView
