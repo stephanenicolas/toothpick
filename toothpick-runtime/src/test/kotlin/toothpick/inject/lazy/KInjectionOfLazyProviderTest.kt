@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.inject.lazy
 
 import org.junit.Test
@@ -22,14 +38,14 @@ class KInjectionOfLazyProviderTest {
     @Test
     @Throws(Exception::class)
     fun testSimpleInjection() {
-        //GIVEN
+        // GIVEN
         val scope = ScopeImpl("")
         val fooWithLazy = KFooWithLazy()
 
-        //WHEN
+        // WHEN
         Toothpick.inject(fooWithLazy, scope)
 
-        //THEN
+        // THEN
         assertThat(fooWithLazy.bar, notNullValue())
         assertThat(fooWithLazy.bar, isA(Lazy::class.java))
         val bar1 = fooWithLazy.bar.get()
@@ -42,7 +58,7 @@ class KInjectionOfLazyProviderTest {
     @Test
     @Throws(Exception::class)
     fun testNamedInjection() {
-        //GIVEN
+        // GIVEN
         val scope = ScopeImpl("")
         scope.installModules(object : Module() {
             init {
@@ -51,10 +67,10 @@ class KInjectionOfLazyProviderTest {
         })
         val fooWithLazy = KFooWithNamedLazy()
 
-        //WHEN
+        // WHEN
         Toothpick.inject(fooWithLazy, scope)
 
-        //THEN
+        // THEN
         assertThat(fooWithLazy.bar, notNullValue())
         assertThat(fooWithLazy.bar, isA(Lazy::class.java))
         val bar1 = fooWithLazy.bar.get()
@@ -67,16 +83,16 @@ class KInjectionOfLazyProviderTest {
     @Test(expected = IllegalStateException::class)
     @Throws(Exception::class)
     fun testLazyAfterClosingScope() {
-        //GIVEN
+        // GIVEN
         val scopeName = ""
         val fooWithLazy = KFooWithLazy()
 
-        //WHEN
+        // WHEN
         Toothpick.inject(fooWithLazy, Toothpick.openScope(scopeName))
         Toothpick.closeScope(scopeName)
         System.gc()
 
-        //THEN
+        // THEN
         fooWithLazy.bar.get() // should crash
     }
 }

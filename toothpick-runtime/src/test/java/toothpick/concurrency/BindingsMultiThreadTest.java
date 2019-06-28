@@ -1,4 +1,25 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.concurrency;
+
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertTrue;
+import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +34,6 @@ import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import toothpick.configuration.Configuration;
 import toothpick.Factory;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -23,12 +43,8 @@ import toothpick.concurrency.threads.ScopeToStringThread;
 import toothpick.concurrency.threads.TestableThread;
 import toothpick.concurrency.utils.ClassCreator;
 import toothpick.concurrency.utils.ThreadTestUtil;
+import toothpick.configuration.Configuration;
 import toothpick.locators.FactoryLocator;
-
-import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertTrue;
-import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
 @PrepareForTest(FactoryLocator.class)
 public class BindingsMultiThreadTest {
@@ -44,11 +60,15 @@ public class BindingsMultiThreadTest {
 
     PowerMock.mockStatic(FactoryLocator.class);
     final Capture<Class> capturedClass = Capture.newInstance();
-    expect(FactoryLocator.getFactory(capture(capturedClass))).andAnswer(new IAnswer<Factory>() {
-      @Override public Factory answer() throws Throwable {
-        return new DynamicTestClassesFactory(capturedClass.getValue(), true);
-      }
-    }).anyTimes();
+    expect(FactoryLocator.getFactory(capture(capturedClass)))
+        .andAnswer(
+            new IAnswer<Factory>() {
+              @Override
+              public Factory answer() throws Throwable {
+                return new DynamicTestClassesFactory(capturedClass.getValue(), true);
+              }
+            })
+        .anyTimes();
     PowerMock.replay(FactoryLocator.class);
     Toothpick.setConfiguration(Configuration.forProduction());
     Toothpick.openScope(ROOT_SCOPE);
@@ -64,33 +84,34 @@ public class BindingsMultiThreadTest {
 
   @Test
   public void concurrentBindingInstall_shouldNotCrash() {
-    //GIVEN
+    // GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
 
-    //WHEN
+    // WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
       InstallBindingThread runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
       threadList.add(runnable);
       ThreadTestUtil.submit(runnable);
     }
 
-    //THEN
-    //we simply should not have crashed when all threads are done
+    // THEN
+    // we simply should not have crashed when all threads are done
     ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+      assertTrue(
+          String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
 
   @Test
   public void concurrentBindingInstallAndToString_shouldNotCrash() {
-    //GIVEN
+    // GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
 
-    //WHEN
+    // WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
       TestableThread runnable;
       if (random.nextInt(100) < 20) {
@@ -102,62 +123,70 @@ public class BindingsMultiThreadTest {
       ThreadTestUtil.submit(runnable);
     }
 
-    //THEN
-    //we simply should not have crashed when all threads are done
+    // THEN
+    // we simply should not have crashed when all threads are done
     ThreadTestUtil.shutdown();
     for (TestableThread thread : threadList) {
-      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+      assertTrue(
+          String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
 
   @Test
   public void concurrentBindingInstallAndGetInstance_shouldNotCrash() {
-    //GIVEN
+    // GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
 
-    //WHEN
+    // WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
       TestableThread runnable;
       if (random.nextInt(100) < 20) {
         runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
       } else {
-        runnable = new GetInstanceThread(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
+        runnable =
+            new GetInstanceThread(
+                ROOT_SCOPE,
+                classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
       }
       threadList.add(runnable);
       ThreadTestUtil.submit(runnable);
     }
 
-    //THEN
-    //we simply should not have crashed when all threads are done
+    // THEN
+    // we simply should not have crashed when all threads are done
     boolean timeout = ThreadTestUtil.shutdown();
     assertTrue("Executor service should not timeout.", timeout);
     for (TestableThread thread : threadList) {
-      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+      assertTrue(
+          String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
 
   @Test
   public void concurrentScopedGetInstance_shouldNotCrash() {
-    //GIVEN
+    // GIVEN
     final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
 
-    //WHEN
+    // WHEN
     for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
-      TestableThread runnable = new GetInstanceThread(ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
+      TestableThread runnable =
+          new GetInstanceThread(
+              ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);
       threadList.add(runnable);
       ThreadTestUtil.submit(runnable);
     }
 
-    //THEN
-    //we simply should not have crashed when all threads are done
+    // THEN
+    // we simply should not have crashed when all threads are done
     boolean timeout = ThreadTestUtil.shutdown();
     assertTrue("Executor service should not timeout.", timeout);
     for (TestableThread thread : threadList) {
-      assertTrue(String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
+      assertTrue(
+          String.format("test of thread %s failed", thread.getName()), thread.isSuccessful());
     }
   }
 

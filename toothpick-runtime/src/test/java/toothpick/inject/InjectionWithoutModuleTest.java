@@ -1,4 +1,26 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.inject;
+
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
 import toothpick.Scope;
@@ -11,43 +33,38 @@ import toothpick.data.FooChildMaskingMember;
 import toothpick.data.FooNested;
 import toothpick.data.FooParentMaskingMember;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 /*
  * Creates a instance in the simplest possible way
-  * without any module.
+ * without any module.
  */
 public class InjectionWithoutModuleTest {
 
   @Test
   public void testSimpleInjection() throws Exception {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("");
     Foo foo = new Foo();
 
-    //WHEN
+    // WHEN
     Toothpick.inject(foo, scope);
 
-    //THEN
+    // THEN
     assertThat(foo.bar, notNullValue());
     assertThat(foo.bar, isA(Bar.class));
   }
 
   @Test
   public void testNestedClassInjection() throws Exception {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     FooNested fooNested = scope.getInstance(FooNested.class);
     FooNested.InnerClass1 innerClass1 = scope.getInstance(FooNested.InnerClass1.class);
-    FooNested.InnerClass1.InnerClass2 innerClass2 = scope.getInstance(FooNested.InnerClass1.InnerClass2.class);
+    FooNested.InnerClass1.InnerClass2 innerClass2 =
+        scope.getInstance(FooNested.InnerClass1.InnerClass2.class);
 
-    //THEN
+    // THEN
     assertThat(fooNested.bar, notNullValue());
     assertThat(fooNested.bar, isA(Bar.class));
     assertThat(innerClass1.bar, notNullValue());
@@ -58,52 +75,54 @@ public class InjectionWithoutModuleTest {
 
   @Test
   public void testInjection_shouldFail_whenFieldsAreMasked() throws Exception {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     FooChildMaskingMember fooChildMaskingMember = scope.getInstance(FooChildMaskingMember.class);
     String parentBarToString = fooChildMaskingMember.toString();
 
-    //THEN
+    // THEN
     assertThat(parentBarToString, notNullValue());
-    assertThat(fooChildMaskingMember.bar, not(sameInstance(((FooParentMaskingMember) fooChildMaskingMember).bar)));
+    assertThat(
+        fooChildMaskingMember.bar,
+        not(sameInstance(((FooParentMaskingMember) fooChildMaskingMember).bar)));
   }
 
   @Test
   public void testInjection_shouldWork_whenInheritingBinding() throws Exception {
-    //GIVEN
+    // GIVEN
 
     Scope scope = Toothpick.openScope("root");
-    scope.installModules(new Module() {
-      {
-        bind(Foo.class).to(Foo.class);
-      }
-    });
+    scope.installModules(
+        new Module() {
+          {
+            bind(Foo.class).to(Foo.class);
+          }
+        });
     Scope childScope = Toothpick.openScopes("root", "child");
     Foo foo = new Foo();
 
-    //WHEN
+    // WHEN
     Toothpick.inject(foo, childScope);
 
-    //THEN
+    // THEN
     assertThat(foo.bar, notNullValue());
     assertThat(foo.bar, isA(Bar.class));
   }
 
   @Test
   public void testInjection_shouldNotThrowAnException_whenNoDependencyIsFound() throws Exception {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("root");
     NotInjectable notInjectable = new NotInjectable();
 
-    //WHEN
+    // WHEN
     Toothpick.inject(notInjectable, scope);
 
-    //THEN
+    // THEN
     // nothing
   }
 
-  class NotInjectable {
-  }
+  class NotInjectable {}
 }

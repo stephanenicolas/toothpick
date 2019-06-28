@@ -1,25 +1,24 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.compiler.factory;
 
-import javax.inject.Singleton;
-import toothpick.Factory;
-import toothpick.ProvidesReleasable;
-import toothpick.ProvidesSingletonInScope;
-import toothpick.Releasable;
-import toothpick.compiler.common.ToothpickProcessor;
-import toothpick.compiler.factory.generators.FactoryGenerator;
-import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
+import static java.lang.String.format;
+import static javax.lang.model.element.Modifier.PRIVATE;
 
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedOptions;
-import javax.inject.Inject;
-import javax.inject.Scope;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,36 +27,62 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static java.lang.String.format;
-import static javax.lang.model.element.Modifier.PRIVATE;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
+import javax.inject.Inject;
+import javax.inject.Scope;
+import javax.inject.Singleton;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.ElementFilter;
+import toothpick.Factory;
+import toothpick.ProvidesReleasable;
+import toothpick.ProvidesSingletonInScope;
+import toothpick.Releasable;
+import toothpick.compiler.common.ToothpickProcessor;
+import toothpick.compiler.factory.generators.FactoryGenerator;
+import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
 
 /**
- * This processor's role is to create {@link Factory}.
- * We create factories in different situations :
+ * This processor's role is to create {@link Factory}. We create factories in different situations :
+ *
  * <ul>
- * <li> When a class {@code Foo} has an {@link javax.inject.Inject} annotated constructor : <br/>
- * --> we create a Factory to create {@code Foo} instances.
+ *   <li>When a class {@code Foo} has an {@link javax.inject.Inject} annotated constructor : <br>
+ *       --> we create a Factory to create {@code Foo} instances.
  * </ul>
- * The processor will also try to relax the constraints to generate factories in a few cases. These factories
- * are helpful as they require less work from developers :
+ *
+ * The processor will also try to relax the constraints to generate factories in a few cases. These
+ * factories are helpful as they require less work from developers :
+ *
  * <ul>
- * <li> When a class {@code Foo} is annotated with {@link javax.inject.Singleton} : <br/>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise an error is raised.
- * <li> When a class {@code Foo} is annotated with {@link ProvidesSingletonInScope} : <br/>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise an error is raised.
- * <li> When a class {@code Foo} has an {@link javax.inject.Inject} annotated field {@code @Inject B b} : <br/>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise an error is raised.
- * <li> When a class {@code Foo} has an {@link javax.inject.Inject} method {@code @Inject m()} : <br/>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise an error is raised.
+ *   <li>When a class {@code Foo} is annotated with {@link javax.inject.Singleton} : <br>
+ *       --> it will use the annotated constructor or the default constructor if possible. Otherwise
+ *       an error is raised.
+ *   <li>When a class {@code Foo} is annotated with {@link ProvidesSingletonInScope} : <br>
+ *       --> it will use the annotated constructor or the default constructor if possible. Otherwise
+ *       an error is raised.
+ *   <li>When a class {@code Foo} has an {@link javax.inject.Inject} annotated field {@code @Inject
+ *       B b} : <br>
+ *       --> it will use the annotated constructor or the default constructor if possible. Otherwise
+ *       an error is raised.
+ *   <li>When a class {@code Foo} has an {@link javax.inject.Inject} method {@code @Inject m()} :
+ *       <br>
+ *       --> it will use the annotated constructor or the default constructor if possible. Otherwise
+ *       an error is raised.
  * </ul>
- * Note that if a class is abstract, the relax mechanism doesn't generate a factory and raises no error.
+ *
+ * Note that if a class is abstract, the relax mechanism doesn't generate a factory and raises no
+ * error.
  */
-//http://stackoverflow.com/a/2067863/693752
+// http://stackoverflow.com/a/2067863/693752
 @SupportedOptions({
-    ToothpickProcessor.PARAMETER_EXCLUDES, //
-    ToothpickProcessor.PARAMETER_ANNOTATION_TYPES, //
-    ToothpickProcessor.PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED, //
+  ToothpickProcessor.PARAMETER_EXCLUDES, //
+  ToothpickProcessor.PARAMETER_ANNOTATION_TYPES, //
+  ToothpickProcessor.PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED, //
 }) //
 public class FactoryProcessor extends ToothpickProcessor {
 
@@ -87,9 +112,11 @@ public class FactoryProcessor extends ToothpickProcessor {
     findAndParseTargets(roundEnv, annotations);
 
     // Generate Factories
-    for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry : mapTypeElementToConstructorInjectionTarget.entrySet()) {
+    for (Map.Entry<TypeElement, ConstructorInjectionTarget> entry :
+        mapTypeElementToConstructorInjectionTarget.entrySet()) {
       ConstructorInjectionTarget constructorInjectionTarget = entry.getValue();
-      FactoryGenerator factoryGenerator = new FactoryGenerator(constructorInjectionTarget, typeUtils);
+      FactoryGenerator factoryGenerator =
+          new FactoryGenerator(constructorInjectionTarget, typeUtils);
       TypeElement typeElement = entry.getKey();
       String fileDescription = format("Factory for type %s", typeElement);
       writeToFile(factoryGenerator, fileDescription, typeElement);
@@ -102,11 +129,13 @@ public class FactoryProcessor extends ToothpickProcessor {
   private void readCrashWhenNoFactoryCanBeCreatedOption() {
     Map<String, String> options = processingEnv.getOptions();
     if (crashWhenNoFactoryCanBeCreated == null) {
-      crashWhenNoFactoryCanBeCreated = Boolean.parseBoolean(options.get(PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED));
+      crashWhenNoFactoryCanBeCreated =
+          Boolean.parseBoolean(options.get(PARAMETER_CRASH_WHEN_NO_FACTORY_CAN_BE_CREATED));
     }
   }
 
-  private void findAndParseTargets(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
+  private void findAndParseTargets(
+      RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
     createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingletonInScope.class);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
@@ -114,7 +143,8 @@ public class FactoryProcessor extends ToothpickProcessor {
     createFactoriesForClassesAnnotatedWithScopeAnnotations(roundEnv, annotations);
   }
 
-  private void createFactoriesForClassesAnnotatedWithScopeAnnotations(RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
+  private void createFactoriesForClassesAnnotatedWithScopeAnnotations(
+      RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     for (TypeElement annotation : annotations) {
       if (annotation.getAnnotation(Scope.class) != null) {
         checkScopeAnnotationValidity(annotation);
@@ -124,48 +154,64 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void createFactoriesForClassesWithInjectAnnotatedMethods(RoundEnvironment roundEnv) {
-    for (ExecutableElement methodElement : ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-      processClassContainingInjectAnnotatedMember(methodElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
+    for (ExecutableElement methodElement :
+        ElementFilter.methodsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
+      processClassContainingInjectAnnotatedMember(
+          methodElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
     }
   }
 
   private void createFactoriesForClassesWithInjectAnnotatedFields(RoundEnvironment roundEnv) {
-    for (VariableElement fieldElement : ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
-      processClassContainingInjectAnnotatedMember(fieldElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
+    for (VariableElement fieldElement :
+        ElementFilter.fieldsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
+      processClassContainingInjectAnnotatedMember(
+          fieldElement.getEnclosingElement(), mapTypeElementToConstructorInjectionTarget);
     }
   }
 
-  private void createFactoriesForClassesAnnotatedWith(RoundEnvironment roundEnv, Class<? extends Annotation> annotationClass) {
-    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationClass))) {
+  private void createFactoriesForClassesAnnotatedWith(
+      RoundEnvironment roundEnv, Class<? extends Annotation> annotationClass) {
+    for (Element singletonAnnotatedElement :
+        ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationClass))) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
-      processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+      processClassContainingInjectAnnotatedMember(
+          singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
-  private void createFactoriesForClassesAnnotatedWith(RoundEnvironment roundEnv, TypeElement annotationType) {
-    for (Element singletonAnnotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationType))) {
+  private void createFactoriesForClassesAnnotatedWith(
+      RoundEnvironment roundEnv, TypeElement annotationType) {
+    for (Element singletonAnnotatedElement :
+        ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationType))) {
       TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
-      processClassContainingInjectAnnotatedMember(singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+      processClassContainingInjectAnnotatedMember(
+          singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
   private void createFactoriesForClassesWithInjectAnnotatedConstructors(RoundEnvironment roundEnv) {
-    for (ExecutableElement constructorElement : ElementFilter.constructorsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
+    for (ExecutableElement constructorElement :
+        ElementFilter.constructorsIn(roundEnv.getElementsAnnotatedWith(Inject.class))) {
       TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
 
       if (!isSingleInjectAnnotatedConstructor(constructorElement)) {
-        error(constructorElement, "Class %s cannot have more than one @Inject annotated constructor.", enclosingElement.getQualifiedName());
+        error(
+            constructorElement,
+            "Class %s cannot have more than one @Inject annotated constructor.",
+            enclosingElement.getQualifiedName());
       }
 
-      processInjectAnnotatedConstructor(constructorElement, mapTypeElementToConstructorInjectionTarget);
+      processInjectAnnotatedConstructor(
+          constructorElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
-  private void processClassContainingInjectAnnotatedMember(Element enclosingElement,
+  private void processClassContainingInjectAnnotatedMember(
+      Element enclosingElement,
       Map<TypeElement, ConstructorInjectionTarget> mapTypeElementToConstructorInjectionTarget) {
     final TypeElement typeElement = (TypeElement) typeUtils.asElement(enclosingElement.asType());
     if (mapTypeElementToConstructorInjectionTarget.containsKey(typeElement)) {
-      //the class is already known
+      // the class is already known
       return;
     }
 
@@ -178,7 +224,8 @@ public class FactoryProcessor extends ToothpickProcessor {
       return;
     }
 
-    ConstructorInjectionTarget constructorInjectionTarget = createConstructorInjectionTarget(typeElement);
+    ConstructorInjectionTarget constructorInjectionTarget =
+        createConstructorInjectionTarget(typeElement);
     if (constructorInjectionTarget != null) {
       mapTypeElementToConstructorInjectionTarget.put(typeElement, constructorInjectionTarget);
     }
@@ -188,16 +235,20 @@ public class FactoryProcessor extends ToothpickProcessor {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
 
     boolean isSingleInjectedConstructor = true;
-    List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(enclosingElement.getEnclosedElements());
+    List<ExecutableElement> constructorElements =
+        ElementFilter.constructorsIn(enclosingElement.getEnclosedElements());
     for (ExecutableElement constructorElementInClass : constructorElements) {
-      if (constructorElementInClass.getAnnotation(Inject.class) != null && !constructorElement.equals(constructorElementInClass)) {
+      if (constructorElementInClass.getAnnotation(Inject.class) != null
+          && !constructorElement.equals(constructorElementInClass)) {
         isSingleInjectedConstructor = false;
       }
     }
     return isSingleInjectedConstructor;
   }
 
-  private void processInjectAnnotatedConstructor(ExecutableElement constructorElement, Map<TypeElement, ConstructorInjectionTarget> targetClassMap) {
+  private void processInjectAnnotatedConstructor(
+      ExecutableElement constructorElement,
+      Map<TypeElement, ConstructorInjectionTarget> targetClassMap) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
 
     // Verify common generated code restrictions.
@@ -210,7 +261,10 @@ public class FactoryProcessor extends ToothpickProcessor {
     }
 
     if (!canTypeHaveAFactory(enclosingElement)) {
-      error(enclosingElement, "The class %s is abstract or private. It cannot have an injected constructor.", enclosingElement.getQualifiedName());
+      error(
+          enclosingElement,
+          "The class %s is abstract or private. It cannot have an injected constructor.",
+          enclosingElement.getQualifiedName());
       return;
     }
 
@@ -223,14 +277,20 @@ public class FactoryProcessor extends ToothpickProcessor {
     // Verify modifiers.
     Set<Modifier> modifiers = element.getModifiers();
     if (modifiers.contains(PRIVATE)) {
-      error(element, "@Inject constructors must not be private in class %s.", enclosingElement.getQualifiedName());
+      error(
+          element,
+          "@Inject constructors must not be private in class %s.",
+          enclosingElement.getQualifiedName());
       return false;
     }
 
     // Verify parentScope modifiers.
     Set<Modifier> parentModifiers = enclosingElement.getModifiers();
     if (parentModifiers.contains(PRIVATE)) {
-      error(element, "Class %s is private. @Inject constructors are not allowed in private classes.", enclosingElement.getQualifiedName());
+      error(
+          element,
+          "Class %s is private. @Inject constructors are not allowed in private classes.",
+          enclosingElement.getQualifiedName());
       return false;
     }
 
@@ -247,29 +307,38 @@ public class FactoryProcessor extends ToothpickProcessor {
     return true;
   }
 
-  private ConstructorInjectionTarget createConstructorInjectionTarget(ExecutableElement constructorElement) {
+  private ConstructorInjectionTarget createConstructorInjectionTarget(
+      ExecutableElement constructorElement) {
     TypeElement enclosingElement = (TypeElement) constructorElement.getEnclosingElement();
     final String scopeName = getScopeName(enclosingElement);
     final boolean hasSingletonAnnotation = hasSingletonAnnotation(enclosingElement);
     final boolean hasReleasableAnnotation = hasReleasableAnnotation(enclosingElement);
-    final boolean hasProvidesSingletonInScopeAnnotation = hasProvidesSingletonInScopeAnnotation(enclosingElement);
-    final boolean hasProvidesReleasableAnnotation = hasProvidesReleasableAnnotation(enclosingElement);
-    checkReleasableAnnotationValidity(enclosingElement, hasReleasableAnnotation, hasSingletonAnnotation);
-    checkProvidesReleasableAnnotationValidity(enclosingElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    final boolean hasProvidesSingletonInScopeAnnotation =
+        hasProvidesSingletonInScopeAnnotation(enclosingElement);
+    final boolean hasProvidesReleasableAnnotation =
+        hasProvidesReleasableAnnotation(enclosingElement);
+    checkReleasableAnnotationValidity(
+        enclosingElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    checkProvidesReleasableAnnotationValidity(
+        enclosingElement, hasReleasableAnnotation, hasSingletonAnnotation);
     if (hasProvidesSingletonInScopeAnnotation && scopeName == null) {
-      error(enclosingElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
+      error(
+          enclosingElement,
+          "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           enclosingElement.getQualifiedName().toString());
     }
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
+    TypeElement superClassWithInjectedMembers =
+        getMostDirectSuperClassWithInjectedMembers(enclosingElement, false);
 
     ConstructorInjectionTarget constructorInjectionTarget =
-        new ConstructorInjectionTarget(enclosingElement,
-                                       scopeName,
-                                       hasSingletonAnnotation,
-                                       hasReleasableAnnotation,
-                                       hasProvidesSingletonInScopeAnnotation,
-                                       hasProvidesReleasableAnnotation,
-                                       superClassWithInjectedMembers);
+        new ConstructorInjectionTarget(
+            enclosingElement,
+            scopeName,
+            hasSingletonAnnotation,
+            hasReleasableAnnotation,
+            hasProvidesSingletonInScopeAnnotation,
+            hasProvidesReleasableAnnotation,
+            superClassWithInjectedMembers);
     constructorInjectionTarget.parameters.addAll(getParamInjectionTargetList(constructorElement));
     constructorInjectionTarget.throwsThrowable = !constructorElement.getThrownTypes().isEmpty();
 
@@ -280,64 +349,77 @@ public class FactoryProcessor extends ToothpickProcessor {
     final String scopeName = getScopeName(typeElement);
     final boolean hasSingletonAnnotation = hasSingletonAnnotation(typeElement);
     final boolean hasReleasableAnnotation = hasReleasableAnnotation(typeElement);
-    final boolean hasProvidesSingletonInScopeAnnotation = hasProvidesSingletonInScopeAnnotation(typeElement);
+    final boolean hasProvidesSingletonInScopeAnnotation =
+        hasProvidesSingletonInScopeAnnotation(typeElement);
     final boolean hasProvidesReleasableAnnotation = hasProvidesReleasableAnnotation(typeElement);
     checkReleasableAnnotationValidity(typeElement, hasReleasableAnnotation, hasSingletonAnnotation);
-    checkProvidesReleasableAnnotationValidity(typeElement, hasReleasableAnnotation, hasSingletonAnnotation);
+    checkProvidesReleasableAnnotationValidity(
+        typeElement, hasReleasableAnnotation, hasSingletonAnnotation);
     if (hasProvidesSingletonInScopeAnnotation && scopeName == null) {
-      error(typeElement, "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
+      error(
+          typeElement,
+          "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
           typeElement.getQualifiedName().toString());
     }
-    TypeElement superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(typeElement, false);
+    TypeElement superClassWithInjectedMembers =
+        getMostDirectSuperClassWithInjectedMembers(typeElement, false);
 
-    List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(typeElement.getEnclosedElements());
-    //we just need to deal with the case of the default constructor only.
-    //like Guice, we will call it by default in the optimistic factory
-    //injected constructors will be handled at some point in the compilation cycle
+    List<ExecutableElement> constructorElements =
+        ElementFilter.constructorsIn(typeElement.getEnclosedElements());
+    // we just need to deal with the case of the default constructor only.
+    // like Guice, we will call it by default in the optimistic factory
+    // injected constructors will be handled at some point in the compilation cycle
 
-    //if there is an injected constructor, it will be caught later, just leave
+    // if there is an injected constructor, it will be caught later, just leave
     for (ExecutableElement constructorElement : constructorElements) {
       if (constructorElement.getAnnotation(Inject.class) != null) {
         return null;
       }
     }
 
-    final String cannotCreateAFactoryMessage = " Toothpick can't create a factory for it." //
-        + " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " //
-        + " then you can remove this warning by adding @SuppressWarnings(\"Injectable\") to the class." //
-        + " A typical example is a class using injection to assign its fields, that calls TP.inject(this)," //
-        + " but it needs a parameter for its constructor and this parameter is not injectable.";
+    final String cannotCreateAFactoryMessage =
+        " Toothpick can't create a factory for it." //
+            + " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " //
+            + " then you can remove this warning by adding @SuppressWarnings(\"Injectable\") to the class." //
+            + " A typical example is a class using injection to assign its fields, that calls TP.inject(this)," //
+            + " but it needs a parameter for its constructor and this parameter is not injectable.";
 
-    //search for default constructor
+    // search for default constructor
     for (ExecutableElement constructorElement : constructorElements) {
       if (constructorElement.getParameters().isEmpty()) {
         if (constructorElement.getModifiers().contains(Modifier.PRIVATE)) {
           if (!isInjectableWarningSuppressed(typeElement)) {
-              String message = format("The class %s has a private default constructor. "
-                      + cannotCreateAFactoryMessage, //
-                  typeElement.getQualifiedName().toString());
+            String message =
+                format(
+                    "The class %s has a private default constructor. "
+                        + cannotCreateAFactoryMessage, //
+                    typeElement.getQualifiedName().toString());
             crashOrWarnWhenNoFactoryCanBeCreated(constructorElement, message);
           }
           return null;
         }
 
         ConstructorInjectionTarget constructorInjectionTarget =
-            new ConstructorInjectionTarget(typeElement,
-                                           scopeName,
-                                           hasSingletonAnnotation,
-                                           hasReleasableAnnotation,
-                                           hasProvidesSingletonInScopeAnnotation,
-                                           hasProvidesReleasableAnnotation,
-                                           superClassWithInjectedMembers);
+            new ConstructorInjectionTarget(
+                typeElement,
+                scopeName,
+                hasSingletonAnnotation,
+                hasReleasableAnnotation,
+                hasProvidesSingletonInScopeAnnotation,
+                hasProvidesReleasableAnnotation,
+                superClassWithInjectedMembers);
         return constructorInjectionTarget;
       }
     }
 
     if (!isInjectableWarningSuppressed(typeElement)) {
-      String message = format("The class %s has injected members or a scope annotation "
-              + "but has no @Inject annotated (non-private) constructor " //
-              + " nor a non-private default constructor. " + cannotCreateAFactoryMessage, //
-          typeElement.getQualifiedName().toString());
+      String message =
+          format(
+              "The class %s has injected members or a scope annotation "
+                  + "but has no @Inject annotated (non-private) constructor " //
+                  + " nor a non-private default constructor. "
+                  + cannotCreateAFactoryMessage, //
+              typeElement.getQualifiedName().toString());
       crashOrWarnWhenNoFactoryCanBeCreated(typeElement, message);
     }
     return null;
@@ -352,8 +434,9 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   /**
-   * Lookup {@link javax.inject.Scope} annotated annotations to provide the name of the scope the {@code typeElement} belongs to.
-   * The method logs an error if the {@code typeElement} has multiple scope annotations.
+   * Lookup {@link javax.inject.Scope} annotated annotations to provide the name of the scope the
+   * {@code typeElement} belongs to. The method logs an error if the {@code typeElement} has
+   * multiple scope annotations.
    *
    * @param typeElement the element for which a scope is to be found.
    * @return the scope of this {@code typeElement} or {@code null} if it has no scope annotations.
@@ -362,8 +445,10 @@ public class FactoryProcessor extends ToothpickProcessor {
     String scopeName = null;
     boolean hasScopeAnnotation = false;
     for (AnnotationMirror annotationMirror : typeElement.getAnnotationMirrors()) {
-      TypeElement annotationTypeElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-      boolean isSingletonAnnotation = annotationTypeElement.getQualifiedName().contentEquals("javax.inject.Singleton");
+      TypeElement annotationTypeElement =
+          (TypeElement) annotationMirror.getAnnotationType().asElement();
+      boolean isSingletonAnnotation =
+          annotationTypeElement.getQualifiedName().contentEquals("javax.inject.Singleton");
       if (!isSingletonAnnotation && annotationTypeElement.getAnnotation(Scope.class) != null) {
         checkScopeAnnotationValidity(annotationTypeElement);
         if (scopeName != null) {
@@ -385,7 +470,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     return typeElement.getAnnotation(Singleton.class) != null;
   }
 
- private boolean hasReleasableAnnotation(TypeElement typeElement) {
+  private boolean hasReleasableAnnotation(TypeElement typeElement) {
     return typeElement.getAnnotation(Releasable.class) != null;
   }
 
@@ -397,41 +482,51 @@ public class FactoryProcessor extends ToothpickProcessor {
     return typeElement.getAnnotation(ProvidesReleasable.class) != null;
   }
 
-  private void checkReleasableAnnotationValidity(TypeElement typeElement,
-                                                 boolean hasReleasableAnnotation,
-                                                 boolean hasSingletonAnnotation) {
+  private void checkReleasableAnnotationValidity(
+      TypeElement typeElement, boolean hasReleasableAnnotation, boolean hasSingletonAnnotation) {
     if (hasReleasableAnnotation && !hasSingletonAnnotation) {
-      error(typeElement, "Class %s is annotated with @Releasable, "
-          + "it should also be annotated with either @Singleton.",
-            typeElement.getQualifiedName());
+      error(
+          typeElement,
+          "Class %s is annotated with @Releasable, "
+              + "it should also be annotated with either @Singleton.",
+          typeElement.getQualifiedName());
     }
   }
 
-  private void checkProvidesReleasableAnnotationValidity(TypeElement typeElement,
-                                                         boolean hasProvidesReleasableAnnotation,
-                                                         boolean hasProvideSingletonInScopeAnnotation) {
+  private void checkProvidesReleasableAnnotationValidity(
+      TypeElement typeElement,
+      boolean hasProvidesReleasableAnnotation,
+      boolean hasProvideSingletonInScopeAnnotation) {
     if (hasProvidesReleasableAnnotation && !hasProvideSingletonInScopeAnnotation) {
-      error(typeElement, "Class %s is annotated with @ProvidesReleasable, "
-                + "it should also be annotated with either @ProvidesSingletonInScope.",
-            typeElement.getQualifiedName());
+      error(
+          typeElement,
+          "Class %s is annotated with @ProvidesReleasable, "
+              + "it should also be annotated with either @ProvidesSingletonInScope.",
+          typeElement.getQualifiedName());
     }
   }
 
   private void checkScopeAnnotationValidity(TypeElement annotation) {
     if (annotation.getAnnotation(Scope.class) == null) {
-      error(annotation, "Scope Annotation %s does not contain Scope annotation.", annotation.getQualifiedName());
+      error(
+          annotation,
+          "Scope Annotation %s does not contain Scope annotation.",
+          annotation.getQualifiedName());
       return;
     }
 
     Retention retention = annotation.getAnnotation(Retention.class);
     if (retention == null || retention.value() != RetentionPolicy.RUNTIME) {
-      error(annotation, "Scope Annotation %s does not have RUNTIME retention policy.", annotation.getQualifiedName());
+      error(
+          annotation,
+          "Scope Annotation %s does not have RUNTIME retention policy.",
+          annotation.getQualifiedName());
     }
   }
 
   /**
-   * Checks if the injectable warning is suppressed for the TypeElement,
-   * through the usage of @SuppressWarning("Injectable").
+   * Checks if the injectable warning is suppressed for the TypeElement, through the usage
+   * of @SuppressWarning("Injectable").
    *
    * @param typeElement the element to check if the warning is suppressed.
    * @return true is the injectable warning is suppressed, false otherwise.
@@ -446,17 +541,17 @@ public class FactoryProcessor extends ToothpickProcessor {
     return !isAbstract && !isPrivate;
   }
 
-  //used for testing only
+  // used for testing only
   void setToothpickExcludeFilters(String toothpickExcludeFilters) {
     this.toothpickExcludeFilters = toothpickExcludeFilters;
   }
 
-  //used for testing only
+  // used for testing only
   void setCrashWhenNoFactoryCanBeCreated(boolean crashWhenNoFactoryCanBeCreated) {
     this.crashWhenNoFactoryCanBeCreated = crashWhenNoFactoryCanBeCreated;
   }
 
-  //used for testing only
+  // used for testing only
   TypeElement getOriginatingElement(String generatedQualifiedName) {
     return allRoundsGeneratedToTypeElement.get(generatedQualifiedName);
   }

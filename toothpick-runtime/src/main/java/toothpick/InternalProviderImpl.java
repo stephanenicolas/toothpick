@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick;
 
 import javax.inject.Provider;
@@ -22,7 +38,8 @@ public class InternalProviderImpl<T> {
   private boolean isProviderReleasable;
 
   public InternalProviderImpl(T instance) {
-    //not that an instance cannot be releasable as TP wouldn't know how to recreate a second instance.
+    // not that an instance cannot be releasable as TP wouldn't know how to recreate a second
+    // instance.
     if (instance == null) {
       throw new IllegalArgumentException("The instance can't be null.");
     }
@@ -30,11 +47,13 @@ public class InternalProviderImpl<T> {
     this.instance = instance;
   }
 
-  public InternalProviderImpl(Provider<? extends T> providerInstance,
-                              boolean isProvidingSingletonInScope,
-                              boolean isProvidingReleasable) {
-    //not that an instance of provider cannot be releasable as TP wouldn't know how to recreate a second instance.
-    //but it can provide releasable singletons
+  public InternalProviderImpl(
+      Provider<? extends T> providerInstance,
+      boolean isProvidingSingletonInScope,
+      boolean isProvidingReleasable) {
+    // not that an instance of provider cannot be releasable as TP wouldn't know how to recreate a
+    // second instance.
+    // but it can provide releasable singletons
     if (providerInstance == null) {
       throw new IllegalArgumentException("The provider can't be null.");
     }
@@ -58,7 +77,8 @@ public class InternalProviderImpl<T> {
     }
   }
 
-  public InternalProviderImpl(Class<?> factoryKeyClass,
+  public InternalProviderImpl(
+      Class<?> factoryKeyClass,
       boolean isProviderFactoryClass,
       boolean isCreatingSingletonInScope,
       boolean isProviderReleasable,
@@ -79,8 +99,8 @@ public class InternalProviderImpl<T> {
     this.isReleasable = isProvidingReleasable;
   }
 
-  //we lock on the unbound provider itself to prevent concurrent usage
-  //of the unbound provider (
+  // we lock on the unbound provider itself to prevent concurrent usage
+  // of the unbound provider (
   public synchronized T get(Scope scope) {
     if (instance != null) {
       return instance;
@@ -89,7 +109,7 @@ public class InternalProviderImpl<T> {
     if (providerInstance != null) {
       if (isProvidingSingletonInScope) {
         instance = providerInstance.get();
-        //gc
+        // gc
         providerInstance = null;
         return instance;
       }
@@ -99,7 +119,7 @@ public class InternalProviderImpl<T> {
 
     if (factoryClass != null && factory == null) {
       factory = FactoryLocator.getFactory(factoryClass);
-      //gc
+      // gc
       factoryClass = null;
     }
 
@@ -108,27 +128,27 @@ public class InternalProviderImpl<T> {
         return factory.createInstance(scope);
       }
       instance = factory.createInstance(scope);
-      //gc
+      // gc
       factory = null;
       return instance;
     }
 
     if (providerFactoryClass != null && providerFactory == null) {
       providerFactory = FactoryLocator.getFactory(providerFactoryClass);
-      //gc
+      // gc
       providerFactoryClass = null;
     }
 
     if (providerFactory != null) {
       if (providerFactory.hasProvidesSingletonInScopeAnnotation() || isProvidingSingletonInScope) {
         instance = providerFactory.createInstance(scope).get();
-        //gc
+        // gc
         providerFactory = null;
         return instance;
       }
       if (providerFactory.hasSingletonAnnotation() || isCreatingSingletonInScope) {
         providerInstance = providerFactory.createInstance(scope);
-        //gc
+        // gc
         providerFactory = null;
         return providerInstance.get();
       }
@@ -136,7 +156,8 @@ public class InternalProviderImpl<T> {
       return providerFactory.createInstance(scope).get();
     }
 
-    throw new IllegalStateException("A provider can only be used with an instance, a provider, a factory or a provider factory. Should not happen.");
+    throw new IllegalStateException(
+        "A provider can only be used with an instance, a provider, a factory or a provider factory. Should not happen.");
   }
 
   public boolean isReleasable() {
@@ -144,7 +165,7 @@ public class InternalProviderImpl<T> {
   }
 
   public void release() {
-    //gc
+    // gc
     instance = null;
     providerInstance = null;
   }

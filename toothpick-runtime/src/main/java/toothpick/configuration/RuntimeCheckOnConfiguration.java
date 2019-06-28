@@ -1,4 +1,22 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.configuration;
+
+import static java.lang.String.format;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -8,21 +26,21 @@ import java.util.List;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
-import static java.lang.String.format;
-
 class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
   // We need a LIFO structure here, but stack is thread safe and we use thread local,
   // so this property is overkill and LinkedHashSet is faster on retrieval.
-  private ThreadLocal<LinkedHashSet<Pair>> cycleDetectionStack = new ThreadLocal<LinkedHashSet<Pair>>() {
-    @Override
-    protected LinkedHashSet<Pair> initialValue() {
-      return new LinkedHashSet<>();
-    }
-  };
+  private ThreadLocal<LinkedHashSet<Pair>> cycleDetectionStack =
+      new ThreadLocal<LinkedHashSet<Pair>>() {
+        @Override
+        protected LinkedHashSet<Pair> initialValue() {
+          return new LinkedHashSet<>();
+        }
+      };
 
   /**
-   * check that a binding's target annotation scope, if present, is supported
-   * by the scope {@code scope}.
+   * check that a binding's target annotation scope, if present, is supported by the scope {@code
+   * scope}.
+   *
    * @param binding the binding being installed.
    * @param scope the scope where the binding is installed.
    */
@@ -47,9 +65,11 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
       Class<? extends Annotation> annotationType = annotation.annotationType();
       if (annotationType.isAnnotationPresent(javax.inject.Scope.class)) {
         if (!scope.isScopeAnnotationSupported(annotationType)) {
-          throw new IllegalBindingException(format("Class %s cannot be bound."
-                  + " It has a scope annotation: %s that is not supported by current scope: %s",
-              clazz.getName(), annotationType.getName(), scope.getName()));
+          throw new IllegalBindingException(
+              format(
+                  "Class %s cannot be bound."
+                      + " It has a scope annotation: %s that is not supported by current scope: %s",
+                  clazz.getName(), annotationType.getName(), scope.getName()));
         }
       }
     }

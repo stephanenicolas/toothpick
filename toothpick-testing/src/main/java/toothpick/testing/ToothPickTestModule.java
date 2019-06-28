@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.testing;
 
 import java.lang.annotation.Annotation;
@@ -45,7 +61,7 @@ public class ToothPickTestModule extends Module {
 
   private Annotation findMockAnnotation(Field field) {
     for (Annotation annotation : field.getAnnotations()) {
-      //works for both easy mock and mockito
+      // works for both easy mock and mockito
       if (annotation.annotationType().getName().contains("Mock")) {
         return annotation;
       }
@@ -55,12 +71,13 @@ public class ToothPickTestModule extends Module {
 
   private String findInjectionName(Field field) {
     for (Annotation annotation : field.getAnnotations()) {
-      //works for both easy mock and mockito
+      // works for both easy mock and mockito
       if (annotation.annotationType() == Named.class) {
         return ((Named) annotation).value();
       }
-      //works for both easy mock and mockito
-      if (annotation.annotationType() != Inject.class && !annotation.annotationType().getName().contains("Mock")) {
+      // works for both easy mock and mockito
+      if (annotation.annotationType() != Inject.class
+          && !annotation.annotationType().getName().contains("Mock")) {
         return annotation.annotationType().getName();
       }
     }

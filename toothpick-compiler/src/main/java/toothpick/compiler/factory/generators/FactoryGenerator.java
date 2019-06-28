@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.compiler.factory.generators;
 
 import com.squareup.javapoet.ClassName;
@@ -18,10 +34,9 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
 
 /**
- * Generates a {@link Factory} for a given {@link ConstructorInjectionTarget}.
- * Typically a factory is created for a class a soon as it contains
- * an {@link javax.inject.Inject} annotated constructor.
- * See Optimistic creation of factories in TP wiki.
+ * Generates a {@link Factory} for a given {@link ConstructorInjectionTarget}. Typically a factory
+ * is created for a class a soon as it contains an {@link javax.inject.Inject} annotated
+ * constructor. See Optimistic creation of factories in TP wiki.
  */
 public class FactoryGenerator extends CodeGenerator {
 
@@ -37,12 +52,15 @@ public class FactoryGenerator extends CodeGenerator {
   public String brewJava() {
     // Interface to implement
     ClassName className = ClassName.get(constructorInjectionTarget.builtClass);
-    ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(Factory.class), className);
+    ParameterizedTypeName parameterizedTypeName =
+        ParameterizedTypeName.get(ClassName.get(Factory.class), className);
 
     // Build class
-    TypeSpec.Builder factoryTypeSpec = TypeSpec.classBuilder(getGeneratedSimpleClassName(constructorInjectionTarget.builtClass) + FACTORY_SUFFIX)
-        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addSuperinterface(parameterizedTypeName);
+    TypeSpec.Builder factoryTypeSpec =
+        TypeSpec.classBuilder(
+                getGeneratedSimpleClassName(constructorInjectionTarget.builtClass) + FACTORY_SUFFIX)
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addSuperinterface(parameterizedTypeName);
     emitSuperMemberInjectorFieldIfNeeded(factoryTypeSpec);
     emitCreateInstance(factoryTypeSpec);
     emitGetTargetScope(factoryTypeSpec);
@@ -58,13 +76,19 @@ public class FactoryGenerator extends CodeGenerator {
 
   private void emitSuperMemberInjectorFieldIfNeeded(TypeSpec.Builder scopeMemberTypeSpec) {
     if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-      ClassName superTypeThatNeedsInjection = ClassName.get(constructorInjectionTarget.superClassThatNeedsMemberInjection);
+      ClassName superTypeThatNeedsInjection =
+          ClassName.get(constructorInjectionTarget.superClassThatNeedsMemberInjection);
       ParameterizedTypeName memberInjectorSuperParameterizedTypeName =
-          ParameterizedTypeName.get(ClassName.get(MemberInjector.class), superTypeThatNeedsInjection);
+          ParameterizedTypeName.get(
+              ClassName.get(MemberInjector.class), superTypeThatNeedsInjection);
       FieldSpec.Builder superMemberInjectorField =
-          FieldSpec.builder(memberInjectorSuperParameterizedTypeName, "memberInjector", Modifier.PRIVATE)
-              //TODO use proper typing here
-              .initializer("new $L__MemberInjector()", getGeneratedFQNClassName(constructorInjectionTarget.superClassThatNeedsMemberInjection));
+          FieldSpec.builder(
+                  memberInjectorSuperParameterizedTypeName, "memberInjector", Modifier.PRIVATE)
+              // TODO use proper typing here
+              .initializer(
+                  "new $L__MemberInjector()",
+                  getGeneratedFQNClassName(
+                      constructorInjectionTarget.superClassThatNeedsMemberInjection));
       scopeMemberTypeSpec.addField(superMemberInjectorField.build());
     }
   }
@@ -76,14 +100,15 @@ public class FactoryGenerator extends CodeGenerator {
 
   private void emitCreateInstance(TypeSpec.Builder builder) {
     ClassName className = ClassName.get(constructorInjectionTarget.builtClass);
-    MethodSpec.Builder createInstanceBuilder = MethodSpec.methodBuilder("createInstance")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .addParameter(ClassName.get(Scope.class), "scope")
-        .returns(className);
+    MethodSpec.Builder createInstanceBuilder =
+        MethodSpec.methodBuilder("createInstance")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(ClassName.get(Scope.class), "scope")
+            .returns(className);
 
-    //change the scope to target scope so that all dependencies are created in the target scope
-    //and the potential injection take place in the target scope too
+    // change the scope to target scope so that all dependencies are created in the target scope
+    // and the potential injection take place in the target scope too
     if (!constructorInjectionTarget.parameters.isEmpty()
         || constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
       // We only need it when the constructor contains parameters or dependencies
@@ -107,7 +132,8 @@ public class FactoryGenerator extends CodeGenerator {
     }
 
     for (ParamInjectionTarget paramInjectionTarget : constructorInjectionTarget.parameters) {
-      CodeBlock invokeScopeGetMethodWithNameCodeBlock = getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget);
+      CodeBlock invokeScopeGetMethodWithNameCodeBlock =
+          getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget);
       String paramName = "param" + counter++;
       codeBlockBuilder.add("$T $L = scope.", getParamType(paramInjectionTarget), paramName);
       codeBlockBuilder.add(invokeScopeGetMethodWithNameCodeBlock);
@@ -137,61 +163,68 @@ public class FactoryGenerator extends CodeGenerator {
 
   private void emitGetTargetScope(TypeSpec.Builder builder) {
     CodeBlock.Builder getParentScopeCodeBlockBuilder = getParentScopeCodeBlockBuilder();
-    MethodSpec.Builder getScopeBuilder = MethodSpec.methodBuilder("getTargetScope")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .addParameter(ClassName.get(Scope.class), "scope")
-        .returns(ClassName.get(Scope.class))
-        .addStatement("return scope$L", getParentScopeCodeBlockBuilder.build().toString());
+    MethodSpec.Builder getScopeBuilder =
+        MethodSpec.methodBuilder("getTargetScope")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(ClassName.get(Scope.class), "scope")
+            .returns(ClassName.get(Scope.class))
+            .addStatement("return scope$L", getParentScopeCodeBlockBuilder.build().toString());
     builder.addMethod(getScopeBuilder.build());
   }
 
   private void emitHasScopeAnnotation(TypeSpec.Builder builder) {
     String scopeName = constructorInjectionTarget.scopeName;
     boolean hasScopeAnnotation = scopeName != null;
-    MethodSpec.Builder hasScopeAnnotationBuilder = MethodSpec.methodBuilder("hasScopeAnnotation")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", hasScopeAnnotation);
+    MethodSpec.Builder hasScopeAnnotationBuilder =
+        MethodSpec.methodBuilder("hasScopeAnnotation")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return $L", hasScopeAnnotation);
     builder.addMethod(hasScopeAnnotationBuilder.build());
   }
 
   private void emitHasSingletonAnnotation(TypeSpec.Builder builder) {
     boolean hasSingletonAnnotation = constructorInjectionTarget.hasSingletonAnnotation;
-    MethodSpec.Builder hasScopeAnnotationBuilder = MethodSpec.methodBuilder("hasSingletonAnnotation")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", hasSingletonAnnotation);
+    MethodSpec.Builder hasScopeAnnotationBuilder =
+        MethodSpec.methodBuilder("hasSingletonAnnotation")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return $L", hasSingletonAnnotation);
     builder.addMethod(hasScopeAnnotationBuilder.build());
   }
 
   private void emitHasReleasableAnnotation(TypeSpec.Builder builder) {
     boolean hasReleasableAnnotation = constructorInjectionTarget.hasReleasableAnnotation;
-    MethodSpec.Builder hasScopeAnnotationBuilder = MethodSpec.methodBuilder("hasReleasableAnnotation")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", hasReleasableAnnotation);
+    MethodSpec.Builder hasScopeAnnotationBuilder =
+        MethodSpec.methodBuilder("hasReleasableAnnotation")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return $L", hasReleasableAnnotation);
     builder.addMethod(hasScopeAnnotationBuilder.build());
   }
 
   private void emitHasProvidesSingletonInScopeAnnotation(TypeSpec.Builder builder) {
-    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProvidesSingletonInScopeAnnotation")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", constructorInjectionTarget.hasProvidesSingletonInScopeAnnotation);
+    MethodSpec.Builder hasProducesSingletonBuilder =
+        MethodSpec.methodBuilder("hasProvidesSingletonInScopeAnnotation")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement(
+                "return $L", constructorInjectionTarget.hasProvidesSingletonInScopeAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 
   private void emitHasProvidesReleasableAnnotation(TypeSpec.Builder builder) {
-    MethodSpec.Builder hasProducesSingletonBuilder = MethodSpec.methodBuilder("hasProvidesReleasableAnnotation")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(TypeName.BOOLEAN)
-        .addStatement("return $L", constructorInjectionTarget.hasProvidesReleasableAnnotation);
+    MethodSpec.Builder hasProducesSingletonBuilder =
+        MethodSpec.methodBuilder("hasProvidesReleasableAnnotation")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return $L", constructorInjectionTarget.hasProvidesReleasableAnnotation);
     builder.addMethod(hasProducesSingletonBuilder.build());
   }
 
@@ -199,7 +232,7 @@ public class FactoryGenerator extends CodeGenerator {
     CodeBlock.Builder getParentScopeCodeBlockBuilder = CodeBlock.builder();
     String scopeName = constructorInjectionTarget.scopeName;
     if (scopeName != null) {
-      //there is no scope name or the current @Scoped annotation.
+      // there is no scope name or the current @Scoped annotation.
       if (javax.inject.Singleton.class.getName().equals(scopeName)) {
         getParentScopeCodeBlockBuilder.add(".getRootScope()");
       } else {

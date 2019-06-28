@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.config;
 
 import java.lang.annotation.Annotation;
@@ -28,10 +44,12 @@ public class Binding<T> {
     return this;
   }
 
-  public <A extends Annotation> Binding<T> withName(Class<A> annotationClassWithQualifierAnnotation) {
+  public <A extends Annotation> Binding<T> withName(
+      Class<A> annotationClassWithQualifierAnnotation) {
     if (!annotationClassWithQualifierAnnotation.isAnnotationPresent(Qualifier.class)) {
       throw new IllegalArgumentException(
-          String.format("Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
+          String.format(
+              "Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
               annotationClassWithQualifierAnnotation));
     }
     this.name = annotationClassWithQualifierAnnotation.getName();
@@ -58,13 +76,15 @@ public class Binding<T> {
     mode = Mode.INSTANCE;
   }
 
-  public BoundStateForProviderClassBinding toProvider(Class<? extends Provider<? extends T>> providerClass) {
+  public BoundStateForProviderClassBinding toProvider(
+      Class<? extends Provider<? extends T>> providerClass) {
     this.providerClass = providerClass;
     mode = Mode.PROVIDER_CLASS;
     return new BoundStateForProviderClassBinding();
   }
 
-  public BoundStateForProviderInstanceBinding toProviderInstance(Provider<? extends T> providerInstance) {
+  public BoundStateForProviderInstanceBinding toProviderInstance(
+      Provider<? extends T> providerInstance) {
     this.providerInstance = providerInstance;
     mode = Mode.PROVIDER_INSTANCE;
     return new BoundStateForProviderInstanceBinding();
@@ -126,22 +146,17 @@ public class Binding<T> {
     PROVIDER_CLASS
   }
 
-  //*************************
-  //***** DSL STATE MACHINE *
-  //*************************
+  // *************************
+  // ***** DSL STATE MACHINE *
+  // *************************
 
   public class BoundStateForClassBinding {
-    /**
-     * to create instances using the binding's scope
-     */
+    /** to create instances using the binding's scope */
     public void instancesInScope() {
       Binding.this.instancesInScope();
     }
 
-    /**
-     * to create a singleton using the binding's scope
-     * and reuse it inside the binding's scope
-     */
+    /** to create a singleton using the binding's scope and reuse it inside the binding's scope */
     public CanBeMarkedAsReleasableClassBinding singletonInScope() {
       Binding.this.singletonInScope();
       return new CanBeMarkedAsReleasableClassBinding();
@@ -149,10 +164,7 @@ public class Binding<T> {
   }
 
   public class BoundStateForProviderClassBinding extends BoundStateForClassBinding {
-    /**
-     * to provide a singleton using the binding's scope
-     * and reuse it inside the binding's scope
-     */
+    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
     public CanBeMarkedAsProvidesReleasableClassBinding providesSingletonInScope() {
       Binding.this.singletonInScope();
       isProvidingSingletonInScope = true;
@@ -161,20 +173,15 @@ public class Binding<T> {
   }
 
   public class CanBeMarkedAsReleasableClassBinding {
-    /**
-     * to provide a singleton using the binding's scope
-     * and reuse it inside the binding's scope
-     */
+    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
     public void releasable() {
       Binding.this.isCreatingReleasable = true;
     }
   }
 
-  public class CanBeMarkedAsProvidesReleasableClassBinding extends CanBeMarkedAsReleasableClassBinding {
-    /**
-     * to provide a singleton using the binding's scope
-     * and reuse it inside the binding's scope
-     */
+  public class CanBeMarkedAsProvidesReleasableClassBinding
+      extends CanBeMarkedAsReleasableClassBinding {
+    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
     public CanBeMarkedAsReleasableClassBinding providesReleasable() {
       Binding.this.isProvidingReleasable = true;
       return this;
@@ -182,10 +189,7 @@ public class Binding<T> {
   }
 
   public class BoundStateForProviderInstanceBinding {
-    /**
-     * to provide a singleton using the binding's scope
-     * and reuse it inside the binding's scope
-     */
+    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
     public void providesSingletonInScope() {
       isProvidingSingletonInScope = true;
     }

@@ -1,4 +1,27 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.getInstance;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -8,16 +31,9 @@ import toothpick.ScopeImpl;
 import toothpick.config.Module;
 import toothpick.data.Foo;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
-
 /*
  * Creates a instance in the simplest possible way
-  * with a module that binds a single class.
+ * with a module that binds a single class.
  */
 public class NamedInstanceCreation {
 
@@ -25,30 +41,31 @@ public class NamedInstanceCreation {
 
   @Test
   public void testNamedInjection() throws Exception {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(new SimpleModule());
 
-    //WHEN
+    // WHEN
     Foo namedInstance = scope.getInstance(Foo.class, "bar");
 
-    //THEN
+    // THEN
     assertThat(namedInstance, is(namedFooInstance));
   }
 
   @Test
-  public void testNamedInjection_shouldNotBeConfusedWithUnNamedInjection_whenUsingName() throws Exception {
-    //GIVEN
+  public void testNamedInjection_shouldNotBeConfusedWithUnNamedInjection_whenUsingName()
+      throws Exception {
+    // GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(new SimpleModule());
 
-    //WHEN
+    // WHEN
     Foo instance = scope.getInstance(Foo.class, "bar");
     Foo instance2 = scope.getInstance(Foo.class, "bar");
     Foo instance3 = scope.getInstance(Foo.class, FooName.class.getName());
     Foo instance4 = scope.getInstance(Foo.class);
 
-    //THEN
+    // THEN
     assertThat(instance, is(namedFooInstance));
     assertThat(instance2, is(namedFooInstance));
     assertThat(instance3, is(namedFooInstance));
@@ -59,18 +76,19 @@ public class NamedInstanceCreation {
   }
 
   @Test
-  public void testNamedProviderInjection_shouldNotBeConfusedWithUnNamedInjection() throws Exception {
-    //GIVEN
+  public void testNamedProviderInjection_shouldNotBeConfusedWithUnNamedInjection()
+      throws Exception {
+    // GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(new SimpleModule());
 
-    //WHEN
+    // WHEN
     Provider<Foo> provider = scope.getProvider(Foo.class, "bar");
     Provider<Foo> provider2 = scope.getProvider(Foo.class, "bar");
     Provider<Foo> provider3 = scope.getProvider(Foo.class, FooName.class.getName());
     Provider<Foo> provider4 = scope.getProvider(Foo.class);
 
-    //THEN
+    // THEN
     assertThat(provider.get(), is(namedFooInstance));
     assertThat(provider2.get(), is(namedFooInstance));
     assertThat(provider3.get(), is(namedFooInstance));
@@ -79,18 +97,22 @@ public class NamedInstanceCreation {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testInstallModule_shouldFail_ifModuleUsesClassAsNameButNotAnAnnotation() throws Exception {
-    //GIVEN
+  public void testInstallModule_shouldFail_ifModuleUsesClassAsNameButNotAnAnnotation()
+      throws Exception {
+    // GIVEN
     Scope scope = new ScopeImpl("");
 
-    //WHEN
-    scope.installModules(new Module() {
-      {
-        bind(Foo.class).withName(NotQualifierAnnotationFooName.class).toInstance(namedFooInstance);
-      }
-    });
+    // WHEN
+    scope.installModules(
+        new Module() {
+          {
+            bind(Foo.class)
+                .withName(NotQualifierAnnotationFooName.class)
+                .toInstance(namedFooInstance);
+          }
+        });
 
-    //THEN
+    // THEN
     fail("Should have thrown an exception");
   }
 
@@ -103,9 +125,7 @@ public class NamedInstanceCreation {
   }
 
   @Qualifier
-  private @interface FooName {
-  }
+  private @interface FooName {}
 
-  private @interface NotQualifierAnnotationFooName {
-  }
+  private @interface NotQualifierAnnotationFooName {}
 }

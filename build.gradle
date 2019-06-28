@@ -9,6 +9,7 @@ buildscript {
   }
   dependencies {
     classpath deps.coverallPlugin
+    classpath deps.spotlessPlugin
   }
 }
 
@@ -80,26 +81,28 @@ subprojects { project ->
   }
 
   apply plugin: 'jacoco'
-  apply plugin: 'checkstyle'
   apply plugin: 'maven'
+  apply plugin: 'com.diffplug.gradle.spotless'
 
-  checkstyle {
-    configFile rootProject.file('checkstyle.xml')
+  spotless {
+    java {
+      licenseHeaderFile rootProject.file('spotless.license.java.txt')
+      googleJavaFormat() // use a specific formatter for Java files
+      target '**/*.java'
+    }
+    kotlin {
+      // optionally takes a version
+      ktlint().userData(['indent_size': '2'])
+      target '**/*.kt'
 
-  }
-
-  task checkstyle(type: Checkstyle) {
-    source 'src/main/java'
-    ignoreFailures true
-    showViolations true
-    include '**/*.java'
-
-    classpath = files()
+      // also supports license headers
+      licenseHeaderFile rootProject.file('spotless.license.java.txt')
+    }
   }
 
   afterEvaluate {
     if (project.tasks.findByName('check') && project.pluginManager.hasPlugin('java')) {
-      check.dependsOn('checkstyle')
+      check.dependsOn('spotlessCheck')
       check.dependsOn('jacocoTestReport')
 
       tasks.withType(Test) {

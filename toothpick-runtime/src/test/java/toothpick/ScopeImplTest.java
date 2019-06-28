@@ -1,5 +1,27 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.data.Bar;
@@ -7,112 +29,106 @@ import toothpick.data.Foo;
 import toothpick.data.IFoo;
 import toothpick.locators.NoFactoryFoundException;
 
-import javax.inject.Provider;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 public class ScopeImplTest {
 
   @Test
   public void installOverrideModules_shouldInstallOverrideBindings_whenCalledOnce() {
-    //GIVEN
+    // GIVEN
     Foo testFoo = new Foo();
     ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
     scope.installModules(new ProdModule());
 
-    //WHEN
+    // WHEN
     Foo instance = scope.getInstance(Foo.class);
 
-    //THEN
+    // THEN
     assertThat(instance, sameInstance(testFoo));
   }
 
   @Test
   public void installTestModules_shouldOverrideBindings_whenInstalledAfterProductionModules() {
-    //GIVEN
+    // GIVEN
     Foo testFoo = new Foo();
     ScopeImpl scope = new ScopeImpl("");
     scope.installModules(new ProdModule());
     scope.installTestModules(new TestModule(testFoo));
 
-    //WHEN
+    // WHEN
     Foo instance = scope.getInstance(Foo.class);
 
-    //THEN
+    // THEN
     assertThat(instance, sameInstance(testFoo));
   }
 
   @Test
-  public void installOverrideModules_shouldNotInstallOverrideBindings_whenCalledWithoutTestModules() {
-    //GIVEN
+  public void
+      installOverrideModules_shouldNotInstallOverrideBindings_whenCalledWithoutTestModules() {
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules();
     scope.installModules(new ProdModule());
 
-    //WHEN
+    // WHEN
     Foo instance = scope.getInstance(Foo.class);
 
-    //THEN
+    // THEN
     assertThat(instance, notNullValue());
   }
 
   @Test(expected = IllegalStateException.class)
   public void installTestModules_shoudFailToInstallTestsBindingsAgain_whenCalledTwice() {
-    //GIVEN
+    // GIVEN
     Foo testFoo = new Foo();
     Foo testFoo2 = new Foo();
     ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
 
-    //WHEN
+    // WHEN
     scope.installTestModules(new TestModule(testFoo2));
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test
   public void installOverrideModules_shouldNotOverrideOtherBindings() {
-    //GIVEN
+    // GIVEN
     Foo testFoo = new Foo();
     ScopeImpl scope = new ScopeImpl("");
     scope.installTestModules(new TestModule(testFoo));
     scope.installModules(new ProdModule2());
 
-    //WHEN
+    // WHEN
     Foo fooInstance = scope.getInstance(Foo.class);
     Bar barInstance = scope.getInstance(Bar.class);
 
-    //THEN
+    // THEN
     assertThat(fooInstance, sameInstance(testFoo));
     assertThat(barInstance, notNullValue());
   }
 
   @Test(expected = IllegalStateException.class)
   public void installModules_shouldThrowAnException_whenModuleHasANullBinding() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     scope.installModules(new NullBindingModule());
 
-    //THEN
+    // THEN
     fail("Should throw an exception.");
   }
 
   @Test(expected = IllegalStateException.class)
   public void installModules_shouldFailWhenModuleHasIssues() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     scope.installModules(new BuggyModule());
 
-    //THEN
+    // THEN
     fail();
   }
 
@@ -125,137 +141,140 @@ public class ScopeImplTest {
 
   @Test(expected = RuntimeException.class)
   public void testLookup_shouldFail_whenNotFindingABindingForANamedProvider() {
-    //GIVEN
-    //WHEN
+    // GIVEN
+    // WHEN
     new ScopeImpl("").lookupProvider(Foo.class, "Bar");
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test(expected = IllegalStateException.class)
   public void testToBinding_shouldFail_whenAddingANullBinding() {
-    //GIVEN
+    // GIVEN
 
-    //WHEN
+    // WHEN
     new ScopeImpl("").toProvider(null);
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void getInstance_shouldFail_whenScopeIsClosed() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     scope.close();
     scope.getInstance(Foo.class);
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void getLazy_shouldFail_whenScopeIsClosed() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     scope.close();
     scope.getLazy(Foo.class);
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void getProvider_shouldFail_whenScopeIsClosed() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     scope.close();
     scope.getProvider(Foo.class);
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void lazyGet_shouldFail_whenScopeIsClosed() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     Lazy<Foo> lazy = scope.getLazy(Foo.class);
 
-    //WHEN
+    // WHEN
     scope.close();
     lazy.get();
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void providerGet_shouldFail_whenScopeIsClosed() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     Provider<Foo> provider = scope.getProvider(Foo.class);
 
-    //WHEN
+    // WHEN
     scope.close();
     provider.get();
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void lazyGet_shouldFail_whenScopeIsClosed_andThereAreNoDependencies() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     Lazy<Bar> lazy = scope.getLazy(Bar.class);
 
-    //WHEN
+    // WHEN
     scope.close();
     lazy.get();
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = IllegalStateException.class)
   public void providerGet_shouldFail_whenScopeIsClosed_andThereAreNoDependencies() {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     Provider<Bar> provider = scope.getProvider(Bar.class);
 
-    //WHEN
+    // WHEN
     scope.close();
     provider.get();
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = NoFactoryFoundException.class)
   public void reset_shouldResetBoundProviders_andFlagTheTestModuleToFalse() throws Exception {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("root");
-    scope.installTestModules(new Module() { {
-      bind(IFoo.class).to(Foo.class);
-    } });
+    scope.installTestModules(
+        new Module() {
+          {
+            bind(IFoo.class).to(Foo.class);
+          }
+        });
 
-    //WHEN
+    // WHEN
     scope.reset();
 
-    //THEN
+    // THEN
     scope.installTestModules(); // Should not crash
     scope.getInstance(IFoo.class); // Should crash as we don't have the binding for IFoo anymore
   }
 
   @Test
   public void reset_shouldRebindScope() throws Exception {
-    //GIVEN
+    // GIVEN
     ScopeImpl scope = new ScopeImpl("root");
 
-    //WHEN
+    // WHEN
     scope.reset();
 
-    //THEN
+    // THEN
     assertThat(scope.getInstance(Scope.class), notNullValue());
   }
 

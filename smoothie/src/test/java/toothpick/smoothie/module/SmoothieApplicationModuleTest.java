@@ -1,4 +1,24 @@
+/*
+ * Copyright 2016 Stephane Nicolas
+ * Copyright 2016 Daniel Molinero Reguerra
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.smoothie.module;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import android.accounts.AccountManager;
 import android.app.ActivityManager;
@@ -30,21 +50,17 @@ import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 @RunWith(RobolectricTestRunner.class)
 public class SmoothieApplicationModuleTest {
 
   @Test
   public void testModule_shouldReturnApplicationBindings() throws Exception {
-    //GIVEN
+    // GIVEN
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 
-    //WHEN
+    // WHEN
     Application injectedApp = appScope.getInstance(Application.class);
     AccountManager accountManager = appScope.getInstance(AccountManager.class);
     AssetManager assetManager = appScope.getInstance(AssetManager.class);
@@ -53,7 +69,7 @@ public class SmoothieApplicationModuleTest {
     Resources resources = appScope.getInstance(Resources.class);
     SharedPreferences sharedPreferences = appScope.getInstance(SharedPreferences.class);
 
-    //THEN
+    // THEN
     assertThat(injectedApp, is(RuntimeEnvironment.application));
     assertThat(accountManager, notNullValue());
     assertThat(assetManager, notNullValue());
@@ -65,12 +81,12 @@ public class SmoothieApplicationModuleTest {
 
   @Test
   public void testModule_shouldReturnSystemServices() throws Exception {
-    //GIVEN
+    // GIVEN
     Application application = RuntimeEnvironment.application;
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 
-    //WHEN
+    // WHEN
     Application injectedApp = appScope.getInstance(Application.class);
     LocationManager locationManager = appScope.getInstance(LocationManager.class);
     WindowManager windowManager = appScope.getInstance(WindowManager.class);
@@ -81,14 +97,14 @@ public class SmoothieApplicationModuleTest {
     KeyguardManager keyguardManager = appScope.getInstance(KeyguardManager.class);
     Vibrator vibrator = appScope.getInstance(Vibrator.class);
     ConnectivityManager connectivityManager = appScope.getInstance(ConnectivityManager.class);
-    //WifiManager wifiManager = appScope.getInstance(WifiManager.class);
+    // WifiManager wifiManager = appScope.getInstance(WifiManager.class);
     InputMethodManager inputMethodManager = appScope.getInstance(InputMethodManager.class);
     SensorManager sensorManager = appScope.getInstance(SensorManager.class);
     TelephonyManager telephonyManager = appScope.getInstance(TelephonyManager.class);
     AudioManager audioManager = appScope.getInstance(AudioManager.class);
     DownloadManager downloadManager = appScope.getInstance(DownloadManager.class);
 
-    //THEN
+    // THEN
     assertThat(injectedApp, is(RuntimeEnvironment.application));
     assertThat(locationManager, notNullValue());
     assertThat(windowManager, notNullValue());
@@ -99,7 +115,7 @@ public class SmoothieApplicationModuleTest {
     assertThat(keyguardManager, notNullValue());
     assertThat(vibrator, notNullValue());
     assertThat(connectivityManager, notNullValue());
-    //assertThat(wifiManager, notNullValue());
+    // assertThat(wifiManager, notNullValue());
     assertThat(inputMethodManager, notNullValue());
     assertThat(sensorManager, notNullValue());
     assertThat(telephonyManager, notNullValue());
@@ -109,40 +125,42 @@ public class SmoothieApplicationModuleTest {
 
   @Test
   public void testModule_shouldReturnDefaultSharedPreferences() throws Exception {
-    //GIVEN
+    // GIVEN
     Application application = RuntimeEnvironment.application;
 
     String itemKey = "isValid";
-    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
+    SharedPreferences sharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(application);
     sharedPreferences.edit().putBoolean(itemKey, true).commit();
 
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 
-    //WHEN
+    // WHEN
     SharedPreferences sharedPreferencesFromScope = appScope.getInstance(SharedPreferences.class);
 
-    //THEN
+    // THEN
     assertThat(sharedPreferencesFromScope.getBoolean(itemKey, false), is(true));
   }
 
   @Test
   public void testModule_shouldReturnNamedSharedPreferences() throws Exception {
-    //GIVEN
+    // GIVEN
     Application application = RuntimeEnvironment.application;
 
     String sharedPreferencesName = "test";
     String itemKey = "isValid";
-    SharedPreferences sharedPreferences = application.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
+    SharedPreferences sharedPreferences =
+        application.getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE);
     sharedPreferences.edit().putBoolean(itemKey, true).commit();
 
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application, sharedPreferencesName));
 
-    //WHEN
+    // WHEN
     SharedPreferences sharedPreferencesFromScope = appScope.getInstance(SharedPreferences.class);
 
-    //THEN
+    // THEN
     assertThat(sharedPreferencesFromScope.getBoolean(itemKey, false), is(true));
   }
 }
