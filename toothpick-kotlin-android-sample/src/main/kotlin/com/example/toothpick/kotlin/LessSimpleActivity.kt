@@ -10,8 +10,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.ContextNamer
 import com.example.toothpick.ktp.KTP
-import com.example.toothpick.ktp.KTP.Companion.inject
-import com.example.toothpick.ktp.KTP.Companion.openScopes
+import toothpick.kotlin.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class LessSimpleActivity : Activity() {
@@ -27,7 +26,7 @@ class LessSimpleActivity : Activity() {
     lateinit var subTitle: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        openScopes(application, this)
+        KTP.openScopes(application, this)
                 .installModules(SmoothieActivityModule(this))
                 .inject(this)
 
