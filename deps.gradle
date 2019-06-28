@@ -25,14 +25,14 @@ ext.deps = [// Common
             tp_testing_junit5   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:2.0.0',
 
             // Test dependencies
-            junit4              : 'junit:junit:4.12',
+            junit4              : 'junit:junit:4.13-beta-3',
             junit5_api          : 'org.junit.jupiter:junit-jupiter-api:5.3.2',
             junit5_engine       : 'org.junit.jupiter:junit-jupiter-engine:5.3.2',
             hamcrest            : 'org.hamcrest:java-hamcrest:2.0.0.0',
             truth               : 'com.google.truth:truth:0.42',
             compiletesting      : 'com.google.testing.compile:compile-testing:0.15',
-            easymock            : 'org.easymock:easymock:3.4',
-            powermock           : 'org.powermock:powermock-easymock-release-full:1.6.4',
+            mockito            : 'org.mockito:mockito-core:2.28.2',
+            powermock           : 'org.powermock:powermock-mockito-release-full:1.6.4',
             powermock_rule      : 'org.powermock:powermock-module-junit4-rule-agent:1.6.4',
             robolectric         : 'org.robolectric:robolectric:3.4.2',
 

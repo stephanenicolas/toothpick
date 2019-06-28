@@ -16,22 +16,24 @@
  */
 package toothpick.concurrency;
 
-import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertTrue;
+import static org.powermock.api.mockito.PowerMockito.when;
 import static toothpick.concurrency.utils.ThreadTestUtil.STANDARD_THREAD_COUNT;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.easymock.Capture;
-import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.powermock.api.easymock.PowerMock;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import org.mockito.exceptions.base.MockitoException;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import toothpick.Factory;
@@ -46,6 +48,7 @@ import toothpick.concurrency.utils.ThreadTestUtil;
 import toothpick.configuration.Configuration;
 import toothpick.locators.FactoryLocator;
 
+
 @PrepareForTest(FactoryLocator.class)
 public class BindingsMultiThreadTest {
 
@@ -54,22 +57,21 @@ public class BindingsMultiThreadTest {
   static final String ROOT_SCOPE = "ROOT_SCOPE";
   final List<Object> scopeNames = new CopyOnWriteArrayList<>();
   private static ClassCreator classCreator = new ClassCreator();
+  private ArgumentCaptor<Class> argument;
 
   @Before
   public void setUp() {
 
-    PowerMock.mockStatic(FactoryLocator.class);
-    final Capture<Class> capturedClass = Capture.newInstance();
-    expect(FactoryLocator.getFactory(capture(capturedClass)))
-        .andAnswer(
-            new IAnswer<Factory>() {
+    PowerMockito.mockStatic(FactoryLocator.class);
+    argument = ArgumentCaptor.forClass(Class.class);
+    when(FactoryLocator.getFactory(argument.capture()))
+        .thenAnswer(
+            new Answer<Factory>() {
               @Override
-              public Factory answer() throws Throwable {
-                return new DynamicTestClassesFactory(capturedClass.getValue(), true);
+              public Factory answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return new DynamicTestClassesFactory(argument.getValue(), true);
               }
-            })
-        .anyTimes();
-    PowerMock.replay(FactoryLocator.class);
+            });
     Toothpick.setConfiguration(Configuration.forProduction());
     Toothpick.openScope(ROOT_SCOPE);
     scopeNames.clear();
@@ -79,7 +81,11 @@ public class BindingsMultiThreadTest {
   public void tearDown() {
     Toothpick.reset();
     ThreadTestUtil.shutdown();
-    PowerMock.verify(FactoryLocator.class);
+    try {
+      PowerMockito.verifyStatic(Mockito.atLeast(0));
+      FactoryLocator.getFactory(argument.getValue());
+    } catch (MockitoException e) {
+    }
   }
 
   @Test

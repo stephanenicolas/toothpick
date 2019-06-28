@@ -15,7 +15,7 @@ dependencies {
   testImplementation deps.tp_testing_junit5
   testImplementation deps.junit5_api
   testRuntimeOnly deps.junit5_engine
-  testImplementation deps.easymock
+  testImplementation deps.mockito
   testImplementation deps.hamcrest
   testAnnotationProcessor deps.tp_compiler
 }

@@ -21,7 +21,7 @@ dependencies {
 
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
-  testImplementation deps.easymock
+  testImplementation deps.mockito
   testImplementation deps.robolectric
 }
 

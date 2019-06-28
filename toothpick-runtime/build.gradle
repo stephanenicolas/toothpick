@@ -24,7 +24,6 @@ dependencies {
   api deps.inject
 
   testImplementation deps.junit4
-  testImplementation deps.easymock
   testImplementation deps.powermock
   testImplementation deps.hamcrest
   testImplementation deps.powermock_rule

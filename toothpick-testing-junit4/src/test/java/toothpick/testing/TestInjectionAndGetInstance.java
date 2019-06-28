@@ -17,7 +17,7 @@
 package toothpick.testing;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.inject.Inject;
 import org.junit.After;

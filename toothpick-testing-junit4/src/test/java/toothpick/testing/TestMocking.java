@@ -16,26 +16,27 @@
  */
 package toothpick.testing;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import javax.inject.Inject;
-import org.easymock.EasyMockRule;
-import org.easymock.Mock;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import toothpick.Toothpick;
 
 public class TestMocking {
-  @Rule public ToothPickRule toothPickRule = new ToothPickRule(this, "Foo");
-  @Rule public TestRule chain = RuleChain.outerRule(toothPickRule).around(new EasyMockRule(this));
+  @Rule(order = 1)
+  public ToothPickRule toothPickRule = new ToothPickRule(this, "Foo");
+
+  @Rule(order = 2)
+  public MockitoRule mockitoJUnitRule = MockitoJUnit.rule();
 
   EntryPoint entryPoint;
   @Mock Dependency dependency;
@@ -50,13 +51,12 @@ public class TestMocking {
   @Test
   public void testMock() throws Exception {
     // GIVEN
-    expect(dependency.num()).andReturn(2);
-    replay(dependency);
+    when(dependency.num()).thenReturn(2);
     // WHEN
     entryPoint = toothPickRule.getInstance(EntryPoint.class);
     int num = entryPoint.dependency.num();
     // THEN
-    verify(dependency);
+    verify(dependency).num();
     assertThat(entryPoint, notNullValue());
     assertThat(entryPoint.dependency, notNullValue());
     assertThat(num, is(2));

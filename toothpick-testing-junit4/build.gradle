@@ -7,7 +7,7 @@ dependencies {
   api project(':toothpick-testing')
   implementation deps.junit4
 
-  testImplementation deps.easymock
+  testImplementation deps.mockito
   testAnnotationProcessor project(':toothpick-compiler')
 }
 

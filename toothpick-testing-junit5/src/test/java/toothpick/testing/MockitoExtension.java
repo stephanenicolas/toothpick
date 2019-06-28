@@ -16,20 +16,20 @@
  */
 package toothpick.testing;
 
-import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockito.MockitoAnnotations;
 
-public class EasyMockExtension implements BeforeEachCallback {
+public class MockitoExtension implements BeforeEachCallback {
 
   private final Object test;
 
-  public EasyMockExtension(Object test) {
+  public MockitoExtension(Object test) {
     this.test = test;
   }
 
   @Override
   public void beforeEach(ExtensionContext context) throws Exception {
-    EasyMockSupport.injectMocks(test);
+    MockitoAnnotations.initMocks(test);
   }
 }

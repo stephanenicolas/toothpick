@@ -16,14 +16,13 @@
  */
 package toothpick;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -247,9 +246,8 @@ public class ToothpickTest {
   @Test
   public void reset_shouldCallResetForProvidedScope() throws Exception {
     // GIVEN
-    ScopeNode mockScope = createMock(ScopeNode.class);
+    ScopeNode mockScope = mock(ScopeNode.class);
     mockScope.reset();
-    replay(mockScope);
 
     // WHEN
     Toothpick.reset(mockScope);
