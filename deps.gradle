@@ -31,9 +31,10 @@ ext.deps = [// Common
             hamcrest            : 'org.hamcrest:java-hamcrest:2.0.0.0',
             truth               : 'com.google.truth:truth:0.42',
             compiletesting      : 'com.google.testing.compile:compile-testing:0.15',
-            mockito            : 'org.mockito:mockito-core:2.28.2',
-            powermock           : 'org.powermock:powermock-mockito-release-full:1.6.4',
-            powermock_rule      : 'org.powermock:powermock-module-junit4-rule-agent:1.6.4',
+            mockito             : 'org.mockito:mockito-core:2.4.0',
+            powermockito        : 'org.powermock:powermock-api-mockito2:1.7.4',
+            powermock_junit     : 'org.powermock:powermock-module-junit4:1.7.4',
+            powermock_rule      : 'org.powermock:powermock-module-junit4-rule-agent:1.7.4',
             robolectric         : 'org.robolectric:robolectric:3.4.2',
 
             // Android Test Dependencies

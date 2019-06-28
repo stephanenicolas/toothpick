@@ -30,7 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.exceptions.base.MockitoException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -47,7 +46,6 @@ import toothpick.concurrency.utils.ClassCreator;
 import toothpick.concurrency.utils.ThreadTestUtil;
 import toothpick.configuration.Configuration;
 import toothpick.locators.FactoryLocator;
-
 
 @PrepareForTest(FactoryLocator.class)
 public class BindingsMultiThreadTest {
@@ -83,8 +81,10 @@ public class BindingsMultiThreadTest {
     ThreadTestUtil.shutdown();
     try {
       PowerMockito.verifyStatic(Mockito.atLeast(0));
-      FactoryLocator.getFactory(argument.getValue());
-    } catch (MockitoException e) {
+      for (Class allValue : argument.getAllValues()) {
+        FactoryLocator.getFactory(allValue);
+      }
+    } catch (Exception e) {
     }
   }
 
