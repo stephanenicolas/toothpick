@@ -1,13 +1,12 @@
 package toothpick.kotlin
 
+import com.example.toothpick.ktp.KTP
 import javax.inject.Inject
 import org.easymock.EasyMockRule
 import org.easymock.Mock
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.RuleChain
-import org.junit.rules.TestRule
 import toothpick.Toothpick
 
 import org.easymock.EasyMock.expect
@@ -22,7 +21,8 @@ import toothpick.testing.ToothPickRule
 /*
 + Lazy
 + Provider
-+ Named and qualifiers
++ Named
+* qualifiers only for constructor
 + Tests ^
 + Concurrency
 
@@ -53,13 +53,16 @@ class TestMocking {
         //GIVEN
         expect(dependency.num()).andReturn(2)
         replay(dependency)
+
         //WHEN
-        val nonEntryPoint = toothPickRule.getInstance(NonEntryPointByFields::class.java)
+        val nonEntryPoint = NonEntryPointByFields()
+        KTP.openScope("Foo").inject(nonEntryPoint)
         val num = nonEntryPoint.dependency.num()
+
         //THEN
         verify(dependency)
         assertThat(nonEntryPoint, notNullValue())
-        assertThat<Dependency>(nonEntryPoint.dependency, notNullValue())
+        assertThat(nonEntryPoint.dependency, notNullValue())
         assertThat(num, `is`(2))
     }
 
@@ -69,13 +72,15 @@ class TestMocking {
         //GIVEN
         expect(dependency.num()).andReturn(2)
         replay(dependency)
+
         //WHEN
         val nonEntryPoint = toothPickRule.getInstance(NonEntryPointByConstructor::class.java)
         val num = nonEntryPoint.dependency.num()
+
         //THEN
         verify(dependency)
         assertThat(nonEntryPoint, notNullValue())
-        assertThat<Dependency>(nonEntryPoint.dependency, notNullValue())
+        assertThat(nonEntryPoint.dependency, notNullValue())
         assertThat(num, `is`(2))
     }
 
@@ -86,48 +91,25 @@ class TestMocking {
         expect(dependency.num()).andReturn(2)
         replay(dependency)
         //WHEN
-        val nonEntryPoint = EntryPointByMemberInjector()
+        val nonEntryPoint = EntryPoint()
         val num = nonEntryPoint.dependency.num()
         //THEN
         verify(dependency)
         assertThat(nonEntryPoint, notNullValue())
-        assertThat<Dependency>(nonEntryPoint.dependency, notNullValue())
+        assertThat(nonEntryPoint.dependency, notNullValue())
         assertThat(num, `is`(2))
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun testInjectDependenciesByFieldsInEntryPointByDelegate() {
-        //GIVEN
-        expect(dependency.num()).andReturn(2)
-        replay(dependency)
-        //WHEN
-        val nonEntryPoint = EntryPointByDelegate()
-        val num = nonEntryPoint.dependency.num()
-        //THEN
-        verify(dependency)
-        assertThat(nonEntryPoint, notNullValue())
-        assertThat<Dependency>(nonEntryPoint.dependency, notNullValue())
-        assertThat(num, `is`(2))
-    }
+    class EntryPoint {
+        val dependency: Dependency by inject()
 
-    class EntryPointByMemberInjector {
-        @Inject lateinit var dependency: Dependency
-
-        constructor() {
-            Toothpick.inject(this, Toothpick.openScope("Foo"))
+        init {
+            KTP.openScope("Foo").inject(this)
         }
     }
 
-    class EntryPointByDelegate {
-        val dependency: Dependency by scope.inject()
-
-        val scope: Scope
-        get() = Toothpick.openScope("Foo")
-    }
-
-    class NonEntryPointByFields(scope: Scope) {
-        val dependency: Dependency by KTP.inject()
+    class NonEntryPointByFields {
+        val dependency: Dependency by inject()
     }
 
     class NonEntryPointByConstructor @Inject constructor(val dependency: Dependency)

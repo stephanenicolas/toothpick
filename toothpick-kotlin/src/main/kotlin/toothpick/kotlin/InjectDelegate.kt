@@ -13,7 +13,7 @@ class InjectDelegate<T: Any>(private val clz: Class<T>, private val name: String
     }
 
     operator fun getValue(thisRef: Any, property: KProperty<*>): T {
-        if (this::instance.isInitialized) {
+        if (!this::instance.isInitialized) {
             throw IllegalStateException("The dependency has not be injected yet.")
         }
         return instance
