@@ -126,6 +126,22 @@ public interface Scope {
   <T> T getInstance(Class<T> clazz, String name);
 
   /**
+   * Returns the instance of {@code clazz} named {@code name} if one is scoped in the current
+   * scope, or its ancestors. If there is no such instance, the factory associated
+   * to the clazz will be used to produce the instance.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   *
+   * @param clazz the class for which to obtain an instance in the scope of this scope.
+   * @param name the name of this instance, if it's null then a unnamed binding is used, otherwise the associated named binding is used.
+   * Note that the name here is denotated by an annotation class, which must be annotated by {link Qualifier}.
+   * This is strictly equivalent to use the canonical name of this class as a string.
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
+   * @see toothpick.config.Binding
+   */
+  <T> T getInstance(Class<T> clazz, Class<? extends Annotation> name);
+
+  /**
    * Requests a provider via an unnamed binding.
    *
    * @see #getProvider(Class, String)
@@ -147,6 +163,23 @@ public interface Scope {
    * @see toothpick.config.Module
    */
   <T> Provider<T> getProvider(Class<T> clazz, String name);
+
+  /**
+   * Returns a named {@code Provider} named {@code name} of {@code clazz} if one is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
+   * to the clazz will be used to create one.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   *
+   * @param clazz the class for which to obtain a provider in the scope of this scope.
+   * @param name the name of this instance, if it's null then a unnamed binding is used, otherwise the associated named binding is used.
+   * Note that the name here is denotated by an annotation class, which must be annotated by {link Qualifier}.
+   * This is strictly equivalent to use the canonical name of this class as a string.
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped provider or a new one using the factory associated to {@code clazz}.
+   * Returned providers are thread safe.
+   * @see toothpick.config.Module
+   */
+  <T> Provider<T> getProvider(Class<T> clazz, Class<? extends Annotation> name);
 
   /**
    * Requests a Lazy via an unnamed binding.
@@ -172,6 +205,25 @@ public interface Scope {
    * @see toothpick.config.Module
    */
   <T> Lazy<T> getLazy(Class<T> clazz, String name);
+
+  /**
+   * Returns a {@code Lazy} named {@code name} of {@code clazz} if one provider is scoped in the current
+   * scope, or its ancestors. If there is no such provider, the factory associated
+   * to the clazz will be used to create one.
+   * All {@link javax.inject.Inject} annotated fields of the instance are injected after creation.
+   * If the {@code clazz} is annotated with {@link javax.inject.Singleton} then the created provider
+   * will be scoped in the root scope of the current scope.
+   *
+   * @param clazz the class for which to obtain a lazy in the scope of this scope.
+   * @param name the name of this instance, if it's null then a unnamed binding is used, otherwise the associated named binding is used.
+   * Note that the name here is denotated by an annotation class, which must be annotated by {link Qualifier}.
+   * This is strictly equivalent to use the canonical name of this class as a string.
+   * @param <T> the type of {@code clazz}.
+   * @return a scoped lazy or a new one using the factory associated to {@code clazz}.
+   * Returned lazies are thread safe.
+   * @see toothpick.config.Module
+   */
+  <T> Lazy<T> getLazy(Class<T> clazz, Class<? extends Annotation> name);
 
   /**
    * Allows to install modules.

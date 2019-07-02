@@ -45,17 +45,19 @@ public class NamedInstanceCreation {
     //WHEN
     Foo instance = scope.getInstance(Foo.class, "bar");
     Foo instance2 = scope.getInstance(Foo.class, "bar");
-    Foo instance3 = scope.getInstance(Foo.class, FooName.class.getName());
-    Foo instance4 = scope.getInstance(Foo.class);
+    Foo instance3 = scope.getInstance(Foo.class, FooName.class.getCanonicalName());
+    Foo instance4 = scope.getInstance(Foo.class, FooName.class);
+    Foo instance5 = scope.getInstance(Foo.class);
 
     //THEN
     assertThat(instance, is(namedFooInstance));
     assertThat(instance2, is(namedFooInstance));
     assertThat(instance3, is(namedFooInstance));
-    assertThat(instance4, notNullValue());
+    assertThat(instance4, is(namedFooInstance));
+    assertThat(instance5, notNullValue());
     assertThat(instance, sameInstance(instance2));
     assertThat(instance, sameInstance(instance3));
-    assertThat(instance, not(sameInstance(instance4)));
+    assertThat(instance, not(sameInstance(instance5)));
   }
 
   @Test
@@ -67,15 +69,17 @@ public class NamedInstanceCreation {
     //WHEN
     Provider<Foo> provider = scope.getProvider(Foo.class, "bar");
     Provider<Foo> provider2 = scope.getProvider(Foo.class, "bar");
-    Provider<Foo> provider3 = scope.getProvider(Foo.class, FooName.class.getName());
-    Provider<Foo> provider4 = scope.getProvider(Foo.class);
+    Provider<Foo> provider3 = scope.getProvider(Foo.class, FooName.class.getCanonicalName());
+    Provider<Foo> provider4 = scope.getProvider(Foo.class, FooName.class);
+    Provider<Foo> provider5 = scope.getProvider(Foo.class);
 
     //THEN
     assertThat(provider.get(), is(namedFooInstance));
     assertThat(provider2.get(), is(namedFooInstance));
     assertThat(provider3.get(), is(namedFooInstance));
-    assertThat(provider4.get(), notNullValue());
-    assertThat(provider, not(sameInstance(provider4)));
+    assertThat(provider4.get(), is(namedFooInstance));
+    assertThat(provider5.get(), notNullValue());
+    assertThat(provider, not(sameInstance(provider5)));
   }
 
   @Test(expected = IllegalArgumentException.class)
