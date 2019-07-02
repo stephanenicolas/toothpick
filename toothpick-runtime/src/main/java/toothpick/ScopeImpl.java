@@ -1,5 +1,6 @@
 package toothpick;
 
+import java.lang.annotation.Annotation;
 import toothpick.config.Binding;
 import toothpick.config.Module;
 import toothpick.configuration.ConfigurationHolder;
@@ -46,7 +47,7 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public <T> T getInstance(Class<T> clazz) {
-    return getInstance(clazz, null);
+    return getInstance(clazz, (String) null);
   }
 
   @Override
@@ -63,8 +64,16 @@ public class ScopeImpl extends ScopeNode {
   }
 
   @Override
+  public <T> T getInstance(Class<T> clazz, Class<? extends Annotation> name) {
+    if (name == null) {
+      return getInstance(clazz, (String) null);
+    }
+   return getInstance(clazz, name.getCanonicalName());
+  }
+
+  @Override
   public <T> Provider<T> getProvider(Class<T> clazz) {
-    return getProvider(clazz, null);
+    return getProvider(clazz, (String) null);
   }
 
   @Override
@@ -74,14 +83,30 @@ public class ScopeImpl extends ScopeNode {
   }
 
   @Override
+  public <T> Provider<T> getProvider(Class<T> clazz, Class<? extends Annotation> name) {
+    if (name == null) {
+      return getProvider(clazz, (String) null);
+    }
+    return getProvider(clazz, name.getCanonicalName());
+  }
+
+  @Override
   public <T> Lazy<T> getLazy(Class<T> clazz) {
-    return getLazy(clazz, null);
+    return getLazy(clazz, (String) null);
   }
 
   @Override
   public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
     crashIfClosed();
     return new ThreadSafeProviderImpl<>(this, clazz, name, true);
+  }
+
+  @Override
+  public <T> Lazy<T> getLazy(Class<T> clazz, Class<? extends Annotation> name) {
+    if (name == null) {
+      return getLazy(clazz, (String) null);
+    }
+    return getLazy(clazz, name.getCanonicalName());
   }
 
   @Override

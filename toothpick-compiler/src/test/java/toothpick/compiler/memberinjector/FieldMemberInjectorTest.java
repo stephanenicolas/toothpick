@@ -121,6 +121,46 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void testNamedFieldInjection_whenUsingQualifierAnnotationAsInnerClass() {
+    JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
+        "package test;", //
+        "import javax.inject.Inject;", //
+        "import javax.inject.Named;", //
+        "import javax.inject.Qualifier;", //
+        "public class TestFieldInjection {", //
+        "  @Inject @Bar Foo foo;", //
+        "  public TestFieldInjection() {}", //
+        "", //
+        "  @Qualifier", //
+        "  @interface Bar {}", //
+        "}", //
+        "class Foo {}"
+    ));
+
+    JavaFileObject expectedSource = JavaFileObjects.forSourceString("test/TestFieldInjection__MemberInjector", Joiner.on('\n').join(//
+        "package test;", //
+        "", //
+        "import java.lang.Override;", //
+        "import toothpick.MemberInjector;", //
+        "import toothpick.Scope;", //
+        "", //
+        "public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {", //
+        "  @Override", //
+        "  public void inject(TestFieldInjection target, Scope scope) {", //
+        "    target.foo = scope.getInstance(Foo.class, \"test.TestFieldInjection.Bar\");", //
+        "  }", //
+        "}" //
+    ));
+
+    assert_().about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testNamedFieldInjection_whenUsingNonQualifierAnnotation() {
     JavaFileObject source = JavaFileObjects.forSourceString("test.TestFieldInjection", Joiner.on('\n').join(//
         "package test;", //
