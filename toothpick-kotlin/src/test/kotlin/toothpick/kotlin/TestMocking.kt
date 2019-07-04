@@ -1,22 +1,38 @@
+/*
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.kotlin
 
 import com.example.toothpick.ktp.KTP
+import org.amshove.kluent.Verify
+import org.amshove.kluent.When
+import org.amshove.kluent.called
+import org.amshove.kluent.calling
+import org.amshove.kluent.itReturns
+import org.amshove.kluent.on
+import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldNotBeNull
+import org.amshove.kluent.that
+import org.amshove.kluent.was
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
+import toothpick.testing.ToothPickExtension
 import javax.inject.Inject
-import org.easymock.EasyMockRule
-import org.easymock.Mock
-import org.junit.After
-import org.junit.Rule
-import org.junit.Test
-import toothpick.Toothpick
-
-import org.easymock.EasyMock.expect
-import org.easymock.EasyMock.replay
-import org.easymock.EasyMock.verify
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.notNullValue
-import org.junit.Assert.assertThat
-import toothpick.Scope
-import toothpick.testing.ToothPickRule
 
 /*
 + Lazy
@@ -32,72 +48,64 @@ import toothpick.testing.ToothPickRule
 + Optionals
  */
 class TestMocking {
-    @Rule @JvmField
-    var toothPickRule = ToothPickRule(this, "Foo")
-    @Rule @JvmField
-    var easyMockRule = EasyMockRule(this)
 
-    @Mock lateinit var dependency: Dependency
+    @JvmField
+    @RegisterExtension
+    val toothpickExtension = ToothPickExtension(this, "Foo")
+    @JvmField
+    @RegisterExtension
+    val mockitoExtension = MockitoExtension()
 
-    @After
-    @Throws(Exception::class)
-    fun tearDown() {
-        //needs to be performed after test execution
-        //not before as rule are initialized before @Before
-        Toothpick.reset()
-    }
+    @Mock
+    lateinit var dependency: Dependency
 
     @Test
-    @Throws(Exception::class)
-    fun testInjectDependenciesByFieldsInNonEntryPoints() {
-        //GIVEN
-        expect(dependency.num()).andReturn(2)
-        replay(dependency)
+    fun `Inject dependencies by fields in non entry points`() {
+        // GIVEN
+        When calling dependency.num() itReturns 2
 
-        //WHEN
+        // WHEN
         val nonEntryPoint = NonEntryPointByFields()
         KTP.openScope("Foo").inject(nonEntryPoint)
         val num = nonEntryPoint.dependency.num()
 
-        //THEN
-        verify(dependency)
-        assertThat(nonEntryPoint, notNullValue())
-        assertThat(nonEntryPoint.dependency, notNullValue())
-        assertThat(num, `is`(2))
+        // THEN
+        Verify on dependency that dependency.num() was called
+        nonEntryPoint.shouldNotBeNull()
+        nonEntryPoint.dependency.shouldNotBeNull()
+        num shouldEqual 2
     }
 
     @Test
-    @Throws(Exception::class)
     fun testInjectDependenciesByConstructorInNonEntryPoints() {
-        //GIVEN
-        expect(dependency.num()).andReturn(2)
-        replay(dependency)
+        // GIVEN
+        When calling dependency.num() itReturns 2
 
-        //WHEN
-        val nonEntryPoint = toothPickRule.getInstance(NonEntryPointByConstructor::class.java)
+        // WHEN
+        val nonEntryPoint = KTP.openScope("Foo").getInstance(NonEntryPointByConstructor::class.java)
         val num = nonEntryPoint.dependency.num()
 
-        //THEN
-        verify(dependency)
-        assertThat(nonEntryPoint, notNullValue())
-        assertThat(nonEntryPoint.dependency, notNullValue())
-        assertThat(num, `is`(2))
+        // THEN
+        Verify on dependency that dependency.num() was called
+        nonEntryPoint.shouldNotBeNull()
+        nonEntryPoint.dependency.shouldNotBeNull()
+        num shouldEqual 2
     }
 
     @Test
-    @Throws(Exception::class)
     fun testInjectDependenciesByFieldsInEntryPointByMemberInjector() {
-        //GIVEN
-        expect(dependency.num()).andReturn(2)
-        replay(dependency)
-        //WHEN
+        // GIVEN
+        When calling dependency.num() itReturns 2
+
+        // WHEN
         val nonEntryPoint = EntryPoint()
         val num = nonEntryPoint.dependency.num()
-        //THEN
-        verify(dependency)
-        assertThat(nonEntryPoint, notNullValue())
-        assertThat(nonEntryPoint.dependency, notNullValue())
-        assertThat(num, `is`(2))
+
+        // THEN
+        Verify on dependency that dependency.num() was called
+        nonEntryPoint.shouldNotBeNull()
+        nonEntryPoint.dependency.shouldNotBeNull()
+        num shouldEqual 2
     }
 
     class EntryPoint {
@@ -114,8 +122,8 @@ class TestMocking {
 
     class NonEntryPointByConstructor @Inject constructor(val dependency: Dependency)
 
-   //open for mocking
-   open class Dependency {
+    // open for mocking
+    open class Dependency {
         open fun num(): Int {
             return 1
         }
