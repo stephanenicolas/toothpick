@@ -14,24 +14,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.toothpick.ktp
+package toothpick.kotlin
 
 import toothpick.Scope
-import java.lang.IllegalStateException
+import javax.inject.Provider
 import kotlin.reflect.KProperty
 
-class InjectDelegate<T : Any>(private val clz: Class<T>, private val name: String?) {
+sealed class InjectDelegate<T : Any>(protected val clz: Class<T>, protected val name: String?) {
 
-    lateinit var instance: T
+    abstract val instance: T
 
-    fun onEntryPointInjected(scope: Scope) {
-        instance = scope.getInstance(clz, name)
-    }
+    abstract fun onEntryPointInjected(scope: Scope)
+    abstract fun isEntryPointInjected(): Boolean
 
     operator fun getValue(thisRef: Any, property: KProperty<*>): T {
-        if (!this::instance.isInitialized) {
+        if (!isEntryPointInjected()) {
             throw IllegalStateException("The dependency has not be injected yet.")
         }
         return instance
     }
+}
+
+class EagerDelegate<T : Any>(clz: Class<T>, name: String?) : InjectDelegate<T>(clz, name) {
+
+    override lateinit var instance: T
+
+    override fun onEntryPointInjected(scope: Scope) {
+        instance = scope.getInstance(clz, name)
+    }
+
+    override fun isEntryPointInjected(): Boolean {
+        return this::instance.isInitialized
+    }
+}
+
+class ProviderDelegate<T : Any>(clz: Class<T>, name: String?, private val lazy: Boolean) : InjectDelegate<T>(clz, name) {
+
+    lateinit var provider: Provider<T>
+
+    override val instance: T
+        get() = provider.get()
+
+    override fun onEntryPointInjected(scope: Scope) {
+        provider = if (lazy) scope.getLazy(clz, name) else scope.getProvider(clz, name)
+    }
+
+    override fun isEntryPointInjected(): Boolean {
+        return this::provider.isInitialized
+    }
+
 }

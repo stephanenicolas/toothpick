@@ -14,15 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.toothpick.ktp
+package toothpick.kotlin
 
 import kotlin.reflect.KProperty
 
-class DelegateProvider<T : Any>(private val clz: Class<T>, private val name: String?) {
+class DelegateProvider<T : Any>(private val clz: Class<T>, private val name: String?, private val injectionType: InjectionType) {
 
     operator fun provideDelegate(thisRef: Any, prop: KProperty<*>): InjectDelegate<T> {
-        val delegate = InjectDelegate(clz, name)
+        val delegate = createDelegate()
         KTP.delegateNotifier.registerDelegate(thisRef, delegate)
         return delegate
+    }
+
+    private fun createDelegate() = when (injectionType) {
+        InjectionType.EAGER -> EagerDelegate(clz, name)
+        InjectionType.LAZY -> ProviderDelegate(clz, name, true)
+        InjectionType.PROVIDER -> ProviderDelegate(clz, name, false)
     }
 }

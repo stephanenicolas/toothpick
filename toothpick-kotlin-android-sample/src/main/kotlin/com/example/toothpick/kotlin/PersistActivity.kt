@@ -8,7 +8,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.PresenterContextNamer
-import com.example.toothpick.ktp.KTP
+import toothpick.kotlin.KTP
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.kotlin.inject

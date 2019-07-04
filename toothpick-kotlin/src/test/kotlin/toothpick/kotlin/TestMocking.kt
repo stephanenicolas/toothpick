@@ -16,7 +16,6 @@
  */
 package toothpick.kotlin
 
-import com.example.toothpick.ktp.KTP
 import org.amshove.kluent.Verify
 import org.amshove.kluent.When
 import org.amshove.kluent.called

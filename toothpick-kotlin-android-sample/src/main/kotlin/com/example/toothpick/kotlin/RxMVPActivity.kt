@@ -9,7 +9,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.RxPresenter
-import com.example.toothpick.ktp.KTP
+import toothpick.kotlin.KTP
 import rx.Subscription
 import rx.functions.Action1
 import toothpick.Scope
