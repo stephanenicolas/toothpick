@@ -34,12 +34,12 @@ import toothpick.testing.ToothPickExtension
 import javax.inject.Inject
 
 /*
-+ Lazy
-+ Provider
-+ Named
-* qualifiers only for constructor
++ Lazy <<<
++ Provider <<<
++ Named <<<
++ Concurrency <<<
+* qualifiers only for constructor <<<
 + Tests ^
-+ Concurrency
 
 + Default scope
 + Compiler -> @InjectAnnotation for class ???

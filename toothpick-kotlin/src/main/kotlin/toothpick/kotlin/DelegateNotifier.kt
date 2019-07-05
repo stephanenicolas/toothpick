@@ -17,11 +17,12 @@
 package toothpick.kotlin
 
 import toothpick.Scope
+import java.util.Collections
 import java.util.WeakHashMap
 
 class DelegateNotifier {
 
-    private val delegatesMap: MutableMap<Any, MutableList<InjectDelegate<out Any>>> = WeakHashMap()
+    private val delegatesMap: MutableMap<Any, MutableList<InjectDelegate<out Any>>> = Collections.synchronizedMap(WeakHashMap())
 
     fun registerDelegate(container: Any, delegate: InjectDelegate<out Any>) {
         val delegates = delegatesMap.getOrPut(container) { mutableListOf() }
