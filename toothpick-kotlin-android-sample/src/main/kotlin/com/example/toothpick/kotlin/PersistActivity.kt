@@ -11,7 +11,7 @@ import com.example.toothpick.kotlin.deps.PresenterContextNamer
 import toothpick.kotlin.KTP
 import toothpick.Scope
 import toothpick.Toothpick
-import toothpick.kotlin.inject
+import toothpick.kotlin.delegate.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class PersistActivity : Activity() {

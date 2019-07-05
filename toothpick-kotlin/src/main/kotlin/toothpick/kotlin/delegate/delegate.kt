@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.kotlin
+package toothpick.kotlin.delegate
 
 inline fun <reified T : Any> inject(name: String? = null): DelegateProvider<T> {
     return DelegateProvider(T::class.java, name, InjectionType.EAGER)

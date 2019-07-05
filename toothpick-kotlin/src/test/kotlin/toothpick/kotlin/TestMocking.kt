@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import toothpick.kotlin.delegate.inject
 import toothpick.testing.ToothPickExtension
 import javax.inject.Inject
 

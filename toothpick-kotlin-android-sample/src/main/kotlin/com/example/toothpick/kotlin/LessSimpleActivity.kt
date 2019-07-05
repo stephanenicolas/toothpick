@@ -10,7 +10,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.ContextNamer
 import toothpick.kotlin.KTP
-import toothpick.kotlin.inject
+import toothpick.kotlin.delegate.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class LessSimpleActivity : Activity() {

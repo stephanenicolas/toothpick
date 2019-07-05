@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.kotlin
+package toothpick.kotlin.delegate
 
 import toothpick.Scope
 import javax.inject.Provider

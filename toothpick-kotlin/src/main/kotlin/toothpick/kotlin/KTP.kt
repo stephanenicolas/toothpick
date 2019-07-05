@@ -17,17 +17,17 @@
 package toothpick.kotlin
 
 import toothpick.Toothpick
+import toothpick.kotlin.delegate.DelegateNotifier
 
-class KTP {
-    companion object {
-        val delegateNotifier = DelegateNotifier()
+object KTP {
 
-        fun openScope(name: Any) = KTPScope(Toothpick.openScope(name))
+    val delegateNotifier = DelegateNotifier()
 
-        fun openScopes(vararg names: Any) = KTPScope(Toothpick.openScopes(names))
+    fun openScope(name: Any) = KTPScope(Toothpick.openScope(name))
 
-        fun closeScope(name: Any) {
-            Toothpick.closeScope(name)
-        }
+    fun openScopes(vararg names: Any) = KTPScope(Toothpick.openScopes(names))
+
+    fun closeScope(name: Any) {
+        Toothpick.closeScope(name)
     }
 }

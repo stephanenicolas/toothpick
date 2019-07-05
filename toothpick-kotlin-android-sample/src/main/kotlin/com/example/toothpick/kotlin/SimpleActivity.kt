@@ -11,7 +11,7 @@ import butterknife.OnClick
 import com.example.toothpick.kotlin.deps.ContextNamer
 import toothpick.kotlin.KTP
 import toothpick.Scope
-import toothpick.kotlin.inject
+import toothpick.kotlin.delegate.inject
 import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
 class SimpleActivity : FragmentActivity() {

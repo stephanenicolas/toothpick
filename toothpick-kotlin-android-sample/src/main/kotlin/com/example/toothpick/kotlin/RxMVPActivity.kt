@@ -14,7 +14,7 @@ import rx.Subscription
 import rx.functions.Action1
 import toothpick.Scope
 import toothpick.Toothpick
-import toothpick.kotlin.inject
+import toothpick.kotlin.delegate.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class RxMVPActivity : Activity() {
