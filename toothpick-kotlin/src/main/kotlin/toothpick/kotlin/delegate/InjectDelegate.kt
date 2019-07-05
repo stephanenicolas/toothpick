@@ -62,5 +62,4 @@ class ProviderDelegate<T : Any>(clz: Class<T>, name: String?, private val lazy: 
     override fun isEntryPointInjected(): Boolean {
         return this::provider.isInitialized
     }
-
 }
