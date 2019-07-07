@@ -1657,8 +1657,8 @@ public class FactoryTest extends BaseFactoryTest {
                     "package test;", //
                     "import javax.inject.Inject;", //
                     "import javax.inject.Singleton;", //
-                    "import toothpick.ProvidesSingletonInScope;", //
-                    "@ProvidesSingletonInScope @Singleton", //
+                    "import toothpick.ProvidesSingleton;", //
+                    "@ProvidesSingleton @Singleton", //
                     "public class TestNonEmptyConstructor {", //
                     "  @Inject public TestNonEmptyConstructor(String str, Integer n) {}", //
                     "}" //

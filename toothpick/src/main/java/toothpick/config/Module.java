@@ -18,7 +18,7 @@ package toothpick.config;
 
 import java.util.HashSet;
 import java.util.Set;
-import toothpick.ProvidesSingletonInScope;
+import toothpick.ProvidesSingleton;
 
 /**
  * Defines a set of bindings, {@code Module} instances are installed in a scope.
@@ -37,8 +37,8 @@ import toothpick.ProvidesSingletonInScope;
  *   <dd>binds an interface or class to a provider class. <br>
  *       If class FooProvider is annotated with the {@link javax.inject.Singleton} annotation, the
  *       same instance of the provider is reused for each injection. <br>
- *       If class FooProvider is annotated with the {@link ProvidesSingletonInScope} annotation, the
- *       same instance of Foo is reused for each injection. <br>
+ *       If class FooProvider is annotated with the {@link ProvidesSingleton} annotation, the same
+ *       instance of Foo is reused for each injection. <br>
  *       Otherwise, a new instance of class Foo will be produced by a new instance of FooProvider
  *       for each injection.
  *   <dt><tt>bind(IFoo.class).toProvider(new FooProvider())</tt>
@@ -88,8 +88,8 @@ import toothpick.ProvidesSingletonInScope;
  *
  * <p><b>{@link javax.inject.Provider} &amp; recycling of instances :</b><br>
  * If providers are bound by class, the annotations {@link javax.inject.Singleton} and {@link
- * ProvidesSingletonInScope} can be used to precise how instances of the provider and instances
- * produced by this provider are recycled across multiple injections. <br>
+ * ProvidesSingleton} can be used to precise how instances of the provider and instances produced by
+ * this provider are recycled across multiple injections. <br>
  * If providers are bound by instances, then the provider has to deal by itself with the recycling
  * of the instance it produces.
  */

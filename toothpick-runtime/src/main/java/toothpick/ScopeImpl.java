@@ -52,12 +52,12 @@ import toothpick.locators.FactoryLocator;
 public class ScopeImpl extends ScopeNode {
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-  private static IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedUnBoundProviders =
-      new IdentityHashMap<>();
-  private final IdentityHashMap<Class, Map<String, InternalProviderImpl>>
+  /*@VisibleForTesting */ static IdentityHashMap<Class, InternalProviderImpl>
+      mapClassesToUnNamedUnBoundProviders = new IdentityHashMap<>();
+  /*@VisibleForTesting */ final IdentityHashMap<Class, Map<String, InternalProviderImpl>>
       mapClassesToNamedBoundProviders = new IdentityHashMap<>();
-  private final IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedBoundProviders =
-      new IdentityHashMap<>();
+  /*@VisibleForTesting */ final IdentityHashMap<Class, InternalProviderImpl>
+      mapClassesToUnNamedBoundProviders = new IdentityHashMap<>();
   private boolean hasTestModules;
 
   public ScopeImpl(Object name) {
@@ -305,7 +305,7 @@ public class ScopeImpl extends ScopeNode {
       boolean isCreatingInstancesInScope,
       boolean isCreatingSingletonInScope,
       boolean isCreatingReleasable,
-      boolean isProvidingInstancesInScope,
+      boolean isProvidingSingletonInScope,
       boolean isProvidingReleasable) {
     if (isCreatingInstancesInScope) {
       return new ScopedProviderImpl<>(
@@ -314,7 +314,7 @@ public class ScopeImpl extends ScopeNode {
           isProviderClass,
           isCreatingSingletonInScope,
           isCreatingReleasable,
-          isProvidingInstancesInScope,
+          isProvidingSingletonInScope,
           isProvidingReleasable);
     } else {
       return new InternalProviderImpl<>(
@@ -322,7 +322,7 @@ public class ScopeImpl extends ScopeNode {
           isProviderClass,
           isCreatingSingletonInScope,
           isCreatingReleasable,
-          isProvidingInstancesInScope,
+          isProvidingSingletonInScope,
           isProvidingReleasable);
     }
   }
@@ -394,8 +394,7 @@ public class ScopeImpl extends ScopeNode {
     if (factory.hasScopeAnnotation()) {
       // the new provider will have to work in the current scope
       Scope targetScope = factory.getTargetScope(this);
-      ScopedProviderImpl<? extends T> newProvider =
-          new ScopedProviderImpl<>(targetScope, factory, false);
+      ScopedProviderImpl<? extends T> newProvider = new ScopedProviderImpl<>(targetScope, factory);
       // it is bound to its target scope only if it has a scope annotation.
       // lock free installing a provider means there could have been one set concurrently since last
       // testing
@@ -404,7 +403,7 @@ public class ScopeImpl extends ScopeNode {
       return targetScopeImpl.installScopedProvider(clazz, null, newProvider, false);
     } else {
       // the provider is but in a pool of unbound providers for later reuse
-      final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory, false);
+      final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory);
       // the pool is static as it is accessible from all scopes
       // lock free installing a provider means there could have been one set concurrently since last
       // testing
@@ -644,7 +643,10 @@ public class ScopeImpl extends ScopeNode {
 
   @Override
   public void release() {
-    Toothpick.release(this);
+    for (ScopeNode childScope : childrenScopes.values()) {
+      childScope.release();
+    }
+
     synchronized (mapClassesToUnNamedBoundProviders) {
       for (InternalProviderImpl internalProvider : mapClassesToUnNamedBoundProviders.values()) {
         if (internalProvider.isReleasable()) {

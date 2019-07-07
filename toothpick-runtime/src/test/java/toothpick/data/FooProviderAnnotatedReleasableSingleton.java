@@ -19,13 +19,15 @@ package toothpick.data;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import toothpick.Releasable;
 
 @Singleton
-public class FooProviderAnnotatedSingletonImpl implements Provider<IFoo> {
+@Releasable
+public class FooProviderAnnotatedReleasableSingleton implements Provider<IFoo> {
   public @Inject Bar bar;
 
   @Inject
-  public FooProviderAnnotatedSingletonImpl() {}
+  public FooProviderAnnotatedReleasableSingleton() {}
 
   @Override
   public IFoo get() {

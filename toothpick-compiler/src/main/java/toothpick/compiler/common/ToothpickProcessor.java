@@ -64,7 +64,7 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
 
   public static final String SINGLETON_ANNOTATION_CLASS_NAME = "javax.inject.Singleton";
   public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME =
-      "toothpick.ProvidesSingletonInScope";
+      "toothpick.ProvidesSingleton";
 
   /**
    * The name of the annotation processor option to exclude classes from the creation of member

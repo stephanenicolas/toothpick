@@ -31,7 +31,7 @@ import toothpick.data.CustomScope;
 import toothpick.data.Foo;
 import toothpick.data.FooProvider;
 import toothpick.data.FooProviderAnnotatedProvidesSingleton;
-import toothpick.data.FooProviderAnnotatedSingletonImpl;
+import toothpick.data.FooProviderAnnotatedSingleton;
 import toothpick.data.FooProviderReusingInstance;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
@@ -252,7 +252,7 @@ public class AllBindingsTestWithDefaultConfiguration {
     scope.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(FooProviderAnnotatedSingletonImpl.class);
+            bind(IFoo.class).toProvider(FooProviderAnnotatedSingleton.class);
           }
         });
 

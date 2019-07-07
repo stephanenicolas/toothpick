@@ -36,7 +36,7 @@ import toothpick.data.Foo;
 import toothpick.data.FooChildWithoutInjectedFields;
 import toothpick.data.FooCustomScope;
 import toothpick.data.FooProviderAnnotatedProvidesSingleton;
-import toothpick.data.FooProviderAnnotatedSingletonImpl;
+import toothpick.data.FooProviderAnnotatedSingleton;
 import toothpick.data.FooSingleton;
 import toothpick.data.IFoo;
 import toothpick.data.IFooProvider;
@@ -462,7 +462,7 @@ public class ScopingTest {
     scope1.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(FooProviderAnnotatedSingletonImpl.class);
+            bind(IFoo.class).toProvider(FooProviderAnnotatedSingleton.class);
           }
         });
 
@@ -479,10 +479,10 @@ public class ScopingTest {
     Scope scope1 = Toothpick.openScopes("root", "scope1");
 
     // WHEN
-    FooProviderAnnotatedSingletonImpl instanceInParent =
-        scopeParent.getInstance(FooProviderAnnotatedSingletonImpl.class);
-    FooProviderAnnotatedSingletonImpl instanceInChild =
-        scope1.getInstance(FooProviderAnnotatedSingletonImpl.class);
+    FooProviderAnnotatedSingleton instanceInParent =
+        scopeParent.getInstance(FooProviderAnnotatedSingleton.class);
+    FooProviderAnnotatedSingleton instanceInChild =
+        scope1.getInstance(FooProviderAnnotatedSingleton.class);
 
     // THEN
     assertThat(instanceInParent, sameInstance(instanceInChild));

@@ -41,7 +41,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
 import toothpick.ProvidesReleasable;
-import toothpick.ProvidesSingletonInScope;
+import toothpick.ProvidesSingleton;
 import toothpick.Releasable;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
@@ -62,7 +62,7 @@ import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
  *   <li>When a class {@code Foo} is annotated with {@link javax.inject.Singleton} : <br>
  *       --> it will use the annotated constructor or the default constructor if possible. Otherwise
  *       an error is raised.
- *   <li>When a class {@code Foo} is annotated with {@link ProvidesSingletonInScope} : <br>
+ *   <li>When a class {@code Foo} is annotated with {@link ProvidesSingleton} : <br>
  *       --> it will use the annotated constructor or the default constructor if possible. Otherwise
  *       an error is raised.
  *   <li>When a class {@code Foo} has an {@link javax.inject.Inject} annotated field {@code @Inject
@@ -137,7 +137,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   private void findAndParseTargets(
       RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
-    createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingletonInScope.class);
+    createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingleton.class);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedMethods(roundEnv);
     createFactoriesForClassesAnnotatedWithScopeAnnotations(roundEnv, annotations);
@@ -324,7 +324,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     if (hasProvidesSingletonInScopeAnnotation && scopeName == null) {
       error(
           enclosingElement,
-          "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
+          "The type %s uses @ProvidesSingleton but doesn't have a scope annotation.",
           enclosingElement.getQualifiedName().toString());
     }
     TypeElement superClassWithInjectedMembers =
@@ -358,7 +358,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     if (hasProvidesSingletonInScopeAnnotation && scopeName == null) {
       error(
           typeElement,
-          "The type %s uses @ProvidesSingletonInScope but doesn't have a scope annotation.",
+          "The type %s uses @ProvidesSingleton but doesn't have a scope annotation.",
           typeElement.getQualifiedName().toString());
     }
     TypeElement superClassWithInjectedMembers =
@@ -475,7 +475,7 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private boolean hasProvidesSingletonInScopeAnnotation(TypeElement typeElement) {
-    return typeElement.getAnnotation(ProvidesSingletonInScope.class) != null;
+    return typeElement.getAnnotation(ProvidesSingleton.class) != null;
   }
 
   private boolean hasProvidesReleasableAnnotation(TypeElement typeElement) {
@@ -501,7 +501,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       error(
           typeElement,
           "Class %s is annotated with @ProvidesReleasable, "
-              + "it should also be annotated with either @ProvidesSingletonInScope.",
+              + "it should also be annotated with either @ProvidesSingleton.",
           typeElement.getQualifiedName());
     }
   }

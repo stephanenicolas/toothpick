@@ -31,4 +31,4 @@ import javax.inject.Singleton;
  *
  * <p>Technically, the provider and the provided instances will all be in the same scope.
  */
-public @interface ProvidesSingletonInScope {}
+public @interface ProvidesSingleton {}

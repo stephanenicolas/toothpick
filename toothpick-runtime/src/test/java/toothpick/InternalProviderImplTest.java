@@ -47,17 +47,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenFactoryIsNull() {
     // GIVEN
     // WHEN
-    new InternalProviderImpl((Factory<String>) null, false);
-
-    // THEN
-    fail("Should throw an exception");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInternalProviderImpl_shouldFail_whenProviderFactoryIsNull() {
-    // GIVEN
-    // WHEN
-    new InternalProviderImpl((Factory<Provider<String>>) null, true);
+    new InternalProviderImpl((Factory<String>) null);
 
     // THEN
     fail("Should throw an exception");

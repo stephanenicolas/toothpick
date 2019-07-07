@@ -36,8 +36,8 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
                 .join( //
                     "package test;", //
                     "import javax.inject.Inject;", //
-                    "import toothpick.ProvidesSingletonInScope;", //
-                    "@ProvidesSingletonInScope", //
+                    "import toothpick.ProvidesSingleton;", //
+                    "@ProvidesSingleton", //
                     "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
                     "}"));
 
@@ -48,7 +48,7 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
         .failsToCompile()
         .withErrorContaining(
             "The type test.TestOptimisticFactoryCreationForHasScopeInstances"
-                + " uses @ProvidesSingletonInScope but doesn't have a scope annotation.");
+                + " uses @ProvidesSingleton but doesn't have a scope annotation.");
   }
 
   @Test
@@ -64,11 +64,11 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
                     "import javax.inject.Scope;", //
                     "import java.lang.annotation.Retention;", //
                     "import java.lang.annotation.RetentionPolicy;", //
-                    "import toothpick.ProvidesSingletonInScope;", //
+                    "import toothpick.ProvidesSingleton;", //
                     "@Scope", //
                     "@Retention(RetentionPolicy.RUNTIME)", //
                     "@interface CustomScope {}", //
-                    "@ProvidesSingletonInScope @CustomScope", //
+                    "@ProvidesSingleton @CustomScope", //
                     "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
                     "}"));
 
@@ -97,11 +97,11 @@ public class RelaxedFactoryForScopeInstancesTest extends BaseFactoryTest {
                     "import javax.inject.Scope;", //
                     "import java.lang.annotation.Retention;", //
                     "import java.lang.annotation.RetentionPolicy;", //
-                    "import toothpick.ProvidesSingletonInScope;", //
+                    "import toothpick.ProvidesSingleton;", //
                     "@Scope", //
                     "@Retention(RetentionPolicy.CLASS)", //
                     "@interface CustomScope {}", //
-                    "@ProvidesSingletonInScope @CustomScope", //
+                    "@ProvidesSingleton @CustomScope", //
                     "public class TestOptimisticFactoryCreationForHasScopeInstances {", //
                     "}"));
 

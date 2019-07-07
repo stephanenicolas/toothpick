@@ -17,17 +17,13 @@
 package toothpick.data;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
-import toothpick.ProvidesSingleton;
+import javax.inject.Singleton;
+import toothpick.Releasable;
 
-@ProvidesSingleton
-@CustomScope
-public class FooProviderAnnotatedProvidesSingleton implements Provider<IFoo> {
+@Singleton
+@Releasable
+public class FooReleasableSingleton implements IFooSingleton {
+
   @Inject
-  public FooProviderAnnotatedProvidesSingleton() {}
-
-  @Override
-  public IFoo get() {
-    return new Foo();
-  }
+  public FooReleasableSingleton() {}
 }

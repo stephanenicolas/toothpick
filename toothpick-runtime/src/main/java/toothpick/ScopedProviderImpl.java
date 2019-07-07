@@ -24,8 +24,8 @@ package toothpick;
 public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected Scope scope;
 
-  public ScopedProviderImpl(Scope scope, Factory<?> factory, boolean isProviderFactory) {
-    super(factory, isProviderFactory);
+  public ScopedProviderImpl(Scope scope, Factory<?> factory) {
+    super(factory);
     this.scope = scope;
   }
 
@@ -35,14 +35,14 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
       boolean isProviderFactoryClass,
       boolean isCreatingSingletonInScope,
       boolean isCreatingReleasableInScope,
-      boolean isProvidingInstancesInScope,
+      boolean isProvidingSingletonInScope,
       boolean isProvidingReleasable) {
     super(
         factoryKeyClass,
         isProviderFactoryClass,
         isCreatingSingletonInScope,
         isCreatingReleasableInScope,
-        isProvidingInstancesInScope,
+        isProvidingSingletonInScope,
         isProvidingReleasable);
     this.scope = scope;
   }
