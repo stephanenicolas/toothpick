@@ -119,28 +119,29 @@ public class InternalProviderImpl<T> {
     if (factoryClass != null && factory == null) {
       factory = FactoryLocator.getFactory(factoryClass);
       this.isSingleton |= factory.hasSingletonAnnotation();
-      this.isReleasable |= this.isSingleton && factory.hasReleasableAnnotation();
+      this.isReleasable |= (this.isSingleton && factory.hasReleasableAnnotation());
       // gc
       factoryClass = null;
     }
 
     if (factory != null) {
-      if (!isSingleton) {
-        return factory.createInstance(scope);
+      if (isSingleton) {
+        instance = factory.createInstance(scope);
+        // gc
+        factory = null;
+        return instance;
       }
-      instance = factory.createInstance(scope);
-      // gc
-      factory = null;
-      return instance;
+
+      return factory.createInstance(scope);
     }
 
     if (providerFactoryClass != null && providerFactory == null) {
       providerFactory = FactoryLocator.getFactory(providerFactoryClass);
       this.isSingleton |= providerFactory.hasSingletonAnnotation();
-      this.isReleasable |= this.isSingleton && providerFactory.hasReleasableAnnotation();
+      this.isReleasable |= (this.isSingleton && providerFactory.hasReleasableAnnotation());
       this.isProvidingSingleton |= providerFactory.hasProvidesSingletonInScopeAnnotation();
       this.isProvidingReleasable |=
-          this.isProvidingSingleton && providerFactory.hasProvidesReleasableAnnotation();
+          (this.isProvidingSingleton && providerFactory.hasProvidesReleasableAnnotation());
 
       // gc
       providerFactoryClass = null;

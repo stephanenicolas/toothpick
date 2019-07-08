@@ -28,6 +28,7 @@ import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
+import toothpick.data.FooProvider;
 import toothpick.data.FooProviderAnnotatedProvidesReleasableSingleton;
 import toothpick.data.FooProviderAnnotatedReleasableSingleton;
 import toothpick.data.FooReleasableSingleton;
@@ -70,7 +71,9 @@ public class ReleasableTest {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     scope.supportScopeAnnotation(CustomScope.class);
-    scope.installModules(new SimpleModule());
+    scope.installModules(new Module() {{
+      bind(IFoo.class).to(Foo.class).singletonInScope().releasable();
+    }});
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
     InternalProviderImpl internalProvider = scope.mapClassesToUnNamedBoundProviders.get(IFoo.class);
@@ -97,6 +100,42 @@ public class ReleasableTest {
           }
         });
     scope.supportScopeAnnotation(CustomScope.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
+    InternalProviderImpl internalProvider = scope.mapClassesToUnNamedBoundProviders.get(IFoo.class);
+    // provider instance is released when it creates a singleton
+    // whether or not it is a singleton and whether or not releasable
+    assertThat(internalProvider.providerInstance, notNullValue());
+    assertThat(internalProvider.instance, notNullValue());
+
+    // WHEN
+    scope.release();
+
+    // THEN
+    assertThat(foo, is(foo2));
+    assertThat(internalProvider.instance, nullValue());
+    assertThat(internalProvider.providerInstance, notNullValue());
+  }
+
+  @Test
+  public void
+  testProvidesReleasableSingleton_byBinding_shouldReleaseInstance_butNotProviderInstance()
+      throws Exception {
+    // GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+    scope.supportScopeAnnotation(CustomScope.class);
+    scope.supportScopeAnnotation(CustomScope.class);
+    scope.installModules(new Module() {{
+
+    }});
+
+    scope.installModules(
+        new Module() {
+          {
+            bind(IFoo.class).toProvider(FooProvider.class)
+                .providesSingletonInScope().providesReleasable();
+          }
+        });
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
     InternalProviderImpl internalProvider = scope.mapClassesToUnNamedBoundProviders.get(IFoo.class);
@@ -144,6 +183,36 @@ public class ReleasableTest {
   }
 
   @Test
+  public void testProviderReleasableSingleton_byBinding_shouldReleaseProviderInstance()
+      throws Exception {
+    // GIVEN
+    ScopeImpl scope = new ScopeImpl("");
+    scope.installModules(
+        new Module() {
+          {
+            bind(IFoo.class).toProvider(FooProvider.class)
+                .singletonInScope().releasable();
+          }
+        });
+    scope.supportScopeAnnotation(CustomScope.class);
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
+    InternalProviderImpl internalProvider = scope.mapClassesToUnNamedBoundProviders.get(IFoo.class);
+    // provider instance is released when it creates a singleton
+    // whether or not it is a singleton and whether or not releasable
+    assertThat(internalProvider.providerInstance, notNullValue());
+    assertThat(internalProvider.instance, nullValue());
+
+    // WHEN
+    scope.release();
+
+    // THEN
+    assertThat(foo, not(is(foo2)));
+    assertThat(internalProvider.instance, nullValue());
+    assertThat(internalProvider.providerInstance, nullValue());
+  }
+
+  @Test
   public void testReleasableSingleton_shouldBeReleased_InSubScope() throws Exception {
     // GIVEN
     ScopeImpl parentScope = (ScopeImpl) Toothpick.openScope("");
@@ -162,14 +231,6 @@ public class ReleasableTest {
     assertThat(foo, is(foo2));
     assertThat(foo, is(foo2));
     assertThat(internalProvider.instance, nullValue());
-  }
-
-  private static class SimpleModule extends Module {
-    static Foo namedFooInstance = new Foo();
-
-    SimpleModule() {
-      bind(IFoo.class).to(Foo.class).singletonInScope().releasable();
-    }
   }
 
   @Qualifier
