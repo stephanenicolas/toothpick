@@ -182,7 +182,7 @@ public abstract class ScopeNode implements Scope {
    * @see #getParentScope(Class)
    */
   @Override
-  public void supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+  public Scope supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
     if (scopeAnnotationClass == Singleton.class) {
       throw new IllegalArgumentException(
@@ -192,6 +192,7 @@ public abstract class ScopeNode implements Scope {
     }
 
     scopeAnnotationClasses.add(scopeAnnotationClass);
+    return this;
   }
 
   @Override

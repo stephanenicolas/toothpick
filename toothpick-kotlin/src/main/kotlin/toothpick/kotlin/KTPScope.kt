@@ -21,14 +21,29 @@ import toothpick.config.Module
 
 class KTPScope(private val scope: Scope) : Scope by scope {
 
-    override fun inject(obj: Any?) {
-        obj?.let {
-            KTP.delegateNotifier.notifyDelegates(it, scope)
-        }
+    override fun inject(obj: Any) {
+        KTP.delegateNotifier.notifyDelegates(obj, scope)
     }
 
-    override fun installModules(vararg modules: Module?): Scope {
+    override fun installModules(vararg modules: Module): Scope {
         scope.installModules(*modules)
         return this
+    }
+
+    override fun supportScopeAnnotation(scopeAnnotationClass: Class<out Annotation>): Scope {
+        scope.supportScopeAnnotation(scopeAnnotationClass)
+        return this
+    }
+
+    override fun getParentScope(): Scope {
+        return KTPScope(scope.parentScope)
+    }
+
+    override fun getParentScope(scopeAnnotationClass: Class<*>): Scope {
+        return KTPScope(scope.getParentScope(scopeAnnotationClass))
+    }
+
+    override fun getRootScope(): Scope {
+        return KTPScope(scope.rootScope)
     }
 }

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.kotlin
+package toothpick.kotlin.delegate
 
 import com.nhaarman.mockitokotlin2.mock
 import org.amshove.kluent.Verify
@@ -28,10 +28,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import toothpick.ScopeImpl
-import toothpick.kotlin.delegate.DelegateNotifier
-import toothpick.kotlin.delegate.InjectDelegate
 
-class TestDelegateNotifier {
+class DelegateNotifierTest {
 
     @Nested
     @DisplayName("One single container / DI root")

@@ -102,7 +102,7 @@ public interface Scope {
    *     all root scopes (scopes with no parents).
    * @see #getParentScope(Class)
    */
-  void supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);
+  Scope supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);
 
   boolean isScopeAnnotationSupported(Class<? extends Annotation> scopeAnnotationClass);
 
