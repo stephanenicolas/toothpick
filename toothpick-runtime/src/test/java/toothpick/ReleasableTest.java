@@ -72,7 +72,7 @@ public class ReleasableTest {
     ScopeImpl scope = new ScopeImpl("");
     scope.supportScopeAnnotation(CustomScope.class);
     scope.installModules(new Module() {{
-      bind(IFoo.class).to(Foo.class).singletonInScope().releasable();
+      bind(IFoo.class).to(Foo.class).singleton().releasable();
     }});
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
@@ -133,7 +133,7 @@ public class ReleasableTest {
         new Module() {
           {
             bind(IFoo.class).toProvider(FooProvider.class)
-                .providesSingletonInScope().providesReleasable();
+                .providesSingleton().providesReleasable();
           }
         });
     IFoo foo = scope.getInstance(IFoo.class);
@@ -191,7 +191,7 @@ public class ReleasableTest {
         new Module() {
           {
             bind(IFoo.class).toProvider(FooProvider.class)
-                .singletonInScope().releasable();
+                .singleton().releasable();
           }
         });
     scope.supportScopeAnnotation(CustomScope.class);

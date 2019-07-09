@@ -246,7 +246,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).singletonInScope();
+            bind(IFoo.class).to(Foo.class).singleton();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -302,7 +302,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(IFooProvider.class).singletonInScope();
+            bind(IFoo.class).toProvider(IFooProvider.class).singleton();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");

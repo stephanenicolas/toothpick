@@ -22,7 +22,7 @@ import javax.inject.Qualifier;
 
 public class Binding<T> {
   private boolean isCreatingInstancesInScope;
-  private boolean isCreatingSingletonInScope;
+  private boolean isCreatingSingleton;
   private boolean isCreatingReleasable;
   private boolean isProvidingSingletonInScope;
   private boolean isProvidingReleasable;
@@ -33,61 +33,17 @@ public class Binding<T> {
   private Provider<? extends T> providerInstance;
   private Class<? extends Provider<? extends T>> providerClass;
   private String name;
+  private Class<? extends Annotation> scopeAnnotation;
 
   public Binding(Class<T> key) {
     this.key = key;
     mode = Mode.SIMPLE;
   }
 
-  public Binding<T> withName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  public <A extends Annotation> Binding<T> withName(
-      Class<A> annotationClassWithQualifierAnnotation) {
-    if (!annotationClassWithQualifierAnnotation.isAnnotationPresent(Qualifier.class)) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
-              annotationClassWithQualifierAnnotation));
-    }
-    this.name = annotationClassWithQualifierAnnotation.getName();
-    return this;
-  }
-
-  public void instancesInScope() {
+  public CanBeReleasable singleton() {
     isCreatingInstancesInScope = true;
-  }
-
-  public void singletonInScope() {
-    isCreatingInstancesInScope = true;
-    isCreatingSingletonInScope = true;
-  }
-
-  public BoundStateForClassBinding to(Class<? extends T> implClass) {
-    this.implementationClass = implClass;
-    mode = Mode.CLASS;
-    return new BoundStateForClassBinding();
-  }
-
-  public void toInstance(T instance) {
-    this.instance = instance;
-    mode = Mode.INSTANCE;
-  }
-
-  public BoundStateForProviderClassBinding toProvider(
-      Class<? extends Provider<? extends T>> providerClass) {
-    this.providerClass = providerClass;
-    mode = Mode.PROVIDER_CLASS;
-    return new BoundStateForProviderClassBinding();
-  }
-
-  public BoundStateForProviderInstanceBinding toProviderInstance(
-      Provider<? extends T> providerInstance) {
-    this.providerInstance = providerInstance;
-    mode = Mode.PROVIDER_INSTANCE;
-    return new BoundStateForProviderInstanceBinding();
+    isCreatingSingleton = true;
+    return new CanBeReleasable();
   }
 
   public Mode getMode() {
@@ -122,11 +78,11 @@ public class Binding<T> {
     return isCreatingInstancesInScope;
   }
 
-  public boolean isCreatingSingletonInScope() {
-    return isCreatingSingletonInScope;
+  public boolean isCreatingSingleton() {
+    return isCreatingSingleton;
   }
 
-  public boolean isProvidingSingletonInScope() {
+  public boolean isProvidingSingleton() {
     return isProvidingSingletonInScope;
   }
 
@@ -136,6 +92,10 @@ public class Binding<T> {
 
   public boolean isProvidingReleasable() {
     return isProvidingReleasable;
+  }
+
+  public Class<? extends Annotation> getScopeAnnotation() {
+    return scopeAnnotation;
   }
 
   public enum Mode {
@@ -150,48 +110,107 @@ public class Binding<T> {
   // ***** DSL STATE MACHINE *
   // *************************
 
-  public class BoundStateForClassBinding {
-    /** to create instances using the binding's scope */
-    public void instancesInScope() {
-      Binding.this.instancesInScope();
+  public class AfterAnyState {
+    public void inScope() {
+      isCreatingInstancesInScope = true;
     }
 
-    /** to create a singleton using the binding's scope and reuse it inside the binding's scope */
-    public CanBeMarkedAsReleasableClassBinding singletonInScope() {
-      Binding.this.singletonInScope();
-      return new CanBeMarkedAsReleasableClassBinding();
+    public void inScope(Class<? extends Annotation> scopeAnnotation) {
+      isCreatingInstancesInScope = true;
+      Binding.this.scopeAnnotation = scopeAnnotation;
     }
   }
 
-  public class BoundStateForProviderClassBinding extends BoundStateForClassBinding {
+  public class CanBeReleasable extends AfterAnyState{
     /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public CanBeMarkedAsProvidesReleasableClassBinding providesSingletonInScope() {
-      Binding.this.singletonInScope();
-      isProvidingSingletonInScope = true;
-      return new CanBeMarkedAsProvidesReleasableClassBinding();
-    }
-  }
-
-  public class CanBeMarkedAsReleasableClassBinding {
-    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public void releasable() {
+    public AfterAnyState releasable() {
       Binding.this.isCreatingReleasable = true;
+      return new AfterAnyState();
     }
   }
 
-  public class CanBeMarkedAsProvidesReleasableClassBinding
-      extends CanBeMarkedAsReleasableClassBinding {
+  public class CanProvideReleasable extends CanBeSingleton {
     /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public CanBeMarkedAsReleasableClassBinding providesReleasable() {
+    public CanBeSingleton providesReleasable() {
       Binding.this.isProvidingReleasable = true;
-      return this;
+      return new CanBeSingleton();
     }
   }
 
-  public class BoundStateForProviderInstanceBinding {
+  public class CanBeSingleton extends AfterAnyState{
     /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public void providesSingletonInScope() {
+    public CanBeReleasable singleton() {
+      Binding.this.isCreatingSingleton = true;
+      return new CanBeReleasable();
+    }
+  }
+
+  public class CanProvideSingletonOrSingleton extends AfterAnyState {
+    CanProvideReleasable providesSingleton() {
       isProvidingSingletonInScope = true;
+      return new CanProvideReleasable();
+    }
+    public CanBeReleasable singleton() {
+      Binding.this.isCreatingSingleton = true;
+      return new CanBeReleasable();
+    }
+  }
+
+  public class CanProvideSingleton extends AfterAnyState {
+    CanProvideReleasable providesSingleton() {
+      isProvidingSingletonInScope = true;
+      return new CanProvideReleasable();
+    }
+  }
+
+  public class CanBeNamed extends CanBeBound {
+    CanBeBound withName(String name) {
+      Binding.this.name = name;
+      return new CanBeBound();
+    }
+
+    public <A extends Annotation> CanBeNamed withName(
+        Class<A> annotationClassWithQualifierAnnotation) {
+      if (!annotationClassWithQualifierAnnotation.isAnnotationPresent(Qualifier.class)) {
+        throw new IllegalArgumentException(
+            String.format(
+                "Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
+                annotationClassWithQualifierAnnotation));
+      }
+      Binding.this.name = annotationClassWithQualifierAnnotation.getName();
+      return new CanBeNamed();
+    }
+  }
+
+  public class CanBeBound extends AfterAnyState {
+    CanBeReleasable singleton() {
+      isCreatingSingleton = true;
+      return new CanBeReleasable();
+    }
+
+    public void toInstance(T instance) {
+      Binding.this.instance = instance;
+      mode = Mode.INSTANCE;
+    }
+
+    public CanBeSingleton to(Class<? extends T> implClass) {
+      Binding.this.implementationClass = implClass;
+      mode = Mode.CLASS;
+      return new CanBeSingleton();
+    }
+
+    public CanProvideSingletonOrSingleton toProvider(
+        Class<? extends Provider<? extends T>> providerClass) {
+      Binding.this.providerClass = providerClass;
+      mode = Mode.PROVIDER_CLASS;
+      return new CanProvideSingletonOrSingleton();
+    }
+
+    public CanProvideSingleton toProviderInstance(
+        Provider<? extends T> providerInstance) {
+      Binding.this.providerInstance = providerInstance;
+      mode = Mode.PROVIDER_INSTANCE;
+      return new CanProvideSingleton();
     }
   }
 }

@@ -255,7 +255,7 @@ public class ScopeImpl extends ScopeNode {
             binding.getKey(),
             false,
             binding.isCreatingInstancesInScope(),
-            binding.isCreatingSingletonInScope(),
+            binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
             false,
             false);
@@ -265,7 +265,7 @@ public class ScopeImpl extends ScopeNode {
             binding.getImplementationClass(),
             false,
             binding.isCreatingInstancesInScope(),
-            binding.isCreatingSingletonInScope(),
+            binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
             false,
             false);
@@ -278,7 +278,7 @@ public class ScopeImpl extends ScopeNode {
         // the instance
         return new InternalProviderImpl<>(
             binding.getProviderInstance(),
-            binding.isProvidingSingletonInScope(),
+            binding.isProvidingSingleton(),
             binding.isProvidingReleasable());
       case PROVIDER_CLASS:
         return createInternalProvider(
@@ -286,9 +286,9 @@ public class ScopeImpl extends ScopeNode {
             binding.getProviderClass(),
             true,
             binding.isCreatingInstancesInScope(),
-            binding.isCreatingSingletonInScope(),
+            binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
-            binding.isProvidingSingletonInScope(),
+            binding.isProvidingSingleton(),
             binding.isProvidingReleasable());
         // JACOCO:OFF
       default:

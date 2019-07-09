@@ -141,7 +141,7 @@ public class AllBindingsTestWithDefaultConfiguration {
     scope.installModules(
         new Module() {
           {
-            bind(Foo.class).toProvider(FooProvider.class).providesSingletonInScope();
+            bind(Foo.class).toProvider(FooProvider.class).providesSingleton();
           }
         });
 
@@ -161,7 +161,7 @@ public class AllBindingsTestWithDefaultConfiguration {
     scope.installModules(
         new Module() {
           {
-            bind(Foo.class).toProvider(FooProviderReusingInstance.class).singletonInScope();
+            bind(Foo.class).toProvider(FooProviderReusingInstance.class).singleton();
           }
         });
 
@@ -416,7 +416,7 @@ public class AllBindingsTestWithDefaultConfiguration {
     scope.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).singletonInScope();
+            bind(IFoo.class).to(Foo.class).singleton();
           }
         });
 

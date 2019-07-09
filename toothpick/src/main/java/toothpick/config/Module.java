@@ -96,10 +96,10 @@ import toothpick.ProvidesSingleton;
 public class Module {
   private Set<Binding> bindingSet = new HashSet<>();
 
-  public <T> Binding<T> bind(Class<T> key) {
+  public <T> Binding<T>.CanBeNamed bind(Class<T> key) {
     Binding<T> binding = new Binding<>(key);
     bindingSet.add(binding);
-    return binding;
+    return binding.new CanBeNamed();
   }
 
   public Set<Binding> getBindingSet() {
