@@ -155,14 +155,14 @@ public class ScopingTest {
 
   @Test
   public void
-      childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenSimpleBindingIsCreatingInstancesInScope()
+      childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenSimpleBindingIsCreatinginScope()
           throws Exception {
     // GIVEN
     Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(
         new Module() {
           {
-            bind(Foo.class).instancesInScope();
+            bind(Foo.class).inScope();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -190,7 +190,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(Foo.class).singletonInScope();
+            bind(Foo.class).singleton().inScope();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -211,14 +211,14 @@ public class ScopingTest {
 
   @Test
   public void
-      childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenClassBindingIsCreatingInstancesInScope()
+      childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenClassBindingIsCreatinginScope()
           throws Exception {
     // GIVEN
     Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).instancesInScope();
+            bind(IFoo.class).to(Foo.class).inScope();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -246,7 +246,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).singleton();
+            bind(IFoo.class).to(Foo.class).singleton().inScope();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -267,14 +267,14 @@ public class ScopingTest {
 
   @Test
   public void
-      childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenProviderClassBindingIsCreatingInstancesInScope()
+      childInjector_shouldReturnInstancesInParentScopeUsingOnlyParentScope_whenProviderClassBindingIsCreatinginScope()
           throws Exception {
     // GIVEN
     Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(IFooProvider.class).instancesInScope();
+            bind(IFoo.class).toProvider(IFooProvider.class).inScope();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -302,7 +302,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(IFooProvider.class).singleton();
+            bind(IFoo.class).toProvider(IFooProvider.class).singleton().inScope();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");

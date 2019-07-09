@@ -71,9 +71,12 @@ public class ReleasableTest {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("");
     scope.supportScopeAnnotation(CustomScope.class);
-    scope.installModules(new Module() {{
-      bind(IFoo.class).to(Foo.class).singleton().releasable();
-    }});
+    scope.installModules(
+        new Module() {
+          {
+            bind(IFoo.class).to(Foo.class).singleton().releasable();
+          }
+        });
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
     InternalProviderImpl internalProvider = scope.mapClassesToUnNamedBoundProviders.get(IFoo.class);
@@ -119,21 +122,24 @@ public class ReleasableTest {
 
   @Test
   public void
-  testProvidesReleasableSingleton_byBinding_shouldReleaseInstance_butNotProviderInstance()
-      throws Exception {
+      testProvidesReleasableSingleton_byBinding_shouldReleaseInstance_butNotProviderInstance()
+          throws Exception {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("");
-    scope.supportScopeAnnotation(CustomScope.class);
-    scope.supportScopeAnnotation(CustomScope.class);
-    scope.installModules(new Module() {{
-
-    }});
+    scope.installModules(
+        new Module() {
+          {
+          }
+        });
 
     scope.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(FooProvider.class)
-                .providesSingleton().providesReleasable();
+            bind(IFoo.class)
+                .toProvider(FooProvider.class)
+                .providesSingleton()
+                .providesReleasable()
+                .singleton();
           }
         });
     IFoo foo = scope.getInstance(IFoo.class);
@@ -190,8 +196,7 @@ public class ReleasableTest {
     scope.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(FooProvider.class)
-                .singleton().releasable();
+            bind(IFoo.class).toProvider(FooProvider.class).singleton().releasable();
           }
         });
     scope.supportScopeAnnotation(CustomScope.class);

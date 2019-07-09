@@ -16,6 +16,8 @@
  */
 package toothpick;
 
+import javax.inject.Provider;
+
 /**
  * A non thread safe internal provider. It should never be exposed outside of Toothpick.
  *
@@ -23,6 +25,11 @@ package toothpick;
  */
 public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected Scope scope;
+
+  public ScopedProviderImpl(Scope scope, T instance) {
+    super(instance);
+    this.scope = scope;
+  }
 
   public ScopedProviderImpl(Scope scope, Factory<?> factory) {
     super(factory);
@@ -44,6 +51,15 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
         isCreatingReleasableInScope,
         isProvidingSingletonInScope,
         isProvidingReleasable);
+    this.scope = scope;
+  }
+
+  public ScopedProviderImpl(
+      Scope scope,
+      Provider<? extends T> providerInstance,
+      boolean providingSingleton,
+      boolean providingReleasable) {
+    super(providerInstance, providingSingleton, providingReleasable);
     this.scope = scope;
   }
 

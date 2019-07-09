@@ -69,13 +69,13 @@ public class AllBindingsTestWithDefaultConfiguration {
   }
 
   @Test
-  public void simpleBinding_shouldCreateInjectedInstances_whenCreateInstancesInScopeViaCode() {
+  public void simpleBinding_shouldCreateInjectedInstances_whenCreateinScopeViaCode() {
     // GIVEN
     Scope scope = new ScopeImpl("root");
     scope.installModules(
         new Module() {
           {
-            bind(Foo.class).instancesInScope();
+            bind(Foo.class).inScope();
           }
         });
 
@@ -119,7 +119,7 @@ public class AllBindingsTestWithDefaultConfiguration {
     scope.installModules(
         new Module() {
           {
-            bind(Foo.class).singletonInScope();
+            bind(Foo.class).singleton();
           }
         });
 
@@ -175,14 +175,13 @@ public class AllBindingsTestWithDefaultConfiguration {
   }
 
   @Test
-  public void
-      providerClassBinding_shouldCreateInstancesViaProviderInstances_whenInstancesInScopeViaCode() {
+  public void providerClassBinding_shouldCreateInstancesViaProviderInstances_wheninScopeViaCode() {
     // GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(
         new Module() {
           {
-            bind(Foo.class).toProvider(FooProviderReusingInstance.class).instancesInScope();
+            bind(Foo.class).toProvider(FooProviderReusingInstance.class).inScope();
           }
         });
 
@@ -297,7 +296,7 @@ public class AllBindingsTestWithDefaultConfiguration {
     scope.installModules(
         new Module() {
           {
-            bind(Foo.class).toProviderInstance(new FooProvider()).providesSingletonInScope();
+            bind(Foo.class).toProviderInstance(new FooProvider()).providesSingleton();
           }
         });
 
@@ -431,13 +430,13 @@ public class AllBindingsTestWithDefaultConfiguration {
   }
 
   @Test
-  public void classBinding_shouldCreateInstances_whenInstancesInScopeViaCode() {
+  public void classBinding_shouldCreateInstances_wheninScopeViaCode() {
     // GIVEN
     Scope scope = new ScopeImpl("");
     scope.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).instancesInScope();
+            bind(IFoo.class).to(Foo.class).inScope();
           }
         });
 

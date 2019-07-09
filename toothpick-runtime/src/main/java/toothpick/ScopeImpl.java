@@ -18,6 +18,7 @@ package toothpick;
 
 import static java.lang.String.format;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -223,7 +224,7 @@ public class ScopeImpl extends ScopeNode {
       try {
         if (isTestModule || getBoundProvider(clazz, bindingName) == null) {
           InternalProviderImpl provider = toProvider(binding);
-          if (binding.isCreatingInstancesInScope()) {
+          if (binding.isInScope()) {
             installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider, isTestModule);
           } else {
             installBoundProvider(clazz, bindingName, provider, isTestModule);
@@ -251,41 +252,44 @@ public class ScopeImpl extends ScopeNode {
     switch (binding.getMode()) {
       case SIMPLE:
         return createInternalProvider(
-            this,
+            binding.isInScope(),
+            binding.getScopeAnnotation(),
             binding.getKey(),
             false,
-            binding.isCreatingInstancesInScope(),
             binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
             false,
             false);
       case CLASS:
         return createInternalProvider(
-            this,
+            binding.isInScope(),
+            binding.getScopeAnnotation(),
             binding.getImplementationClass(),
             false,
-            binding.isCreatingInstancesInScope(),
             binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
             false,
             false);
       case INSTANCE:
-        return new InternalProviderImpl<>(binding.getInstance());
+        return createInternalProvider(
+            binding.isInScope(), binding.getScopeAnnotation(), binding.getInstance());
       case PROVIDER_INSTANCE:
         // to ensure providers do not have to deal with concurrency, we wrap them in a thread safe
         // provider
         // We do not need to pass the scope here because the provider won't use any scope to create
         // the instance
-        return new InternalProviderImpl<>(
+        return createInternalProvider(
+            binding.isInScope(),
+            binding.getScopeAnnotation(),
             binding.getProviderInstance(),
             binding.isProvidingSingleton(),
             binding.isProvidingReleasable());
       case PROVIDER_CLASS:
         return createInternalProvider(
-            this,
+            binding.isInScope(),
+            binding.getScopeAnnotation(),
             binding.getProviderClass(),
             true,
-            binding.isCreatingInstancesInScope(),
             binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
             binding.isProvidingSingleton(),
@@ -299,30 +303,71 @@ public class ScopeImpl extends ScopeNode {
   }
 
   private <T> InternalProviderImpl<T> createInternalProvider(
-      Scope scope,
+      boolean inScope,
+      Class<? extends Annotation> scopeAnnotation,
+      Provider<? extends T> providerInstance,
+      boolean providingSingleton,
+      boolean providingReleasable) {
+    if (inScope) {
+      final Scope scope;
+      if (scopeAnnotation != null) {
+        scope = getParentScope(scopeAnnotation);
+      } else {
+        scope = this;
+      }
+      return new ScopedProviderImpl<>(
+          scope, providerInstance, providingSingleton, providingReleasable);
+    } else {
+      return new InternalProviderImpl<>(providerInstance, providingSingleton, providingReleasable);
+    }
+  }
+
+  private <T> InternalProviderImpl<T> createInternalProvider(
+      boolean inScope, Class<? extends Annotation> scopeAnnotation, T instance) {
+    if (inScope) {
+      final Scope scope;
+      if (scopeAnnotation != null) {
+        scope = getParentScope(scopeAnnotation);
+      } else {
+        scope = this;
+      }
+      return new ScopedProviderImpl<>(scope, instance);
+    } else {
+      return new InternalProviderImpl<>(instance);
+    }
+  }
+
+  private <T> InternalProviderImpl<T> createInternalProvider(
+      boolean isInScope,
+      Class<? extends Annotation> scopeAnnotation,
       Class<?> factoryKeyClass,
       boolean isProviderClass,
-      boolean isCreatingInstancesInScope,
-      boolean isCreatingSingletonInScope,
+      boolean isCreatingSingleton,
       boolean isCreatingReleasable,
-      boolean isProvidingSingletonInScope,
+      boolean isProvidingSingleton,
       boolean isProvidingReleasable) {
-    if (isCreatingInstancesInScope) {
+    if (isInScope) {
+      final Scope scope;
+      if (scopeAnnotation != null) {
+        scope = getParentScope(scopeAnnotation);
+      } else {
+        scope = this;
+      }
       return new ScopedProviderImpl<>(
           scope,
           factoryKeyClass,
           isProviderClass,
-          isCreatingSingletonInScope,
+          isCreatingSingleton,
           isCreatingReleasable,
-          isProvidingSingletonInScope,
+          isProvidingSingleton,
           isProvidingReleasable);
     } else {
       return new InternalProviderImpl<>(
           factoryKeyClass,
           isProviderClass,
-          isCreatingSingletonInScope,
+          isCreatingSingleton,
           isCreatingReleasable,
-          isProvidingSingletonInScope,
+          isProvidingSingleton,
           isProvidingReleasable);
     }
   }
