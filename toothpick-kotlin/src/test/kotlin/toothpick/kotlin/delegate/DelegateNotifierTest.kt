@@ -24,7 +24,6 @@ import org.amshove.kluent.called
 import org.amshove.kluent.on
 import org.amshove.kluent.that
 import org.amshove.kluent.was
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import toothpick.ScopeImpl
@@ -32,7 +31,6 @@ import toothpick.ScopeImpl
 class DelegateNotifierTest {
 
     @Nested
-    @DisplayName("One single container / DI root")
     inner class SingleContainer {
 
         @Test
@@ -92,7 +90,6 @@ class DelegateNotifierTest {
     }
 
     @Nested
-    @DisplayName("Multiple containers / DI roots")
     inner class MultipleContainer {
 
         @Test
