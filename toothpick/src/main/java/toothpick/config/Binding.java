@@ -28,8 +28,6 @@ public class Binding<T> {
   private T instance;
   private Provider<? extends T> providerInstance;
   private Class<? extends Provider<? extends T>> providerClass;
-  private boolean isInScope;
-  private Class<? extends Annotation> scopeAnnotation;
   private boolean isCreatingSingleton;
   private boolean isCreatingReleasable;
   private boolean isProvidingSingleton;
@@ -41,7 +39,6 @@ public class Binding<T> {
   }
 
   public CanBeReleasable singleton() {
-    isInScope = true;
     isCreatingSingleton = true;
     return new CanBeReleasable();
   }
@@ -74,10 +71,6 @@ public class Binding<T> {
     return name;
   }
 
-  public boolean isInScope() {
-    return isInScope;
-  }
-
   public boolean isCreatingSingleton() {
     return isCreatingSingleton;
   }
@@ -94,10 +87,6 @@ public class Binding<T> {
     return isProvidingReleasable;
   }
 
-  public Class<? extends Annotation> getScopeAnnotation() {
-    return scopeAnnotation;
-  }
-
   public enum Mode {
     SIMPLE,
     CLASS,
@@ -110,22 +99,11 @@ public class Binding<T> {
   // ***** DSL STATE MACHINE *
   // *************************
 
-  public class AfterAnyState {
-    public void inScope() {
-      isInScope = true;
-    }
-
-    public void inScope(Class<? extends Annotation> scopeAnnotation) {
-      isInScope = true;
-      Binding.this.scopeAnnotation = scopeAnnotation;
-    }
-  }
-
-  public class CanBeReleasable extends AfterAnyState {
+  public class CanBeReleasable {
     /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public AfterAnyState releasable() {
+    public CanProvideSingleton releasable() {
       Binding.this.isCreatingReleasable = true;
-      return new AfterAnyState();
+      return new CanProvideSingleton();
     }
   }
 
@@ -137,7 +115,7 @@ public class Binding<T> {
     }
   }
 
-  public class CanBeSingleton extends AfterAnyState {
+  public class CanBeSingleton {
     /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
     public CanBeReleasable singleton() {
       Binding.this.isCreatingSingleton = true;
@@ -145,7 +123,7 @@ public class Binding<T> {
     }
   }
 
-  public class CanProvideSingletonOrSingleton extends AfterAnyState {
+  public class CanProvideSingletonOrSingleton {
     public CanProvideReleasable providesSingleton() {
       isProvidingSingleton = true;
       return new CanProvideReleasable();
@@ -157,7 +135,7 @@ public class Binding<T> {
     }
   }
 
-  public class CanProvideSingleton extends AfterAnyState {
+  public class CanProvideSingleton {
     public CanProvideReleasable providesSingleton() {
       isProvidingSingleton = true;
       return new CanProvideReleasable();
@@ -183,7 +161,7 @@ public class Binding<T> {
     }
   }
 
-  public class CanBeBound extends AfterAnyState {
+  public class CanBeBound {
     public CanBeReleasable singleton() {
       isCreatingSingleton = true;
       return new CanBeReleasable();

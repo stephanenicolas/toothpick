@@ -105,9 +105,7 @@ public class ScopingTest {
   }
 
   @Test
-  public void
-      childInjector_shouldReturnInstancesInParentScopeUsingChildScope_whenParentHasKeyInHisScopeThroughModule()
-          throws Exception {
+  public void childInjector_shouldReturnInstancesInParentScopeUsingBindingScope() {
     // GIVEN
     Scope scopeParent = Toothpick.openScope("root");
     scopeParent.installModules(
@@ -128,7 +126,8 @@ public class ScopingTest {
     Foo instance = scope.getInstance(Foo.class);
 
     // THEN
-    assertThat(instance.bar, instanceOf(BarChild.class));
+    assertThat(instance.bar, instanceOf(Bar.class));
+    assertThat(instance.bar, not(instanceOf(BarChild.class)));
   }
 
   @Test
@@ -162,7 +161,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(Foo.class).inScope();
+            bind(Foo.class);
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -190,7 +189,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(Foo.class).singleton().inScope();
+            bind(Foo.class).singleton();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -218,7 +217,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).inScope();
+            bind(IFoo.class).to(Foo.class);
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -246,7 +245,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).to(Foo.class).singleton().inScope();
+            bind(IFoo.class).to(Foo.class).singleton();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -274,7 +273,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(IFooProvider.class).inScope();
+            bind(IFoo.class).toProvider(IFooProvider.class);
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");
@@ -302,7 +301,7 @@ public class ScopingTest {
     scopeParent.installModules(
         new Module() {
           {
-            bind(IFoo.class).toProvider(IFooProvider.class).singleton().inScope();
+            bind(IFoo.class).toProvider(IFooProvider.class).singleton();
           }
         });
     Scope scope = Toothpick.openScopes("root", "child");

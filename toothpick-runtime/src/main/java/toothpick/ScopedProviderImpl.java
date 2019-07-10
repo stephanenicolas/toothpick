@@ -16,7 +16,7 @@
  */
 package toothpick;
 
-import javax.inject.Provider;
+import static java.lang.String.format;
 
 /**
  * A non thread safe internal provider. It should never be exposed outside of Toothpick.
@@ -25,11 +25,6 @@ import javax.inject.Provider;
  */
 public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected Scope scope;
-
-  public ScopedProviderImpl(Scope scope, T instance) {
-    super(instance);
-    this.scope = scope;
-  }
 
   public ScopedProviderImpl(Scope scope, Factory<?> factory) {
     super(factory);
@@ -54,18 +49,26 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
     this.scope = scope;
   }
 
-  public ScopedProviderImpl(
-      Scope scope,
-      Provider<? extends T> providerInstance,
-      boolean providingSingleton,
-      boolean providingReleasable) {
-    super(providerInstance, providingSingleton, providingReleasable);
-    this.scope = scope;
-  }
-
   // we lock on the unbound provider itself to prevent concurrent usage
   // of the unbound provider (
   public T get(Scope scope) {
     return super.get(this.scope);
+  }
+
+  @Override
+  protected void checkFactoryScope(Factory<?> factory) {
+    if (factory.getTargetScope(scope) != scope) {
+      String factoryClassName = factory.getClass().getName();
+      String factoryKeyClass = factoryClassName.substring(0, factoryClassName.length() - "__Factory".length());
+      String message =
+          format(
+              "The class %s has a scope annotation that is not supported by the scope named \"%s\". "
+                  + "A binding for a scope annotated class or provider class must use an "
+                  + "annotation supported by the scope where the binding is installed. "
+                  + "This is also true for classes annotated with @Singleton without additional scope annotation: "
+                  + "they can only be installed in a root scope.",
+              factoryKeyClass, scope.getName());
+      throw new RuntimeException(message);
+    }
   }
 }

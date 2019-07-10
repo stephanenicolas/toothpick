@@ -18,7 +18,6 @@ package toothpick;
 
 import static java.lang.String.format;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -224,11 +223,7 @@ public class ScopeImpl extends ScopeNode {
       try {
         if (isTestModule || getBoundProvider(clazz, bindingName) == null) {
           InternalProviderImpl provider = toProvider(binding);
-          if (binding.isInScope()) {
-            installScopedProvider(clazz, bindingName, (ScopedProviderImpl) provider, isTestModule);
-          } else {
-            installBoundProvider(clazz, bindingName, provider, isTestModule);
-          }
+          installBoundProvider(clazz, bindingName, provider, isTestModule);
         }
       } catch (Exception e) {
         throw new IllegalBindingException(
@@ -252,8 +247,6 @@ public class ScopeImpl extends ScopeNode {
     switch (binding.getMode()) {
       case SIMPLE:
         return createInternalProvider(
-            binding.isInScope(),
-            binding.getScopeAnnotation(),
             binding.getKey(),
             false,
             binding.isCreatingSingleton(),
@@ -262,8 +255,6 @@ public class ScopeImpl extends ScopeNode {
             false);
       case CLASS:
         return createInternalProvider(
-            binding.isInScope(),
-            binding.getScopeAnnotation(),
             binding.getImplementationClass(),
             false,
             binding.isCreatingSingleton(),
@@ -271,23 +262,18 @@ public class ScopeImpl extends ScopeNode {
             false,
             false);
       case INSTANCE:
-        return createInternalProvider(
-            binding.isInScope(), binding.getScopeAnnotation(), binding.getInstance());
+        return new InternalProviderImpl<>(binding.getInstance());
       case PROVIDER_INSTANCE:
         // to ensure providers do not have to deal with concurrency, we wrap them in a thread safe
         // provider
         // We do not need to pass the scope here because the provider won't use any scope to create
         // the instance
-        return createInternalProvider(
-            binding.isInScope(),
-            binding.getScopeAnnotation(),
+        return new InternalProviderImpl<>(
             binding.getProviderInstance(),
             binding.isProvidingSingleton(),
             binding.isProvidingReleasable());
       case PROVIDER_CLASS:
         return createInternalProvider(
-            binding.isInScope(),
-            binding.getScopeAnnotation(),
             binding.getProviderClass(),
             true,
             binding.isCreatingSingleton(),
@@ -303,73 +289,20 @@ public class ScopeImpl extends ScopeNode {
   }
 
   private <T> InternalProviderImpl<T> createInternalProvider(
-      boolean inScope,
-      Class<? extends Annotation> scopeAnnotation,
-      Provider<? extends T> providerInstance,
-      boolean providingSingleton,
-      boolean providingReleasable) {
-    if (inScope) {
-      final Scope scope;
-      if (scopeAnnotation != null) {
-        scope = getParentScope(scopeAnnotation);
-      } else {
-        scope = this;
-      }
-      return new ScopedProviderImpl<>(
-          scope, providerInstance, providingSingleton, providingReleasable);
-    } else {
-      return new InternalProviderImpl<>(providerInstance, providingSingleton, providingReleasable);
-    }
-  }
-
-  private <T> InternalProviderImpl<T> createInternalProvider(
-      boolean inScope, Class<? extends Annotation> scopeAnnotation, T instance) {
-    if (inScope) {
-      final Scope scope;
-      if (scopeAnnotation != null) {
-        scope = getParentScope(scopeAnnotation);
-      } else {
-        scope = this;
-      }
-      return new ScopedProviderImpl<>(scope, instance);
-    } else {
-      return new InternalProviderImpl<>(instance);
-    }
-  }
-
-  private <T> InternalProviderImpl<T> createInternalProvider(
-      boolean isInScope,
-      Class<? extends Annotation> scopeAnnotation,
       Class<?> factoryKeyClass,
       boolean isProviderClass,
       boolean isCreatingSingleton,
       boolean isCreatingReleasable,
       boolean isProvidingSingleton,
       boolean isProvidingReleasable) {
-    if (isInScope) {
-      final Scope scope;
-      if (scopeAnnotation != null) {
-        scope = getParentScope(scopeAnnotation);
-      } else {
-        scope = this;
-      }
-      return new ScopedProviderImpl<>(
-          scope,
-          factoryKeyClass,
-          isProviderClass,
-          isCreatingSingleton,
-          isCreatingReleasable,
-          isProvidingSingleton,
-          isProvidingReleasable);
-    } else {
-      return new InternalProviderImpl<>(
-          factoryKeyClass,
-          isProviderClass,
-          isCreatingSingleton,
-          isCreatingReleasable,
-          isProvidingSingleton,
-          isProvidingReleasable);
-    }
+    return new ScopedProviderImpl<>(
+        this,
+        factoryKeyClass,
+        isProviderClass,
+        isCreatingSingleton,
+        isCreatingReleasable,
+        isProvidingSingleton,
+        isProvidingReleasable);
   }
 
   /**
@@ -445,7 +378,7 @@ public class ScopeImpl extends ScopeNode {
       // testing
       // its value. We allow to return it here
       ScopeImpl targetScopeImpl = (ScopeImpl) targetScope;
-      return targetScopeImpl.installScopedProvider(clazz, null, newProvider, false);
+      return targetScopeImpl.installBoundProvider(clazz, null, newProvider, false);
     } else {
       // the provider is but in a pool of unbound providers for later reuse
       final InternalProviderImpl<T> newProvider = new InternalProviderImpl<>(factory);
@@ -531,27 +464,6 @@ public class ScopeImpl extends ScopeNode {
    * Install the provider of the class {@code clazz} and name {@code bindingName} in the current
    * scope.
    *
-   * @param clazz the class for which to install the scoped provider of this scope.
-   * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
-   * @param scopedProvider the internal provider to install.
-   * @param isTestProvider whether or not is a test provider, installed through a Test Module that
-   *     should override existing providers for the same class-bindingname.
-   * @param <T> the type of {@code clazz}.
-   * @return the provider that will be installed, if one was previously installed, it is returned,
-   *     in a lock-free way.
-   */
-  private <T> InternalProviderImpl<? extends T> installScopedProvider(
-      Class<T> clazz,
-      String bindingName,
-      ScopedProviderImpl<? extends T> scopedProvider,
-      boolean isTestProvider) {
-    return installBoundProvider(clazz, bindingName, scopedProvider, isTestProvider);
-  }
-
-  /**
-   * Install the provider of the class {@code clazz} and name {@code bindingName} in the current
-   * scope.
-   *
    * @param clazz the class for which to install the scoped provider.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param internalProvider the internal provider to install.
@@ -597,7 +509,7 @@ public class ScopeImpl extends ScopeNode {
    *     #installUnBoundProvider(Class, String, InternalProviderImpl)} are a facade of this method
    *     and make the calls more clear.
    */
-  private <T> InternalProviderImpl installInternalProvider(
+  private <T> InternalProviderImpl<? extends T> installInternalProvider(
       Class<T> clazz,
       String bindingName,
       InternalProviderImpl<? extends T> internalProvider,
@@ -617,7 +529,7 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
-  private <T> InternalProviderImpl installNamedProvider(
+  private <T> InternalProviderImpl<? extends T> installNamedProvider(
       IdentityHashMap<Class, Map<String, InternalProviderImpl>> mapClassesToNamedBoundProviders,
       Class<T> clazz,
       String bindingName,
@@ -643,7 +555,7 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
-  private <T> InternalProviderImpl installUnNamedProvider(
+  private <T> InternalProviderImpl<? extends T> installUnNamedProvider(
       IdentityHashMap<Class, InternalProviderImpl> mapClassesToUnNamedProviders,
       Class<T> clazz,
       InternalProviderImpl<? extends T> internalProvider,
