@@ -8,5 +8,6 @@ include ':toothpick-testing-junit5'
 include ':smoothie'
 include ':smoothie-support'
 include ':smoothie-androidx'
+include ':smoothie-lifecycle'
 
 rootProject.name = 'toothpick-parent'
