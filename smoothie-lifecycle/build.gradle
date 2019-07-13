@@ -43,6 +43,7 @@ dependencies {
   compileOnly deps.lifecycle
 
   testImplementation deps.androidxv4
+  testImplementation deps.lifecycle
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
   testImplementation deps.mockito

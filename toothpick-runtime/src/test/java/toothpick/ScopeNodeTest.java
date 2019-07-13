@@ -204,7 +204,8 @@ public class ScopeNodeTest {
     parentScope.supportScopeAnnotation(CustomScope.class);
 
     // WHEN
-    boolean isSupportingToScopeAnnotation = parentScope.isScopeAnnotationSupported(CustomScope.class);
+    boolean isSupportingToScopeAnnotation =
+        parentScope.isScopeAnnotationSupported(CustomScope.class);
 
     // THEN
     assertThat(isSupportingToScopeAnnotation, is(true));

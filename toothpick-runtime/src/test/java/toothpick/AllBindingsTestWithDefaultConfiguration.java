@@ -243,29 +243,29 @@ public class AllBindingsTestWithDefaultConfiguration {
     assertThat(((Foo) foo).bar, not(sameInstance(((Foo) foo2).bar)));
   }
 
-    @Test(expected = RuntimeException.class)
-    public void
-    providerClassBinding_shouldFailToInstallBinding_whenAnnotationScopeIsNotMatchedByInstallationScope() {
-        // GIVEN
-        Scope scope = Toothpick.openScopes("", "child");
-        scope.installModules(
-            new Module() {
-                {
-                    bind(IFoo.class).toProvider(FooProviderAnnotatedSingleton.class);
-                }
-            });
+  @Test(expected = RuntimeException.class)
+  public void
+      providerClassBinding_shouldFailToInstallBinding_whenAnnotationScopeIsNotMatchedByInstallationScope() {
+    // GIVEN
+    Scope scope = Toothpick.openScopes("", "child");
+    scope.installModules(
+        new Module() {
+          {
+            bind(IFoo.class).toProvider(FooProviderAnnotatedSingleton.class);
+          }
+        });
 
-        // WHEN
-        IFoo foo = scope.getInstance(IFoo.class);
-        IFoo foo2 = scope.getInstance(IFoo.class);
+    // WHEN
+    IFoo foo = scope.getInstance(IFoo.class);
+    IFoo foo2 = scope.getInstance(IFoo.class);
 
-        // THEN
-        assertThat(foo, notNullValue());
-        assertThat(foo2, not(sameInstance(foo)));
-        assertThat(((Foo) foo).bar, notNullValue());
-        assertThat(((Foo) foo2).bar, notNullValue());
-        assertThat(((Foo) foo).bar, sameInstance(((Foo) foo2).bar));
-    }
+    // THEN
+    assertThat(foo, notNullValue());
+    assertThat(foo2, not(sameInstance(foo)));
+    assertThat(((Foo) foo).bar, notNullValue());
+    assertThat(((Foo) foo2).bar, notNullValue());
+    assertThat(((Foo) foo).bar, sameInstance(((Foo) foo2).bar));
+  }
 
   @Test
   public void

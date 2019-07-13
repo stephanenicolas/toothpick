@@ -406,8 +406,8 @@ public class ScopeImpl extends ScopeNode {
 
   /**
    * Obtains the provider of the class {@code clazz} and name {@code bindingName}, if any. The
-   * returned provider will be scoped. It can be {@code null} if there is no such
-   * provider. Ancestors are not taken into account.
+   * returned provider will be scoped. It can be {@code null} if there is no such provider.
+   * Ancestors are not taken into account.
    *
    * @param clazz the class for which to obtain the scoped provider.
    * @param bindingName the name, possibly {@code null}, for which to obtain the scoped provider.
@@ -422,8 +422,8 @@ public class ScopeImpl extends ScopeNode {
 
   /**
    * Obtains the provider of the class {@code clazz} and name {@code bindingName}, if any. The
-   * returned provider will belong to the pool of unscoped providers. It can be {@code null} if there
-   * is no such provider.
+   * returned provider will belong to the pool of unscoped providers. It can be {@code null} if
+   * there is no such provider.
    *
    * @param clazz the class for which to obtain the unscoped provider.
    * @param bindingName the name, possibly {@code null}, for which to obtain the unscoped provider.
@@ -448,7 +448,8 @@ public class ScopeImpl extends ScopeNode {
    *     providers scoped to the scope or from the pool of unscoped providers. If there is no such
    *     provider, returns {@code null}.
    *     <p>Note to maintainers : we don't use this method directly, both {@link #getScopedProvider}
-   *     and {@link #getUnUnScopedProvider} are a facade of this method and make the calls more clear.
+   *     and {@link #getUnUnScopedProvider} are a facade of this method and make the calls more
+   *     clear.
    */
   private <T> InternalProviderImpl<? extends T> getInternalProvider(
       Class<T> clazz, String bindingName, boolean isScoped) {
@@ -513,8 +514,8 @@ public class ScopeImpl extends ScopeNode {
    * @param clazz the class for which to install the provider.
    * @param bindingName the name, possibly {@code null}, for which to install the scoped provider.
    * @param internalProvider the internal provider to install.
-   * @param isScoped whether or not the provider belongs to a specific scope or belongs to the pool of
-   *     unscoped providers.
+   * @param isScoped whether or not the provider belongs to a specific scope or belongs to the pool
+   *     of unscoped providers.
    * @param isTestProvider whether or not is a test provider, installed through a Test Module that
    *     should override existing providers for the same class-bindingname.
    * @param <T> the type of {@code clazz}.

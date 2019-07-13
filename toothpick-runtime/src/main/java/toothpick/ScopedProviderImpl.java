@@ -59,7 +59,8 @@ public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
   protected void checkFactoryScope(Factory<?> factory) {
     if (factory.getTargetScope(scope) != scope) {
       String factoryClassName = factory.getClass().getName();
-      String factoryKeyClass = factoryClassName.substring(0, factoryClassName.length() - "__Factory".length());
+      String factoryKeyClass =
+          factoryClassName.substring(0, factoryClassName.length() - "__Factory".length());
       String message =
           format(
               "The class %s has a scope annotation that is not supported by the scope named \"%s\". "

@@ -47,11 +47,10 @@ import toothpick.config.Module;
  * implementation of ToothPick provides a {@code Toothpick} class that wraps these operations in a
  * thread safe way.
  *
- * <p>Scopes can support scope annotations :
- * annotation classes qualified by the {@link javax.inject.Scope} annotation. All classes
- * annotated by this annotation will automatically be scoped by Toothpick in a scope that
- * supports them. Scoping a class by
- * annotation is conceptually exactly the same as binding it in this scope.
+ * <p>Scopes can support scope annotations : annotation classes qualified by the {@link
+ * javax.inject.Scope} annotation. All classes annotated by this annotation will automatically be
+ * scoped by Toothpick in a scope that supports them. Scoping a class by annotation is conceptually
+ * exactly the same as binding it in this scope.
  *
  * <p>Classes that are not annotated with a {@link javax.inject.Scope} annotation, also called
  * un-scoped classes, are not associated to a particular scope and can be used in all scopes. Their
@@ -94,8 +93,8 @@ public interface Scope {
   Scope getRootScope();
 
   /**
-   * Add support of a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all
-   * classes that are scoped using this {@code scopeAnnotationClass}.
+   * Add support of a {@code scopeAnnotationClass}, to the current scope. The current scope will
+   * accept all classes that are scoped using this {@code scopeAnnotationClass}.
    *
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown. Note that the {@link Singleton} scope

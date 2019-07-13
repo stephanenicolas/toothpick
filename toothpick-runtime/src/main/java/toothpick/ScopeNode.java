@@ -57,10 +57,9 @@ import toothpick.config.Module;
  * implementation of Toothpick provides a {@code Toothpick} class that wraps these operations in a
  * thread safe way.
  *
- * <p>Scopes can be support scope annotations:
- * annotation classes qualified by the {@link javax.inject.Scope} annotation. All classes
- * annotated by this annotation will automatically be scoped by Toothpick in the scope that
- * supports them.
+ * <p>Scopes can be support scope annotations: annotation classes qualified by the {@link
+ * javax.inject.Scope} annotation. All classes annotated by this annotation will automatically be
+ * scoped by Toothpick in the scope that supports them.
  *
  * <p>Classes that are not annotated with a {@link javax.inject.Scope} annotation, also called
  * un-scoped classes, are not associated to a particular scope and can be used in all scopes. Their
@@ -128,10 +127,10 @@ public abstract class ScopeNode implements Scope {
   /**
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown.
-   * @return the parent {@link ScopeNode} of this scope that supports {@code
-   *     scopeAnnotationClass}. The current {@code scope} (this) can be returned if it, itself, supports
-   *     {@code scopeAnnotationClass}. If no such parent exists, it throws an exception. This later
-   *     case means that something scoped is using a lower scoped dependency, which is conceptually
+   * @return the parent {@link ScopeNode} of this scope that supports {@code scopeAnnotationClass}.
+   *     The current {@code scope} (this) can be returned if it, itself, supports {@code
+   *     scopeAnnotationClass}. If no such parent exists, it throws an exception. This later case
+   *     means that something scoped is using a lower scoped dependency, which is conceptually
    *     flawed and not allowed in Toothpick. Note that is {@code scopeAnnotationClass} is {@link
    *     Singleton}, the root scope is always returned. Thus the {@link Singleton} scope annotation
    *     class doesn't need to be supported, it's built-in.
@@ -178,8 +177,8 @@ public abstract class ScopeNode implements Scope {
    *
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown. Note that the {@link Singleton} scope
-   *     annotation class doesn't need to be explicitely supported, it's built-in, and supported
-   *     by all root scopes (scopes without parent).
+   *     annotation class doesn't need to be explicitely supported, it's built-in, and supported by
+   *     all root scopes (scopes without parent).
    * @see #getParentScope(Class)
    */
   @Override
