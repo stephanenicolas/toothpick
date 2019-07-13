@@ -54,10 +54,10 @@ public class ScopeNodeTest {
     Scope scope = new ScopeImpl(CustomScope.class);
 
     // WHEN
-    boolean isBoundToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
+    boolean isSupportingToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
 
     // THEN
-    assertThat(isBoundToScopeAnnotation, is(true));
+    assertThat(isSupportingToScopeAnnotation, is(true));
   }
 
   @Test
@@ -66,10 +66,10 @@ public class ScopeNodeTest {
     Scope scope = new ScopeImpl(NotAScope.class);
 
     // WHEN
-    boolean isBoundToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
+    boolean isSupportingToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
 
     // THEN
-    assertThat(isBoundToScopeAnnotation, is(false));
+    assertThat(isSupportingToScopeAnnotation, is(false));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class ScopeNodeTest {
   }
 
   @Test
-  public void testGetParentScope_shouldReturnItself_whenBoundToScopeAnnotation() {
+  public void testGetParentScope_shouldReturnItself_whenScopedToScopeAnnotation() {
     // GIVEN
     Scope childScope = Toothpick.openScopes("root", "child");
     childScope.supportScopeAnnotation(CustomScope.class);
@@ -99,7 +99,7 @@ public class ScopeNodeTest {
   }
 
   @Test
-  public void testGetParentScope_shouldReturnParentScope_whenParentBoundToScopeAnnotation() {
+  public void testGetParentScope_shouldReturnParentScope_whenParentSupportsScopeAnnotation() {
     // GIVEN
     Scope parentScope = Toothpick.openScope("root");
     parentScope.supportScopeAnnotation(CustomScope.class);
@@ -113,7 +113,7 @@ public class ScopeNodeTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testGetParentScope_shouldFail_whenNoParentBoundToScopeAnnotation() {
+  public void testGetParentScope_shouldFail_whenNoParentSupportsScopeAnnotation() {
     // GIVEN
     Scope scope = Toothpick.openScope("root");
 
@@ -186,52 +186,52 @@ public class ScopeNodeTest {
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnFalse_whenNotBound() {
+  public void testSupportScopeAnnotation_shouldReturnFalse_whenNotSupported() {
     // GIVEN
     Scope scope = Toothpick.openScope("root");
 
     // WHEN
-    boolean isBoundToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
+    boolean isSupportingToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
 
     // THEN
-    assertThat(isBoundToScopeAnnotation, is(false));
+    assertThat(isSupportingToScopeAnnotation, is(false));
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnTrue_whenBound() {
+  public void testSupportScopeAnnotation_shouldReturnTrue_whenSupported() {
     // GIVEN
     Scope parentScope = Toothpick.openScope("root");
     parentScope.supportScopeAnnotation(CustomScope.class);
 
     // WHEN
-    boolean isBoundToScopeAnnotation = parentScope.isScopeAnnotationSupported(CustomScope.class);
+    boolean isSupportingToScopeAnnotation = parentScope.isScopeAnnotationSupported(CustomScope.class);
 
     // THEN
-    assertThat(isBoundToScopeAnnotation, is(true));
+    assertThat(isSupportingToScopeAnnotation, is(true));
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnTrue_whenRootScopeAskedForSingleton() {
+  public void testSupportScopeAnnotation_shouldReturnTrue_whenRootScopeAskedForSingleton() {
     // GIVEN
     Scope parentScope = Toothpick.openScope("root");
 
     // WHEN
-    boolean isBoundToSingleton = parentScope.isScopeAnnotationSupported(Singleton.class);
+    boolean isSupportingSingleton = parentScope.isScopeAnnotationSupported(Singleton.class);
 
     // THEN
-    assertThat(isBoundToSingleton, is(true));
+    assertThat(isSupportingSingleton, is(true));
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnFalse_whenNonRootScopeAskedForSingleton() {
+  public void testSupportScopeAnnotation_shouldReturnFalse_whenNonRootScopeAskedForSingleton() {
     // GIVEN
     Scope childScope = Toothpick.openScopes("root", "child");
 
     // WHEN
-    boolean isBoundToSingleton = childScope.isScopeAnnotationSupported(Singleton.class);
+    boolean isSupportingSingleton = childScope.isScopeAnnotationSupported(Singleton.class);
 
     // THEN
-    assertThat(isBoundToSingleton, is(false));
+    assertThat(isSupportingSingleton, is(false));
   }
 
   @Test
@@ -441,7 +441,7 @@ public class ScopeNodeTest {
   }
 
   @Test
-  public void testReset_shouldClearBoundAnnotations_andFlagTheScopeAsOpen() throws Exception {
+  public void testReset_shouldClearSupportedAnnotations_andFlagTheScopeAsOpen() throws Exception {
     // GIVEN
     ScopeNode scope = new ScopeImpl("root");
     scope.supportScopeAnnotation(CustomScope.class);

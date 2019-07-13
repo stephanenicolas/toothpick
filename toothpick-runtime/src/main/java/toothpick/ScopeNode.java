@@ -57,10 +57,10 @@ import toothpick.config.Module;
  * implementation of Toothpick provides a {@code Toothpick} class that wraps these operations in a
  * thread safe way.
  *
- * <p>Scopes can be associated or bound (not related to binding {@code Foo} to {@code Bar}) to an
- * annotation class that is qualified by the {@link javax.inject.Scope} annotation. All classes
- * annotated by this annotation will automatically be scoped by Toothpick in the scope that is
- * associated to them. Their instances will be recycled in this case.
+ * <p>Scopes can be support scope annotations:
+ * annotation classes qualified by the {@link javax.inject.Scope} annotation. All classes
+ * annotated by this annotation will automatically be scoped by Toothpick in the scope that
+ * supports them.
  *
  * <p>Classes that are not annotated with a {@link javax.inject.Scope} annotation, also called
  * un-scoped classes, are not associated to a particular scope and can be used in all scopes. Their
@@ -128,13 +128,13 @@ public abstract class ScopeNode implements Scope {
   /**
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown.
-   * @return the parent {@link ScopeNode} of this scope that is bound to {@code
-   *     scopeAnnotationClass}. The current {@code scope} (this) can be returned if it is bound to
+   * @return the parent {@link ScopeNode} of this scope that supports {@code
+   *     scopeAnnotationClass}. The current {@code scope} (this) can be returned if it, itself, supports
    *     {@code scopeAnnotationClass}. If no such parent exists, it throws an exception. This later
    *     case means that something scoped is using a lower scoped dependency, which is conceptually
    *     flawed and not allowed in Toothpick. Note that is {@code scopeAnnotationClass} is {@link
    *     Singleton}, the root scope is always returned. Thus the {@link Singleton} scope annotation
-   *     class doesn't need to be bound, it's built-in.
+   *     class doesn't need to be supported, it's built-in.
    */
   @SuppressWarnings({"unused", "used by generated code"})
   @Override
@@ -154,7 +154,7 @@ public abstract class ScopeNode implements Scope {
     }
     throw new IllegalStateException(
         format(
-            "There is no parent scope of %s bound to scope scopeAnnotationClass %s", //
+            "There is no parent scope of %s that supports the scope scopeAnnotationClass %s", //
             this.name, //
             scopeAnnotationClass.getName()));
   }
@@ -178,7 +178,8 @@ public abstract class ScopeNode implements Scope {
    *
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown. Note that the {@link Singleton} scope
-   *     annotation class doesn't need to be bound, it's built-in.
+   *     annotation class doesn't need to be explicitely supported, it's built-in, and supported
+   *     by all root scopes (scopes without parent).
    * @see #getParentScope(Class)
    */
   @Override
@@ -187,8 +188,8 @@ public abstract class ScopeNode implements Scope {
     if (scopeAnnotationClass == Singleton.class) {
       throw new IllegalArgumentException(
           format(
-              "The annotation @Singleton is already bound "
-                  + "to the root scope of any scope. It can't be bound dynamically."));
+              "The annotation @Singleton is already supported "
+                  + "by root scopes. It can't be supported programmatically."));
     }
 
     scopeAnnotationClasses.add(scopeAnnotationClass);

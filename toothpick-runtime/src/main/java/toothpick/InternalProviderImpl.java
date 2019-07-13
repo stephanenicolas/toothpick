@@ -100,8 +100,8 @@ public class InternalProviderImpl<T> {
     this.isReleasable = this.isSingleton && isReleasable;
   }
 
-  // we lock on the unbound provider itself to prevent concurrent usage
-  // of the unbound provider (
+  // we lock on the unscoped provider itself to prevent concurrent usage
+  // of the unscoped provider (
   public synchronized T get(Scope scope) {
     if (instance != null) {
       return instance;

@@ -67,8 +67,8 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
         if (!scope.isScopeAnnotationSupported(annotationType)) {
           throw new IllegalBindingException(
               format(
-                  "Class %s cannot be bound."
-                      + " It has a scope annotation: %s that is not supported by current scope: %s",
+                  "Class %s cannot be scoped."
+                      + " It has a scope annotation: %s that is not supported by the current scope: %s",
                   clazz.getName(), annotationType.getName(), scope.getName()));
         }
       }

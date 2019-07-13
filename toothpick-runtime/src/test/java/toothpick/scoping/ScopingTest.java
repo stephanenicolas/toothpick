@@ -489,7 +489,7 @@ public class ScopingTest {
 
   @Test
   public void
-      binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotationViaProvider_whenParentScopeIsBoundToScopeAnnotation()
+      binding_shouldCreateAnnotatedClassInScopeThatSupportsScopeAnnotationViaProvider_whenParentScopeSupportsScopeAnnotation()
           throws Exception {
     // GIVEN
     Toothpick.setConfiguration(forDevelopment());
@@ -508,7 +508,7 @@ public class ScopingTest {
 
   @Test
   public void
-      binding_shouldCreateAnnotatedClassInScopeBoundToScopeAnnotationViaFactory_whenParentScopeIsBoundToScopeAnnotation()
+  binding_shouldCreateAnnotatedClassInScopeThatSupportsScopeAnnotationViaFactory_whenParentScopeSupportsScopeAnnotation()
           throws Exception {
     // GIVEN
     Toothpick.setConfiguration(forDevelopment());

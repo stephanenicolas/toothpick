@@ -150,7 +150,7 @@ public final class Toothpick {
       closeScope(name);
     }
     ConfigurationHolder.configuration.onScopeForestReset();
-    ScopeImpl.resetUnBoundProviders();
+    ScopeImpl.resetUnScopedProviders();
   }
 
   /**

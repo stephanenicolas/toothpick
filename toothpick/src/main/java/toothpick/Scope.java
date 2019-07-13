@@ -47,15 +47,16 @@ import toothpick.config.Module;
  * implementation of ToothPick provides a {@code Toothpick} class that wraps these operations in a
  * thread safe way.
  *
- * <p>Scopes can be associated or bound (not related to binding {@code Foo} to {@code Bar}) to an
- * annotation class that is qualified by the {@link javax.inject.Scope} annotation. All classes
- * annotated by this annotation will automatically be scoped by Toothpick in the scope that is
- * associated to them. Their instances will be recycled in this case.
+ * <p>Scopes can support scope annotations :
+ * annotation classes qualified by the {@link javax.inject.Scope} annotation. All classes
+ * annotated by this annotation will automatically be scoped by Toothpick in a scope that
+ * supports them. Scoping a class by
+ * annotation is conceptually exactly the same as binding it in this scope.
  *
  * <p>Classes that are not annotated with a {@link javax.inject.Scope} annotation, also called
  * un-scoped classes, are not associated to a particular scope and can be used in all scopes. Their
- * instances are not recycled, every injection provides a different instance. Scoping a class by
- * annotation is conceptually exactly the same as binding it to itself in a scope.
+ * instances are not recycled, every injection provides a different instance. Not scoping a class by
+ * annotation is conceptually exactly the same as binding it in every scope.
  *
  * <p>Scope resolution : when a class is scoped, either by binding it in a module and then
  * installing this module in a scope, or by adding a {@link javax.inject.Scope} annotation, it means
@@ -76,13 +77,13 @@ public interface Scope {
   /**
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown.
-   * @return the parent {@link Scope} of this scope that is bound to {@code scopeAnnotationClass}.
-   *     The current {@code scope} (this) can be returned if it is bound to {@code
+   * @return the parent {@link Scope} of this scope that supports this {@code scopeAnnotationClass}.
+   *     The current {@code scope} (this) can be returned if it, itself, supports {@code
    *     scopeAnnotationClass}. If no such parent exists, it throws an exception. This later case
    *     means that something scoped is using a lower scoped dependency, which is conceptually
    *     flawed and not allowed in Toothpick. Note that is {@code scopeAnnotationClass} is {@link
    *     Singleton}, the root scope is always returned. Thus the {@link Singleton} scope annotation
-   *     class doesn't need to be bound, it's built-in.
+   *     class doesn't need to be explicitely supported, it's built-in.
    */
   Scope getParentScope(Class scopeAnnotationClass);
 
@@ -93,12 +94,13 @@ public interface Scope {
   Scope getRootScope();
 
   /**
-   * Binds a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all
+   * Add support of a {@code scopeAnnotationClass}, to the current scope. The current scope will accept all
    * classes that are scoped using this {@code scopeAnnotationClass}.
    *
    * @param scopeAnnotationClass an annotation that should be qualified by {@link
    *     javax.inject.Scope}. If not, an exception is thrown. Note that the {@link Singleton} scope
-   *     annotation class doesn't need to be bound, it's built-in.
+   *     annotation class doesn't need to be explicitely supported, it's built-in and supported by
+   *     all root scopes (scopes with no parents).
    * @see #getParentScope(Class)
    */
   void supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);

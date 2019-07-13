@@ -248,7 +248,7 @@ public class ScopeImplTest {
   }
 
   @Test(expected = NoFactoryFoundException.class)
-  public void reset_shouldResetBoundProviders_andFlagTheTestModuleToFalse() throws Exception {
+  public void reset_shouldResetScopedProviders_andFlagTheTestModuleToFalse() throws Exception {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("root");
     scope.installTestModules(

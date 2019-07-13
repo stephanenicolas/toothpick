@@ -46,7 +46,7 @@ public class ScopeImplDumpTest {
                 + "Providers: \\[toothpick.Scope,toothpick.data.Foo\\].*"
                 + "\\\\---child:\\d+.*"
                 + "Providers:.*\\[toothpick.Scope\\].*"
-                + "Unbound providers: \\[toothpick.data.Bar\\].*",
+                + "UnScoped providers: \\[toothpick.data.Bar\\].*",
             Pattern.DOTALL);
     assertThat(dump, MatchesPattern.matchesPattern(expected));
   }
