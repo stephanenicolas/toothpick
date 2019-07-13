@@ -10,6 +10,8 @@ ext.deps = [// Common
             supportv4           : 'com.android.support:support-v4:28.0.0',
             androidxv4          : 'androidx.legacy:legacy-support-v4:1.0.0',
             lifecycle           : 'androidx.lifecycle:lifecycle-common-java8:2.2.0-alpha02',
+            lifecycle_viewmodel : 'androidx.lifecycle:lifecycle-viewmodel:2.2.0-alpha02',
+            lifecycle_extensions: 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02',
             butterknife         : 'com.jakewharton:butterknife:10.0.0',
             butterknife_compiler: 'com.jakewharton:butterknife-compiler:10.0.0',
             rxandroid           : 'io.reactivex:rxandroid:1.2.1',

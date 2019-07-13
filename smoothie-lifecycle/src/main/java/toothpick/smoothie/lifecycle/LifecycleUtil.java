@@ -24,8 +24,8 @@ import androidx.lifecycle.LifecycleOwner;
 import toothpick.Scope;
 
 /**
- * Provides support for Android architecture components.
- * Closes scopes automatically following a life cycle owner's onDestroy event.
+ * Provides support for Android architecture components. Closes scopes automatically following a
+ * life cycle owner's onDestroy event.
  */
 public class LifecycleUtil {
 
