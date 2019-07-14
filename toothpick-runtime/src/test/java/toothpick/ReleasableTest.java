@@ -79,8 +79,7 @@ public class ReleasableTest {
         });
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
-    InternalProvider internalProvider =
-        scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
+    InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
     assertThat(internalProvider.instance, notNullValue());
 
     // WHEN
@@ -106,8 +105,7 @@ public class ReleasableTest {
     scope.supportScopeAnnotation(CustomScope.class);
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
-    InternalProvider internalProvider =
-        scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
+    InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
     // provider instance is released when it creates a singleton
     // whether or not it is a singleton and whether or not releasable
     assertThat(internalProvider.providerInstance, notNullValue());
@@ -146,8 +144,7 @@ public class ReleasableTest {
         });
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
-    InternalProvider internalProvider =
-        scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
+    InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
     // provider instance is released when it creates a singleton
     // whether or not it is a singleton and whether or not releasable
     assertThat(internalProvider.providerInstance, notNullValue());
@@ -176,8 +173,7 @@ public class ReleasableTest {
     scope.supportScopeAnnotation(CustomScope.class);
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
-    InternalProvider internalProvider =
-        scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
+    InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
     // provider instance is released when it creates a singleton
     // whether or not it is a singleton and whether or not releasable
     assertThat(internalProvider.providerInstance, notNullValue());
@@ -206,8 +202,7 @@ public class ReleasableTest {
     scope.supportScopeAnnotation(CustomScope.class);
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
-    InternalProvider internalProvider =
-        scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
+    InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
     // provider instance is released when it creates a singleton
     // whether or not it is a singleton and whether or not releasable
     assertThat(internalProvider.providerInstance, notNullValue());

@@ -377,6 +377,17 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
     return paramInjectionTargetList;
   }
 
+  protected List<TypeElement> getExceptionTypes(ExecutableElement methodElement) {
+    List<TypeElement> exceptionClassNames = new ArrayList<>();
+    for (TypeMirror thrownTypeMirror : methodElement.getThrownTypes()) {
+      DeclaredType thrownDeclaredType = (DeclaredType) thrownTypeMirror;
+      TypeElement thrownType = (TypeElement) thrownDeclaredType.asElement();
+      exceptionClassNames.add(thrownType);
+    }
+
+    return exceptionClassNames;
+  }
+
   protected FieldInjectionTarget createFieldOrParamInjectionTarget(
       VariableElement variableElement) {
     final TypeElement memberTypeElement =

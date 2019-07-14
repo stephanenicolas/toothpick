@@ -149,7 +149,22 @@ public class MemberInjectorGenerator extends CodeGenerator {
       }
       injectedMethodCallStatement.append(")");
 
+      boolean isMethodThrowingExceptions = !methodInjectionTarget.exceptionTypes.isEmpty();
+      if (isMethodThrowingExceptions) {
+        injectMethodBuilder.beginControlFlow("try");
+      }
       injectMethodBuilder.addStatement(injectedMethodCallStatement.toString());
+      if (isMethodThrowingExceptions) {
+        int exceptionCounter = 1;
+        for (TypeElement exceptionType : methodInjectionTarget.exceptionTypes) {
+          injectMethodBuilder.nextControlFlow("catch ($T e$L)", exceptionType, exceptionCounter);
+          injectMethodBuilder.addStatement(
+              "throw new $T(e$L)", RuntimeException.class, exceptionCounter);
+          exceptionCounter++;
+        }
+
+        injectMethodBuilder.endControlFlow();
+      }
     }
   }
 

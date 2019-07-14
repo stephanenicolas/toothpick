@@ -315,8 +315,7 @@ public class ScopeImpl extends ScopeNode {
    * it is scoped, it will be scoped in the appropriate scope, if not it will be added to the pool
    * of un-scoped providers. Note that
    *
-   * @param clazz the {@link Class} of {@code T} for which we lookup an {@link
-   *     InternalProvider}.
+   * @param clazz the {@link Class} of {@code T} for which we lookup an {@link InternalProvider}.
    * @param bindingName the potential name of the provider when it was bound (which means we always
    *     returned a scoped provider if name is not null).
    * @param <T> the type for which we lookup an {@link InternalProvider}.
@@ -373,7 +372,8 @@ public class ScopeImpl extends ScopeNode {
     if (factory.hasScopeAnnotation()) {
       // the new provider will have to work in the current scope
       Scope targetScope = factory.getTargetScope(this);
-      InternalScopedProvider<? extends T> newProvider = new InternalScopedProvider<>(targetScope, factory);
+      InternalScopedProvider<? extends T> newProvider =
+          new InternalScopedProvider<>(targetScope, factory);
       // it is bound to its target scope only if it has a scope annotation.
       // lock free installing a provider means there could have been one set concurrently since last
       // testing
@@ -402,8 +402,7 @@ public class ScopeImpl extends ScopeNode {
    * @return the scoped provider for class {@code clazz} and {@code bindingName}. Returns {@code
    *     null} is there is no such scoped provider.
    */
-  private <T> InternalProvider<? extends T> getScopedProvider(
-      Class<T> clazz, String bindingName) {
+  private <T> InternalProvider<? extends T> getScopedProvider(Class<T> clazz, String bindingName) {
     return getInternalProvider(clazz, bindingName, true);
   }
 
@@ -508,8 +507,8 @@ public class ScopeImpl extends ScopeNode {
    * @param <T> the type of {@code clazz}.
    *     <p>Note to maintainers : we don't use this method directly, both {@link
    *     #installScopedProvider(Class, String, InternalProvider, boolean)} and {@link
-   *     #installUnScopedProvider(Class, String, InternalProvider)} are a facade of this method
-   *     and make the calls more clear.
+   *     #installUnScopedProvider(Class, String, InternalProvider)} are a facade of this method and
+   *     make the calls more clear.
    */
   private <T> InternalProvider<? extends T> installInternalProvider(
       Class<T> clazz,

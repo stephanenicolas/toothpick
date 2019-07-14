@@ -392,4 +392,109 @@ public class MethodMemberInjectorTest {
         .and()
         .generatesSources(expectedSource);
   }
+
+  @Test
+  public void testMethodInjection_withException() {
+    JavaFileObject source =
+        JavaFileObjects.forSourceString(
+            "test.TestMethodInjection",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import javax.inject.Inject;", //
+                    "public class TestMethodInjection {", //
+                    "  @Inject", //
+                    "  public void m(Foo foo) throws Exception {}", //
+                    "}", //
+                    "class Foo {}" //
+                    ));
+
+    JavaFileObject expectedSource =
+        JavaFileObjects.forSourceString(
+            "test/TestMethodInjection__MemberInjector",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "", //
+                    "import java.lang.Exception;", //
+                    "import java.lang.Override;", //
+                    "import java.lang.RuntimeException;", //
+                    "import toothpick.MemberInjector;", //
+                    "import toothpick.Scope;", //
+                    "", //
+                    "public final class TestMethodInjection__MemberInjector implements MemberInjector<TestMethodInjection> {", //
+                    "  @Override", //
+                    "  public void inject(TestMethodInjection target, Scope scope) {", //
+                    "    Foo param1 = scope.getInstance(Foo.class);", //
+                    "    try {", //
+                    "      target.m(param1);", //
+                    "    } catch(Exception e1) {", //
+                    "      throw new RuntimeException(e1);", //
+                    "    } ", //
+                    "  }", //
+                    "}" //
+                    ));
+
+    assert_()
+        .about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
+  public void testMethodInjection_withExceptions() {
+    JavaFileObject source =
+        JavaFileObjects.forSourceString(
+            "test.TestMethodInjection",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import javax.inject.Inject;", //
+                    "public class TestMethodInjection {", //
+                    "  @Inject", //
+                    "  public void m(Foo foo) throws Exception, Throwable {}", //
+                    "}", //
+                    "class Foo {}" //
+                    ));
+
+    JavaFileObject expectedSource =
+        JavaFileObjects.forSourceString(
+            "test/TestMethodInjection__MemberInjector",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "", //
+                    "import java.lang.Exception;", //
+                    "import java.lang.Override;", //
+                    "import java.lang.RuntimeException;", //
+                    "import java.lang.Throwable;", //
+                    "import toothpick.MemberInjector;", //
+                    "import toothpick.Scope;", //
+                    "", //
+                    "public final class TestMethodInjection__MemberInjector implements MemberInjector<TestMethodInjection> {", //
+                    "  @Override", //
+                    "  public void inject(TestMethodInjection target, Scope scope) {", //
+                    "    Foo param1 = scope.getInstance(Foo.class);", //
+                    "    try {", //
+                    "      target.m(param1);", //
+                    "    } catch(Exception e1) {", //
+                    "      throw new RuntimeException(e1);", //
+                    "    } catch(Throwable e2) {", //
+                    "      throw new RuntimeException(e2);", //
+                    "    } ", //
+                    "  }", //
+                    "}" //
+                    ));
+
+    assert_()
+        .about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
 }

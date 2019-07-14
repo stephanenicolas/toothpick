@@ -190,6 +190,7 @@ public class MemberInjectorProcessor extends ToothpickProcessor {
     MethodInjectionTarget methodInjectionTarget =
         new MethodInjectionTarget(enclosingElement, methodName, isOverride);
     methodInjectionTarget.parameters.addAll(getParamInjectionTargetList(methodElement));
+    methodInjectionTarget.exceptionTypes.addAll(getExceptionTypes(methodElement));
 
     return methodInjectionTarget;
   }

@@ -26,7 +26,8 @@ public final class MethodInjectionTarget {
   public final List<ParamInjectionTarget> parameters = new ArrayList<>();
   public final TypeElement enclosingClass;
   public final String methodName;
-  public boolean isOverride;
+  public final boolean isOverride;
+  public final List<TypeElement> exceptionTypes = new ArrayList<>();
 
   public MethodInjectionTarget(TypeElement enclosingClass, String methodName, boolean isOverride) {
     this.enclosingClass = enclosingClass;
