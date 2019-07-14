@@ -16,31 +16,164 @@
  */
 package toothpick.config;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static toothpick.config.Binding.Mode;
+import static toothpick.config.Binding.Mode.SIMPLE;
+
+import javax.inject.Named;
 import javax.inject.Provider;
 import org.junit.Test;
 
 public class BindingTest {
 
   @Test
+  public void testSimpleBindingAPI() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class);
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(binding, SIMPLE, String.class, null, null, false, false, false, false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_withNameAsString() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).withName("foo");
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(binding, SIMPLE, String.class, "foo", null, false, false, false, false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_withNameAsAnnotation() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).withName(Named.class);
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(
+        binding,
+        SIMPLE,
+        String.class,
+        Named.class.getCanonicalName(),
+        null,
+        false,
+        false,
+        false,
+        false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_asSingleton() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).singleton();
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(binding, SIMPLE, String.class, null, null, true, false, false, false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_withNameAsString_asSingleton() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).withName("foo").singleton();
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(binding, SIMPLE, String.class, "foo", null, true, false, false, false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_withNameAsAnnotation_asSingleton() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).withName(Named.class).singleton();
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(
+        binding,
+        SIMPLE,
+        String.class,
+        Named.class.getCanonicalName(),
+        null,
+        true,
+        false,
+        false,
+        false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_asReleasableSingleton() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).singleton().releasable();
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(binding, SIMPLE, String.class, null, null, true, true, false, false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_withNameAsString_asReleasableSingleton() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).withName("foo").singleton().releasable();
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(binding, SIMPLE, String.class, "foo", null, true, true, false, false);
+  }
+
+  @Test
+  public void testSimpleBindingAPI_withNameAsAnnotation_asReleasableSingleton() {
+    // GIVEN
+    Module module = new Module();
+
+    // WHEN
+    module.bind(String.class).withName(Named.class).singleton().releasable();
+
+    // THEN
+    Binding binding = getBinding(module);
+    assertBinding(
+        binding,
+        SIMPLE,
+        String.class,
+        Named.class.getCanonicalName(),
+        null,
+        true,
+        true,
+        false,
+        false);
+  }
+
+  @Test
   public void testBindingAPI() {
-    // simple
-    new Module().bind(String.class);
-
-    // simple with name
-    new Module().bind(String.class).withName("");
-
-    // simple with name and singleton
-    new Module().bind(String.class).withName("").singleton();
-
-    // simple with name and singleton and releasable
-    new Module().bind(String.class).withName("").singleton().releasable();
-
-    // simple singleton
-    new Module().bind(String.class).singleton();
-
-    // simple singleton and releasable
-    new Module().bind(String.class).singleton().releasable();
-
     // bind to class
     new Module().bind(String.class).to(String.class);
 
@@ -136,5 +269,41 @@ public class BindingTest {
     public String get() {
       return null;
     }
+  }
+
+  private Binding getBinding(Module module) {
+    return module.getBindingSet().iterator().next();
+  }
+
+  private void assertBinding(
+      Binding binding,
+      Mode mode,
+      Class<?> keyClass,
+      String name,
+      Class<?> implementationClass,
+      boolean isSingleton,
+      boolean isReleasable,
+      boolean isProducingSingleton,
+      boolean isProducingReleasable) {
+    assertThat(binding.getMode(), is(mode));
+    if (keyClass == null) {
+      assertThat(binding.getKey(), nullValue());
+    } else {
+      assertThat(binding.getKey().getName(), is(keyClass.getName()));
+    }
+    if (name == null) {
+      assertThat(binding.getName(), nullValue());
+    } else {
+      assertThat(binding.getName(), is(name));
+    }
+    if (implementationClass == null) {
+      assertThat(binding.getImplementationClass(), nullValue());
+    } else {
+      assertThat(binding.getImplementationClass().getName(), is(implementationClass.getName()));
+    }
+    assertThat(binding.isCreatingSingleton(), is(isSingleton));
+    assertThat(binding.isCreatingReleasable(), is(isReleasable));
+    assertThat(binding.isProvidingSingleton(), is(isProducingSingleton));
+    assertThat(binding.isProvidingReleasable(), is(isProducingReleasable));
   }
 }
