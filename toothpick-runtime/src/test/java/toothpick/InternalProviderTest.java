@@ -21,13 +21,13 @@ import static org.junit.Assert.fail;
 import javax.inject.Provider;
 import org.junit.Test;
 
-public class InternalProviderImplTest {
+public class InternalProviderTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testCreateInternalProviderImpl_shouldFail_whenInstanceIsNull() {
     // GIVEN
     // WHEN
-    new InternalProviderImpl((String) null);
+    new InternalProvider((String) null);
 
     // THEN
     fail("Should throw an exception");
@@ -37,7 +37,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenProviderInstanceIsNull() {
     // GIVEN
     // WHEN
-    new InternalProviderImpl((Provider<String>) null, false, false);
+    new InternalProvider((Provider<String>) null, false, false);
 
     // THEN
     fail("Should throw an exception");
@@ -47,7 +47,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenFactoryIsNull() {
     // GIVEN
     // WHEN
-    new InternalProviderImpl((Factory<String>) null);
+    new InternalProvider((Factory<String>) null);
 
     // THEN
     fail("Should throw an exception");
@@ -57,7 +57,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenFactoryClassIsNull() {
     // GIVEN
     // WHEN
-    new InternalProviderImpl((Class) null, false, false, false, false, false);
+    new InternalProvider((Class) null, false, false, false, false, false);
 
     // THEN
     fail("Should throw an exception");
@@ -67,7 +67,7 @@ public class InternalProviderImplTest {
   public void testCreateInternalProviderImpl_shouldFail_whenProviderFactoryClassIsNull() {
     // GIVEN
     // WHEN
-    new InternalProviderImpl((Class) null, true, false, false, false, false);
+    new InternalProvider((Class) null, true, false, false, false, false);
 
     // THEN
     fail("Should throw an exception");

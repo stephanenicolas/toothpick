@@ -24,7 +24,7 @@ import toothpick.locators.FactoryLocator;
  *
  * @param <T> the class of the instances provided by this provider.
  */
-public class InternalProviderImpl<T> {
+public class InternalProvider<T> {
   /*VisibleForTesting*/ volatile T instance;
   private Factory<T> factory;
   private Class<T> factoryClass;
@@ -37,7 +37,7 @@ public class InternalProviderImpl<T> {
   protected boolean isProvidingSingleton;
   private boolean isProvidingReleasable;
 
-  public InternalProviderImpl(T instance) {
+  public InternalProvider(T instance) {
     // not that an instance cannot be releasable as TP wouldn't know how to recreate a second
     // instance.
     if (instance == null) {
@@ -48,7 +48,7 @@ public class InternalProviderImpl<T> {
     this.isSingleton = true;
   }
 
-  public InternalProviderImpl(
+  public InternalProvider(
       Provider<? extends T> providerInstance,
       boolean isProvidingSingleton,
       boolean isProvidingReleasable) {
@@ -65,7 +65,7 @@ public class InternalProviderImpl<T> {
     this.isProvidingReleasable = isProvidingSingleton && isProvidingReleasable;
   }
 
-  public InternalProviderImpl(Factory<?> factory) {
+  public InternalProvider(Factory<?> factory) {
     if (factory == null) {
       throw new IllegalArgumentException("The factory can't be null.");
     }
@@ -78,7 +78,7 @@ public class InternalProviderImpl<T> {
         this.isProvidingSingleton && factory.hasProvidesReleasableAnnotation();
   }
 
-  public InternalProviderImpl(
+  public InternalProvider(
       Class<?> factoryKeyClass,
       boolean isProviderFactoryClass,
       boolean isSingleton,

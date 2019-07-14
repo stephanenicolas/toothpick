@@ -18,20 +18,40 @@ package toothpick;
 
 import static java.lang.String.format;
 
+import javax.inject.Provider;
+
 /**
  * A non thread safe internal provider. It should never be exposed outside of Toothpick.
  *
  * @param <T> the class of the instances provided by this provider.
  */
-public class ScopedProviderImpl<T> extends InternalProviderImpl<T> {
+public class InternalScopedProvider<T> extends InternalProvider<T> {
   protected Scope scope;
 
-  public ScopedProviderImpl(Scope scope, Factory<?> factory) {
+  public InternalScopedProvider(Scope scope, Factory<?> factory) {
     super(factory);
     this.scope = scope;
   }
 
-  public ScopedProviderImpl(
+  // This constructor is a bit strange:
+  // if we use an instance, we will not use the scope
+  // but it makes the code more homogeneous when we
+  // transform bindings into InternalScopedProvider
+  public InternalScopedProvider(Scope scope, T instance) {
+    super(instance);
+    this.scope = scope;
+  }
+
+  public InternalScopedProvider(
+      Scope scope,
+      Provider<? extends T> providerInstance,
+      boolean isProvidingSingleton,
+      boolean isProvidingReleasable) {
+    super(providerInstance, isProvidingSingleton, isProvidingReleasable);
+    this.scope = scope;
+  }
+
+  public InternalScopedProvider(
       Scope scope,
       Class<?> factoryKeyClass,
       boolean isProviderFactoryClass,
