@@ -42,10 +42,8 @@ import javax.inject.Inject
 * qualifiers only for constructor <<<
 + Tests ^
 
-+ Default scope
 + Compiler -> @InjectAnnotation for class ???
 + Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
-+ Optionals
  */
 class TestMocking {
 
@@ -60,13 +58,12 @@ class TestMocking {
     lateinit var dependency: Dependency
 
     @Test
-    fun `Inject dependencies by fields in non entry points`() {
+    fun testInjectDependenciesByFieldsInEntryPointByMemberInjector() {
         // GIVEN
         When calling dependency.num() itReturns 2
 
         // WHEN
-        val nonEntryPoint = NonEntryPointByFields()
-        KTP.openScope("Foo").inject(nonEntryPoint)
+        val nonEntryPoint = EntryPoint()
         val num = nonEntryPoint.dependency.num()
 
         // THEN
@@ -92,32 +89,12 @@ class TestMocking {
         num shouldEqual 2
     }
 
-    @Test
-    fun testInjectDependenciesByFieldsInEntryPointByMemberInjector() {
-        // GIVEN
-        When calling dependency.num() itReturns 2
-
-        // WHEN
-        val nonEntryPoint = EntryPoint()
-        val num = nonEntryPoint.dependency.num()
-
-        // THEN
-        Verify on dependency that dependency.num() was called
-        nonEntryPoint.shouldNotBeNull()
-        nonEntryPoint.dependency.shouldNotBeNull()
-        num shouldEqual 2
-    }
-
     class EntryPoint {
         val dependency: Dependency by inject()
 
         init {
             KTP.openScope("Foo").inject(this)
         }
-    }
-
-    class NonEntryPointByFields {
-        val dependency: Dependency by inject()
     }
 
     class NonEntryPointByConstructor @Inject constructor(val dependency: Dependency)
