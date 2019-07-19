@@ -43,9 +43,7 @@ class EagerDelegate<T : Any>(clz: Class<T>, name: String?) : InjectDelegate<T>(c
         instance = scope.getInstance(clz, name)
     }
 
-    override fun isEntryPointInjected(): Boolean {
-        return this::instance.isInitialized
-    }
+    override fun isEntryPointInjected() = this::instance.isInitialized
 }
 
 class ProviderDelegate<T : Any>(clz: Class<T>, name: String?, private val lazy: Boolean) : InjectDelegate<T>(clz, name) {
@@ -59,7 +57,5 @@ class ProviderDelegate<T : Any>(clz: Class<T>, name: String?, private val lazy: 
         provider = if (lazy) scope.getLazy(clz, name) else scope.getProvider(clz, name)
     }
 
-    override fun isEntryPointInjected(): Boolean {
-        return this::provider.isInitialized
-    }
+    override fun isEntryPointInjected() = this::provider.isInitialized
 }

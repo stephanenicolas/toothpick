@@ -9,6 +9,7 @@ import org.amshove.kluent.itReturns
 import org.amshove.kluent.on
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeInstanceOf
+import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.that
 import org.amshove.kluent.was
 import org.junit.jupiter.api.Test
@@ -97,5 +98,37 @@ class KTPScopeTest {
         // THEN
         Verify on childScope that childScope.rootScope was called
         result shouldBeInstanceOf KTPScope::class
+    }
+
+    @Test
+    fun `getInstance should return instance without name using the provided scope`() {
+        // GIVEN
+        val scope: Scope = mock()
+        val ktpScope = KTPScope(scope)
+
+        When calling scope.getInstance(String::class.java, null) itReturns "test"
+
+        // WHEN
+        val result: String = ktpScope.getInstance()
+
+        // THEN
+        Verify on scope that scope.getInstance(String::class.java, null) was called
+        result shouldEqual "test"
+    }
+
+    @Test
+    fun `getInstance should return instance with name using the provided scope`() {
+        // GIVEN
+        val scope: Scope = mock()
+        val ktpScope = KTPScope(scope)
+
+        When calling scope.getInstance(String::class.java, "name") itReturns "test"
+
+        // WHEN
+        val result: String = ktpScope.getInstance("name")
+
+        // THEN
+        Verify on scope that scope.getInstance(String::class.java, "name") was called
+        result shouldEqual "test"
     }
 }

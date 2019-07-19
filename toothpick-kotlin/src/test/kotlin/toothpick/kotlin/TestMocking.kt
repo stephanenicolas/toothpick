@@ -41,7 +41,6 @@ import javax.inject.Provider
 + Concurrency <<<
 * qualifiers only for constructor <<<
 + Tests ^
-+ getinstance reified for scope
 + fix binding dsl
 
 + supporting mockk
@@ -95,7 +94,7 @@ class TestMocking {
         When calling namedDependency.num() itReturns 3
 
         // WHEN
-        val nonEntryPoint = KTP.openScope("Foo").getInstance(NonEntryPoint::class.java)
+        val nonEntryPoint: NonEntryPoint = KTP.openScope("Foo").getInstance()
 
         // THEN
         nonEntryPoint.shouldNotBeNull()
