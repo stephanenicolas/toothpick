@@ -25,12 +25,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import toothpick.InjectConstructor
 import toothpick.Lazy
 import toothpick.kotlin.delegate.inject
 import toothpick.kotlin.delegate.lazy
 import toothpick.kotlin.delegate.provider
 import toothpick.testing.ToothPickExtension
-import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 
@@ -45,7 +45,6 @@ import javax.inject.Provider
 + fix binding dsl
 
 + supporting mockk
-+ Compiler -> @InjectAnnotation for class ???
 + Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
  */
 class TestMocking {
@@ -97,7 +96,6 @@ class TestMocking {
 
         // WHEN
         val nonEntryPoint = KTP.openScope("Foo").getInstance(NonEntryPoint::class.java)
-        val num = nonEntryPoint.dependency.num()
 
         // THEN
         nonEntryPoint.shouldNotBeNull()
@@ -129,12 +127,13 @@ class TestMocking {
         }
     }
 
-    class NonEntryPoint @Inject constructor(val dependency: Dependency,
-                                            val lazyDependency: Lazy<Dependency>,
-                                            val providerDependency: Provider<Dependency>,
-                                            @Named("name") val namedDependency: Dependency,
-                                            @Named("name") val namedLazyDependency: Lazy<Dependency>,
-                                            @Named("name") val namedProviderDependency: Provider<Dependency>)
+    @InjectConstructor
+    class NonEntryPoint(val dependency: Dependency,
+                        val lazyDependency: Lazy<Dependency>,
+                        val providerDependency: Provider<Dependency>,
+                        @Named("name") val namedDependency: Dependency,
+                        @Named("name") val namedLazyDependency: Lazy<Dependency>,
+                        @Named("name") val namedProviderDependency: Provider<Dependency>)
 
     // open for mocking
     open class Dependency {

@@ -16,13 +16,6 @@
  */
 package toothpick.compiler.common;
 
-import static java.lang.String.format;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PROTECTED;
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.tools.Diagnostic.Kind.ERROR;
-import static javax.tools.Diagnostic.Kind.WARNING;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -53,6 +46,13 @@ import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
 
+import static java.lang.String.format;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PROTECTED;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.tools.Diagnostic.Kind.ERROR;
+import static javax.tools.Diagnostic.Kind.WARNING;
+
 /** Base processor class. */
 public abstract class ToothpickProcessor extends AbstractProcessor {
 
@@ -65,6 +65,8 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String SINGLETON_ANNOTATION_CLASS_NAME = "javax.inject.Singleton";
   public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME =
       "toothpick.ProvidesSingleton";
+  public static final String INJECT_CONSTRUCTOR_ANNOTATION_CLASS_NAME =
+      "toothpick.InjectConstructor";
 
   /**
    * The name of the annotation processor option to exclude classes from the creation of member

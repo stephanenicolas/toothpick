@@ -16,9 +16,6 @@
  */
 package toothpick.compiler.factory;
 
-import static java.lang.String.format;
-import static javax.lang.model.element.Modifier.PRIVATE;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,12 +37,16 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
+import toothpick.InjectConstructor;
 import toothpick.ProvidesReleasable;
 import toothpick.ProvidesSingleton;
 import toothpick.Releasable;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
+
+import static java.lang.String.format;
+import static javax.lang.model.element.Modifier.PRIVATE;
 
 /**
  * This processor's role is to create {@link Factory}. We create factories in different situations :
@@ -98,6 +99,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     supportedAnnotationTypes.add(ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME);
     supportedAnnotationTypes.add(ToothpickProcessor.SINGLETON_ANNOTATION_CLASS_NAME);
     supportedAnnotationTypes.add(ToothpickProcessor.PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME);
+    supportedAnnotationTypes.add(ToothpickProcessor.INJECT_CONSTRUCTOR_ANNOTATION_CLASS_NAME);
     readOptionAnnotationTypes();
     return supportedAnnotationTypes;
   }
@@ -138,6 +140,7 @@ public class FactoryProcessor extends ToothpickProcessor {
       RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
     createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingleton.class);
+    createFactoriesForClassesAnnotatedWith(roundEnv, InjectConstructor.class);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedMethods(roundEnv);
     createFactoriesForClassesAnnotatedWithScopeAnnotations(roundEnv, annotations);
@@ -171,21 +174,21 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void createFactoriesForClassesAnnotatedWith(
       RoundEnvironment roundEnv, Class<? extends Annotation> annotationClass) {
-    for (Element singletonAnnotatedElement :
+    for (Element annotatedElement :
         ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationClass))) {
-      TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
+      TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
       processClassContainingInjectAnnotatedMember(
-          singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+          annotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
   private void createFactoriesForClassesAnnotatedWith(
       RoundEnvironment roundEnv, TypeElement annotationType) {
-    for (Element singletonAnnotatedElement :
+    for (Element annotatedElement :
         ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationType))) {
-      TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
+      TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
       processClassContainingInjectAnnotatedMember(
-          singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+          annotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
