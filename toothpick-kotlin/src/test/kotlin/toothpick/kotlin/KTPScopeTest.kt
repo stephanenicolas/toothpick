@@ -57,6 +57,7 @@ class KTPScopeTest {
         val ktpScope = KTPScope(childScope)
 
         When calling childScope.parentScope itReturns parentScope
+        When calling parentScope.name itReturns "parent"
 
         // WHEN
         val result = ktpScope.parentScope
@@ -64,6 +65,7 @@ class KTPScopeTest {
         // THEN
         Verify on childScope that childScope.parentScope was called
         result shouldBeInstanceOf KTPScope::class
+        result.name shouldEqual "parent"
     }
 
     @Test
@@ -74,6 +76,7 @@ class KTPScopeTest {
         val ktpScope = KTPScope(childScope)
 
         When calling childScope.getParentScope(Singleton::class.java) itReturns parentScope
+        When calling parentScope.name itReturns "parent"
 
         // WHEN
         val result = ktpScope.getParentScope(Singleton::class.java)
@@ -81,6 +84,7 @@ class KTPScopeTest {
         // THEN
         Verify on childScope that childScope.getParentScope(Singleton::class.java) was called
         result shouldBeInstanceOf KTPScope::class
+        result.name shouldEqual "parent"
     }
 
     @Test
@@ -91,6 +95,7 @@ class KTPScopeTest {
         val ktpScope = KTPScope(childScope)
 
         When calling childScope.rootScope itReturns rootScope
+        When calling rootScope.name itReturns "root"
 
         // WHEN
         val result = ktpScope.rootScope
@@ -98,6 +103,7 @@ class KTPScopeTest {
         // THEN
         Verify on childScope that childScope.rootScope was called
         result shouldBeInstanceOf KTPScope::class
+        result.name shouldEqual "root"
     }
 
     @Test
