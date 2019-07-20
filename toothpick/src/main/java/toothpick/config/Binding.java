@@ -99,56 +99,13 @@ public class Binding<T> {
   // ***** DSL STATE MACHINE *
   // *************************
 
-  public class CanBeReleasable {
-    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public CanProvideSingleton releasable() {
-      Binding.this.isCreatingReleasable = true;
-      return new CanProvideSingleton();
-    }
-  }
-
-  public class CanProvideReleasable extends CanBeSingleton {
-    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public CanBeSingleton providesReleasable() {
-      Binding.this.isProvidingReleasable = true;
-      return new CanBeSingleton();
-    }
-  }
-
-  public class CanBeSingleton {
-    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
-    public CanBeReleasable singleton() {
-      Binding.this.isCreatingSingleton = true;
-      return new CanBeReleasable();
-    }
-  }
-
-  public class CanProvideSingletonOrSingleton {
-    public CanProvideReleasable providesSingleton() {
-      isProvidingSingleton = true;
-      return new CanProvideReleasable();
-    }
-
-    public CanBeReleasable singleton() {
-      Binding.this.isCreatingSingleton = true;
-      return new CanBeReleasable();
-    }
-  }
-
-  public class CanProvideSingleton {
-    public CanProvideReleasable providesSingleton() {
-      isProvidingSingleton = true;
-      return new CanProvideReleasable();
-    }
-  }
-
   public class CanBeNamed extends CanBeBound {
     public CanBeBound withName(String name) {
       Binding.this.name = name;
       return new CanBeBound();
     }
 
-    public <A extends Annotation> CanBeNamed withName(
+    public <A extends Annotation> CanBeBound withName(
         Class<A> annotationClassWithQualifierAnnotation) {
       if (!annotationClassWithQualifierAnnotation.isAnnotationPresent(Qualifier.class)) {
         throw new IllegalArgumentException(
@@ -156,8 +113,8 @@ public class Binding<T> {
                 "Only qualifier annotation annotations can be used to define a binding name. Add @Qualifier to %s",
                 annotationClassWithQualifierAnnotation));
       }
-      Binding.this.name = annotationClassWithQualifierAnnotation.getName();
-      return new CanBeNamed();
+      Binding.this.name = annotationClassWithQualifierAnnotation.getCanonicalName();
+      return new CanBeBound();
     }
   }
 
@@ -189,6 +146,54 @@ public class Binding<T> {
       Binding.this.providerInstance = providerInstance;
       mode = Mode.PROVIDER_INSTANCE;
       return new CanProvideSingleton();
+    }
+  }
+
+  public class CanBeSingleton {
+    /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
+    public CanBeReleasable singleton() {
+      Binding.this.isCreatingSingleton = true;
+      return new CanBeReleasable();
+    }
+  }
+
+  public class CanBeReleasable {
+    /** to make the singleton releasable */
+    public void releasable() {
+      Binding.this.isCreatingReleasable = true;
+    }
+  }
+
+  public class CanProvideSingleton {
+    public CanProvideReleasable providesSingleton() {
+      isProvidingSingleton = true;
+      return new CanProvideReleasable();
+    }
+  }
+
+  public class CanProvideReleasable {
+    public void providesReleasable() {
+      Binding.this.isProvidingReleasable = true;
+    }
+  }
+
+  public class CanProvideSingletonOrSingleton extends CanBeSingleton {
+    public CanProvideReleasableAndThenOnlySingleton providesSingleton() {
+      isProvidingSingleton = true;
+      return new CanProvideReleasableAndThenOnlySingleton();
+    }
+  }
+
+  public class CanProvideReleasableAndThenOnlySingleton {
+    public CanBeOnlySingleton providesReleasable() {
+      Binding.this.isProvidingReleasable = true;
+      return new CanBeOnlySingleton();
+    }
+  }
+
+  public class CanBeOnlySingleton {
+    public void singleton() {
+        Binding.this.isCreatingSingleton = true;
     }
   }
 }
