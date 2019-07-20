@@ -5,15 +5,15 @@ import javax.inject.Inject
 
 class TestRuntime {
 
-    class EntryPoint {
-        val dependency: Dependency by inject()
+//    class EntryPoint {
+//        val dependency: Dependency by inject()
+//
+//        init {
+//            KTP.openScope("Foo").inject(this)
+//        }
+//    }
 
-        init {
-            KTP.openScope("Foo").inject(this)
-        }
-    }
-
-    class NonEntryPoint @Inject constructor(val dependency: Dependency)
+    //class NonEntryPoint @Inject constructor(val dependency: Dependency)
 
     class Dependency
 }

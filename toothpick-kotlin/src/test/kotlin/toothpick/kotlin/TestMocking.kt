@@ -41,8 +41,8 @@ import javax.inject.Provider
 + Concurrency <<<
 * qualifiers only for constructor <<<
 + Tests ^
-+ fix binding dsl
 
++ fix binding dsl
 + supporting mockk
 + Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
  */

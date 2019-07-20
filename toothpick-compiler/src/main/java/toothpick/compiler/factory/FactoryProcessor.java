@@ -138,9 +138,9 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void findAndParseTargets(
       RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
+    createFactoriesForClassesAnnotatedWithInjectConstructor(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
     createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingleton.class);
-    createFactoriesForClassesAnnotatedWith(roundEnv, InjectConstructor.class);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedMethods(roundEnv);
     createFactoriesForClassesAnnotatedWithScopeAnnotations(roundEnv, annotations);
@@ -206,6 +206,20 @@ public class FactoryProcessor extends ToothpickProcessor {
 
       processInjectAnnotatedConstructor(
           constructorElement, mapTypeElementToConstructorInjectionTarget);
+    }
+  }
+
+  private void createFactoriesForClassesAnnotatedWithInjectConstructor(RoundEnvironment roundEnv) {
+    for (Element annotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(InjectConstructor.class))) {
+      TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
+      List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(annotatedTypeElement.getEnclosedElements());
+      if (constructorElements.size() != 1 || constructorElements.get(0).getAnnotation(Inject.class) != null) {
+        error(
+            constructorElements.get(0),
+            "Class %s is annotated with @InjectInjectConstructor. Therefore, It must have one unique constructor and it should not be annotated with @Inject.",
+            annotatedTypeElement.getQualifiedName());
+      }
+      processInjectAnnotatedConstructor(constructorElements.get(0), mapTypeElementToConstructorInjectionTarget);
     }
   }
 
