@@ -78,7 +78,7 @@ public class ToothPickTestModule extends Module {
       // works for both easy mock and mockito
       if (annotation.annotationType() != Inject.class
           && !annotation.annotationType().getName().contains("Mock")) {
-        return annotation.annotationType().getName();
+        return annotation.annotationType().getCanonicalName();
       }
     }
     return null;

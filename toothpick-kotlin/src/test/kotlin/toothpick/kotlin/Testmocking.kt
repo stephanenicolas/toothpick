@@ -33,6 +33,7 @@ import toothpick.kotlin.delegate.provider
 import toothpick.testing.ToothPickExtension
 import javax.inject.Named
 import javax.inject.Provider
+import javax.inject.Qualifier
 
 /*
 + Lazy <<<
@@ -46,7 +47,7 @@ import javax.inject.Provider
 + supporting mockk
 + Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
  */
-class TestMocking {
+class Testmocking {
 
     @JvmField
     @RegisterExtension
@@ -60,6 +61,9 @@ class TestMocking {
     @Mock
     @field:Named("name")
     lateinit var namedDependency: Dependency
+    @Mock
+    @field:QualifierName
+    lateinit var qualifierDependency: Dependency
 
     @Test
     fun `field injection should inject mocks when they are defined`() {
@@ -88,10 +92,11 @@ class TestMocking {
     }
 
     @Test
-    fun testInjectDependenciesByConstructorInNonEntryPoints() {
+    fun `constructor injection should inject mocks when they are defined`() {
         // GIVEN
         When calling dependency.num() itReturns 2
         When calling namedDependency.num() itReturns 3
+        When calling qualifierDependency.num() itReturns 4
 
         // WHEN
         val nonEntryPoint: NonEntryPoint = KTP.openScope("Foo").getInstance()
@@ -104,6 +109,9 @@ class TestMocking {
         nonEntryPoint.namedDependency.shouldNotBeNull()
         nonEntryPoint.namedLazyDependency.shouldNotBeNull()
         nonEntryPoint.namedProviderDependency.shouldNotBeNull()
+        nonEntryPoint.qualifierDependency.shouldNotBeNull()
+        nonEntryPoint.qualifierLazyDependency.shouldNotBeNull()
+        nonEntryPoint.qualifierProviderDependency.shouldNotBeNull()
 
         nonEntryPoint.dependency.num() shouldEqual 2
         nonEntryPoint.lazyDependency.get().num() shouldEqual 2
@@ -111,6 +119,9 @@ class TestMocking {
         nonEntryPoint.namedDependency.num() shouldEqual 3
         nonEntryPoint.namedLazyDependency.get().num() shouldEqual 3
         nonEntryPoint.namedProviderDependency.get().num() shouldEqual 3
+        nonEntryPoint.qualifierDependency.num() shouldEqual 4
+        nonEntryPoint.qualifierLazyDependency.get().num() shouldEqual 4
+        nonEntryPoint.qualifierProviderDependency.get().num() shouldEqual 4
     }
 
     class EntryPoint {
@@ -132,7 +143,10 @@ class TestMocking {
                         val providerDependency: Provider<Dependency>,
                         @Named("name") val namedDependency: Dependency,
                         @Named("name") val namedLazyDependency: Lazy<Dependency>,
-                        @Named("name") val namedProviderDependency: Provider<Dependency>)
+                        @Named("name") val namedProviderDependency: Provider<Dependency>,
+                        @QualifierName val qualifierDependency: Dependency,
+                        @QualifierName val qualifierLazyDependency: Lazy<Dependency>,
+                        @QualifierName val qualifierProviderDependency: Provider<Dependency>)
 
     // open for mocking
     open class Dependency {
@@ -140,4 +154,8 @@ class TestMocking {
             return 1
         }
     }
+
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class QualifierName
 }
