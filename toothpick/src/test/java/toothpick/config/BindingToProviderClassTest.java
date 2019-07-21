@@ -16,10 +16,10 @@
  */
 package toothpick.config;
 
-import static toothpick.config.Binding.Mode.PROVIDER_CLASS;
-
 import javax.inject.Named;
 import org.junit.Test;
+
+import static toothpick.config.Binding.Mode.PROVIDER_CLASS;
 
 public class BindingToProviderClassTest extends BaseBindingTest {
 
@@ -427,91 +427,6 @@ public class BindingToProviderClassTest extends BaseBindingTest {
   }
 
   @Test
-  public void testBindingToProviderClassAPI_asProvidesSingletonAndSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module.bind(String.class).toProvider(StringProvider.class).providesSingleton().singleton();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        null,
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        false,
-        true,
-        false);
-  }
-
-  @Test
-  public void testBindingToProviderClassAPI_withNameAsString_asProvidesSingletonAndSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .withName("foo")
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .singleton();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        "foo",
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        false,
-        true,
-        false);
-  }
-
-  @Test
-  public void testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesSingletonAndSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .withName(Named.class)
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .singleton();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        Named.class.getCanonicalName(),
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        false,
-        true,
-        false);
-  }
-
-  @Test
   public void testBindingToProviderClassAPI_asProvidesReleasableSingletonAndSingleton() {
     // GIVEN
     Module module = new Module();
@@ -543,7 +458,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
 
   @Test
   public void
-      testBindingToProviderClassAPI_withNameAsString_asProvidesReleasableSingletonAndSingleton() {
+  testBindingToProviderClassAPI_withNameAsString_asProvidesReleasableSingletonAndSingleton() {
     // GIVEN
     Module module = new Module();
 
@@ -575,7 +490,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
 
   @Test
   public void
-      testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesReleasableSingletonAndSingleton() {
+  testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesReleasableSingletonAndSingleton() {
     // GIVEN
     Module module = new Module();
 
@@ -601,198 +516,6 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         StringProvider.class,
         true,
         false,
-        true,
-        true);
-  }
-
-  // xxx
-  @Test
-  public void testBindingToProviderClassAPI_asProvidesSingletonAndReleasableSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .singleton()
-        .releasable();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        null,
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        true,
-        true,
-        false);
-  }
-
-  @Test
-  public void
-      testBindingToProviderClassAPI_withNameAsString_asProvidesSingletonAndReleasableSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .withName("foo")
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .singleton()
-        .releasable();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        "foo",
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        true,
-        true,
-        false);
-  }
-
-  @Test
-  public void
-      testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesSingletonAndReleasableSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .withName(Named.class)
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .singleton()
-        .releasable();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        Named.class.getCanonicalName(),
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        true,
-        true,
-        false);
-  }
-
-  @Test
-  public void testBindingToProviderClassAPI_asProvidesReleasableSingletonAndReleasableSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .providesReleasable()
-        .singleton()
-        .releasable();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        null,
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        true,
-        true,
-        true);
-  }
-
-  @Test
-  public void
-      testBindingToProviderClassAPI_withNameAsString_asProvidesReleasableSingletonAndReleasableSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .withName("foo")
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .providesReleasable()
-        .singleton()
-        .releasable();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        "foo",
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        true,
-        true,
-        true);
-  }
-
-  @Test
-  public void
-      testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesReleasableSingletonAndReleasableSingleton() {
-    // GIVEN
-    Module module = new Module();
-
-    // WHEN
-    module
-        .bind(String.class)
-        .withName(Named.class)
-        .toProvider(StringProvider.class)
-        .providesSingleton()
-        .providesReleasable()
-        .singleton()
-        .releasable();
-
-    // THEN
-    Binding binding = getBinding(module);
-    assertBinding(
-        binding,
-        PROVIDER_CLASS,
-        String.class,
-        Named.class.getCanonicalName(),
-        null,
-        null,
-        null,
-        StringProvider.class,
-        true,
-        true,
         true,
         true);
   }

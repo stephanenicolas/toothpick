@@ -36,7 +36,6 @@ import javax.inject.Provider
 import javax.inject.Qualifier
 
 /*
-+ fix binding dsl
 + Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
 + add javadoc to everything
  */
