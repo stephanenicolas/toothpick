@@ -136,9 +136,8 @@ public class ScopeImpl extends ScopeNode {
   }
 
   @Override
-  public Scope inject(Object obj) {
+  public void inject(Object obj) {
     Toothpick.inject(obj, this);
-    return this;
   }
 
   @Override
@@ -632,8 +631,11 @@ public class ScopeImpl extends ScopeNode {
   @Override
   public Scope openSubScope(Object subScopeName, ScopeConfig scopeConfig) {
     //we already check later that sub scope is a child of this
+    boolean wasOpen = Toothpick.isScopeOpen(subScopeName);
     Scope scope = Toothpick.openScopes(getName(), subScopeName);
-    scopeConfig.configure(scope);
+    if(!wasOpen) {
+      scopeConfig.configure(scope);
+    }
     return scope;
   }
 

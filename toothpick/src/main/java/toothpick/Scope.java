@@ -205,7 +205,7 @@ public interface Scope {
    *
    * @param obj the object to be injected.
    */
-  Scope inject(Object obj);
+  void inject(Object obj);
 
   /**
    * Release all releasable singletons. Factories and internal providers won't be released.
