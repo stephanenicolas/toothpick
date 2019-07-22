@@ -23,7 +23,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import toothpick.Scope;
-import toothpick.Toothpick;
+
+import static toothpick.Toothpick.closeScope;
 
 /**
  * Provides support for Android architecture components's view model. Closes scopes automatically
@@ -42,7 +43,7 @@ public class ViewModelUtil {
    * @param scope the scope that will be closed when the view model of a {@link FragmentActivity} is
    *     cleared.
    */
-  public static void closeOnClear(@NonNull FragmentActivity activity, @NonNull Scope scope) {
+  public static void closeOnViewModelCleared(@NonNull FragmentActivity activity, @NonNull Scope scope) {
     ViewModelProvider.Factory factory = new TPViewModelFactory(scope);
     ViewModelProviders.of(activity, factory).get(TPViewModel.class);
   }
@@ -54,7 +55,7 @@ public class ViewModelUtil {
    * @param scope the scope that will be closed when the view model of a {@link FragmentActivity} is
    *     cleared.
    */
-  public static void closeOnClear(@NonNull Fragment fragment, @NonNull Scope scope) {
+  public static void closeOnViewModelCleared(@NonNull Fragment fragment, @NonNull Scope scope) {
     ViewModelProvider.Factory factory = new TPViewModelFactory(scope);
     ViewModelProviders.of(fragment, factory).get(TPViewModel.class);
   }
@@ -73,6 +74,9 @@ public class ViewModelUtil {
     }
   }
 
+  /**
+   * Internal view model that closes a scope when {@link #onCleared()} is invoked.
+   */
   private static class TPViewModel extends ViewModel {
     private Scope scope;
 
@@ -84,7 +88,7 @@ public class ViewModelUtil {
     @Override
     protected void onCleared() {
       super.onCleared();
-      Toothpick.closeScope(scope.getName());
+      closeScope(scope.getName());
     }
   }
 }

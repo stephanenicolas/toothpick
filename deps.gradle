@@ -21,8 +21,11 @@ ext.deps = [// Common
             kotlin_runtime      : 'org.jetbrains.kotlin:kotlin-stdlib:1.3.40',
 
             // TP artifacts for composite builds
-            tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:2.0.0',
-            tp_smoothie_androidx: 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.0.0',
+            tp_version          : '2.0.0',
+            tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:$tp_version',
+            tp_androidx         : 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.0.0',
+            tp_lifecycle        : 'com.github.stephanenicolas.toothpick:smoothie-lifecycle:2.0.0',
+            tp_viewmodel        : 'com.github.stephanenicolas.toothpick:smoothie-lifecycle-viewmodel:2.0.0',
             tp_smoothie_support : 'com.github.stephanenicolas.toothpick:smoothie-support:2.0.0',
             tp                  : 'com.github.stephanenicolas.toothpick:toothpick:2.0.0',
             tp_runtime          : 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.0.0',

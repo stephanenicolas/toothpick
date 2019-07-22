@@ -205,11 +205,35 @@ public interface Scope {
    *
    * @param obj the object to be injected.
    */
-  void inject(Object obj);
+  Scope inject(Object obj);
 
   /**
    * Release all releasable singletons. Factories and internal providers won't be released.
    * Typically, on Android, this method is called when the app is under memory pressure.
    */
   void release();
+
+  /**
+   * Opens a sub scope of this scope. If a child scope by this {@code name} already exists, it is
+   * returned. Otherwise a new scope is created.
+   * @param subScopeName the <em>name of the scope</em>.
+   * @see #openSubScope(Object)
+   */
+  Scope openSubScope(Object subScopeName);
+
+  /**
+   * Opens a sub scope of this scope. If a child scope by this {@code name} already exists, it is
+   * returned. Otherwise a new scope is created. If a new scope is created, then {@code scopeConfig}
+   * is applied to the new scope.
+   * @param subScopeName the <em>name of the scope</em>.
+   * @param scopeConfig a lambda to configure the scope if it is created. The lambda is not applied if
+   * the scope existed already.
+   * @see #openSubScope(Object)
+   */
+  Scope openSubScope(Object subScopeName, ScopeConfig scopeConfig);
+
+  @FunctionalInterface
+  interface ScopeConfig {
+    void configure(Scope scope);
+  }
 }

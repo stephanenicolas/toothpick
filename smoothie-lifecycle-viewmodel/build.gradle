@@ -5,11 +5,13 @@ buildscript {
   }
   dependencies {
     classpath deps.androidPlugin
+    classpath deps.kotlinPlugin
   }
 
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
   google()
@@ -28,6 +30,11 @@ android {
     minSdkVersion 15
   }
 
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+  }
+
   lintOptions {
     textReport true
     textOutput 'stdout'
@@ -43,10 +50,12 @@ dependencies {
   compileOnly deps.lifecycle_viewmodel
   compileOnly deps.lifecycle_extensions
   compileOnly deps.androidxv4
+  compileOnly deps.kotlin
 
   testImplementation deps.androidxv4
   testImplementation deps.lifecycle_viewmodel
   testImplementation deps.lifecycle_extensions
+  testImplementation deps.kotlin
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
   testImplementation deps.mockito

@@ -5,11 +5,12 @@ buildscript {
   }
   dependencies {
     classpath deps.androidPlugin
+    classpath deps.kotlinPlugin
   }
-
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
   google()
@@ -34,6 +35,12 @@ android {
     // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
     checkReleaseBuilds false
   }
+
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+  }
+
 }
 
 dependencies {
@@ -41,9 +48,12 @@ dependencies {
   api project(':smoothie')
   compileOnly deps.inject
   compileOnly deps.lifecycle
+  compileOnly deps.androidxv4
+  compileOnly deps.kotlin
 
   testImplementation deps.androidxv4
   testImplementation deps.lifecycle
+  testImplementation deps.kotlin
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
   testImplementation deps.mockito

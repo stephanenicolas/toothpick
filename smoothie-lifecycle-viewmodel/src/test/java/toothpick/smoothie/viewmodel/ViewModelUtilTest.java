@@ -43,7 +43,7 @@ public class ViewModelUtilTest {
     Scope activityScope = Toothpick.openScopes(application, activity);
 
     // WHEN
-    ViewModelUtil.closeOnClear(activity, activityScope);
+    ViewModelUtil.closeOnViewModelCleared(activity, activityScope);
     activityController.destroy();
 
     // THEN
@@ -60,7 +60,7 @@ public class ViewModelUtilTest {
     Scope activityScope = Toothpick.openScopes(application, activity);
 
     // WHEN
-    ViewModelUtil.closeOnClear(activity, activityScope);
+    ViewModelUtil.closeOnViewModelCleared(activity, activityScope);
     activityController.configurationChange(new Configuration());
 
     // THEN
