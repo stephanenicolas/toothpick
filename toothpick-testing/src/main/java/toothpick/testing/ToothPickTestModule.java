@@ -61,8 +61,9 @@ public class ToothPickTestModule extends Module {
 
   private Annotation findMockAnnotation(Field field) {
     for (Annotation annotation : field.getAnnotations()) {
-      // works for both easy mock and mockito
-      if (annotation.annotationType().getName().contains("Mock")) {
+      // works for Easymock, Mockito and MockK
+      String annotationName = annotation.annotationType().getName();
+      if (annotationName.contains("Mock") || annotationName.contains("Spy")) {
         return annotation;
       }
     }
@@ -71,14 +72,16 @@ public class ToothPickTestModule extends Module {
 
   private String findInjectionName(Field field) {
     for (Annotation annotation : field.getAnnotations()) {
-      // works for both easy mock and mockito
+      // works for Easymock, Mockito and MockK
       if (annotation.annotationType() == Named.class) {
         return ((Named) annotation).value();
       }
-      // works for both easy mock and mockito
-      if (annotation.annotationType() != Inject.class
-          && !annotation.annotationType().getName().contains("Mock")) {
-        return annotation.annotationType().getCanonicalName();
+      // works for Easymock, Mockito and MockK
+      if (annotation.annotationType() != Inject.class) {
+        String annotationName = annotation.annotationType().getName();
+        if (!annotationName.contains("Mock") && !annotationName.contains("Spy")) {
+          return annotation.annotationType().getCanonicalName();
+        }
       }
     }
     return null;
