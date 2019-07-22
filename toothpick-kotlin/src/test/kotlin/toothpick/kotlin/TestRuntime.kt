@@ -36,7 +36,8 @@ import javax.inject.Provider
 import javax.inject.Qualifier
 
 /*
-+ Module and bindings (Danny Preussler or Cody) https://github.com/sporttotal-tv/toothpick-kotlin-extensions   &    https://github.com/stephanenicolas/toothpick/issues/305
++ test cases for binding
++ extend new methods for scope (lifecycle, and new methods)
 + add javadoc to everything
  */
 class TestRuntime {
