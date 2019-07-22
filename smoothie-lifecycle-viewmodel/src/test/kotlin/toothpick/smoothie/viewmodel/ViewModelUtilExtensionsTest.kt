@@ -71,9 +71,11 @@ class ViewModelUtilExtensionsTest {
         val activity = activityController.get()
         val application = RuntimeEnvironment.application
         // WHEN
-        val scope = openScopes(application, ViewModelScope::class.java, activity)
+        val scope = openScopes(application, ViewModelScope::class.java)
                 .installViewModelBinding(activity, viewModelClass = TestViewModel::class.java)
                 .closeOnViewModelCleared(activity)
+                .openSubScope(activity)
+
         val viewModelBeforeRotation = scope.getInstance(TestViewModel::class.java)
         activityController.configurationChange(Configuration())
         val viewModelAfterRotation = scope.getInstance(TestViewModel::class.java)

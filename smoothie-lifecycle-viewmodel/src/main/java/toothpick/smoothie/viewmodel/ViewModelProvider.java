@@ -16,6 +16,8 @@ import javax.inject.Provider;
  * If one wants to rewrite this class, make sure that the provider
  * doesn't leak the activity.
  * @param <T> a view model class.
+ * Warning this provider is not scoped. Ideally, it should be a singleton
+ * of a view model scope.
  */
 public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
     private final T viewModel;

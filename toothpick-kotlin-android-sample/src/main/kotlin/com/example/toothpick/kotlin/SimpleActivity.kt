@@ -22,6 +22,9 @@ class SimpleActivity : FragmentActivity() {
     @Inject
     lateinit var backpack: Backpack
     @Inject
+    lateinit var viewModel: SimpleActivityViewModel
+
+    @Inject
     lateinit var contextNamer: ContextNamer
     @BindView(R.id.title)
     lateinit var title: TextView
