@@ -16,6 +16,9 @@
  */
 package toothpick.compiler.factory;
 
+import static java.lang.String.format;
+import static javax.lang.model.element.Modifier.PRIVATE;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,9 +47,6 @@ import toothpick.Releasable;
 import toothpick.compiler.common.ToothpickProcessor;
 import toothpick.compiler.factory.generators.FactoryGenerator;
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget;
-
-import static java.lang.String.format;
-import static javax.lang.model.element.Modifier.PRIVATE;
 
 /**
  * This processor's role is to create {@link Factory}. We create factories in different situations :
@@ -210,16 +210,20 @@ public class FactoryProcessor extends ToothpickProcessor {
   }
 
   private void createFactoriesForClassesAnnotatedWithInjectConstructor(RoundEnvironment roundEnv) {
-    for (Element annotatedElement : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(InjectConstructor.class))) {
+    for (Element annotatedElement :
+        ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(InjectConstructor.class))) {
       TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
-      List<ExecutableElement> constructorElements = ElementFilter.constructorsIn(annotatedTypeElement.getEnclosedElements());
-      if (constructorElements.size() != 1 || constructorElements.get(0).getAnnotation(Inject.class) != null) {
+      List<ExecutableElement> constructorElements =
+          ElementFilter.constructorsIn(annotatedTypeElement.getEnclosedElements());
+      if (constructorElements.size() != 1
+          || constructorElements.get(0).getAnnotation(Inject.class) != null) {
         error(
             constructorElements.get(0),
             "Class %s is annotated with @InjectInjectConstructor. Therefore, It must have one unique constructor and it should not be annotated with @Inject.",
             annotatedTypeElement.getQualifiedName());
       }
-      processInjectAnnotatedConstructor(constructorElements.get(0), mapTypeElementToConstructorInjectionTarget);
+      processInjectAnnotatedConstructor(
+          constructorElements.get(0), mapTypeElementToConstructorInjectionTarget);
     }
   }
 

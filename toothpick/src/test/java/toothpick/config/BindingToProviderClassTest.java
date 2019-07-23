@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
  */
 package toothpick.config;
 
+import static toothpick.config.Binding.Mode.PROVIDER_CLASS;
+
 import javax.inject.Named;
 import org.junit.Test;
-
-import static toothpick.config.Binding.Mode.PROVIDER_CLASS;
 
 public class BindingToProviderClassTest extends BaseBindingTest {
 
@@ -458,7 +458,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
 
   @Test
   public void
-  testBindingToProviderClassAPI_withNameAsString_asProvidesReleasableSingletonAndSingleton() {
+      testBindingToProviderClassAPI_withNameAsString_asProvidesReleasableSingletonAndSingleton() {
     // GIVEN
     Module module = new Module();
 
@@ -490,7 +490,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
 
   @Test
   public void
-  testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesReleasableSingletonAndSingleton() {
+      testBindingToProviderClassAPI_withNameAsAnnotation_asProvidesReleasableSingletonAndSingleton() {
     // GIVEN
     Module module = new Module();
 

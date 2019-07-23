@@ -16,14 +16,14 @@
  */
 package toothpick.compiler.factory;
 
+import static com.google.common.truth.Truth.assert_;
+import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
+
 import com.google.common.base.Joiner;
 import com.google.testing.compile.JavaFileObjects;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import org.junit.Test;
-
-import static com.google.common.truth.Truth.assert_;
-import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
 public class RelaxedFactoryForInjectConstructorTest extends BaseFactoryTest {
 
@@ -55,69 +55,69 @@ public class RelaxedFactoryForInjectConstructorTest extends BaseFactoryTest {
 
   @Test
   public void
-  testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated() {
+      testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated() {
     JavaFileObject source =
         JavaFileObjects.forSourceString(
             "test.TestNonEmptyConstructor",
             Joiner.on('\n')
                 .join( //
-                       "package test;", //
-                       "import toothpick.InjectConstructor;", //
-                       "import toothpick.Lazy;", //
-                       "@InjectConstructor", //
-                       "public class TestNonEmptyConstructor {", //
-                       "  public TestNonEmptyConstructor(Lazy<String> str, Integer n) {}", //
-                       "}" //
-                ));
+                    "package test;", //
+                    "import toothpick.InjectConstructor;", //
+                    "import toothpick.Lazy;", //
+                    "@InjectConstructor", //
+                    "public class TestNonEmptyConstructor {", //
+                    "  public TestNonEmptyConstructor(Lazy<String> str, Integer n) {}", //
+                    "}" //
+                    ));
 
     JavaFileObject expectedSource =
         JavaFileObjects.forSourceString(
             "test/TestNonEmptyConstructor__Factory",
             Joiner.on('\n')
                 .join( //
-                       "package test;", //
-                       "import java.lang.Integer;", //
-                       "import java.lang.Override;", //
-                       "import java.lang.String;", //
-                       "import toothpick.Factory;", //
-                       "import toothpick.Lazy;", //
-                       "import toothpick.Scope;", //
-                       "", //
-                       "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
-                       "  @Override", //
-                       "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
-                       "    scope = getTargetScope(scope);", //
-                       "    Lazy<String> param1 = scope.getLazy(String.class);", //
-                       "    Integer param2 = scope.getInstance(Integer.class);", //
-                       "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
-                       "    return testNonEmptyConstructor;", //
-                       "  }", //
-                       "  @Override", //
-                       "  public Scope getTargetScope(Scope scope) {", //
-                       "    return scope;", //
-                       "  }", //
-                       "  @Override", //
-                       "  public boolean hasScopeAnnotation() {", //
-                       "    return false;", //
-                       "  }", //
-                       "  @Override", //
-                       "  public boolean hasSingletonAnnotation() {", //
-                       "    return false;", //
-                       "  }", //
-                       "  @Override", //
-                       "  public boolean hasReleasableAnnotation() {", //
-                       "    return false;", //
-                       "  }", //
-                       "  @Override", //
-                       "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
-                       "    return false;", //
-                       "  }", //
-                       "  @Override", //
-                       "  public boolean hasProvidesReleasableAnnotation() {", //
-                       "    return false;", //
-                       "  }", //
-                       "}" //
-                ));
+                    "package test;", //
+                    "import java.lang.Integer;", //
+                    "import java.lang.Override;", //
+                    "import java.lang.String;", //
+                    "import toothpick.Factory;", //
+                    "import toothpick.Lazy;", //
+                    "import toothpick.Scope;", //
+                    "", //
+                    "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
+                    "  @Override", //
+                    "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+                    "    scope = getTargetScope(scope);", //
+                    "    Lazy<String> param1 = scope.getLazy(String.class);", //
+                    "    Integer param2 = scope.getInstance(Integer.class);", //
+                    "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+                    "    return testNonEmptyConstructor;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public Scope getTargetScope(Scope scope) {", //
+                    "    return scope;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasScopeAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasSingletonAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasReleasableAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasProvidesReleasableAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "}" //
+                    ));
 
     assert_()
         .about(javaSource())
@@ -128,141 +128,140 @@ public class RelaxedFactoryForInjectConstructorTest extends BaseFactoryTest {
         .generatesSources(expectedSource);
   }
 
-    @Test
-    public void
-    testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector() {
-        JavaFileObject source =
-            JavaFileObjects.forSourceString(
-                "test.TestNonEmptyConstructor",
-                Joiner.on('\n')
-                    .join( //
-                           "package test;", //
-                           "import toothpick.InjectConstructor;", //
-                           "import javax.inject.Inject;", //
-                           "import toothpick.Lazy;", //
-                           "@InjectConstructor", //
-                           "public class TestNonEmptyConstructor {", //
-                           "  @Inject String string;", //
-                           "  public TestNonEmptyConstructor(Lazy<String> str, Integer n) {}", //
-                           "}" //
+  @Test
+  public void
+      testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector() {
+    JavaFileObject source =
+        JavaFileObjects.forSourceString(
+            "test.TestNonEmptyConstructor",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import toothpick.InjectConstructor;", //
+                    "import javax.inject.Inject;", //
+                    "import toothpick.Lazy;", //
+                    "@InjectConstructor", //
+                    "public class TestNonEmptyConstructor {", //
+                    "  @Inject String string;", //
+                    "  public TestNonEmptyConstructor(Lazy<String> str, Integer n) {}", //
+                    "}" //
                     ));
 
-        JavaFileObject expectedSource =
-            JavaFileObjects.forSourceString(
-                "test/TestNonEmptyConstructor__Factory",
-                Joiner.on('\n')
-                    .join( //
-                           "package test;", //
-                           "import java.lang.Integer;", //
-                           "import java.lang.Override;", //
-                           "import java.lang.String;", //
-                           "import toothpick.Factory;", //
-                           "import toothpick.Lazy;", //
-                           "import toothpick.MemberInjector;", //
-                           "import toothpick.Scope;", //
-                           "", //
-                           "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
-                           "  private MemberInjector<TestNonEmptyConstructor> memberInjector = new test.TestNonEmptyConstructor__MemberInjector();", //
-                           "", //
-                           "  @Override", //
-                           "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
-                           "    scope = getTargetScope(scope);", //
-                           "    Lazy<String> param1 = scope.getLazy(String.class);", //
-                           "    Integer param2 = scope.getInstance(Integer.class);", //
-                           "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
-                           "    memberInjector.inject(testNonEmptyConstructor, scope);", //
-                           "    return testNonEmptyConstructor;", //
-                           "  }", //
-                           "  @Override", //
-                           "  public Scope getTargetScope(Scope scope) {", //
-                           "    return scope;", //
-                           "  }", //
-                           "  @Override", //
-                           "  public boolean hasScopeAnnotation() {", //
-                           "    return false;", //
-                           "  }", //
-                           "  @Override", //
-                           "  public boolean hasSingletonAnnotation() {", //
-                           "    return false;", //
-                           "  }", //
-                           "  @Override", //
-                           "  public boolean hasReleasableAnnotation() {", //
-                           "    return false;", //
-                           "  }", //
-                           "  @Override", //
-                           "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
-                           "    return false;", //
-                           "  }", //
-                           "  @Override", //
-                           "  public boolean hasProvidesReleasableAnnotation() {", //
-                           "    return false;", //
-                           "  }", //
-                           "}" //
+    JavaFileObject expectedSource =
+        JavaFileObjects.forSourceString(
+            "test/TestNonEmptyConstructor__Factory",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import java.lang.Integer;", //
+                    "import java.lang.Override;", //
+                    "import java.lang.String;", //
+                    "import toothpick.Factory;", //
+                    "import toothpick.Lazy;", //
+                    "import toothpick.MemberInjector;", //
+                    "import toothpick.Scope;", //
+                    "", //
+                    "public final class TestNonEmptyConstructor__Factory implements Factory<TestNonEmptyConstructor> {", //
+                    "  private MemberInjector<TestNonEmptyConstructor> memberInjector = new test.TestNonEmptyConstructor__MemberInjector();", //
+                    "", //
+                    "  @Override", //
+                    "  public TestNonEmptyConstructor createInstance(Scope scope) {", //
+                    "    scope = getTargetScope(scope);", //
+                    "    Lazy<String> param1 = scope.getLazy(String.class);", //
+                    "    Integer param2 = scope.getInstance(Integer.class);", //
+                    "    TestNonEmptyConstructor testNonEmptyConstructor = new TestNonEmptyConstructor(param1, param2);", //
+                    "    memberInjector.inject(testNonEmptyConstructor, scope);", //
+                    "    return testNonEmptyConstructor;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public Scope getTargetScope(Scope scope) {", //
+                    "    return scope;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasScopeAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasSingletonAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasReleasableAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasProvidesSingletonInScopeAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "  @Override", //
+                    "  public boolean hasProvidesReleasableAnnotation() {", //
+                    "    return false;", //
+                    "  }", //
+                    "}" //
                     ));
 
-        assert_()
-            .about(javaSource())
-            .that(source)
-            .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-            .compilesWithoutError()
-            .and()
-            .generatesSources(expectedSource);
-    }
+    assert_()
+        .about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
 
-    @Test
-    public void
-    testOptimisticFactoryCreationForInjectConstructor_shouldFail_uniqueConstructorIsAnnotated() {
-        JavaFileObject source =
-            JavaFileObjects.forSourceString(
-                "test.TestNonEmptyConstructorInjected",
-                Joiner.on('\n')
-                    .join( //
-                           "package test;", //
-                           "import javax.inject.Inject;", //
-                           "import toothpick.InjectConstructor;", //
-                           "import toothpick.Lazy;", //
-                           "@InjectConstructor", //
-                           "public class TestNonEmptyConstructorInjected {", //
-                           "  @Inject public TestNonEmptyConstructorInjected(Lazy<String> str, Integer n) {}", //
-                           "}" //
+  @Test
+  public void
+      testOptimisticFactoryCreationForInjectConstructor_shouldFail_uniqueConstructorIsAnnotated() {
+    JavaFileObject source =
+        JavaFileObjects.forSourceString(
+            "test.TestNonEmptyConstructorInjected",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import javax.inject.Inject;", //
+                    "import toothpick.InjectConstructor;", //
+                    "import toothpick.Lazy;", //
+                    "@InjectConstructor", //
+                    "public class TestNonEmptyConstructorInjected {", //
+                    "  @Inject public TestNonEmptyConstructorInjected(Lazy<String> str, Integer n) {}", //
+                    "}" //
                     ));
 
-        assert_()
-            .about(javaSource())
-            .that(source)
-            .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-            .failsToCompile()
-            .withErrorContaining(
-                "Class test.TestNonEmptyConstructorInjected is annotated with @InjectInjectConstructor. "
-                    + "Therefore, It must have one unique constructor and it should not be annotated with @Inject.");
-    }
+    assert_()
+        .about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining(
+            "Class test.TestNonEmptyConstructorInjected is annotated with @InjectInjectConstructor. "
+                + "Therefore, It must have one unique constructor and it should not be annotated with @Inject.");
+  }
 
-    @Test
-    public void
-    testOptimisticFactoryCreationForInjectConstructor_shouldFail_multipleConstructors() {
-        JavaFileObject source =
-            JavaFileObjects.forSourceString(
-                "test.TestMultipleConstructors",
-                Joiner.on('\n')
-                    .join( //
-                           "package test;", //
-                           "import javax.inject.Inject;", //
-                           "import toothpick.InjectConstructor;", //
-                           "import toothpick.Lazy;", //
-                           "@InjectConstructor", //
-                           "public class TestMultipleConstructors {", //
-                           "  public TestMultipleConstructors(Lazy<String> str, Integer n) {}", //
-                           "  public TestMultipleConstructors() {}", //
-                           "}" //
+  @Test
+  public void testOptimisticFactoryCreationForInjectConstructor_shouldFail_multipleConstructors() {
+    JavaFileObject source =
+        JavaFileObjects.forSourceString(
+            "test.TestMultipleConstructors",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import javax.inject.Inject;", //
+                    "import toothpick.InjectConstructor;", //
+                    "import toothpick.Lazy;", //
+                    "@InjectConstructor", //
+                    "public class TestMultipleConstructors {", //
+                    "  public TestMultipleConstructors(Lazy<String> str, Integer n) {}", //
+                    "  public TestMultipleConstructors() {}", //
+                    "}" //
                     ));
 
-        assert_()
-            .about(javaSource())
-            .that(source)
-            .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
-            .failsToCompile()
-            .withErrorContaining(
-                "Class test.TestMultipleConstructors is annotated with @InjectInjectConstructor. "
-                    + "Therefore, It must have one unique constructor and it should not be annotated with @Inject.");
-    }
+    assert_()
+        .about(javaSource())
+        .that(source)
+        .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+        .failsToCompile()
+        .withErrorContaining(
+            "Class test.TestMultipleConstructors is annotated with @InjectInjectConstructor. "
+                + "Therefore, It must have one unique constructor and it should not be annotated with @Inject.");
+  }
 }

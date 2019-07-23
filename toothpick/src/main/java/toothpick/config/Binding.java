@@ -193,7 +193,7 @@ public class Binding<T> {
 
   public class CanBeOnlySingleton {
     public void singleton() {
-        Binding.this.isCreatingSingleton = true;
+      Binding.this.isCreatingSingleton = true;
     }
   }
 }

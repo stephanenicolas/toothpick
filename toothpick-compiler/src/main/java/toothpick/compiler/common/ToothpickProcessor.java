@@ -16,6 +16,13 @@
  */
 package toothpick.compiler.common;
 
+import static java.lang.String.format;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PROTECTED;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.tools.Diagnostic.Kind.ERROR;
+import static javax.tools.Diagnostic.Kind.WARNING;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -45,13 +52,6 @@ import javax.tools.JavaFileObject;
 import toothpick.compiler.common.generators.CodeGenerator;
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget;
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget;
-
-import static java.lang.String.format;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.lang.model.element.Modifier.PROTECTED;
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.tools.Diagnostic.Kind.ERROR;
-import static javax.tools.Diagnostic.Kind.WARNING;
 
 /** Base processor class. */
 public abstract class ToothpickProcessor extends AbstractProcessor {
