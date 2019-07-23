@@ -14,21 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.smoothie.provider;
+package toothpick.data;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
+import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
-public class AndroidXLoaderManagerProvider implements Provider<LoaderManager> {
-  FragmentActivity activity;
+@Singleton
+public class FooProviderAnnotatedSingletonImpl implements Provider<IFoo> {
+  public @Inject Bar bar;
 
-  public AndroidXLoaderManagerProvider(FragmentActivity activity) {
-    this.activity = activity;
-  }
+  @Inject
+  public FooProviderAnnotatedSingletonImpl() {}
 
   @Override
-  public LoaderManager get() {
-    return LoaderManager.getInstance(activity);
+  public IFoo get() {
+    Foo foo = new Foo();
+    foo.bar = bar;
+    return foo;
   }
 }

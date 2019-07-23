@@ -16,6 +16,7 @@
  */
 package toothpick.config;
 
+import javax.inject.Named;
 import javax.inject.Provider;
 import org.junit.Test;
 
@@ -33,6 +34,7 @@ public class BindingTest {
 
     // bind to instance with name
     new Module().bind(String.class).withName("").toInstance("");
+    new Module().bind(String.class).withName(Named.class).toInstance("");
 
     /*
       BIND TO
@@ -43,6 +45,7 @@ public class BindingTest {
 
     // bind to class with name
     new Module().bind(String.class).withName("").to(String.class);
+    new Module().bind(String.class).withName(Named.class).to(String.class);
 
     // bind to class and singleton
     new Module().bind(String.class).to(String.class).singleton();
@@ -59,6 +62,7 @@ public class BindingTest {
 
     // bind to provider instance with name
     new Module().bind(String.class).withName("").toProviderInstance(new StringProvider());
+    new Module().bind(String.class).withName(Named.class).toProviderInstance(new StringProvider());
 
     // bind to provider instance and provides singleton
     new Module().bind(String.class).toProviderInstance(new StringProvider()).providesSingleton();
@@ -79,6 +83,7 @@ public class BindingTest {
 
     // bind to provider with name
     new Module().bind(String.class).withName("").toProvider(StringProvider.class);
+    new Module().bind(String.class).withName(Named.class).toProvider(StringProvider.class);
 
     // bind to provider and provider singleton
     new Module().bind(String.class).toProvider(StringProvider.class).singleton();

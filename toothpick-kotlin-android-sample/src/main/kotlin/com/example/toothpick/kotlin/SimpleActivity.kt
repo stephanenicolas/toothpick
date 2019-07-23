@@ -9,17 +9,20 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.example.toothpick.kotlin.deps.ContextNamer
-import toothpick.kotlin.KTP
-import toothpick.Scope
-import toothpick.kotlin.delegate.inject
+import javax.inject.Inject
+import toothpick.Toothpick.openScope
+import toothpick.smoothie.lifecycle.closeOnDestroy
 import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
 class SimpleActivity : FragmentActivity() {
 
-    private lateinit var scope: Scope
+    @Inject
+    lateinit var backpack: Backpack
+    @Inject
+    lateinit var viewModel: SimpleActivityViewModel
 
-    val contextNamer: ContextNamer by inject()
-
+    @Inject
+    lateinit var contextNamer: ContextNamer
     @BindView(R.id.title)
     lateinit var title: TextView
     @BindView(R.id.subtitle)
@@ -28,8 +31,14 @@ class SimpleActivity : FragmentActivity() {
     lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        KTP.openScopes(application, this)
-                .installModules(SmoothieAndroidXActivityModule(this))
+        openScope(application)
+                .openBackpackFlowSubScope()
+                .openSimpleActivityViewModelSubScope(this)
+                .openSubScope(this) { ifScopeCreated ->
+                    ifScopeCreated
+                            .installModules(SmoothieAndroidXActivityModule(this))
+                            .closeOnDestroy(this)
+                }
                 .inject(this)
 
         super.onCreate(savedInstanceState)
@@ -45,10 +54,5 @@ class SimpleActivity : FragmentActivity() {
     @SuppressWarnings("unused")
     internal fun startNewActivity() {
         startActivity(Intent(this, RxMVPActivity::class.java))
-    }
-
-    override fun onDestroy() {
-        KTP.closeScope(this)
-        super.onDestroy()
     }
 }

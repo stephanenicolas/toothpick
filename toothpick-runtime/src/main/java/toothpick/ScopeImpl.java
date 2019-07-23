@@ -623,6 +623,23 @@ public class ScopeImpl extends ScopeNode {
   }
 
   @Override
+  public Scope openSubScope(Object subScopeName) {
+    // we already check later that sub scope is a child of this
+    return Toothpick.openScopes(getName(), subScopeName);
+  }
+
+  @Override
+  public Scope openSubScope(Object subScopeName, ScopeConfig scopeConfig) {
+    // we already check later that sub scope is a child of this
+    boolean wasOpen = Toothpick.isScopeOpen(subScopeName);
+    Scope scope = Toothpick.openScopes(getName(), subScopeName);
+    if (!wasOpen) {
+      scopeConfig.configure(scope);
+    }
+    return scope;
+  }
+
+  @Override
   public void release() {
     for (ScopeNode childScope : childrenScopes.values()) {
       childScope.release();

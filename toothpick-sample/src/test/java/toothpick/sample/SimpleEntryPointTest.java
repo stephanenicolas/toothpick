@@ -1,21 +1,21 @@
 package toothpick.sample;
 
 import javax.inject.Inject;
-import org.easymock.Mock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import toothpick.testing.ToothPickExtension;
+import org.mockito.Mock;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import toothpick.testing.ToothPickExtension;
 
 class SimpleEntryPointTest {
 
   @RegisterExtension ToothPickExtension toothPickExtension = new ToothPickExtension(this, "MyScope");
-  @RegisterExtension EasyMockExtension easyMockExtension = new EasyMockExtension(this);
+  @RegisterExtension MockitoExtension mockitoExtension = new MockitoExtension(this);
 
   @Mock private Computer mockComputer;
   @Mock private Computer2 mockComputer2;
@@ -25,10 +25,8 @@ class SimpleEntryPointTest {
   @Test
   public void testMultiply() throws Exception {
     //GIVEN
-    expect(mockComputer.compute()).andReturn(4);
-    expect(mockComputer2.compute()).andReturn(4);
-
-    replay(mockComputer, mockComputer2);
+    when(mockComputer.compute()).thenReturn(4);
+    when(mockComputer2.compute()).thenReturn(4);
 
     toothPickExtension.inject(this);
 

@@ -1,23 +1,13 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-  dependencies {
-    classpath deps.androidPlugin
-  }
-
-}
-
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
   google()
+  jcenter()
 }
 
 android {
   compileSdkVersion 28
-  buildToolsVersion '28.0.3'
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -33,17 +23,22 @@ android {
     textOutput 'stdout'
     // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
     checkReleaseBuilds false
+    abortOnError false
   }
+
 }
 
 dependencies {
-  compileOnly project(':toothpick-runtime')
+  implementation project(':toothpick-runtime')
   api project(':smoothie')
-  compileOnly deps.inject
-  compileOnly deps.lifecycle
+  implementation deps.inject
+  implementation deps.lifecycle
+  implementation deps.androidxv4
+  implementation deps.kotlin_runtime
 
   testImplementation deps.androidxv4
   testImplementation deps.lifecycle
+  testImplementation deps.kotlin_runtime
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
   testImplementation deps.mockito

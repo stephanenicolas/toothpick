@@ -14,21 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.smoothie.provider;
+package toothpick.smoothie.viewmodel
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import javax.inject.Provider;
+import androidx.lifecycle.ViewModel
 
-public class AndroidXLoaderManagerProvider implements Provider<LoaderManager> {
-  FragmentActivity activity;
+class TestViewModel : ViewModel()
 
-  public AndroidXLoaderManagerProvider(FragmentActivity activity) {
-    this.activity = activity;
-  }
-
-  @Override
-  public LoaderManager get() {
-    return LoaderManager.getInstance(activity);
-  }
-}
+@javax.inject.Scope
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class ViewModelScope

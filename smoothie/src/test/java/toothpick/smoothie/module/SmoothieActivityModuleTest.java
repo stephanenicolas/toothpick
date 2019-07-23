@@ -37,7 +37,7 @@ import toothpick.Toothpick;
 public class SmoothieActivityModuleTest {
 
   @Test
-  public void testGet() throws Exception {
+  public void testGet() {
     // GIVEN
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
     Application application = RuntimeEnvironment.application;

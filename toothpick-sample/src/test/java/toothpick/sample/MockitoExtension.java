@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.smoothie.provider;
+package toothpick.sample;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import javax.inject.Provider;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockito.MockitoAnnotations;
 
-public class AndroidXLoaderManagerProvider implements Provider<LoaderManager> {
-  FragmentActivity activity;
+public class MockitoExtension implements BeforeEachCallback {
 
-  public AndroidXLoaderManagerProvider(FragmentActivity activity) {
-    this.activity = activity;
+  private final Object test;
+
+  public MockitoExtension(Object test) {
+    this.test = test;
   }
 
   @Override
-  public LoaderManager get() {
-    return LoaderManager.getInstance(activity);
+  public void beforeEach(ExtensionContext context) throws Exception {
+    MockitoAnnotations.initMocks(test);
   }
 }

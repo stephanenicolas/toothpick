@@ -1,6 +1,3 @@
-apply plugin: 'jacoco'
-apply plugin: 'com.github.kt3k.coveralls'
-
 buildscript {
   apply from: 'deps.gradle'
   repositories {
@@ -8,10 +5,15 @@ buildscript {
     jcenter()
   }
   dependencies {
+    classpath deps.android_plugin
+    classpath deps.kotlin_plugin
     classpath deps.coverallPlugin
     classpath deps.spotlessPlugin
   }
 }
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 repositories {
   jcenter()
@@ -83,6 +85,7 @@ subprojects { project ->
   apply plugin: 'jacoco'
   apply plugin: 'maven'
   apply plugin: 'com.diffplug.gradle.spotless'
+
 
   spotless {
     java {

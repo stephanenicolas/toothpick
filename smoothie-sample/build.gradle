@@ -5,7 +5,8 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath deps.androidPlugin
+    classpath deps.android_plugin
+    classpath deps.kotlin_plugin
   }
 }
 
@@ -13,7 +14,6 @@ apply plugin: 'com.android.application'
 
 android {
   compileSdkVersion 28
-  buildToolsVersion '28.0.3'
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-  implementation deps.tp_smoothie_androidx
+  implementation deps.tp_androidx
   implementation deps.tp_runtime
   implementation deps.butterknife
   implementation deps.rxandroid

@@ -14,21 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.smoothie.provider;
+package toothpick.smoothie.lifecycle
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import javax.inject.Provider;
+import androidx.fragment.app.FragmentActivity
+import toothpick.Scope
 
-public class AndroidXLoaderManagerProvider implements Provider<LoaderManager> {
-  FragmentActivity activity;
-
-  public AndroidXLoaderManagerProvider(FragmentActivity activity) {
-    this.activity = activity;
-  }
-
-  @Override
-  public LoaderManager get() {
-    return LoaderManager.getInstance(activity);
-  }
+/**
+ * The scope will be closed automatically during {@code owner}'s onDestroy event.
+ *
+ * @param owner the lifecycle owner to observe.
+ */
+fun Scope.closeOnDestroy(owner: FragmentActivity): Scope {
+    LifecycleUtil.closeOnDestroy(owner, this)
+    return this
 }

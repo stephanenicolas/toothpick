@@ -5,7 +5,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath deps.androidPlugin
+    classpath deps.android_plugin
     classpath deps.kotlin_plugin
   }
 }
@@ -17,7 +17,6 @@ apply plugin: 'kotlin-kapt'
 
 android {
   compileSdkVersion 28
-  buildToolsVersion '28.0.3'
 
   compileOptions {
     sourceCompatibility '1.7'
@@ -60,12 +59,15 @@ repositories {
 }
 
 dependencies {
-  implementation deps.tp_smoothie_androidx
+  implementation deps.tp_androidx
+  implementation deps.tp_lifecycle
+  implementation deps.tp_viewmodel
   implementation deps.tp_runtime
   implementation deps.tp_kotlin
   implementation deps.butterknife
   implementation deps.rxandroid
   implementation deps.androidxv4
+  implementation deps.lifecycle_extensions
 
   implementation deps.kotlin_runtime
   kapt deps.tp_compiler

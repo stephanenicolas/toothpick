@@ -18,6 +18,7 @@ package toothpick;
 
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+import toothpick.Scope.ScopeConfig;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.ConfigurationHolder;
 
@@ -90,6 +91,11 @@ public final class Toothpick {
   /**
    * Opens a scope without any parent. If a scope by this {@code name} already exists, it is
    * returned. Otherwise a new scope is created.
+   *
+   * @param name the <em>name of the scope</em>.
+   * @see #openScopes(Object...)
+   * @see #openScope(Object, ScopeConfig)
+   * @see #closeScope(Object)
    */
   public static Scope openScope(Object name) {
     return openScope(name, true);

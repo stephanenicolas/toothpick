@@ -6,7 +6,7 @@ ext.deps = [// Common
 
             // Android
             android             : 'com.google.android:android:4.1.1.4',
-            androidPlugin       : 'com.android.tools.build:gradle:3.3.0',
+            android_plugin       : 'com.android.tools.build:gradle:3.3.0',
             supportv4           : 'com.android.support:support-v4:28.0.0',
             androidxv4          : 'androidx.legacy:legacy-support-v4:1.0.0',
             lifecycle           : 'androidx.lifecycle:lifecycle-common-java8:2.2.0-alpha02',
@@ -21,16 +21,18 @@ ext.deps = [// Common
             kotlin_runtime      : 'org.jetbrains.kotlin:kotlin-stdlib:1.3.40',
 
             // TP artifacts for composite builds
-            tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:2.0.0',
-            tp_smoothie_androidx: 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.0.0',
-            tp_smoothie_support : 'com.github.stephanenicolas.toothpick:smoothie-support:2.0.0',
-            tp                  : 'com.github.stephanenicolas.toothpick:toothpick:2.0.0',
-            tp_runtime          : 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.0.0',
-            tp_kotlin           : 'com.github.stephanenicolas.toothpick:toothpick-kotlin:2.0.0',
-            tp_compiler         : 'com.github.stephanenicolas.toothpick:toothpick-compiler:2.0.0',
-            tp_testing          : 'com.github.stephanenicolas.toothpick:toothpick-testing:2.0.0',
-            tp_testing_junit4   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit4:2.0.0',
-            tp_testing_junit5   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:2.0.0',
+            tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:3.0.0',
+            tp_androidx         : 'com.github.stephanenicolas.toothpick:smoothie-androidx:3.0.0',
+            tp_lifecycle        : 'com.github.stephanenicolas.toothpick:smoothie-lifecycle:3.0.0',
+            tp_viewmodel        : 'com.github.stephanenicolas.toothpick:smoothie-lifecycle-viewmodel:3.0.0',
+            tp_smoothie_support : 'com.github.stephanenicolas.toothpick:smoothie-support:3.0.0',
+            tp                  : 'com.github.stephanenicolas.toothpick:toothpick:3.0.0',
+            tp_runtime          : 'com.github.stephanenicolas.toothpick:toothpick-runtime:3.0.0',
+            tp_kotlin           : 'com.github.stephanenicolas.toothpick:toothpick-kotlin:3.0.0',
+            tp_compiler         : 'com.github.stephanenicolas.toothpick:toothpick-compiler:3.0.0',
+            tp_testing          : 'com.github.stephanenicolas.toothpick:toothpick-testing:3.0.0',
+            tp_testing_junit4   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit4:3.0.0',
+            tp_testing_junit5   : 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:3.0.0',
 
             // Test dependencies
             junit4              : 'junit:junit:4.13-beta-3',
