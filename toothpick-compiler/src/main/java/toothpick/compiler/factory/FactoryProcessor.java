@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import toothpick.Factory;
+import toothpick.InjectConstructor;
 import toothpick.ProvidesReleasable;
 import toothpick.ProvidesSingleton;
 import toothpick.Releasable;
@@ -98,6 +99,7 @@ public class FactoryProcessor extends ToothpickProcessor {
     supportedAnnotationTypes.add(ToothpickProcessor.INJECT_ANNOTATION_CLASS_NAME);
     supportedAnnotationTypes.add(ToothpickProcessor.SINGLETON_ANNOTATION_CLASS_NAME);
     supportedAnnotationTypes.add(ToothpickProcessor.PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME);
+    supportedAnnotationTypes.add(ToothpickProcessor.INJECT_CONSTRUCTOR_ANNOTATION_CLASS_NAME);
     readOptionAnnotationTypes();
     return supportedAnnotationTypes;
   }
@@ -136,6 +138,7 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void findAndParseTargets(
       RoundEnvironment roundEnv, Set<? extends TypeElement> annotations) {
+    createFactoriesForClassesAnnotatedWithInjectConstructor(roundEnv);
     createFactoriesForClassesWithInjectAnnotatedConstructors(roundEnv);
     createFactoriesForClassesAnnotatedWith(roundEnv, ProvidesSingleton.class);
     createFactoriesForClassesWithInjectAnnotatedFields(roundEnv);
@@ -171,21 +174,21 @@ public class FactoryProcessor extends ToothpickProcessor {
 
   private void createFactoriesForClassesAnnotatedWith(
       RoundEnvironment roundEnv, Class<? extends Annotation> annotationClass) {
-    for (Element singletonAnnotatedElement :
+    for (Element annotatedElement :
         ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationClass))) {
-      TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
+      TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
       processClassContainingInjectAnnotatedMember(
-          singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+          annotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
   private void createFactoriesForClassesAnnotatedWith(
       RoundEnvironment roundEnv, TypeElement annotationType) {
-    for (Element singletonAnnotatedElement :
+    for (Element annotatedElement :
         ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(annotationType))) {
-      TypeElement singletonAnnotatedTypeElement = (TypeElement) singletonAnnotatedElement;
+      TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
       processClassContainingInjectAnnotatedMember(
-          singletonAnnotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
+          annotatedTypeElement, mapTypeElementToConstructorInjectionTarget);
     }
   }
 
@@ -203,6 +206,24 @@ public class FactoryProcessor extends ToothpickProcessor {
 
       processInjectAnnotatedConstructor(
           constructorElement, mapTypeElementToConstructorInjectionTarget);
+    }
+  }
+
+  private void createFactoriesForClassesAnnotatedWithInjectConstructor(RoundEnvironment roundEnv) {
+    for (Element annotatedElement :
+        ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(InjectConstructor.class))) {
+      TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
+      List<ExecutableElement> constructorElements =
+          ElementFilter.constructorsIn(annotatedTypeElement.getEnclosedElements());
+      if (constructorElements.size() != 1
+          || constructorElements.get(0).getAnnotation(Inject.class) != null) {
+        error(
+            constructorElements.get(0),
+            "Class %s is annotated with @InjectInjectConstructor. Therefore, It must have one unique constructor and it should not be annotated with @Inject.",
+            annotatedTypeElement.getQualifiedName());
+      }
+      processInjectAnnotatedConstructor(
+          constructorElements.get(0), mapTypeElementToConstructorInjectionTarget);
     }
   }
 

@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,8 @@ public abstract class ToothpickProcessor extends AbstractProcessor {
   public static final String SINGLETON_ANNOTATION_CLASS_NAME = "javax.inject.Singleton";
   public static final String PRODUCES_SINGLETON_ANNOTATION_CLASS_NAME =
       "toothpick.ProvidesSingleton";
+  public static final String INJECT_CONSTRUCTOR_ANNOTATION_CLASS_NAME =
+      "toothpick.InjectConstructor";
 
   /**
    * The name of the annotation processor option to exclude classes from the creation of member

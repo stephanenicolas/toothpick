@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

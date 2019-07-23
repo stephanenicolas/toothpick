@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,9 @@ public class ToothPickTestModule extends Module {
 
   private Annotation findMockAnnotation(Field field) {
     for (Annotation annotation : field.getAnnotations()) {
-      // works for both easy mock and mockito
-      if (annotation.annotationType().getName().contains("Mock")) {
+      // works for Easymock, Mockito and MockK
+      String annotationName = annotation.annotationType().getName();
+      if (annotationName.contains("Mock") || annotationName.contains("Spy")) {
         return annotation;
       }
     }
@@ -71,14 +72,16 @@ public class ToothPickTestModule extends Module {
 
   private String findInjectionName(Field field) {
     for (Annotation annotation : field.getAnnotations()) {
-      // works for both easy mock and mockito
+      // works for Easymock, Mockito and MockK
       if (annotation.annotationType() == Named.class) {
         return ((Named) annotation).value();
       }
-      // works for both easy mock and mockito
-      if (annotation.annotationType() != Inject.class
-          && !annotation.annotationType().getName().contains("Mock")) {
-        return annotation.annotationType().getName();
+      // works for Easymock, Mockito and MockK
+      if (annotation.annotationType() != Inject.class) {
+        String annotationName = annotation.annotationType().getName();
+        if (!annotationName.contains("Mock") && !annotationName.contains("Spy")) {
+          return annotation.annotationType().getCanonicalName();
+        }
       }
     }
     return null;

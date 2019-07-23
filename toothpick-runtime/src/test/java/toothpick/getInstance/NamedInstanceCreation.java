@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class NamedInstanceCreation {
     // WHEN
     Foo instance = scope.getInstance(Foo.class, "bar");
     Foo instance2 = scope.getInstance(Foo.class, "bar");
-    Foo instance3 = scope.getInstance(Foo.class, FooName.class.getName());
+    Foo instance3 = scope.getInstance(Foo.class, FooName.class.getCanonicalName());
     Foo instance4 = scope.getInstance(Foo.class);
 
     // THEN
@@ -85,7 +85,7 @@ public class NamedInstanceCreation {
     // WHEN
     Provider<Foo> provider = scope.getProvider(Foo.class, "bar");
     Provider<Foo> provider2 = scope.getProvider(Foo.class, "bar");
-    Provider<Foo> provider3 = scope.getProvider(Foo.class, FooName.class.getName());
+    Provider<Foo> provider3 = scope.getProvider(Foo.class, FooName.class.getCanonicalName());
     Provider<Foo> provider4 = scope.getProvider(Foo.class);
 
     // THEN

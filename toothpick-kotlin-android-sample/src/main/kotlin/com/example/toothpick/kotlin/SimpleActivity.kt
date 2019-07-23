@@ -9,17 +9,17 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.example.toothpick.kotlin.deps.ContextNamer
-import javax.inject.Inject
+import toothpick.kotlin.KTP
 import toothpick.Scope
-import toothpick.Toothpick
+import toothpick.kotlin.delegate.inject
 import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
 class SimpleActivity : FragmentActivity() {
 
     private lateinit var scope: Scope
 
-    @Inject
-    lateinit var contextNamer: ContextNamer
+    val contextNamer: ContextNamer by inject()
+
     @BindView(R.id.title)
     lateinit var title: TextView
     @BindView(R.id.subtitle)
@@ -28,10 +28,12 @@ class SimpleActivity : FragmentActivity() {
     lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        scope = Toothpick.openScopes(getApplication(), this)
-        scope.installModules(SmoothieAndroidXActivityModule(this))
+        KTP.openScopes(application, this)
+                .installModules(SmoothieAndroidXActivityModule(this))
+                .inject(this)
+
         super.onCreate(savedInstanceState)
-        Toothpick.inject(this, scope)
+
         setContentView(R.layout.simple_activity)
         ButterKnife.bind(this)
         title.setText(contextNamer.applicationName)
@@ -46,7 +48,7 @@ class SimpleActivity : FragmentActivity() {
     }
 
     override fun onDestroy() {
-        Toothpick.closeScope(this)
+        KTP.closeScope(this)
         super.onDestroy()
     }
 }

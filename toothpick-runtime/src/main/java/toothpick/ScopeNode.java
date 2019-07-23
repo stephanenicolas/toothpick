@@ -1,6 +1,6 @@
 /*
- * Copyright 2016 Stephane Nicolas
- * Copyright 2016 Daniel Molinero Reguerra
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ public abstract class ScopeNode implements Scope {
    * @see #getParentScope(Class)
    */
   @Override
-  public void supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+  public Scope supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
     if (scopeAnnotationClass == Singleton.class) {
       throw new IllegalArgumentException(
@@ -192,6 +192,7 @@ public abstract class ScopeNode implements Scope {
     }
 
     scopeAnnotationClasses.add(scopeAnnotationClass);
+    return this;
   }
 
   @Override
