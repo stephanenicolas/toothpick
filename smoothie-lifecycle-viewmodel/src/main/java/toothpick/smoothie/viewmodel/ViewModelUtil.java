@@ -16,6 +16,8 @@
  */
 package toothpick.smoothie.viewmodel;
 
+import static toothpick.Toothpick.closeScope;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -23,8 +25,6 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import toothpick.Scope;
-
-import static toothpick.Toothpick.closeScope;
 
 /**
  * Provides support for Android architecture components's view model. Closes scopes automatically
@@ -43,7 +43,8 @@ public class ViewModelUtil {
    * @param scope the scope that will be closed when the view model of a {@link FragmentActivity} is
    *     cleared.
    */
-  public static void closeOnViewModelCleared(@NonNull FragmentActivity activity, @NonNull Scope scope) {
+  public static void closeOnViewModelCleared(
+      @NonNull FragmentActivity activity, @NonNull Scope scope) {
     ViewModelProvider.Factory factory = new TPViewModelFactory(scope);
     ViewModelProviders.of(activity, factory).get(TPViewModel.class);
   }
@@ -74,9 +75,7 @@ public class ViewModelUtil {
     }
   }
 
-  /**
-   * Internal view model that closes a scope when {@link #onCleared()} is invoked.
-   */
+  /** Internal view model that closes a scope when {@link #onCleared()} is invoked. */
   private static class TPViewModel extends ViewModel {
     private Scope scope;
 

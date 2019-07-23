@@ -4,7 +4,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath deps.androidPlugin
+    classpath deps.android_plugin
   }
 
 }
@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-  compileOnly project(':toothpick')
+  api project(':toothpick-runtime')
   compileOnly deps.inject
 
   testImplementation project(':toothpick-testing')

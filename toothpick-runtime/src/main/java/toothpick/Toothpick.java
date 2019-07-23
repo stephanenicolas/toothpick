@@ -91,6 +91,7 @@ public final class Toothpick {
   /**
    * Opens a scope without any parent. If a scope by this {@code name} already exists, it is
    * returned. Otherwise a new scope is created.
+   *
    * @param name the <em>name of the scope</em>.
    * @see #openScopes(Object...)
    * @see #openScope(Object, ScopeConfig)

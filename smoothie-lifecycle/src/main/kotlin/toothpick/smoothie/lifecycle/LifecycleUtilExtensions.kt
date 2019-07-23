@@ -14,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.data;
+package toothpick.smoothie.lifecycle
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import androidx.fragment.app.FragmentActivity
+import toothpick.Scope
 
-@Singleton
-public class FooProviderAnnotatedSingletonImpl implements Provider<IFoo> {
-  public @Inject Bar bar;
-
-  @Inject
-  public FooProviderAnnotatedSingletonImpl() {}
-
-  @Override
-  public IFoo get() {
-    Foo foo = new Foo();
-    foo.bar = bar;
-    return foo;
-  }
+/**
+ * The scope will be closed automatically during {@code owner}'s onDestroy event.
+ *
+ * @param owner the lifecycle owner to observe.
+ */
+fun Scope.closeOnDestroy(owner: FragmentActivity): Scope {
+    LifecycleUtil.closeOnDestroy(owner, this)
+    return this
 }

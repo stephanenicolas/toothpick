@@ -10,6 +10,7 @@ buildscript {
   dependencies {
     classpath deps.coverallPlugin
     classpath deps.spotlessPlugin
+    classpath deps.kotlin_plugin
   }
 }
 
@@ -83,6 +84,7 @@ subprojects { project ->
   apply plugin: 'jacoco'
   apply plugin: 'maven'
   apply plugin: 'com.diffplug.gradle.spotless'
+
 
   spotless {
     java {
