@@ -13,10 +13,9 @@ import toothpick.Toothpick;
 import toothpick.config.Module;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -30,16 +29,15 @@ public class SimpleActivityTest {
   @Test
   public void verifyInjectionAtOnCreate() {
     //GIVEN
-    final ContextNamer mockContextNamer = createMock(ContextNamer.class);
-    expect(mockContextNamer.getApplicationName()).andReturn("foo");
-    expect(mockContextNamer.getActivityName()).andReturn("bar");
+    final ContextNamer mockContextNamer = mock(ContextNamer.class);
+    when(mockContextNamer.getApplicationName()).thenReturn("foo");
+    when(mockContextNamer.getActivityName()).thenReturn("bar");
 
     ActivityController<SimpleActivity> controllerSimpleActivity = Robolectric.buildActivity(SimpleActivity.class);
     SimpleActivity activity = controllerSimpleActivity.get();
     Scope scope = Toothpick.openScope(activity);
     //or new ToothPickTestModule(this)
     scope.installTestModules(new TestModule(mockContextNamer));
-    replay(mockContextNamer);
 
     //WHEN
     controllerSimpleActivity.create();
@@ -47,7 +45,8 @@ public class SimpleActivityTest {
     //THEN
     assertThat(activity.title.getText()).isEqualTo("foo");
     assertThat(activity.subTitle.getText()).isEqualTo("bar");
-    verify(mockContextNamer);
+    verify(mockContextNamer).getApplicationName();
+    verify(mockContextNamer).getActivityName();
   }
 
   private class TestModule extends Module {

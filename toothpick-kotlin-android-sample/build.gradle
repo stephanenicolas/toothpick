@@ -17,7 +17,6 @@ apply plugin: 'kotlin-kapt'
 
 android {
   compileSdkVersion 28
-  buildToolsVersion '28.0.3'
 
   compileOptions {
     sourceCompatibility '1.7'
