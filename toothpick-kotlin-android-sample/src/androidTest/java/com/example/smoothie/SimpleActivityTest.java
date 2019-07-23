@@ -17,10 +17,10 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.thenReturn;
 
 @RunWith(AndroidJUnit4.class)
 public class SimpleActivityTest {
@@ -68,18 +68,17 @@ public class SimpleActivityTest {
 
     @Test
     public void testWithContextNamerTestModuleWithMock() {
-        ContextNamer contextNamer = createMock(ContextNamer.class);
+        ContextNamer contextNamer = mock(ContextNamer.class);
 
-        expect(contextNamer.getApplicationName()).andReturn("TestAppNameMock");
-        expect(contextNamer.getActivityName()).andReturn("TestActivityNameMock");
-
-        replay(contextNamer);
+        when(contextNamer.getApplicationName()).thenReturn("TestAppNameMock");
+        when(contextNamer.getActivityName()).thenReturn("TestActivityNameMock");
 
         appScope.installTestModules(new ContextNamerTestModule(contextNamer));
 
         activityRule.launchActivity(null);
 
-        verify(contextNamer);
+        verify(contextNamer).getApplicationName();
+        verify(contextNamer).getActivityName();
 
         onView(withId(R.id.title))
             .check(matches(withText("TestAppNameMock")));

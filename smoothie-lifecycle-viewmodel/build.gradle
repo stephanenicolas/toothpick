@@ -1,17 +1,9 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-  dependencies {
-    classpath deps.android_plugin
-  }
-}
-
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
   google()
+  jcenter()
 }
 
 android {

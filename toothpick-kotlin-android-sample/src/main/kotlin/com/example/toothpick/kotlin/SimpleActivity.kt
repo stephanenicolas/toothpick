@@ -9,9 +9,6 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.example.toothpick.kotlin.deps.ContextNamer
-import toothpick.kotlin.KTP
-import toothpick.Scope
-import toothpick.kotlin.delegate.inject
 import javax.inject.Inject
 import toothpick.Toothpick.openScope
 import toothpick.smoothie.lifecycle.closeOnDestroy

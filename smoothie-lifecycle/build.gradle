@@ -1,14 +1,5 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-  dependencies {
-    classpath deps.android_plugin
-  }
-}
-
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
   google()
@@ -33,11 +24,6 @@ android {
     // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
     checkReleaseBuilds false
     abortOnError false
-  }
-
-  sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-    test.java.srcDirs += 'src/test/kotlin'
   }
 
 }
