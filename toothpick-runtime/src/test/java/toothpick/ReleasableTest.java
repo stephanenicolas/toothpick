@@ -96,13 +96,13 @@ public class ReleasableTest {
           throws Exception {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("");
+    scope.supportScopeAnnotation(CustomScope.class);
     scope.installModules(
         new Module() {
           {
             bind(IFoo.class).toProvider(FooProviderAnnotatedProvidesReleasableSingleton.class);
           }
         });
-    scope.supportScopeAnnotation(CustomScope.class);
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
     InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
@@ -164,13 +164,13 @@ public class ReleasableTest {
       throws Exception {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("");
+    scope.supportScopeAnnotation(CustomScope.class);
     scope.installModules(
         new Module() {
           {
             bind(IFoo.class).toProvider(FooProviderAnnotatedReleasableSingleton.class);
           }
         });
-    scope.supportScopeAnnotation(CustomScope.class);
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
     InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);
@@ -193,13 +193,13 @@ public class ReleasableTest {
       throws Exception {
     // GIVEN
     ScopeImpl scope = new ScopeImpl("");
+    scope.supportScopeAnnotation(CustomScope.class);
     scope.installModules(
         new Module() {
           {
             bind(IFoo.class).toProvider(FooProvider.class).singleton().releasable();
           }
         });
-    scope.supportScopeAnnotation(CustomScope.class);
     IFoo foo = scope.getInstance(IFoo.class);
     IFoo foo2 = scope.getInstance(IFoo.class);
     InternalProvider internalProvider = scope.mapClassesToUnNamedScopedProviders.get(IFoo.class);

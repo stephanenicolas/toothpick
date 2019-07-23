@@ -16,6 +16,11 @@
  */
 package toothpick;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import javax.inject.Singleton;
 
 /**
@@ -31,4 +36,7 @@ import javax.inject.Singleton;
  *
  * <p>Technically, the provider and the provided instances will all be in the same scope.
  */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.CLASS)
+@Documented
 public @interface ProvidesSingleton {}
