@@ -22,13 +22,14 @@ import android.support.v4.app.LoaderManager;
 import javax.inject.Provider;
 
 public class SupportLoaderManagerProvider implements Provider<LoaderManager> {
-  Activity activity;
+  private Activity activity;
 
   public SupportLoaderManagerProvider(Activity activity) {
     this.activity = activity;
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public LoaderManager get() {
     return ((FragmentActivity) activity).getSupportLoaderManager();
   }

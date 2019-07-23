@@ -8,11 +8,10 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath deps.coverallPlugin
-    classpath deps.spotlessPlugin
-    classpath deps.kotlin_plugin
     classpath deps.android_plugin
     classpath deps.kotlin_plugin
+    classpath deps.coverallPlugin
+    classpath deps.spotlessPlugin
   }
 }
 

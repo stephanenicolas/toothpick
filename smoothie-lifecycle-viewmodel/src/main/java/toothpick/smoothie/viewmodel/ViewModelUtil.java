@@ -64,14 +64,18 @@ public class ViewModelUtil {
   private static class TPViewModelFactory implements ViewModelProvider.Factory {
     private Scope scope;
 
-    public TPViewModelFactory(Scope scope) {
+    private TPViewModelFactory(Scope scope) {
       this.scope = scope;
     }
 
     @NonNull
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-      return (T) new TPViewModel(scope);
+      if (modelClass.isAssignableFrom(TPViewModel.class)) {
+        return (T) new TPViewModel(scope);
+      }
+      throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }
   }
 
@@ -79,7 +83,7 @@ public class ViewModelUtil {
   private static class TPViewModel extends ViewModel {
     private Scope scope;
 
-    public TPViewModel(Scope scope) {
+    private TPViewModel(Scope scope) {
 
       this.scope = scope;
     }

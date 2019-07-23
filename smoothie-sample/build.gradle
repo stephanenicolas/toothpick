@@ -6,6 +6,7 @@ buildscript {
   }
   dependencies {
     classpath deps.android_plugin
+    classpath deps.kotlin_plugin
   }
 }
 
