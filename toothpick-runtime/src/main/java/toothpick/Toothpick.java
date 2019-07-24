@@ -105,15 +105,16 @@ public final class Toothpick {
    * Opens a scope without any parent. If a scope by this {@code name} already exists, it is
    * returned. Otherwise a new scope is created. If a new scope is created, then {@code scopeConfig}
    * is applied to the new scope.
+   *
    * @param name the <em>name of the scope</em>.
-   * @param scopeConfig a lambda to configure the scope if it is created. The lambda is not applied if
-   * the scope existed already.
+   * @param scopeConfig a lambda to configure the scope if it is created. The lambda is not applied
+   *     if the scope existed already.
    * @see #openScopes(Object...)
    * @see #openScope(Object)
    * @see #closeScope(Object)
    */
   public static Scope openScope(Object name, ScopeConfig scopeConfig) {
-    if(isScopeOpen(name)) {
+    if (isScopeOpen(name)) {
       return openScope(name);
     }
     Scope scope = openScope(name, true);

@@ -34,7 +34,7 @@ import toothpick.configuration.MultipleRootException;
 public class ToothpickTest {
 
   @Test
-  public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() throws Exception {
+  public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() {
     // GIVEN
 
     // WHEN
@@ -45,7 +45,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void getScope_shouldReturnAnScope_whenThisScopeByThisKeyWasCreated() throws Exception {
+  public void getScope_shouldReturnAnScope_whenThisScopeByThisKeyWasCreated() {
     // GIVEN
     Scope scope = Toothpick.openScope(this);
 
@@ -59,8 +59,7 @@ public class ToothpickTest {
 
   @Test
   public void
-      createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent()
-          throws Exception {
+      createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("foo");
@@ -75,7 +74,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void createScope_shouldMarkThisScopeAsOpen() throws Exception {
+  public void createScope_shouldMarkThisScopeAsOpen() {
     // GIVEN
 
     // WHEN
@@ -85,8 +84,37 @@ public class ToothpickTest {
     assertThat(scope.isOpen, is(true));
   }
 
+  @Test
+  public void openScope_shouldApplyScopeConfig_whenNewScopeCreated() {
+    // GIVEN
+    TestScopeConfig scopeConfig = new TestScopeConfig();
+    ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo", scopeConfig);
+
+    // WHEN
+    Toothpick.closeScope("foo");
+
+    // THEN
+    assertThat(scope.isOpen, is(false));
+    assertThat(scopeConfig.wasApplied, is(true));
+  }
+
+  @Test
+  public void openScope_shouldNotApplyScopeConfig_whenNoNewScopeCreated() {
+    // GIVEN
+    TestScopeConfig scopeConfig = new TestScopeConfig();
+    Toothpick.openScope("foo");
+    ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo", scopeConfig);
+
+    // WHEN
+    Toothpick.closeScope("foo");
+
+    // THEN
+    assertThat(scope.isOpen, is(false));
+    assertThat(scopeConfig.wasApplied, is(false));
+  }
+
   @Test(expected = IllegalArgumentException.class)
-  public void openScopes_shouldFail_whenScopeNamesAreNull() throws Exception {
+  public void openScopes_shouldFail_whenScopeNamesAreNull() {
     // GIVEN
 
     // WHEN
@@ -96,7 +124,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void reset_shouldClear_WhenSomeScopesWereCreated() throws Exception {
+  public void reset_shouldClear_WhenSomeScopesWereCreated() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     Scope scope0 = Toothpick.openScope("foo");
@@ -113,7 +141,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void destroyScope_shouldClearThisScope_WhenThisScopesWasCreated() throws Exception {
+  public void destroyScope_shouldClearThisScope_WhenThisScopesWasCreated() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     Scope scope = Toothpick.openScope("foo");
@@ -127,7 +155,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void closeScope_shouldMarkThisScopeAsClosed() throws Exception {
+  public void closeScope_shouldMarkThisScopeAsClosed() {
     // GIVEN
     ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo");
 
@@ -140,8 +168,7 @@ public class ToothpickTest {
 
   @Test(expected = MultipleRootException.class)
   public void
-      openingAClosedChildScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes()
-          throws Exception {
+      openingAClosedChildScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
     Toothpick.openScopes("foo", "bar");
@@ -154,8 +181,8 @@ public class ToothpickTest {
   }
 
   @Test(expected = MultipleRootException.class)
-  public void opening2rootScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes()
-      throws Exception {
+  public void
+      opening2rootScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
     Toothpick.openScope("foo");
@@ -167,8 +194,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void getOrCreateScope_shouldReturnSameScope_WhenOneWasCreatedWithSameKey()
-      throws Exception {
+  public void getOrCreateScope_shouldReturnSameScope_WhenOneWasCreatedWithSameKey() {
     // GIVEN
     Scope scope = Toothpick.openScope("foo");
 
@@ -180,8 +206,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey()
-      throws Exception {
+  public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("bar");
@@ -198,7 +223,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void closeScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
+  public void closeScope_shouldNotFail_WhenThisScopesWasNotCreated() {
     // GIVEN
 
     // WHEN
@@ -208,7 +233,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void closeScope_shouldRemoveChildScope_whenChildScopeIsClosed() throws Exception {
+  public void closeScope_shouldRemoveChildScope_whenChildScopeIsClosed() {
     // GIVEN
     Toothpick.openScopes("foo", "bar");
 
@@ -244,7 +269,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void reset_shouldCallResetForProvidedScope() throws Exception {
+  public void reset_shouldCallResetForProvidedScope() {
     // GIVEN
     ScopeNode mockScope = mock(ScopeNode.class);
     mockScope.reset();
@@ -257,7 +282,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasNotCreated() throws Exception {
+  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasNotCreated() {
     // GIVEN
 
     // WHEN
@@ -268,7 +293,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void isScopeOpen_shouldReturnTrue_WhenThisScopesWasCreated() throws Exception {
+  public void isScopeOpen_shouldReturnTrue_WhenThisScopesWasCreated() {
     // GIVEN
     Toothpick.openScope("foo");
 
@@ -280,7 +305,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasClosed() throws Exception {
+  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasClosed() {
     // GIVEN
     Toothpick.openScope("foo");
 
@@ -293,7 +318,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void isScopeOpen_shouldReturnFalse_WhenParentScopesWasClosed() throws Exception {
+  public void isScopeOpen_shouldReturnFalse_WhenParentScopesWasClosed() {
     // GIVEN
     Toothpick.openScopes("foo", "bar");
 
@@ -306,7 +331,20 @@ public class ToothpickTest {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     Toothpick.reset();
+  }
+
+  private static class TestScopeConfig implements Scope.ScopeConfig {
+    private boolean wasApplied = false;
+
+    @Override
+    public void configure(Scope scope) {
+      wasApplied = true;
+    }
+
+    public boolean wasApplied() {
+      return wasApplied;
+    }
   }
 }
