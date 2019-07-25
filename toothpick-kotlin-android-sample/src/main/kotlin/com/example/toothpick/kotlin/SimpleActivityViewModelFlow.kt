@@ -12,9 +12,10 @@ class SimpleActivityViewModelFlow {
         private val viewModelScopeName = SimpleActivityViewModelFlow.Scope::class.java
 
         fun openScope(parentScope: KTPScope, factory: ViewModelProvider.Factory? = null, activity: FragmentActivity): KTPScope {
-            return parentScope.openSubKTPScope(viewModelScopeName) {
-                it.closeOnViewModelCleared(activity)
-                  .installViewModelBinding(activity, factory, SimpleActivityViewModel::class.java)
+            return parentScope.openSubScope(viewModelScopeName) {
+                (it as KTPScope)
+                        .closeOnViewModelCleared(activity)
+                        .installViewModelBinding<SimpleActivityViewModel>(activity, factory)
             }
         }
     }

@@ -52,9 +52,9 @@ fun KTPScope.closeOnViewModelCleared(fragment: Fragment): KTPScope {
  * @param factory optional factory needed to create the view model instances.
  * @param viewModelClass the class of the view model to inject.
  */
-fun <T : ViewModel> KTPScope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null, viewModelClass: Class<T>): KTPScope {
+inline fun <reified T : ViewModel> KTPScope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null): KTPScope {
     installModules(module {
-        bind(viewModelClass).toProviderInstance(ViewModelProvider(activity, factory, viewModelClass))
+        bind(T::class.java).toProviderInstance(ViewModelProvider(activity, factory, T::class.java))
     })
     return this
 }
@@ -68,9 +68,9 @@ fun <T : ViewModel> KTPScope.installViewModelBinding(activity: FragmentActivity,
  * @param factory optional factory needed to create the view model instances.
  * @param viewModelClass the class of the view model to inject.
  */
-fun <T : ViewModel> KTPScope.installViewModelBinding(fragment: Fragment, factory: Factory? = null, viewModelClass: Class<T>): KTPScope {
+inline fun <reified T : ViewModel> KTPScope.installViewModelBinding(fragment: Fragment, factory: Factory? = null): KTPScope {
     installModules(module {
-        bind(viewModelClass).toProviderInstance(ViewModelProvider(fragment, factory, viewModelClass))
+        bind(T::class.java).toProviderInstance(ViewModelProvider(fragment, factory, T::class.java))
     })
     return this
 }

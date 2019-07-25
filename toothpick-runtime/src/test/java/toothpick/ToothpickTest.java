@@ -335,7 +335,7 @@ public class ToothpickTest {
     Toothpick.reset();
   }
 
-  private static class TestScopeConfig implements Scope.ScopeConfig<Scope> {
+  private static class TestScopeConfig implements Scope.ScopeConfig {
     private boolean wasApplied = false;
 
     @Override

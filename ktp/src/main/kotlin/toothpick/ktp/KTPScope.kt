@@ -21,7 +21,7 @@ import toothpick.Toothpick
 import toothpick.Toothpick.isScopeOpen
 import toothpick.config.Module
 
-class KTPScope(private val scope: Scope) : Scope by scope {
+open class KTPScope(private val scope: Scope) : Scope by scope {
 
     override fun inject(obj: Any) {
         KTP.delegateNotifier.notifyDelegates(obj, scope)
@@ -42,13 +42,13 @@ class KTPScope(private val scope: Scope) : Scope by scope {
     override fun getRootScope() = KTPScope(scope.rootScope)
     override fun openSubScope(subScopeName: Any) = KTPScope(scope.openSubScope(subScopeName))
 
-    fun openSubKTPScope(subScopeName: Any, scopeConfig: (KTPScope) -> Unit): KTPScope {
+    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig): KTPScope {
         // we already check later that sub scope is a child of this
         val wasOpen = Toothpick.isScopeOpen(subScopeName)
-        val scope = Toothpick.openScopes(name, subScopeName)
-        val ktpScope = KTPScope(scope)
+        val subScope = scope.openSubScope(subScopeName)
+        val ktpScope = KTPScope(subScope)
         if (!wasOpen) {
-            scopeConfig.invoke(ktpScope)
+            scopeConfig.configure(ktpScope)
         }
         return ktpScope
     }

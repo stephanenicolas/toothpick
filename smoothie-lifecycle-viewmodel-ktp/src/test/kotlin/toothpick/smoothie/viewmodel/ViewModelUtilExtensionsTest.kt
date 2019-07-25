@@ -71,7 +71,7 @@ class ViewModelUtilExtensionsTest {
         val application = RuntimeEnvironment.application
         // WHEN
         val scope = KTP.openScopes(application, ViewModelScope::class.java)
-                .installViewModelBinding(activity, viewModelClass = TestViewModel::class.java)
+                .installViewModelBinding<TestViewModel>(activity)
                 .closeOnViewModelCleared(activity)
                 .openSubScope(activity)
 

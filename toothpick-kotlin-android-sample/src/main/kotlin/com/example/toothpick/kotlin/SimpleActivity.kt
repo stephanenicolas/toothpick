@@ -11,6 +11,7 @@ import butterknife.OnClick
 import com.example.toothpick.kotlin.deps.ContextNamer
 import javax.inject.Inject
 import toothpick.ktp.KTP.openScope
+import toothpick.ktp.KTPScope
 import toothpick.smoothie.lifecycle.closeOnDestroy
 import toothpick.smoothie.module.SmoothieAndroidXActivityModule
 
@@ -34,8 +35,8 @@ class SimpleActivity : FragmentActivity() {
         openScope(application)
                 .openBackpackFlowSubScope()
                 .openSimpleActivityViewModelSubScope(this)
-                .openSubKTPScope(this) { ifScopeCreated ->
-                    ifScopeCreated
+                .openSubScope(this) { ifScopeCreated ->
+                    (ifScopeCreated as KTPScope)
                             .installModules(SmoothieAndroidXActivityModule(this))
                             .closeOnDestroy(this)
                 }

@@ -26,11 +26,22 @@ object KTP {
 
     val delegateNotifier = DelegateNotifier()
 
-    fun openScope(name: Any, scopeConfig: Scope.ScopeConfig) = KTPScope(Toothpick.openScope(name, scopeConfig))
     fun openScope(name: Any) = KTPScope(Toothpick.openScope(name))
+
+    fun openScope(name: Any, scopeConfig: Scope.ScopeConfig): KTPScope {
+        if (isScopeOpen(name)) {
+            return openScope(name)
+        }
+        val scope = openScope(name)
+        scopeConfig.configure(scope)
+        return scope
+    }
+
     fun openScopes(vararg names: Any) = KTPScope(Toothpick.openScopes(*names))
 
     fun closeScope(name: Any) = Toothpick.closeScope(name)
+
     fun isScopeOpen(name: Any) = Toothpick.isScopeOpen(name)
+
     fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
 }
