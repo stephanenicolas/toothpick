@@ -1,17 +1,19 @@
 package com.example.toothpick.kotlin
 
 import toothpick.Toothpick
+import toothpick.ktp.KTP
+import toothpick.ktp.KTPScope
 import kotlin.annotation.AnnotationRetention.RUNTIME
 
 class BackpackFlow {
 
     companion object {
-        fun openScope(parentScope: toothpick.Scope): toothpick.Scope {
+        fun openScope(parentScope: KTPScope): KTPScope {
             return parentScope.openSubScope(Scope::class.java)
         }
 
         fun closeScope() {
-            Toothpick.closeScope(Scope::class.java)
+            KTP.closeScope(Scope::class.java)
         }
     }
 
@@ -21,7 +23,7 @@ class BackpackFlow {
     annotation class Scope
 }
 
-fun toothpick.Scope.openBackpackFlowSubScope(): toothpick.Scope {
+fun KTPScope.openBackpackFlowSubScope(): KTPScope {
     return BackpackFlow.openScope(this)
 }
 

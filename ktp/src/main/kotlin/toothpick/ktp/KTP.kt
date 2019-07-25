@@ -19,6 +19,7 @@ package toothpick.ktp
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
+import toothpick.ktp.KTP.openScope
 import toothpick.ktp.delegate.DelegateNotifier
 
 object KTP {

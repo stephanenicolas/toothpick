@@ -143,19 +143,19 @@ class KTPScopeTest {
     @Test
     fun `openSubScope should return wrapped sub scope of the provided scope and provide ScopeConfig`() {
         // GIVEN
-        val childScope: Scope = mock()
-        val parentScope: Scope = mock()
-        val config: Scope.ScopeConfig = mock()
+        val childScope: KTPScope = mock()
+        val parentScope: KTPScope = mock()
+        val config: (KTPScope) -> Unit = mock()
         val ktpScope = KTPScope(parentScope)
 
-        When calling parentScope.openSubScope("name", config) itReturns childScope
+        When calling parentScope.openSubKTPScope("name", config) itReturns childScope
         When calling childScope.name itReturns "child"
 
         // WHEN
-        val result = ktpScope.openSubScope("name", config)
+        val result = ktpScope.openSubKTPScope("name", config)
 
         // THEN
-        Verify on parentScope that parentScope.openSubScope("name", config) was called
+        Verify on parentScope that parentScope.openSubKTPScope("name", config) was called
         result shouldBeInstanceOf KTPScope::class
         result.name shouldEqual "child"
     }

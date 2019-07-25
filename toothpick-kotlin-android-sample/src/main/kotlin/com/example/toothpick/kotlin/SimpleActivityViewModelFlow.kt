@@ -2,6 +2,7 @@ package com.example.toothpick.kotlin
 
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import toothpick.ktp.KTPScope
 import toothpick.smoothie.viewmodel.closeOnViewModelCleared
 import toothpick.smoothie.viewmodel.installViewModelBinding
 
@@ -10,10 +11,10 @@ class SimpleActivityViewModelFlow {
     companion object {
         private val viewModelScopeName = SimpleActivityViewModelFlow.Scope::class.java
 
-        fun openScope(parentScope: toothpick.Scope, factory: ViewModelProvider.Factory? = null, activity: FragmentActivity): toothpick.Scope {
-            return parentScope.openSubScope(viewModelScopeName) {
+        fun openScope(parentScope: KTPScope, factory: ViewModelProvider.Factory? = null, activity: FragmentActivity): KTPScope {
+            return parentScope.openSubKTPScope(viewModelScopeName) {
                 it.closeOnViewModelCleared(activity)
-                        .installViewModelBinding(activity, factory, SimpleActivityViewModel::class.java)
+                  .installViewModelBinding(activity, factory, SimpleActivityViewModel::class.java)
             }
         }
     }
@@ -24,6 +25,6 @@ class SimpleActivityViewModelFlow {
     annotation class Scope
 }
 
-fun toothpick.Scope.openSimpleActivityViewModelSubScope(activity: FragmentActivity, factory: ViewModelProvider.Factory? = null): toothpick.Scope {
+fun KTPScope.openSimpleActivityViewModelSubScope(activity: FragmentActivity, factory: ViewModelProvider.Factory? = null): KTPScope {
     return SimpleActivityViewModelFlow.openScope(this, factory, activity)
 }

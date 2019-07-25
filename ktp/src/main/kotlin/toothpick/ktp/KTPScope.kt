@@ -17,6 +17,8 @@
 package toothpick.ktp
 
 import toothpick.Scope
+import toothpick.Toothpick
+import toothpick.Toothpick.isScopeOpen
 import toothpick.config.Module
 
 class KTPScope(private val scope: Scope) : Scope by scope {
@@ -25,12 +27,12 @@ class KTPScope(private val scope: Scope) : Scope by scope {
         KTP.delegateNotifier.notifyDelegates(obj, scope)
     }
 
-    override fun installModules(vararg modules: Module): Scope {
+    override fun installModules(vararg modules: Module): KTPScope {
         scope.installModules(*modules)
         return this
     }
 
-    override fun supportScopeAnnotation(scopeAnnotationClass: Class<out Annotation>): Scope {
+    override fun supportScopeAnnotation(scopeAnnotationClass: Class<out Annotation>): KTPScope {
         scope.supportScopeAnnotation(scopeAnnotationClass)
         return this
     }
@@ -39,7 +41,17 @@ class KTPScope(private val scope: Scope) : Scope by scope {
     override fun getParentScope(scopeAnnotationClass: Class<*>) = KTPScope(scope.getParentScope(scopeAnnotationClass))
     override fun getRootScope() = KTPScope(scope.rootScope)
     override fun openSubScope(subScopeName: Any) = KTPScope(scope.openSubScope(subScopeName))
-    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig) = KTPScope(scope.openSubScope(subScopeName, scopeConfig))
+
+    fun openSubKTPScope(subScopeName: Any, scopeConfig: (KTPScope) -> Unit): KTPScope {
+        // we already check later that sub scope is a child of this
+        val wasOpen = Toothpick.isScopeOpen(subScopeName)
+        val scope = Toothpick.openScopes(name, subScopeName)
+        val ktpScope = KTPScope(scope)
+        if (!wasOpen) {
+            scopeConfig.invoke(ktpScope)
+        }
+        return ktpScope
+    }
 
     inline fun <reified T> getInstance(name: String? = null): T = this.getInstance(T::class.java, name)
 }
