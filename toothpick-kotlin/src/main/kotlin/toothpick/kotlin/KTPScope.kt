@@ -38,6 +38,8 @@ class KTPScope(private val scope: Scope) : Scope by scope {
     override fun getParentScope() = KTPScope(scope.parentScope)
     override fun getParentScope(scopeAnnotationClass: Class<*>) = KTPScope(scope.getParentScope(scopeAnnotationClass))
     override fun getRootScope() = KTPScope(scope.rootScope)
+    override fun openSubScope(subScopeName: Any) = KTPScope(scope.openSubScope(subScopeName))
+    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig) = KTPScope(scope.openSubScope(subScopeName, scopeConfig))
 
     inline fun <reified T> getInstance(name: String? = null): T = this.getInstance(T::class.java, name)
 }

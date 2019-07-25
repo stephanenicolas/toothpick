@@ -16,6 +16,7 @@
  */
 package toothpick.kotlin
 
+import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.kotlin.delegate.DelegateNotifier
@@ -24,6 +25,7 @@ object KTP {
 
     val delegateNotifier = DelegateNotifier()
 
+    fun openScope(name: Any, scopeConfig: Scope.ScopeConfig) = KTPScope(Toothpick.openScope(name, scopeConfig))
     fun openScope(name: Any) = KTPScope(Toothpick.openScope(name))
     fun openScopes(vararg names: Any) = KTPScope(Toothpick.openScopes(*names))
 

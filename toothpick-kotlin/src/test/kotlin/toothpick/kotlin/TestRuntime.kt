@@ -36,8 +36,8 @@ import javax.inject.Provider
 import javax.inject.Qualifier
 
 /*
-+ test cases for binding
-+ extend new methods for scope (lifecycle, and new methods)
++ crashing for binding/annotation problems only for development config
++ make stable test failing on CI
 + add javadoc to everything
  */
 class TestRuntime {

@@ -25,6 +25,7 @@ import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBe
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.configuration.ConfigurationHolder
@@ -43,6 +44,20 @@ class KTPTest {
 
         // WHEN
         val scope = KTP.openScope("name")
+
+        // THEN
+        scope shouldBeInstanceOf KTPScope::class
+        scope.name shouldEqual "name"
+        Toothpick.isScopeOpen("name").shouldBeTrue()
+    }
+
+    @Test
+    fun `openScope should open scope and wrap it using KTPScope and provide configuration`() {
+        // GIVEN
+        Toothpick.isScopeOpen("name").shouldBeFalse()
+
+        // WHEN
+        val scope = KTP.openScope("name", Scope.ScopeConfig { })
 
         // THEN
         scope shouldBeInstanceOf KTPScope::class
