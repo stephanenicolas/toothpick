@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.kotlin
+package toothpick.ktp
 
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
-import toothpick.kotlin.delegate.DelegateNotifier
+import toothpick.ktp.delegate.DelegateNotifier
 
 object KTP {
 

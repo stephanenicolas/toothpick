@@ -25,7 +25,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import toothpick.Toothpick
-import toothpick.kotlin.KTP
+import toothpick.ktp.KTP
 
 @RunWith(RobolectricTestRunner::class)
 class LifecycleUtilExtensionsTest {

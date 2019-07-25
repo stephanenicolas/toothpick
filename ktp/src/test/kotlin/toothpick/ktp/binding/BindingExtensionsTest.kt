@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.kotlin.binding
+package toothpick.ktp.binding
 
 import org.junit.jupiter.api.Test
 import javax.inject.Provider

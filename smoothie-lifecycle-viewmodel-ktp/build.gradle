@@ -33,7 +33,7 @@ android {
 
 dependencies {
   api project(':smoothie-lifecycle-viewmodel')
-  implementation project(':toothpick-kotlin')
+  implementation project(':ktp')
   implementation deps.lifecycle_viewmodel
   implementation deps.lifecycle_extensions
   implementation deps.androidxv4

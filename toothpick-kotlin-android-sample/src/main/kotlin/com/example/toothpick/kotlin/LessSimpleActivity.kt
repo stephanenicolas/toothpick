@@ -9,8 +9,8 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.ContextNamer
-import toothpick.kotlin.KTP
-import toothpick.kotlin.delegate.inject
+import toothpick.ktp.KTP
+import toothpick.ktp.delegate.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class LessSimpleActivity : Activity() {

@@ -27,7 +27,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import toothpick.Toothpick.isScopeOpen
-import toothpick.kotlin.KTP
+import toothpick.ktp.KTP
 
 @RunWith(RobolectricTestRunner::class)
 class ViewModelUtilExtensionsTest {

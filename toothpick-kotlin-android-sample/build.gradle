@@ -63,7 +63,7 @@ dependencies {
   implementation deps.tp_lifecycle
   implementation deps.tp_viewmodel
   implementation deps.tp_runtime
-  implementation deps.tp_kotlin
+  implementation deps.ktp
   implementation deps.butterknife
   implementation deps.rxandroid
   implementation deps.androidxv4

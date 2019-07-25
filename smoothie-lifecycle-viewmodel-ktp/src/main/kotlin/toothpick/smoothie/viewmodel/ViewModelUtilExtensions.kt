@@ -20,8 +20,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
-import toothpick.kotlin.KTPScope
-import toothpick.kotlin.binding.module
+import toothpick.ktp.KTPScope
+import toothpick.ktp.binding.module
 
 /**
  * Closes a scope automatically when the view model of a {@link FragmentActivity} is cleared.

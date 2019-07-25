@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.kotlin
+package toothpick.ktp
 
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -27,9 +27,9 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import toothpick.InjectConstructor
 import toothpick.Lazy
-import toothpick.kotlin.delegate.inject
-import toothpick.kotlin.delegate.lazy
-import toothpick.kotlin.delegate.provider
+import toothpick.ktp.delegate.inject
+import toothpick.ktp.delegate.lazy
+import toothpick.ktp.delegate.provider
 import toothpick.testing.ToothPickExtension
 import javax.inject.Named
 import javax.inject.Provider

@@ -8,10 +8,10 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.example.toothpick.kotlin.deps.PresenterContextNamer
-import toothpick.kotlin.KTP
+import toothpick.ktp.KTP
 import toothpick.Scope
 import toothpick.Toothpick
-import toothpick.kotlin.delegate.inject
+import toothpick.ktp.delegate.inject
 import toothpick.smoothie.module.SmoothieActivityModule
 
 class PersistActivity : Activity() {
