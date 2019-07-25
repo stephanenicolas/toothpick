@@ -20,15 +20,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
-import toothpick.Scope
-import toothpick.config.Module
+import toothpick.kotlin.KTPScope
+import toothpick.kotlin.binding.module
 
 /**
  * Closes a scope automatically when the view model of a {@link FragmentActivity} is cleared.
  *
  * @param activity the fragment activity to observe.
  */
-fun Scope.closeOnViewModelCleared(activity: FragmentActivity): Scope {
+fun KTPScope.closeOnViewModelCleared(activity: FragmentActivity): KTPScope {
     ViewModelUtil.closeOnViewModelCleared(activity, this)
     return this
 }
@@ -38,7 +38,7 @@ fun Scope.closeOnViewModelCleared(activity: FragmentActivity): Scope {
  *
  * @param fragment the fragment to observe.
  */
-fun Scope.closeOnViewModelCleared(fragment: Fragment): Scope {
+fun KTPScope.closeOnViewModelCleared(fragment: Fragment): KTPScope {
     ViewModelUtil.closeOnViewModelCleared(fragment, this)
     return this
 }
@@ -52,13 +52,10 @@ fun Scope.closeOnViewModelCleared(fragment: Fragment): Scope {
  * @param factory optional factory needed to create the view model instances.
  * @param viewModelClass the class of the view model to inject.
  */
-fun <T> Scope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null, viewModelClass: Class<T>): Scope where T : ViewModel {
-    installModules(object : Module() {
-        init {
-            bind(viewModelClass).toProviderInstance(ViewModelProvider(activity, factory, viewModelClass))
-        }
+fun <T : ViewModel> KTPScope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null, viewModelClass: Class<T>): KTPScope {
+    installModules(module {
+        bind(viewModelClass).toProviderInstance(ViewModelProvider(activity, factory, viewModelClass))
     })
-
     return this
 }
 
@@ -71,12 +68,9 @@ fun <T> Scope.installViewModelBinding(activity: FragmentActivity, factory: Facto
  * @param factory optional factory needed to create the view model instances.
  * @param viewModelClass the class of the view model to inject.
  */
-fun <T> Scope.installViewModelBinding(fragment: Fragment, factory: Factory? = null, viewModelClass: Class<T>): Scope where T : ViewModel {
-    installModules(object : Module() {
-        init {
-            bind(viewModelClass).toProviderInstance(ViewModelProvider(fragment, factory, viewModelClass))
-        }
+fun <T : ViewModel> KTPScope.installViewModelBinding(fragment: Fragment, factory: Factory? = null, viewModelClass: Class<T>): KTPScope {
+    installModules(module {
+        bind(viewModelClass).toProviderInstance(ViewModelProvider(fragment, factory, viewModelClass))
     })
-
     return this
 }

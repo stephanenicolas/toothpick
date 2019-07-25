@@ -16,15 +16,15 @@
  */
 package toothpick.smoothie.lifecycle
 
-import androidx.fragment.app.FragmentActivity
-import toothpick.Scope
+import androidx.lifecycle.LifecycleOwner
+import toothpick.kotlin.KTPScope
 
 /**
  * The scope will be closed automatically during {@code owner}'s onDestroy event.
  *
  * @param owner the lifecycle owner to observe.
  */
-fun Scope.closeOnDestroy(owner: FragmentActivity): Scope {
+fun KTPScope.closeOnDestroy(owner: LifecycleOwner): KTPScope {
     LifecycleUtil.closeOnDestroy(owner, this)
     return this
 }

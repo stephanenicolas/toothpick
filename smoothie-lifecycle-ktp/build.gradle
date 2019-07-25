@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
   google()
@@ -17,26 +18,28 @@ android {
     minSdkVersion 15
   }
 
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+  }
+
   lintOptions {
     textReport true
     textOutput 'stdout'
     // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
     checkReleaseBuilds false
-    abortOnError false
   }
 
 }
 
 dependencies {
-  compileOnly project(':toothpick-runtime')
-  api project(':smoothie')
-  implementation deps.inject
+  api project(':smoothie-lifecycle')
+  implementation project(':toothpick-kotlin')
   implementation deps.lifecycle
   implementation deps.androidxv4
+  implementation deps.kotlin_runtime
 
-  testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
-  testImplementation deps.mockito
   testImplementation deps.robolectric
 }
 

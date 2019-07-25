@@ -25,7 +25,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import toothpick.Toothpick
-import toothpick.Toothpick.openScopes
+import toothpick.kotlin.KTP
 
 @RunWith(RobolectricTestRunner::class)
 class LifecycleUtilExtensionsTest {
@@ -37,7 +37,7 @@ class LifecycleUtilExtensionsTest {
         val application = RuntimeEnvironment.application
 
         // WHEN
-        openScopes(application, activity)
+        KTP.openScopes(application, activity)
                 .closeOnDestroy(activity)
         activityController.destroy()
 

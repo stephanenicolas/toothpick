@@ -18,17 +18,16 @@ package toothpick.smoothie.viewmodel
 
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentActivity
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.sameInstance
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import toothpick.Toothpick.openScopes
 import toothpick.Toothpick.isScopeOpen
-
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.sameInstance
-import org.hamcrest.MatcherAssert.assertThat
+import toothpick.kotlin.KTP
 
 @RunWith(RobolectricTestRunner::class)
 class ViewModelUtilExtensionsTest {
@@ -40,8 +39,8 @@ class ViewModelUtilExtensionsTest {
         val application = RuntimeEnvironment.application
 
         // WHEN
-        openScopes(application, activity)
-        .closeOnViewModelCleared(activity)
+        KTP.openScopes(application, activity)
+                .closeOnViewModelCleared(activity)
         activityController.destroy()
 
         // THEN
@@ -56,8 +55,8 @@ class ViewModelUtilExtensionsTest {
         val application = RuntimeEnvironment.application
 
         // WHEN
-        openScopes(application, activity)
-        .closeOnViewModelCleared(activity)
+        KTP.openScopes(application, activity)
+                .closeOnViewModelCleared(activity)
         activityController.configurationChange(Configuration())
 
         // THEN
@@ -71,7 +70,7 @@ class ViewModelUtilExtensionsTest {
         val activity = activityController.get()
         val application = RuntimeEnvironment.application
         // WHEN
-        val scope = openScopes(application, ViewModelScope::class.java)
+        val scope = KTP.openScopes(application, ViewModelScope::class.java)
                 .installViewModelBinding(activity, viewModelClass = TestViewModel::class.java)
                 .closeOnViewModelCleared(activity)
                 .openSubScope(activity)

@@ -10,6 +10,8 @@ include ':smoothie'
 include ':smoothie-support'
 include ':smoothie-androidx'
 include ':smoothie-lifecycle'
+include ':smoothie-lifecycle-ktp'
 include ':smoothie-lifecycle-viewmodel'
+include ':smoothie-lifecycle-viewmodel-ktp'
 
 rootProject.name = 'toothpick-parent'
