@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 import org.robolectric.android.controller.ActivityController;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -18,7 +17,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class SimpleActivityTest {
 
   @After

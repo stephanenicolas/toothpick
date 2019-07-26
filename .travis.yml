@@ -39,7 +39,6 @@ cache:
 
 script:
   - ./gradlew clean check
-  - cat toothpick-runtime/build/reports/test/results/TEST-toothpick.concurrency.ToothpickManipulationsMultiThreadTest.xml
   - ./gradlew -b toothpick-sample/build.gradle clean check 
   - ./gradlew -b smoothie-sample/build.gradle clean check -x lint
   - ./gradlew -b toothpick-kotlin-android-sample/build.gradle clean check -x lint
