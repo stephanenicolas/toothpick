@@ -148,7 +148,7 @@ class KTPScopeTest {
         val config: Scope.ScopeConfig = mock()
         val ktpScope = KTPScope(parentScope)
 
-        When calling parentScope.openSubScope("name") itReturns childScope
+        When calling parentScope.openSubScope("name", config) itReturns childScope
         When calling parentScope.name itReturns "root"
         When calling childScope.name itReturns "child"
 
@@ -156,7 +156,7 @@ class KTPScopeTest {
         val result = ktpScope.openSubScope("name", config)
 
         // THEN
-        Verify on parentScope that parentScope.openSubScope("name") was called
+        Verify on parentScope that parentScope.openSubScope("name", config) was called
         result shouldBeInstanceOf KTPScope::class
         result.name shouldEqual "child"
     }

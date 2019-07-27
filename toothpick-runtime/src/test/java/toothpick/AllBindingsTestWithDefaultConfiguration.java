@@ -26,6 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
+import toothpick.configuration.Configuration;
 import toothpick.data.Bar;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
@@ -245,8 +246,9 @@ public class AllBindingsTestWithDefaultConfiguration {
 
   @Test(expected = RuntimeException.class)
   public void
-      providerClassBinding_shouldFailToInstallBinding_whenAnnotationScopeIsNotMatchedByInstallationScope() {
+      providerClassBinding_shouldFailToInstallBinding_whenAnnotationScopeIsNotMatchedByInstallationScope_InDevConfig() {
     // GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment());
     Scope scope = Toothpick.openScopes("", "child");
     scope.installModules(
         new Module() {

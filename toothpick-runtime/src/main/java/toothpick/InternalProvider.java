@@ -118,7 +118,6 @@ public class InternalProvider<T> {
 
     if (factoryClass != null && factory == null) {
       factory = FactoryLocator.getFactory(factoryClass);
-      checkFactoryScope(factory);
       this.isSingleton |= factory.hasSingletonAnnotation();
       this.isReleasable |= (this.isSingleton && factory.hasReleasableAnnotation());
       // gc
@@ -138,7 +137,6 @@ public class InternalProvider<T> {
 
     if (providerFactoryClass != null && providerFactory == null) {
       providerFactory = FactoryLocator.getFactory(providerFactoryClass);
-      checkFactoryScope(providerFactory);
       this.isSingleton |= providerFactory.hasSingletonAnnotation();
       this.isReleasable |= (this.isSingleton && providerFactory.hasReleasableAnnotation());
       this.isProvidingSingleton |= providerFactory.hasProvidesSingletonInScopeAnnotation();
@@ -173,10 +171,6 @@ public class InternalProvider<T> {
 
     throw new IllegalStateException(
         "A provider can only be used with an instance, a provider, a factory or a provider factory. Should not happen.");
-  }
-
-  protected void checkFactoryScope(Factory<?> factory) {
-    // do nothing, will be overriden.
   }
 
   public boolean isReleasable() {

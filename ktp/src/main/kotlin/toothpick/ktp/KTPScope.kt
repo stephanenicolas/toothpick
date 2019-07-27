@@ -17,8 +17,6 @@
 package toothpick.ktp
 
 import toothpick.Scope
-import toothpick.Toothpick
-import toothpick.Toothpick.isScopeOpen
 import toothpick.config.Module
 
 open class KTPScope(private val scope: Scope) : Scope by scope {
@@ -42,11 +40,11 @@ open class KTPScope(private val scope: Scope) : Scope by scope {
     override fun getRootScope() = KTPScope(scope.rootScope)
     override fun openSubScope(subScopeName: Any) = KTPScope(scope.openSubScope(subScopeName))
 
-    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig)
-            = KTPScope(scope.openSubScope(subScopeName, scopeConfig))
+    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig) =
+            KTPScope(scope.openSubScope(subScopeName, scopeConfig))
 
-    fun openSubScope(subScopeName: Any, scopeConfig: (KTPScope) -> Unit): KTPScope
-            = openSubScope(subScopeName) { scope -> scopeConfig.invoke(KTPScope(scope))
+    fun openSubScope(subScopeName: Any, scopeConfig: (KTPScope) -> Unit): KTPScope =
+            openSubScope(subScopeName) { scope -> scopeConfig.invoke(KTPScope(scope))
     }
 
     inline fun <reified T> getInstance(name: String? = null): T = this.getInstance(T::class.java, name)
