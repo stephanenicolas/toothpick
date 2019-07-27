@@ -22,21 +22,22 @@ import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.ktp.delegate.DelegateNotifier
 
-class KTP: Toothpick() {
+class KTP : Toothpick() {
 
-    init {
-        injector = object: InjectorImpl() {
-            override fun <T : Any> inject(obj: T, scope: Scope) {
-                if(delegateNotifier.hasDelegates(obj)) {
-                    delegateNotifier.notifyDelegates(obj, scope)
-                } else {
-                    super.inject(obj, scope)
+    companion object TP {
+        val delegateNotifier = DelegateNotifier()
+
+        init {
+            injector = object : InjectorImpl() {
+                override fun <T : Any> inject(obj: T, scope: Scope) {
+                    if (delegateNotifier.hasDelegates(obj)) {
+                        delegateNotifier.notifyDelegates(obj, scope)
+                    } else {
+                        super.inject(obj, scope)
+                    }
                 }
             }
         }
-    }
-    companion object TP {
-        val delegateNotifier = DelegateNotifier()
 
         fun openScope(name: Any): Scope = Toothpick.openScope(name)
 

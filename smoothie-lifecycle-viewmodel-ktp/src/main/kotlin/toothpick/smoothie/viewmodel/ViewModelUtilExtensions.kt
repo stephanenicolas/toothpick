@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
-import toothpick.ktp.KTPScope
+import toothpick.Scope
 import toothpick.ktp.binding.module
 
 /**
@@ -28,7 +28,7 @@ import toothpick.ktp.binding.module
  *
  * @param activity the fragment activity to observe.
  */
-fun KTPScope.closeOnViewModelCleared(activity: FragmentActivity): KTPScope {
+fun Scope.closeOnViewModelCleared(activity: FragmentActivity): Scope {
     ViewModelUtil.closeOnViewModelCleared(activity, this)
     return this
 }
@@ -38,7 +38,7 @@ fun KTPScope.closeOnViewModelCleared(activity: FragmentActivity): KTPScope {
  *
  * @param fragment the fragment to observe.
  */
-fun KTPScope.closeOnViewModelCleared(fragment: Fragment): KTPScope {
+fun Scope.closeOnViewModelCleared(fragment: Fragment): Scope {
     ViewModelUtil.closeOnViewModelCleared(fragment, this)
     return this
 }
@@ -52,7 +52,7 @@ fun KTPScope.closeOnViewModelCleared(fragment: Fragment): KTPScope {
  * @param factory optional factory needed to create the view model instances.
  * @param viewModelClass the class of the view model to inject.
  */
-inline fun <reified T : ViewModel> KTPScope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null): KTPScope {
+inline fun <reified T : ViewModel> Scope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null): Scope {
     installModules(module {
         bind(T::class.java).toProviderInstance(ViewModelProvider(activity, factory, T::class.java))
     })
@@ -68,7 +68,7 @@ inline fun <reified T : ViewModel> KTPScope.installViewModelBinding(activity: Fr
  * @param factory optional factory needed to create the view model instances.
  * @param viewModelClass the class of the view model to inject.
  */
-inline fun <reified T : ViewModel> KTPScope.installViewModelBinding(fragment: Fragment, factory: Factory? = null): KTPScope {
+inline fun <reified T : ViewModel> Scope.installViewModelBinding(fragment: Fragment, factory: Factory? = null): Scope {
     installModules(module {
         bind(T::class.java).toProviderInstance(ViewModelProvider(fragment, factory, T::class.java))
     })

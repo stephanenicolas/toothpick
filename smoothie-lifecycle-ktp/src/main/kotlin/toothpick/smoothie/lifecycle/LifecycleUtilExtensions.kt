@@ -17,14 +17,14 @@
 package toothpick.smoothie.lifecycle
 
 import androidx.lifecycle.LifecycleOwner
-import toothpick.ktp.KTPScope
+import toothpick.Scope
 
 /**
  * The scope will be closed automatically during {@code owner}'s onDestroy event.
  *
  * @param owner the lifecycle owner to observe.
  */
-fun KTPScope.closeOnDestroy(owner: LifecycleOwner): KTPScope {
+fun Scope.closeOnDestroy(owner: LifecycleOwner): Scope {
     LifecycleUtil.closeOnDestroy(owner, this)
     return this
 }
