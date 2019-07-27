@@ -19,7 +19,7 @@ package toothpick;
 import toothpick.locators.MemberInjectorLocator;
 
 /** Default implementation of an injector. */
-public final class InjectorImpl implements Injector {
+public class InjectorImpl implements Injector {
   /**
    * {@inheritDoc}
    *

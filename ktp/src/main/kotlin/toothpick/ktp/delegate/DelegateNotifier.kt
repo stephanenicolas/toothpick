@@ -35,4 +35,8 @@ class DelegateNotifier {
         }
         delegatesMap.remove(container)
     }
+
+    fun hasDelegates(container: Any): Boolean {
+        return delegatesMap.contains(container)
+    }
 }
