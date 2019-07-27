@@ -42,15 +42,11 @@ open class KTPScope(private val scope: Scope) : Scope by scope {
     override fun getRootScope() = KTPScope(scope.rootScope)
     override fun openSubScope(subScopeName: Any) = KTPScope(scope.openSubScope(subScopeName))
 
-    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig): KTPScope {
-        // we already check later that sub scope is a child of this
-        val wasOpen = Toothpick.isScopeOpen(subScopeName)
-        val subScope = scope.openSubScope(subScopeName)
-        val ktpScope = KTPScope(subScope)
-        if (!wasOpen) {
-            scopeConfig.configure(ktpScope)
-        }
-        return ktpScope
+    override fun openSubScope(subScopeName: Any, scopeConfig: Scope.ScopeConfig)
+            = KTPScope(scope.openSubScope(subScopeName, scopeConfig))
+
+    fun openSubScope(subScopeName: Any, scopeConfig: (KTPScope) -> Unit): KTPScope
+            = openSubScope(subScopeName) { scope -> scopeConfig.invoke(KTPScope(scope))
     }
 
     inline fun <reified T> getInstance(name: String? = null): T = this.getInstance(T::class.java, name)

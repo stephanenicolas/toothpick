@@ -35,9 +35,8 @@ class SimpleActivity : FragmentActivity() {
         openScope(application)
                 .openBackpackFlowSubScope()
                 .openSimpleActivityViewModelSubScope(this)
-                .openSubScope(this) { ifScopeCreated ->
-                    (ifScopeCreated as KTPScope)
-                            .installModules(SmoothieAndroidXActivityModule(this))
+                .openSubScope(this) { ifScopeCreated: KTPScope ->
+                    ifScopeCreated.installModules(SmoothieAndroidXActivityModule(this))
                             .closeOnDestroy(this)
                 }
                 .inject(this)
