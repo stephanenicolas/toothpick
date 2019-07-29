@@ -16,6 +16,7 @@
  */
 package toothpick.smoothie.lifecycle
 
+import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -23,9 +24,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import toothpick.Toothpick
 import toothpick.ktp.KTP
+import androidx.test.core.app.ApplicationProvider
 
 @RunWith(RobolectricTestRunner::class)
 class LifecycleUtilExtensionsTest {
@@ -34,7 +35,7 @@ class LifecycleUtilExtensionsTest {
         // GIVEN
         val activityController = Robolectric.buildActivity(FragmentActivity::class.java).create()
         val activity = activityController.get()
-        val application = RuntimeEnvironment.application
+        val application: Context = ApplicationProvider.getApplicationContext()
 
         // WHEN
         KTP.openScopes(application, activity)

@@ -16,6 +16,7 @@
  */
 package toothpick.smoothie.viewmodel
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentActivity
 import org.hamcrest.CoreMatchers.`is`
@@ -25,9 +26,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import toothpick.Toothpick.isScopeOpen
 import toothpick.ktp.KTP
+import androidx.test.core.app.ApplicationProvider
 
 @RunWith(RobolectricTestRunner::class)
 class ViewModelUtilExtensionsTest {
@@ -36,7 +37,7 @@ class ViewModelUtilExtensionsTest {
         // GIVEN
         val activityController = Robolectric.buildActivity(FragmentActivity::class.java).create()
         val activity = activityController.get()
-        val application = RuntimeEnvironment.application
+        val application: Context = ApplicationProvider.getApplicationContext()
 
         // WHEN
         KTP.openScopes(application, activity)
@@ -52,7 +53,7 @@ class ViewModelUtilExtensionsTest {
         // GIVEN
         val activityController = Robolectric.buildActivity(FragmentActivity::class.java).create()
         val activity = activityController.get()
-        val application = RuntimeEnvironment.application
+        val application: Context = ApplicationProvider.getApplicationContext()
 
         // WHEN
         KTP.openScopes(application, activity)
@@ -68,7 +69,7 @@ class ViewModelUtilExtensionsTest {
         // GIVEN
         val activityController = Robolectric.buildActivity(FragmentActivity::class.java).create()
         val activity = activityController.get()
-        val application = RuntimeEnvironment.application
+        val application: Context = ApplicationProvider.getApplicationContext()
         // WHEN
         val scope = KTP.openScopes(application, ViewModelScope::class.java)
                 .installViewModelBinding<TestViewModel>(activity)

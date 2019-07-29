@@ -29,13 +29,12 @@ class KTP : Toothpick() {
 
         init {
             injector = object : InjectorImpl() {
-                override fun <T : Any> inject(obj: T, scope: Scope) {
+                override fun <T : Any> inject(obj: T, scope: Scope) =
                     if (delegateNotifier.hasDelegates(obj)) {
                         delegateNotifier.notifyDelegates(obj, scope)
                     } else {
                         super.inject(obj, scope)
                     }
-                }
             }
         }
 
