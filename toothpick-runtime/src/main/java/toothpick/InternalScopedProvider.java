@@ -26,7 +26,7 @@ import javax.inject.Provider;
 public class InternalScopedProvider<T> extends InternalProvider<T> {
   protected Scope scope;
 
-  public InternalScopedProvider(Scope scope, Factory<?> factory) {
+  public InternalScopedProvider(Scope scope, Factory<T> factory) {
     super(factory);
     this.scope = scope;
   }
@@ -51,15 +51,22 @@ public class InternalScopedProvider<T> extends InternalProvider<T> {
 
   public InternalScopedProvider(
       Scope scope,
-      Class<?> factoryKeyClass,
-      boolean isProviderFactoryClass,
+      Class<? extends T> factoryKeyClass,
+      boolean isCreatingSingletonInScope,
+      boolean isCreatingReleasableInScope) {
+    super(factoryKeyClass, isCreatingSingletonInScope, isCreatingReleasableInScope);
+    this.scope = scope;
+  }
+
+  public InternalScopedProvider(
+      Scope scope,
+      Class<? extends Provider<? extends T>> factoryKeyClass,
       boolean isCreatingSingletonInScope,
       boolean isCreatingReleasableInScope,
       boolean isProvidingSingletonInScope,
       boolean isProvidingReleasable) {
     super(
         factoryKeyClass,
-        isProviderFactoryClass,
         isCreatingSingletonInScope,
         isCreatingReleasableInScope,
         isProvidingSingletonInScope,

@@ -86,6 +86,10 @@ subprojects { project ->
   apply plugin: 'maven'
   apply plugin: 'com.diffplug.gradle.spotless'
 
+  tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.deprecation = true
+  }
 
   spotless {
     java {

@@ -35,7 +35,7 @@ import toothpick.data.FooProvider;
 public class CyclicDependencyExceptionTest {
 
   @Test
-  public void testConstructor_shouldCreateEmptyMessage_whenNotPassedAMessage() throws Exception {
+  public void testConstructor_shouldCreateEmptyMessage_whenNotPassedAMessage() {
     // GIVEN
 
     // WHEN
@@ -46,7 +46,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void testConstructor_shouldCreateMessage_whenPassedAMessage() throws Exception {
+  public void testConstructor_shouldCreateMessage_whenPassedAMessage() {
     // GIVEN
 
     // WHEN
@@ -57,7 +57,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void testConstructor_shouldCreateCause_whenPassedACause() throws Exception {
+  public void testConstructor_shouldCreateCause_whenPassedACause() {
     // GIVEN
     Throwable cause = new Exception("Foo");
 
@@ -70,8 +70,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void testConstructor_shouldCreateMessageAndCause_whenPassedAMessageAndCause()
-      throws Exception {
+  public void testConstructor_shouldCreateMessageAndCause_whenPassedAMessageAndCause() {
     // GIVEN
     Throwable cause = new Exception();
 
@@ -84,8 +83,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void newCyclicDependencyException_showGenerateWholePath_whenCycleStartsPath()
-      throws Exception {
+  public void newCyclicDependencyException_showGenerateWholePath_whenCycleStartsPath() {
     String expectedErrorMessage =
         "Class toothpick.data.CyclicFoo creates a cycle:\n"
             + "\n"
@@ -103,7 +101,7 @@ public class CyclicDependencyExceptionTest {
             + "               ================\n";
 
     // GIVEN
-    List<Class> path = new ArrayList<>();
+    List<Class<?>> path = new ArrayList<>();
     path.add(CyclicFoo.class);
     path.add(Bar.class);
     path.add(Foo.class);
@@ -117,8 +115,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void newCyclicDependencyException_showGeneratePartialPath_whenCycleStartsInTheMiddle()
-      throws Exception {
+  public void newCyclicDependencyException_showGeneratePartialPath_whenCycleStartsInTheMiddle() {
     String expectedErrorMessage =
         "Class toothpick.data.CyclicFoo creates a cycle:\n"
             + "\n"
@@ -134,7 +131,7 @@ public class CyclicDependencyExceptionTest {
             + "               ================\n";
 
     // GIVEN
-    List<Class> path = new ArrayList<>();
+    List<Class<?>> path = new ArrayList<>();
     path.add(Bar.class);
     path.add(CyclicFoo.class);
     path.add(Foo.class);
@@ -148,8 +145,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void newCyclicDependencyException_showGenerateLastElementPath_whenCycleFinishesPath()
-      throws Exception {
+  public void newCyclicDependencyException_showGenerateLastElementPath_whenCycleFinishesPath() {
     String expectedErrorMessage =
         "Class toothpick.data.CyclicFoo creates a cycle:\n"
             + "\n"
@@ -161,7 +157,7 @@ public class CyclicDependencyExceptionTest {
             + "               ================\n";
 
     // GIVEN
-    List<Class> path = new ArrayList<>();
+    List<Class<?>> path = new ArrayList<>();
     path.add(Bar.class);
     path.add(Foo.class);
     path.add(BarChild.class);
@@ -175,8 +171,7 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void newCyclicDependencyException_showGenerateWholePath_whenStartCannotBeFound()
-      throws Exception {
+  public void newCyclicDependencyException_showGenerateWholePath_whenStartCannotBeFound() {
     String expectedErrorMessage =
         "Class toothpick.data.FooProvider creates a cycle:\n"
             + "\n"
@@ -194,7 +189,7 @@ public class CyclicDependencyExceptionTest {
             + "               ================\n";
 
     // GIVEN
-    List<Class> path = new ArrayList<>();
+    List<Class<?>> path = new ArrayList<>();
     path.add(CyclicFoo.class);
     path.add(Bar.class);
     path.add(Foo.class);
@@ -208,8 +203,8 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test
-  public void newCyclicDependencyException_showGenerateOneElementPath_whenCycleContainsOneElement()
-      throws Exception {
+  public void
+      newCyclicDependencyException_showGenerateOneElementPath_whenCycleContainsOneElement() {
     String expectedErrorMessage =
         "Class toothpick.data.CyclicFoo creates a cycle:\n"
             + "\n"
@@ -221,7 +216,7 @@ public class CyclicDependencyExceptionTest {
             + "               ================\n";
 
     // GIVEN
-    List<Class> path = new ArrayList<>();
+    List<Class<?>> path = new ArrayList<>();
     path.add(CyclicFoo.class);
 
     // WHEN
@@ -232,8 +227,8 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test(expected = NullPointerException.class)
-  public void newCyclicDependencyException_showThrowNullPointerException_whenPathIsNull()
-      throws Exception {
+  @SuppressWarnings("ThrowableInstanceNeverThrown")
+  public void newCyclicDependencyException_showThrowNullPointerException_whenPathIsNull() {
     // GIVEN, WHEN
     new CyclicDependencyException(null, CyclicFoo.class);
 
@@ -242,20 +237,20 @@ public class CyclicDependencyExceptionTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void newCyclicDependencyException_showThrowIllegalArgumentException_whenPathIsEmpty()
-      throws Exception {
+  @SuppressWarnings("ThrowableInstanceNeverThrown")
+  public void newCyclicDependencyException_showThrowIllegalArgumentException_whenPathIsEmpty() {
     // GIVEN, WHEN
-    new CyclicDependencyException(new ArrayList<Class>(), CyclicFoo.class);
+    new CyclicDependencyException(new ArrayList<Class<?>>(), CyclicFoo.class);
 
     // THEN
     fail("Should throw an exception as a wrong parameters are passed");
   }
 
   @Test(expected = NullPointerException.class)
-  public void newCyclicDependencyException_showThrowNullPointerException_whenStartClassIsNull()
-      throws Exception {
+  @SuppressWarnings("ThrowableInstanceNeverThrown")
+  public void newCyclicDependencyException_showThrowNullPointerException_whenStartClassIsNull() {
     // GIVEN
-    List<Class> path = new ArrayList<>();
+    List<Class<?>> path = new ArrayList<>();
     path.add(CyclicFoo.class);
 
     // WHEN

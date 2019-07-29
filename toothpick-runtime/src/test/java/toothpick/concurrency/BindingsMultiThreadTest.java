@@ -52,22 +52,22 @@ public class BindingsMultiThreadTest {
 
   public @Rule PowerMockRule rule = new PowerMockRule();
 
-  static final String ROOT_SCOPE = "ROOT_SCOPE";
-  final List<Object> scopeNames = new CopyOnWriteArrayList<>();
+  private static final String ROOT_SCOPE = "ROOT_SCOPE";
+  private final List<Object> scopeNames = new CopyOnWriteArrayList<>();
   private static ClassCreator classCreator = new ClassCreator();
   private ArgumentCaptor<Class> argument;
 
   @Before
+  @SuppressWarnings("unchecked")
   public void setUp() {
-
     PowerMockito.mockStatic(FactoryLocator.class);
     argument = ArgumentCaptor.forClass(Class.class);
     when(FactoryLocator.getFactory(argument.capture()))
         .thenAnswer(
             new Answer<Factory>() {
               @Override
-              public Factory answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return new DynamicTestClassesFactory(argument.getValue(), true);
+              public Factory answer(InvocationOnMock invocationOnMock) {
+                return new DynamicTestClassesFactory<>(argument.getValue(), true);
               }
             });
     Toothpick.setConfiguration(Configuration.forProduction());
@@ -76,26 +76,27 @@ public class BindingsMultiThreadTest {
   }
 
   @After
+  @SuppressWarnings("unchecked")
   public void tearDown() {
     Toothpick.reset();
     ThreadTestUtil.shutdown();
     try {
-      PowerMockito.verifyStatic(Mockito.atLeast(0));
+      PowerMockito.verifyStatic(FactoryLocator.class, Mockito.atLeast(0));
       for (Class allValue : argument.getAllValues()) {
         FactoryLocator.getFactory(allValue);
       }
     } catch (Exception e) {
+      // ignored
     }
   }
 
   @Test
   public void concurrentBindingInstall_shouldNotCrash() {
     // GIVEN
-    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
 
     // WHEN
-    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+    for (int indexThread = 0; indexThread < STANDARD_THREAD_COUNT; indexThread++) {
       InstallBindingThread runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
       threadList.add(runnable);
       ThreadTestUtil.submit(runnable);
@@ -113,12 +114,11 @@ public class BindingsMultiThreadTest {
   @Test
   public void concurrentBindingInstallAndToString_shouldNotCrash() {
     // GIVEN
-    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
 
     // WHEN
-    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+    for (int indexThread = 0; indexThread < STANDARD_THREAD_COUNT; indexThread++) {
       TestableThread runnable;
       if (random.nextInt(100) < 20) {
         runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
@@ -141,12 +141,11 @@ public class BindingsMultiThreadTest {
   @Test
   public void concurrentBindingInstallAndGetInstance_shouldNotCrash() {
     // GIVEN
-    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
 
     // WHEN
-    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+    for (int indexThread = 0; indexThread < STANDARD_THREAD_COUNT; indexThread++) {
       TestableThread runnable;
       if (random.nextInt(100) < 20) {
         runnable = new InstallBindingThread(classCreator, ROOT_SCOPE);
@@ -173,12 +172,11 @@ public class BindingsMultiThreadTest {
   @Test
   public void concurrentScopedGetInstance_shouldNotCrash() {
     // GIVEN
-    final int addNodeThreadCount = STANDARD_THREAD_COUNT;
     List<TestableThread> threadList = new ArrayList<>();
     Random random = new Random();
 
     // WHEN
-    for (int indexThread = 0; indexThread < addNodeThreadCount; indexThread++) {
+    for (int indexThread = 0; indexThread < STANDARD_THREAD_COUNT; indexThread++) {
       TestableThread runnable =
           new GetInstanceThread(
               ROOT_SCOPE, classCreator.allClasses[random.nextInt(classCreator.allClasses.length)]);

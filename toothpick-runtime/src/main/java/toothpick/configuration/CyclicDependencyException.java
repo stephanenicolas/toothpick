@@ -23,17 +23,17 @@ public class CyclicDependencyException extends RuntimeException {
   private static final int MARGIN_SIZE = 3;
   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-  public CyclicDependencyException() {}
+  CyclicDependencyException() {}
 
-  public CyclicDependencyException(String message) {
+  CyclicDependencyException(String message) {
     super(message);
   }
 
-  public CyclicDependencyException(String message, Throwable cause) {
+  CyclicDependencyException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  public CyclicDependencyException(Throwable cause) {
+  CyclicDependencyException(Throwable cause) {
     super(cause);
   }
 
@@ -42,13 +42,13 @@ public class CyclicDependencyException extends RuntimeException {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 
-  public CyclicDependencyException(List<Class> path, Class startClass) {
+  CyclicDependencyException(List<Class<?>> path, Class startClass) {
     this(
         String.format(
             "Class %s creates a cycle:%n%s", startClass.getName(), format(path, startClass)));
   }
 
-  private static String format(List<Class> path, Class startClass) {
+  private static String format(List<Class<?>> path, Class startClass) {
     if (path.size() == 0) {
       throw new IllegalArgumentException();
     }
@@ -96,7 +96,7 @@ public class CyclicDependencyException extends RuntimeException {
     builder.append(LINE_SEPARATOR);
   }
 
-  private static int findLongestClassNameLength(List<Class> path) {
+  private static int findLongestClassNameLength(List<Class<?>> path) {
     int length, max = 0;
     for (Class clazz : path) {
       length = clazz.getName().length();

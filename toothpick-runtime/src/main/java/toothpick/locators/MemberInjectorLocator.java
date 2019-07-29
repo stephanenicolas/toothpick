@@ -27,6 +27,7 @@ import toothpick.MemberInjector;
 public class MemberInjectorLocator {
   private MemberInjectorLocator() {}
 
+  @SuppressWarnings("unchecked")
   public static <T> MemberInjector<T> getMemberInjector(Class<T> clazz) {
     try {
       Class<? extends MemberInjector<T>> memberInjectorClass =

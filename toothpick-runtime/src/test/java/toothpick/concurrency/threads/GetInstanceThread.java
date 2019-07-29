@@ -18,12 +18,12 @@ package toothpick.concurrency.threads;
 
 import toothpick.Toothpick;
 
-public class GetInstanceThread extends TestableThread {
+public class GetInstanceThread<T> extends TestableThread {
   static int instanceNumber = 0;
   private Object scopeName;
-  private Class clazz;
+  private Class<T> clazz;
 
-  public GetInstanceThread(Object scopeName, Class clazz) {
+  public GetInstanceThread(Object scopeName, Class<T> clazz) {
     super("GetInstanceThread " + instanceNumber++);
     this.scopeName = scopeName;
     this.clazz = clazz;

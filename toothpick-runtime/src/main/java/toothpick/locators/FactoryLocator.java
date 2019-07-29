@@ -27,6 +27,7 @@ import toothpick.Factory;
 public class FactoryLocator {
   private FactoryLocator() {}
 
+  @SuppressWarnings("unchecked")
   public static <T> Factory<T> getFactory(Class<T> clazz) {
     try {
       Class<? extends Factory<T>> factoryClass =

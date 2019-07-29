@@ -27,6 +27,7 @@ public class InjectorImpl implements Injector {
    * MemberInjector} is found, we use it to inject the members of {@code obj}.
    */
   @Override
+  @SuppressWarnings("unchecked")
   public <T> void inject(T obj, Scope scope) {
     Class<? super T> currentClass = (Class<T>) obj.getClass();
     do {
