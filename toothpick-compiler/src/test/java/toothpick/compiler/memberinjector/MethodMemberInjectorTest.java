@@ -376,7 +376,7 @@ public class MethodMemberInjectorTest {
                     "public final class TestMethodInjectionParent$TestMethodInjection__MemberInjector "
                         + "implements MemberInjector<TestMethodInjectionParent.TestMethodInjection> {",
                     //
-                    "  private MemberInjector superMemberInjector = new test.TestMethodInjectionParent__MemberInjector();\n", //
+                    "  private MemberInjector<TestMethodInjectionParent> superMemberInjector = new test.TestMethodInjectionParent__MemberInjector();\n", //
                     "  @Override", //
                     "  public void inject(TestMethodInjectionParent.TestMethodInjection target, Scope scope) {", //
                     "    superMemberInjector.inject(target, scope);", //

@@ -4,19 +4,6 @@ repositories {
   google()
 }
 
-dependencies {
-  compileOnly project(':toothpick')
-  api project(':smoothie')
-  compileOnly deps.inject
-  compileOnly deps.supportv4
-
-  testImplementation deps.supportv4
-  testImplementation project(':toothpick-testing')
-  testImplementation deps.junit4
-  testImplementation deps.mockito
-  testImplementation deps.robolectric
-}
-
 android {
   compileSdkVersion 28
 
@@ -35,6 +22,20 @@ android {
     // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
     checkReleaseBuilds false
   }
+}
+
+dependencies {
+  compileOnly project(':toothpick')
+  api project(':smoothie')
+  compileOnly deps.inject
+  compileOnly deps.supportv4
+
+  testImplementation deps.supportv4
+  testImplementation project(':toothpick-testing')
+  testImplementation deps.junit4
+  testImplementation deps.mockito
+  testImplementation deps.robolectric
+  testImplementation deps.androidx_test_core
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

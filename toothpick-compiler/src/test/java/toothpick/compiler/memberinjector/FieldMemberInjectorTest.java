@@ -754,7 +754,7 @@ public class FieldMemberInjectorTest {
                     "import toothpick.Scope;", //
                     "", //
                     "public final class TestMemberInjection$InnerClass__MemberInjector implements MemberInjector<TestMemberInjection.InnerClass> {", //
-                    "  private MemberInjector superMemberInjector "
+                    "  private MemberInjector<TestMemberInjection.InnerSuperClass> superMemberInjector "
                         + "= new test.TestMemberInjection$InnerSuperClass__MemberInjector();",
                     //
                     "  @Override", //
@@ -805,7 +805,7 @@ public class FieldMemberInjectorTest {
                     "import toothpick.Scope;", //
                     "", //
                     "public final class TestMemberInjection__MemberInjector implements MemberInjector<TestMemberInjection> {", //
-                    "  private MemberInjector superMemberInjector "
+                    "  private MemberInjector<TestMemberInjectionParent> superMemberInjector "
                         + "= new test.TestMemberInjectionParent__MemberInjector();",
                     //
                     "  @Override", //

@@ -22,6 +22,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.List;
 import javax.lang.model.element.Modifier;
@@ -86,7 +87,12 @@ public class MemberInjectorGenerator extends CodeGenerator {
   private void emitSuperMemberInjectorFieldIfNeeded(TypeSpec.Builder scopeMemberTypeSpec) {
     if (superClassThatNeedsInjection != null) {
       FieldSpec.Builder superMemberInjectorField =
-          FieldSpec.builder(MemberInjector.class, "superMemberInjector", Modifier.PRIVATE)
+          FieldSpec.builder(
+                  ParameterizedTypeName.get(
+                      ClassName.get(MemberInjector.class),
+                      TypeName.get(superClassThatNeedsInjection.asType())),
+                  "superMemberInjector",
+                  Modifier.PRIVATE)
               // TODO use proper typing here
               .initializer(
                   "new $L__MemberInjector()",

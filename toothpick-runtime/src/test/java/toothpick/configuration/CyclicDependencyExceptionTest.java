@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
 import toothpick.data.Bar;
 import toothpick.data.BarChild;
@@ -53,7 +52,7 @@ public class CyclicDependencyExceptionTest {
     CyclicDependencyException exception = new CyclicDependencyException("Foo");
 
     // THEN
-    Assert.assertThat(exception.getMessage(), CoreMatchers.is("Foo"));
+    assertThat(exception.getMessage(), CoreMatchers.is("Foo"));
   }
 
   @Test
