@@ -84,7 +84,7 @@ public interface Scope {
    *     Singleton}, the root scope is always returned. Thus the {@link Singleton} scope annotation
    *     class doesn't need to be explicitely supported, it's built-in.
    */
-  Scope getParentScope(Class scopeAnnotationClass);
+  <A extends Annotation> Scope getParentScope(Class<A> scopeAnnotationClass);
 
   /**
    * @return the root scope of this scope. The root scope is the scope itself if the scope has no

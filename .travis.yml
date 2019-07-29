@@ -1,4 +1,5 @@
 language: android
+dist: trusty
 
 android:
   components:
@@ -38,7 +39,7 @@ cache:
 
 script:
   - ./gradlew clean check
-  - ./gradlew -b toothpick-sample/build.gradle clean check
+  - ./gradlew -b toothpick-sample/build.gradle clean check 
   - ./gradlew -b smoothie-sample/build.gradle clean check -x lint
   - ./gradlew -b toothpick-kotlin-android-sample/build.gradle clean check -x lint
 

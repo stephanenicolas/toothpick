@@ -21,11 +21,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import android.app.Application;
 import androidx.fragment.app.FragmentActivity;
+import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -38,7 +38,7 @@ public class LifecycleUtilTest {
     ActivityController<FragmentActivity> activityController =
         Robolectric.buildActivity(FragmentActivity.class).create();
     FragmentActivity activity = activityController.get();
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
     Scope activityScope = Toothpick.openScopes(application, activity);
 
     // WHEN

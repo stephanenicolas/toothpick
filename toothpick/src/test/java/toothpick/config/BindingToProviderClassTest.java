@@ -32,7 +32,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).toProvider(StringProvider.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -57,7 +57,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").toProvider(StringProvider.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -82,7 +82,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).toProvider(StringProvider.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -107,7 +107,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).toProvider(StringProvider.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -132,7 +132,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").toProvider(StringProvider.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -157,7 +157,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).toProvider(StringProvider.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -182,7 +182,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).toProvider(StringProvider.class).singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -212,7 +212,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -242,7 +242,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -267,7 +267,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).toProvider(StringProvider.class).providesSingleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -292,7 +292,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").toProvider(StringProvider.class).providesSingleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -321,7 +321,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .providesSingleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -350,7 +350,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .providesReleasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -380,7 +380,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .providesReleasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -410,7 +410,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .providesReleasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -440,7 +440,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -472,7 +472,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,
@@ -504,7 +504,7 @@ public class BindingToProviderClassTest extends BaseBindingTest {
         .singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         PROVIDER_CLASS,

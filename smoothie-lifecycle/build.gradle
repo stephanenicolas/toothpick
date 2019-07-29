@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 repositories {
   google()
@@ -29,20 +28,17 @@ android {
 }
 
 dependencies {
-  implementation project(':toothpick-runtime')
+  compileOnly project(':toothpick-runtime')
   api project(':smoothie')
   implementation deps.inject
   implementation deps.lifecycle
   implementation deps.androidxv4
-  implementation deps.kotlin_runtime
 
-  testImplementation deps.androidxv4
-  testImplementation deps.lifecycle
-  testImplementation deps.kotlin_runtime
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
   testImplementation deps.mockito
   testImplementation deps.robolectric
+  testImplementation deps.androidx_test_core
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

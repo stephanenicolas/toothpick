@@ -26,18 +26,18 @@ import toothpick.locators.FactoryLocator;
  */
 public class InternalProvider<T> {
   /*VisibleForTesting*/ volatile T instance;
-  private Factory<T> factory;
-  private Class<T> factoryClass;
+  private Factory<? extends T> factory;
+  private Class<? extends T> factoryClass;
   /*VisibleForTesting*/ volatile Provider<? extends T> providerInstance;
-  private Factory<Provider<T>> providerFactory;
-  private Class<Provider<T>> providerFactoryClass;
+  private Factory<? extends Provider<? extends T>> providerFactory;
+  private Class<? extends Provider<? extends T>> providerFactoryClass;
 
   private boolean isSingleton;
   private boolean isReleasable;
-  protected boolean isProvidingSingleton;
+  private boolean isProvidingSingleton;
   private boolean isProvidingReleasable;
 
-  public InternalProvider(T instance) {
+  InternalProvider(T instance) {
     // not that an instance cannot be releasable as TP wouldn't know how to recreate a second
     // instance.
     if (instance == null) {
@@ -48,7 +48,7 @@ public class InternalProvider<T> {
     this.isSingleton = true;
   }
 
-  public InternalProvider(
+  InternalProvider(
       Provider<? extends T> providerInstance,
       boolean isProvidingSingleton,
       boolean isProvidingReleasable) {
@@ -65,12 +65,12 @@ public class InternalProvider<T> {
     this.isProvidingReleasable = isProvidingSingleton && isProvidingReleasable;
   }
 
-  public InternalProvider(Factory<?> factory) {
+  InternalProvider(Factory<T> factory) {
     if (factory == null) {
       throw new IllegalArgumentException("The factory can't be null.");
     }
 
-    this.factory = (Factory<T>) factory;
+    this.factory = factory;
     this.isSingleton = factory.hasSingletonAnnotation();
     this.isReleasable = this.isSingleton && factory.hasReleasableAnnotation();
     this.isProvidingSingleton = factory.hasProvidesSingletonInScopeAnnotation();
@@ -78,9 +78,18 @@ public class InternalProvider<T> {
         this.isProvidingSingleton && factory.hasProvidesReleasableAnnotation();
   }
 
-  public InternalProvider(
-      Class<?> factoryKeyClass,
-      boolean isProviderFactoryClass,
+  InternalProvider(Class<? extends T> factoryKeyClass, boolean isSingleton, boolean isReleasable) {
+    if (factoryKeyClass == null) {
+      throw new IllegalArgumentException("The factory class can't be null.");
+    }
+
+    this.factoryClass = factoryKeyClass;
+    this.isSingleton = isSingleton;
+    this.isReleasable = this.isSingleton && isReleasable;
+  }
+
+  InternalProvider(
+      Class<? extends Provider<? extends T>> factoryKeyClass,
       boolean isSingleton,
       boolean isReleasable,
       boolean isProvidingSingleton,
@@ -89,13 +98,9 @@ public class InternalProvider<T> {
       throw new IllegalArgumentException("The factory class can't be null.");
     }
 
-    if (isProviderFactoryClass) {
-      this.providerFactoryClass = (Class<Provider<T>>) factoryKeyClass;
-      this.isProvidingSingleton = isProvidingSingleton;
-      this.isProvidingReleasable = this.isProvidingSingleton && isProvidingReleasable;
-    } else {
-      this.factoryClass = (Class<T>) factoryKeyClass;
-    }
+    this.providerFactoryClass = factoryKeyClass;
+    this.isProvidingSingleton = isProvidingSingleton;
+    this.isProvidingReleasable = this.isProvidingSingleton && isProvidingReleasable;
     this.isSingleton = isSingleton;
     this.isReleasable = this.isSingleton && isReleasable;
   }
@@ -118,7 +123,6 @@ public class InternalProvider<T> {
 
     if (factoryClass != null && factory == null) {
       factory = FactoryLocator.getFactory(factoryClass);
-      checkFactoryScope(factory);
       this.isSingleton |= factory.hasSingletonAnnotation();
       this.isReleasable |= (this.isSingleton && factory.hasReleasableAnnotation());
       // gc
@@ -138,7 +142,6 @@ public class InternalProvider<T> {
 
     if (providerFactoryClass != null && providerFactory == null) {
       providerFactory = FactoryLocator.getFactory(providerFactoryClass);
-      checkFactoryScope(providerFactory);
       this.isSingleton |= providerFactory.hasSingletonAnnotation();
       this.isReleasable |= (this.isSingleton && providerFactory.hasReleasableAnnotation());
       this.isProvidingSingleton |= providerFactory.hasProvidesSingletonInScopeAnnotation();
@@ -175,15 +178,11 @@ public class InternalProvider<T> {
         "A provider can only be used with an instance, a provider, a factory or a provider factory. Should not happen.");
   }
 
-  protected void checkFactoryScope(Factory<?> factory) {
-    // do nothing, will be overriden.
-  }
-
-  public boolean isReleasable() {
+  boolean isReleasable() {
     return isReleasable || isProvidingReleasable;
   }
 
-  public void release() {
+  void release() {
     if (isReleasable) {
       if (providerInstance != null) {
         providerInstance = null;

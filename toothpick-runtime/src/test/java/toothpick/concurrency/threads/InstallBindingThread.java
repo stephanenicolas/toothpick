@@ -36,6 +36,7 @@ public class InstallBindingThread extends TestableThread {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void doRun() {
     Scope scope = Toothpick.openScope(rootScopeName);
     scope.installModules(

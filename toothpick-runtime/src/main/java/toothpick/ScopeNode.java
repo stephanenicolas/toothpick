@@ -137,7 +137,7 @@ public abstract class ScopeNode implements Scope {
    */
   @SuppressWarnings({"unused", "used by generated code"})
   @Override
-  public ScopeNode getParentScope(Class scopeAnnotationClass) {
+  public <A extends Annotation> ScopeNode getParentScope(Class<A> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
 
     if (scopeAnnotationClass == Singleton.class) {
@@ -298,6 +298,7 @@ public abstract class ScopeNode implements Scope {
    * Bind Scope Annotation if the Scope name is a Scope Annotation. For example:
    * Toothpick.openScope(MyScopeAnnotation.class)
    */
+  @SuppressWarnings("unchecked")
   private void bindScopeAnnotationIfNameIsScopeAnnotation() {
     if (name.getClass() == Class.class //
         && Annotation.class.isAssignableFrom((Class) name) //

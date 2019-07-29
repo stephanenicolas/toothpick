@@ -12,8 +12,8 @@ class SimpleActivityViewModelFlow {
 
         fun openScope(parentScope: toothpick.Scope, factory: ViewModelProvider.Factory? = null, activity: FragmentActivity): toothpick.Scope {
             return parentScope.openSubScope(viewModelScopeName) {
-                it.closeOnViewModelCleared(activity)
-                        .installViewModelBinding(activity, factory, SimpleActivityViewModel::class.java)
+                        it.closeOnViewModelCleared(activity)
+                        .installViewModelBinding<SimpleActivityViewModel>(activity, factory)
             }
         }
     }

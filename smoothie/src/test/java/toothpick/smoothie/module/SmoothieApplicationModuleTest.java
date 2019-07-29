@@ -43,10 +43,10 @@ import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -56,7 +56,7 @@ public class SmoothieApplicationModuleTest {
   @Test
   public void testModule_shouldReturnApplicationBindings() throws Exception {
     // GIVEN
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 
@@ -70,7 +70,7 @@ public class SmoothieApplicationModuleTest {
     SharedPreferences sharedPreferences = appScope.getInstance(SharedPreferences.class);
 
     // THEN
-    assertThat(injectedApp, is(RuntimeEnvironment.application));
+    assertThat(injectedApp, is(ApplicationProvider.getApplicationContext()));
     assertThat(accountManager, notNullValue());
     assertThat(assetManager, notNullValue());
     assertThat(contentResolver, notNullValue());
@@ -82,7 +82,7 @@ public class SmoothieApplicationModuleTest {
   @Test
   public void testModule_shouldReturnSystemServices() throws Exception {
     // GIVEN
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 
@@ -105,7 +105,7 @@ public class SmoothieApplicationModuleTest {
     DownloadManager downloadManager = appScope.getInstance(DownloadManager.class);
 
     // THEN
-    assertThat(injectedApp, is(RuntimeEnvironment.application));
+    assertThat(injectedApp, is(ApplicationProvider.getApplicationContext()));
     assertThat(locationManager, notNullValue());
     assertThat(windowManager, notNullValue());
     assertThat(activityManager, notNullValue());
@@ -126,7 +126,7 @@ public class SmoothieApplicationModuleTest {
   @Test
   public void testModule_shouldReturnDefaultSharedPreferences() throws Exception {
     // GIVEN
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
 
     String itemKey = "isValid";
     SharedPreferences sharedPreferences =
@@ -146,7 +146,7 @@ public class SmoothieApplicationModuleTest {
   @Test
   public void testModule_shouldReturnNamedSharedPreferences() throws Exception {
     // GIVEN
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
 
     String sharedPreferencesName = "test";
     String itemKey = "isValid";

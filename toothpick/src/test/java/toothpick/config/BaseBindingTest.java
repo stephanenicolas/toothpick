@@ -33,14 +33,15 @@ public class BaseBindingTest {
     }
   }
 
-  protected Binding getBinding(Module module) {
+  @SuppressWarnings("unchecked")
+  <T> Binding<T> getBinding(Module module) {
     return module.getBindingSet().iterator().next();
   }
 
-  protected <T> void assertBinding(
+  <T> void assertBinding(
       Binding<T> binding,
       Mode mode,
-      Class<? extends T> keyClass,
+      Class<T> keyClass,
       String name,
       Class<? extends T> implementationClass,
       T instance,

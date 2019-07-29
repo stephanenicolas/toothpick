@@ -1,6 +1,7 @@
 package com.example.toothpick.kotlin
 
 import toothpick.Toothpick
+import toothpick.ktp.KTP
 import kotlin.annotation.AnnotationRetention.RUNTIME
 
 class BackpackFlow {
@@ -11,7 +12,7 @@ class BackpackFlow {
         }
 
         fun closeScope() {
-            Toothpick.closeScope(Scope::class.java)
+            KTP.closeScope(Scope::class.java)
         }
     }
 

@@ -16,8 +16,6 @@
  */
 package toothpick;
 
-import static java.lang.String.format;
-
 import javax.inject.Provider;
 
 /**
@@ -28,7 +26,7 @@ import javax.inject.Provider;
 public class InternalScopedProvider<T> extends InternalProvider<T> {
   protected Scope scope;
 
-  public InternalScopedProvider(Scope scope, Factory<?> factory) {
+  public InternalScopedProvider(Scope scope, Factory<T> factory) {
     super(factory);
     this.scope = scope;
   }
@@ -53,15 +51,22 @@ public class InternalScopedProvider<T> extends InternalProvider<T> {
 
   public InternalScopedProvider(
       Scope scope,
-      Class<?> factoryKeyClass,
-      boolean isProviderFactoryClass,
+      Class<? extends T> factoryKeyClass,
+      boolean isCreatingSingletonInScope,
+      boolean isCreatingReleasableInScope) {
+    super(factoryKeyClass, isCreatingSingletonInScope, isCreatingReleasableInScope);
+    this.scope = scope;
+  }
+
+  public InternalScopedProvider(
+      Scope scope,
+      Class<? extends Provider<? extends T>> factoryKeyClass,
       boolean isCreatingSingletonInScope,
       boolean isCreatingReleasableInScope,
       boolean isProvidingSingletonInScope,
       boolean isProvidingReleasable) {
     super(
         factoryKeyClass,
-        isProviderFactoryClass,
         isCreatingSingletonInScope,
         isCreatingReleasableInScope,
         isProvidingSingletonInScope,
@@ -73,23 +78,5 @@ public class InternalScopedProvider<T> extends InternalProvider<T> {
   // of the unscoped provider (
   public T get(Scope scope) {
     return super.get(this.scope);
-  }
-
-  @Override
-  protected void checkFactoryScope(Factory<?> factory) {
-    if (factory.getTargetScope(scope) != scope) {
-      String factoryClassName = factory.getClass().getName();
-      String factoryKeyClass =
-          factoryClassName.substring(0, factoryClassName.length() - "__Factory".length());
-      String message =
-          format(
-              "The class %s has a scope annotation that is not supported by the scope named \"%s\". "
-                  + "A binding for a scope annotated class or provider class must use an "
-                  + "annotation supported by the scope where the binding is installed. "
-                  + "This is also true for classes annotated with @Singleton without additional scope annotation: "
-                  + "they can only be installed in a root scope.",
-              factoryKeyClass, scope.getName());
-      throw new RuntimeException(message);
-    }
   }
 }

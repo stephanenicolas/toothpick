@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 import toothpick.Toothpick;
 import toothpick.testing.ToothPickRule;
 
@@ -20,7 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class SimpleActivityTestWithRules {
 
   @Rule(order = 1)
