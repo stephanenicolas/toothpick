@@ -12,6 +12,7 @@ ext.deps = [// Common
             lifecycle           : 'androidx.lifecycle:lifecycle-common-java8:2.2.0-alpha02',
             lifecycle_viewmodel : 'androidx.lifecycle:lifecycle-viewmodel:2.2.0-alpha02',
             lifecycle_extensions: 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02',
+            androidx_test_core  : 'androidx.test:core:1.2.0',
             butterknife         : 'com.jakewharton:butterknife:10.0.0',
             butterknife_compiler: 'com.jakewharton:butterknife-compiler:10.0.0',
             rxandroid           : 'io.reactivex:rxandroid:1.2.1',
@@ -50,7 +51,7 @@ ext.deps = [// Common
             powermock_junit     : 'org.powermock:powermock-module-junit4:1.7.4',
             powermock_rule      : 'org.powermock:powermock-module-junit4-rule-agent:1.7.4',
             kluent              : 'org.amshove.kluent:kluent-android:1.51',
-            robolectric         : 'org.robolectric:robolectric:4.3',
+            robolectric         : 'org.robolectric:robolectric:4.2.1',
 
             // Android Test Dependencies
             espresso            : 'com.android.support.test.espresso:espresso-core:2.2.2',

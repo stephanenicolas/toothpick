@@ -32,7 +32,7 @@ public class BindingToInstanceTest extends BaseBindingTest {
     module.bind(String.class).toInstance("bar");
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, INSTANCE, String.class, null, null, "bar", null, null, false, false, false, false);
   }
@@ -46,7 +46,7 @@ public class BindingToInstanceTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").toInstance("bar");
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         INSTANCE,
@@ -71,7 +71,7 @@ public class BindingToInstanceTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).toInstance("bar");
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         INSTANCE,

@@ -22,25 +22,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
 import android.view.LayoutInflater;
+import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
 @RunWith(RobolectricTestRunner.class)
+@SuppressWarnings("deprecation")
 public class SmoothieActivityModuleTest {
 
   @Test
   public void testGet() {
     // GIVEN
     Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 
@@ -49,8 +48,10 @@ public class SmoothieActivityModuleTest {
 
     // WHEN
     Activity injectedActivity = activityScope.getInstance(Activity.class);
-    FragmentManager fragmentManager = activityScope.getInstance(FragmentManager.class);
-    LoaderManager loaderManager = activityScope.getInstance(LoaderManager.class);
+    android.app.FragmentManager fragmentManager =
+        activityScope.getInstance(android.app.FragmentManager.class);
+    android.app.LoaderManager loaderManager =
+        activityScope.getInstance(android.app.LoaderManager.class);
     LayoutInflater layoutInflater = activityScope.getInstance(LayoutInflater.class);
 
     // THEN

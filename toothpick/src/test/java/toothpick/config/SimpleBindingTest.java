@@ -32,7 +32,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, SIMPLE, String.class, null, null, null, null, null, false, false, false, false);
   }
@@ -46,7 +46,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).withName("foo");
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, SIMPLE, String.class, "foo", null, null, null, null, false, false, false, false);
   }
@@ -60,7 +60,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         SIMPLE,
@@ -85,7 +85,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, SIMPLE, String.class, null, null, null, null, null, true, false, false, false);
   }
@@ -99,7 +99,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, SIMPLE, String.class, "foo", null, null, null, null, true, false, false, false);
   }
@@ -113,7 +113,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         SIMPLE,
@@ -138,7 +138,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, SIMPLE, String.class, null, null, null, null, null, true, true, false, false);
   }
@@ -152,7 +152,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding, SIMPLE, String.class, "foo", null, null, null, null, true, true, false, false);
   }
@@ -166,7 +166,7 @@ public class SimpleBindingTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         SIMPLE,

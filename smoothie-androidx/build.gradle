@@ -35,6 +35,7 @@ dependencies {
   testImplementation deps.junit4
   testImplementation deps.mockito
   testImplementation deps.robolectric
+  testImplementation deps.androidx_test_core
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

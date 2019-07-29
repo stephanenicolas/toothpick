@@ -85,7 +85,7 @@ class TestRuntime {
     }
 
     @Test
-    fun `constructor injection should inject mocks when they are defined`() {
+    fun `constructor injection by getInstance should inject dependencies when they are defined`() {
         // GIVEN
         When calling dependency.num() itReturns 2
         When calling namedDependency.num() itReturns 3
@@ -95,6 +95,43 @@ class TestRuntime {
         val nonEntryPoint: NonEntryPoint = KTP.openScope("Foo").getInstance()
 
         // THEN
+        assertDependencies(nonEntryPoint, 2, 3, 4)
+    }
+
+    @Test
+    fun `constructor injection byLazy should inject dependencies when they are defined`() {
+        // GIVEN
+        When calling dependency.num() itReturns 2
+        When calling namedDependency.num() itReturns 3
+        When calling qualifierDependency.num() itReturns 4
+
+        // WHEN
+        val nonEntryPoint: Lazy<NonEntryPoint> = KTP.openScope("Foo").getLazy()
+
+        // THEN
+        assertDependencies(nonEntryPoint.get(), 2, 3, 4)
+    }
+
+    @Test
+    fun `constructor injection by provider should inject dependencies when they are defined`() {
+        // GIVEN
+        When calling dependency.num() itReturns 2
+        When calling namedDependency.num() itReturns 3
+        When calling qualifierDependency.num() itReturns 4
+
+        // WHEN
+        val nonEntryPoint: Provider<NonEntryPoint> = KTP.openScope("Foo").getProvider()
+
+        // THEN
+        assertDependencies(nonEntryPoint.get(), 2, 3, 4)
+    }
+
+    private fun assertDependencies(
+      nonEntryPoint: NonEntryPoint,
+      dependencyValue: Int,
+      namedDependencyValue: Int,
+      qualifierDependencyValue: Int
+    ) {
         nonEntryPoint.shouldNotBeNull()
         nonEntryPoint.dependency.shouldNotBeNull()
         nonEntryPoint.lazyDependency.shouldNotBeNull()
@@ -106,15 +143,15 @@ class TestRuntime {
         nonEntryPoint.qualifierLazyDependency.shouldNotBeNull()
         nonEntryPoint.qualifierProviderDependency.shouldNotBeNull()
 
-        nonEntryPoint.dependency.num() shouldEqual 2
-        nonEntryPoint.lazyDependency.get().num() shouldEqual 2
-        nonEntryPoint.providerDependency.get().num() shouldEqual 2
-        nonEntryPoint.namedDependency.num() shouldEqual 3
-        nonEntryPoint.namedLazyDependency.get().num() shouldEqual 3
-        nonEntryPoint.namedProviderDependency.get().num() shouldEqual 3
-        nonEntryPoint.qualifierDependency.num() shouldEqual 4
-        nonEntryPoint.qualifierLazyDependency.get().num() shouldEqual 4
-        nonEntryPoint.qualifierProviderDependency.get().num() shouldEqual 4
+        nonEntryPoint.dependency.num() shouldEqual dependencyValue
+        nonEntryPoint.lazyDependency.get().num() shouldEqual dependencyValue
+        nonEntryPoint.providerDependency.get().num() shouldEqual dependencyValue
+        nonEntryPoint.namedDependency.num() shouldEqual namedDependencyValue
+        nonEntryPoint.namedLazyDependency.get().num() shouldEqual namedDependencyValue
+        nonEntryPoint.namedProviderDependency.get().num() shouldEqual namedDependencyValue
+        nonEntryPoint.qualifierDependency.num() shouldEqual qualifierDependencyValue
+        nonEntryPoint.qualifierLazyDependency.get().num() shouldEqual qualifierDependencyValue
+        nonEntryPoint.qualifierProviderDependency.get().num() shouldEqual qualifierDependencyValue
     }
 
     class EntryPoint {

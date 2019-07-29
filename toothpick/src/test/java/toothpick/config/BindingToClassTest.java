@@ -32,7 +32,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).to(String.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -57,7 +57,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").to(String.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -82,7 +82,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).to(String.class);
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -107,7 +107,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).to(String.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -132,7 +132,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").to(String.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -157,7 +157,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).to(String.class).singleton();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -182,7 +182,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).to(String.class).singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -207,7 +207,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).withName("foo").to(String.class).singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,
@@ -232,7 +232,7 @@ public class BindingToClassTest extends BaseBindingTest {
     module.bind(String.class).withName(Named.class).to(String.class).singleton().releasable();
 
     // THEN
-    Binding binding = getBinding(module);
+    Binding<String> binding = getBinding(module);
     assertBinding(
         binding,
         CLASS,

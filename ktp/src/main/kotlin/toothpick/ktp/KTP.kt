@@ -16,32 +16,42 @@
  */
 package toothpick.ktp
 
+import toothpick.InjectorImpl
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
-import toothpick.ktp.KTP.openScope
 import toothpick.ktp.delegate.DelegateNotifier
 
-object KTP {
+class KTP : Toothpick() {
 
-    val delegateNotifier = DelegateNotifier()
+    companion object TP {
+        val delegateNotifier = DelegateNotifier()
 
-    fun openScope(name: Any) = KTPScope(Toothpick.openScope(name))
-
-    fun openScope(name: Any, scopeConfig: Scope.ScopeConfig): KTPScope {
-        if (isScopeOpen(name)) {
-            return openScope(name)
+        init {
+            injector = object : InjectorImpl() {
+                override fun <T : Any> inject(obj: T, scope: Scope) =
+                    if (delegateNotifier.hasDelegates(obj)) {
+                        delegateNotifier.notifyDelegates(obj, scope)
+                    } else {
+                        super.inject(obj, scope)
+                    }
+            }
         }
-        val scope = openScope(name)
-        scopeConfig.configure(scope)
-        return scope
+
+        fun openScope(name: Any): Scope = Toothpick.openScope(name)
+
+        fun openScope(name: Any, scopeConfig: Scope.ScopeConfig) = Toothpick.openScope(name, scopeConfig)
+
+        fun openScopes(vararg names: Any) = Toothpick.openScopes(*names)
+
+        fun closeScope(name: Any) = Toothpick.closeScope(name)
+
+        fun isScopeOpen(name: Any) = Toothpick.isScopeOpen(name)
+
+        fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
     }
-
-    fun openScopes(vararg names: Any) = KTPScope(Toothpick.openScopes(*names))
-
-    fun closeScope(name: Any) = Toothpick.closeScope(name)
-
-    fun isScopeOpen(name: Any) = Toothpick.isScopeOpen(name)
-
-    fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
 }
+
+inline fun <reified T> Scope.getInstance(name: String? = null) = this.getInstance(T::class.java, name)
+inline fun <reified T> Scope.getLazy(name: String? = null) = this.getLazy(T::class.java, name)
+inline fun <reified T> Scope.getProvider(name: String? = null) = this.getProvider(T::class.java, name)

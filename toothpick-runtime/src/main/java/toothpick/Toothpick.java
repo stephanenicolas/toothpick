@@ -32,16 +32,16 @@ import toothpick.configuration.ConfigurationHolder;
  * responsible for injecting Foo; developers have to manually inject the instances they create.</em>
  * <br/
  */
-public final class Toothpick {
+public class Toothpick {
 
   // TP must be lock free, any thread can see the state of tp before or after it is transformed but
   // not during
   // its transformation
   private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE =
       new ConcurrentHashMap<>();
-  private static Injector injector = new InjectorImpl();
+  protected static Injector injector = new InjectorImpl();
 
-  private Toothpick() {
+  protected Toothpick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
   }
 

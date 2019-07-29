@@ -19,7 +19,6 @@ package toothpick.ktp
 import com.nhaarman.mockitokotlin2.mock
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeFalse
-import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBe
@@ -46,9 +45,9 @@ class KTPTest {
         val scope = KTP.openScope("name")
 
         // THEN
-        scope shouldBeInstanceOf KTPScope::class
         scope.name shouldEqual "name"
         Toothpick.isScopeOpen("name").shouldBeTrue()
+        KTP.isScopeOpen("name").shouldBeTrue()
     }
 
     @Test
@@ -60,9 +59,9 @@ class KTPTest {
         val scope = KTP.openScope("name", Scope.ScopeConfig { })
 
         // THEN
-        scope shouldBeInstanceOf KTPScope::class
         scope.name shouldEqual "name"
         Toothpick.isScopeOpen("name").shouldBeTrue()
+        KTP.isScopeOpen("name").shouldBeTrue()
     }
 
     @Test
@@ -75,10 +74,11 @@ class KTPTest {
         val scope = KTP.openScopes("parent", "child")
 
         // THEN
-        scope shouldBeInstanceOf KTPScope::class
         scope.name shouldEqual "child"
         Toothpick.isScopeOpen("parent").shouldBeTrue()
+        KTP.isScopeOpen("parent").shouldBeTrue()
         Toothpick.isScopeOpen("child").shouldBeTrue()
+        KTP.isScopeOpen("child").shouldBeTrue()
     }
 
     @Test

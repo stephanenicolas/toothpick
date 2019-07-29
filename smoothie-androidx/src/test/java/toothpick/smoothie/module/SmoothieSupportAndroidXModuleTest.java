@@ -27,11 +27,11 @@ import android.view.LayoutInflater;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
+import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -42,7 +42,7 @@ public class SmoothieSupportAndroidXModuleTest {
   public void testGet() throws Exception {
     // GIVEN
     FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class).create().get();
-    Application application = RuntimeEnvironment.application;
+    Application application = ApplicationProvider.getApplicationContext();
     Scope appScope = Toothpick.openScope(application);
     appScope.installModules(new SmoothieApplicationModule(application));
 

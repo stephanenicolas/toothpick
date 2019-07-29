@@ -61,7 +61,7 @@ public class ScopeImpl extends ScopeNode {
    * the recreation of the factory instance for each of them. Hence we use a static map
    * to keep the factory available to all scopes.
    */
-  /*@VisibleForTesting */ static IdentityHashMap<Class, InternalProvider>
+  /*@VisibleForTesting */ static final IdentityHashMap<Class, InternalProvider>
       mapClassesToUnNamedUnScopedProviders = new IdentityHashMap<>();
 
   /*
@@ -156,7 +156,7 @@ public class ScopeImpl extends ScopeNode {
     builder.append("Providers: [");
     ArrayList<Class> sortedScopedProviderClassesList;
     synchronized (mapClassesToNamedScopedProviders) {
-      sortedScopedProviderClassesList = new ArrayList(mapClassesToNamedScopedProviders.keySet());
+      sortedScopedProviderClassesList = new ArrayList<>(mapClassesToNamedScopedProviders.keySet());
     }
     synchronized (mapClassesToUnNamedScopedProviders) {
       sortedScopedProviderClassesList.addAll(mapClassesToUnNamedScopedProviders.keySet());
@@ -197,7 +197,7 @@ public class ScopeImpl extends ScopeNode {
       ArrayList<Class> sortedUnScopedProviderClassesList;
       synchronized (mapClassesToUnNamedUnScopedProviders) {
         sortedUnScopedProviderClassesList =
-            new ArrayList(mapClassesToUnNamedUnScopedProviders.keySet());
+            new ArrayList<>(mapClassesToUnNamedUnScopedProviders.keySet());
       }
       Collections.sort(sortedUnScopedProviderClassesList, new ClassNameComparator());
 
@@ -226,6 +226,7 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void installModule(boolean isTestModule, Module module) {
     for (Binding binding : module.getBindingSet()) {
       if (binding == null) {
@@ -260,23 +261,14 @@ public class ScopeImpl extends ScopeNode {
 
     switch (binding.getMode()) {
       case SIMPLE:
-        return new InternalScopedProvider<>(
-            this,
-            binding.getKey(),
-            false,
-            binding.isCreatingSingleton(),
-            binding.isCreatingReleasable(),
-            false,
-            false);
+        return new InternalScopedProvider<T>(
+            this, binding.getKey(), binding.isCreatingSingleton(), binding.isCreatingReleasable());
       case CLASS:
-        return new InternalScopedProvider<>(
+        return new InternalScopedProvider<T>(
             this,
             binding.getImplementationClass(),
-            false,
             binding.isCreatingSingleton(),
-            binding.isCreatingReleasable(),
-            false,
-            false);
+            binding.isCreatingReleasable());
       case INSTANCE:
         return new InternalScopedProvider<>(this, binding.getInstance());
       case PROVIDER_INSTANCE:
@@ -290,10 +282,9 @@ public class ScopeImpl extends ScopeNode {
             binding.isProvidingSingleton(),
             binding.isProvidingReleasable());
       case PROVIDER_CLASS:
-        return new InternalScopedProvider<>(
+        return new InternalScopedProvider<T>(
             this,
             binding.getProviderClass(),
-            true,
             binding.isCreatingSingleton(),
             binding.isCreatingReleasable(),
             binding.isProvidingSingleton(),
@@ -332,9 +323,7 @@ public class ScopeImpl extends ScopeNode {
     if (scopedProvider != null) {
       return scopedProvider;
     }
-    Iterator<ScopeNode> iterator = parentScopes.iterator();
-    while (iterator.hasNext()) {
-      Scope parentScope = iterator.next();
+    for (Scope parentScope : parentScopes) {
       ScopeImpl parentScopeImpl = (ScopeImpl) parentScope;
       InternalProvider<? extends T> parentScopedProvider =
           parentScopeImpl.getScopedProvider(clazz, bindingName);
@@ -358,7 +347,7 @@ public class ScopeImpl extends ScopeNode {
     // bindingName = null;  <-- valid but fails checkstyle as we use null directly
 
     // check if we have a cached un-scoped provider
-    InternalProvider unScopedProviderInPool = getUnUnScopedProvider(clazz, null);
+    InternalProvider<? extends T> unScopedProviderInPool = getUnUnScopedProvider(clazz, null);
     if (unScopedProviderInPool != null) {
       return unScopedProviderInPool;
     }
@@ -437,6 +426,7 @@ public class ScopeImpl extends ScopeNode {
    *     and {@link #getUnUnScopedProvider} are a facade of this method and make the calls more
    *     clear.
    */
+  @SuppressWarnings("unchecked")
   private <T> InternalProvider<? extends T> getInternalProvider(
       Class<T> clazz, String bindingName, boolean isScoped) {
     if (bindingName == null) {
@@ -510,6 +500,7 @@ public class ScopeImpl extends ScopeNode {
    *     #installUnScopedProvider(Class, String, InternalProvider)} are a facade of this method and
    *     make the calls more clear.
    */
+  @SuppressWarnings("unchecked")
   private <T> InternalProvider<? extends T> installInternalProvider(
       Class<T> clazz,
       String bindingName,
@@ -519,26 +510,21 @@ public class ScopeImpl extends ScopeNode {
     if (bindingName == null) {
       if (isScoped) {
         return installUnNamedScopedProvider(
-            mapClassesToUnNamedScopedProviders,
-            clazz,
-            (InternalScopedProvider) internalProvider,
-            isTestProvider);
+            clazz, (InternalScopedProvider<? extends T>) internalProvider, isTestProvider);
       } else {
-        return installUnScopedProvider(
-            mapClassesToUnNamedUnScopedProviders, clazz, internalProvider, isTestProvider);
+        return installUnScopedProvider(clazz, internalProvider, isTestProvider);
       }
     } else {
       return installNamedScopedProvider(
-          mapClassesToNamedScopedProviders,
           clazz,
           bindingName,
-          (InternalScopedProvider) internalProvider,
+          (InternalScopedProvider<? extends T>) internalProvider,
           isTestProvider);
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T> InternalProvider<? extends T> installNamedScopedProvider(
-      IdentityHashMap<Class, Map<String, InternalScopedProvider>> mapClassesToNamedScopedProviders,
       Class<T> clazz,
       String bindingName,
       InternalScopedProvider<? extends T> internalProvider,
@@ -553,7 +539,7 @@ public class ScopeImpl extends ScopeNode {
         return internalProvider;
       }
 
-      InternalProvider previous = mapNameToProvider.get(bindingName);
+      InternalProvider<? extends T> previous = mapNameToProvider.get(bindingName);
       if (previous == null || isTestProvider) {
         mapNameToProvider.put(bindingName, internalProvider);
         return internalProvider;
@@ -563,15 +549,15 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T> InternalProvider<? extends T> installUnNamedScopedProvider(
-      IdentityHashMap<Class, InternalScopedProvider> mapClassesToUnNamedProviders,
       Class<T> clazz,
       InternalScopedProvider<? extends T> internalProvider,
       boolean isTestProvider) {
-    synchronized (mapClassesToUnNamedProviders) {
-      InternalScopedProvider previous = mapClassesToUnNamedProviders.get(clazz);
+    synchronized (mapClassesToUnNamedScopedProviders) {
+      InternalScopedProvider<T> previous = mapClassesToUnNamedScopedProviders.get(clazz);
       if (previous == null || isTestProvider) {
-        mapClassesToUnNamedProviders.put(clazz, internalProvider);
+        mapClassesToUnNamedScopedProviders.put(clazz, internalProvider);
         return internalProvider;
       } else {
         return previous;
@@ -579,15 +565,13 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T> InternalProvider<? extends T> installUnScopedProvider(
-      IdentityHashMap<Class, InternalProvider> mapClassesToUnNamedProviders,
-      Class<T> clazz,
-      InternalProvider<? extends T> internalProvider,
-      boolean isTestProvider) {
-    synchronized (mapClassesToUnNamedProviders) {
-      InternalProvider previous = mapClassesToUnNamedProviders.get(clazz);
+      Class<T> clazz, InternalProvider<? extends T> internalProvider, boolean isTestProvider) {
+    synchronized (mapClassesToUnNamedUnScopedProviders) {
+      InternalProvider<? extends T> previous = mapClassesToUnNamedUnScopedProviders.get(clazz);
       if (previous == null || isTestProvider) {
-        mapClassesToUnNamedProviders.put(clazz, internalProvider);
+        mapClassesToUnNamedUnScopedProviders.put(clazz, internalProvider);
         return internalProvider;
       } else {
         return previous;
