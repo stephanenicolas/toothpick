@@ -40,9 +40,9 @@ class KTP : Toothpick() {
 
         fun openScope(name: Any): Scope = Toothpick.openScope(name)
 
-        fun openScope(name: Any, scopeConfig: Scope.ScopeConfig) = Toothpick.openScope(name, scopeConfig)
+        fun openScope(name: Any, scopeConfig: Scope.ScopeConfig): Scope = Toothpick.openScope(name, scopeConfig)
 
-        fun openScopes(vararg names: Any) = Toothpick.openScopes(*names)
+        fun openScopes(vararg names: Any): Scope = Toothpick.openScopes(*names)
 
         fun closeScope(name: Any) = Toothpick.closeScope(name)
 
@@ -51,7 +51,3 @@ class KTP : Toothpick() {
         fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
     }
 }
-
-inline fun <reified T> Scope.getInstance(name: String? = null) = this.getInstance(T::class.java, name)
-inline fun <reified T> Scope.getLazy(name: String? = null) = this.getLazy(T::class.java, name)
-inline fun <reified T> Scope.getProvider(name: String? = null) = this.getProvider(T::class.java, name)

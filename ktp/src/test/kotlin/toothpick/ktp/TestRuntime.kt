@@ -30,16 +30,14 @@ import toothpick.Lazy
 import toothpick.ktp.delegate.inject
 import toothpick.ktp.delegate.lazy
 import toothpick.ktp.delegate.provider
+import toothpick.ktp.extension.getInstance
+import toothpick.ktp.extension.getLazy
+import toothpick.ktp.extension.getProvider
 import toothpick.testing.ToothPickExtension
 import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Qualifier
 
-/*
-+ crashing for binding/annotation problems only for development config
-+ make stable test failing on CI
-+ add javadoc to everything
- */
 class TestRuntime {
 
     @JvmField
@@ -127,10 +125,10 @@ class TestRuntime {
     }
 
     private fun assertDependencies(
-      nonEntryPoint: NonEntryPoint,
-      dependencyValue: Int,
-      namedDependencyValue: Int,
-      qualifierDependencyValue: Int
+            nonEntryPoint: NonEntryPoint,
+            dependencyValue: Int,
+            namedDependencyValue: Int,
+            qualifierDependencyValue: Int
     ) {
         nonEntryPoint.shouldNotBeNull()
         nonEntryPoint.dependency.shouldNotBeNull()
@@ -169,15 +167,15 @@ class TestRuntime {
 
     @InjectConstructor
     class NonEntryPoint(
-      val dependency: Dependency,
-      val lazyDependency: Lazy<Dependency>,
-      val providerDependency: Provider<Dependency>,
-      @Named("name") val namedDependency: Dependency,
-      @Named("name") val namedLazyDependency: Lazy<Dependency>,
-      @Named("name") val namedProviderDependency: Provider<Dependency>,
-      @QualifierName val qualifierDependency: Dependency,
-      @QualifierName val qualifierLazyDependency: Lazy<Dependency>,
-      @QualifierName val qualifierProviderDependency: Provider<Dependency>
+            val dependency: Dependency,
+            val lazyDependency: Lazy<Dependency>,
+            val providerDependency: Provider<Dependency>,
+            @Named("name") val namedDependency: Dependency,
+            @Named("name") val namedLazyDependency: Lazy<Dependency>,
+            @Named("name") val namedProviderDependency: Provider<Dependency>,
+            @QualifierName val qualifierDependency: Dependency,
+            @QualifierName val qualifierLazyDependency: Lazy<Dependency>,
+            @QualifierName val qualifierProviderDependency: Provider<Dependency>
     )
 
     // open for mocking
