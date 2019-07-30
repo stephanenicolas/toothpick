@@ -22,12 +22,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
 import javax.inject.Provider;
 import org.junit.Test;
 import toothpick.config.Module;
-import toothpick.configuration.Configuration;
 import toothpick.data.Bar;
 import toothpick.data.CustomScope;
 import toothpick.data.Foo;
@@ -243,50 +241,6 @@ public class AllBindingsTestWithDefaultConfiguration {
     assertThat(((Foo) foo).bar, notNullValue());
     assertThat(((Foo) foo2).bar, notNullValue());
     assertThat(((Foo) foo).bar, not(sameInstance(((Foo) foo2).bar)));
-  }
-
-  @Test(expected = RuntimeException.class)
-  public void
-      providerClassBinding_shouldFailToInstallBinding_whenAnnotationScopeIsNotMatchedByInstallationScope_InDevConfig() {
-    // GIVEN
-    Toothpick.setConfiguration(Configuration.forDevelopment());
-    Scope scope = Toothpick.openScopes("", "child");
-
-    // WHEN
-    scope.installModules(
-        new Module() {
-          {
-            bind(IFoo.class).toProvider(FooProviderAnnotatedSingleton.class);
-          }
-        });
-
-    // THEN
-    fail("Test should have thrown an exception.");
-  }
-
-  @Test
-  public void
-      providerClassBinding_shouldFailToInstallBinding_whenAnnotationScopeIsNotMatchedByInstallationScope_InProdConfig() {
-    // GIVEN
-    Toothpick.setConfiguration(Configuration.forProduction());
-    Scope scope = Toothpick.openScopes("", "child");
-    scope.installModules(
-        new Module() {
-          {
-            bind(IFoo.class).toProvider(FooProviderAnnotatedSingleton.class);
-          }
-        });
-
-    // WHEN
-    IFoo foo = scope.getInstance(IFoo.class);
-    IFoo foo2 = scope.getInstance(IFoo.class);
-
-    // THEN
-    assertThat(foo, notNullValue());
-    assertThat(foo2, not(sameInstance(foo)));
-    assertThat(((Foo) foo).bar, notNullValue());
-    assertThat(((Foo) foo2).bar, notNullValue());
-    assertThat(((Foo) foo).bar, sameInstance(((Foo) foo2).bar));
   }
 
   @Test

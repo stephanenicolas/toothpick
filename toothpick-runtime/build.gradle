@@ -5,10 +5,6 @@ apply plugin: 'kotlin-kapt'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-configurations {
-  testAnnotationProcessor
-}
-
 dependencies {
   api project(':toothpick')
   api deps.inject
