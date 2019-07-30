@@ -125,10 +125,10 @@ class TestRuntime {
     }
 
     private fun assertDependencies(
-            nonEntryPoint: NonEntryPoint,
-            dependencyValue: Int,
-            namedDependencyValue: Int,
-            qualifierDependencyValue: Int
+      nonEntryPoint: NonEntryPoint,
+      dependencyValue: Int,
+      namedDependencyValue: Int,
+      qualifierDependencyValue: Int
     ) {
         nonEntryPoint.shouldNotBeNull()
         nonEntryPoint.dependency.shouldNotBeNull()
@@ -167,15 +167,15 @@ class TestRuntime {
 
     @InjectConstructor
     class NonEntryPoint(
-            val dependency: Dependency,
-            val lazyDependency: Lazy<Dependency>,
-            val providerDependency: Provider<Dependency>,
-            @Named("name") val namedDependency: Dependency,
-            @Named("name") val namedLazyDependency: Lazy<Dependency>,
-            @Named("name") val namedProviderDependency: Provider<Dependency>,
-            @QualifierName val qualifierDependency: Dependency,
-            @QualifierName val qualifierLazyDependency: Lazy<Dependency>,
-            @QualifierName val qualifierProviderDependency: Provider<Dependency>
+      val dependency: Dependency,
+      val lazyDependency: Lazy<Dependency>,
+      val providerDependency: Provider<Dependency>,
+      @Named("name") val namedDependency: Dependency,
+      @Named("name") val namedLazyDependency: Lazy<Dependency>,
+      @Named("name") val namedProviderDependency: Provider<Dependency>,
+      @QualifierName val qualifierDependency: Dependency,
+      @QualifierName val qualifierLazyDependency: Lazy<Dependency>,
+      @QualifierName val qualifierProviderDependency: Provider<Dependency>
     )
 
     // open for mocking
