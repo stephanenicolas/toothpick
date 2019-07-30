@@ -1,5 +1,17 @@
 <!-- Continue from top -->
 
+## Release version 3.0.0-RC1 (July 29th, 2019)
+ * TODO finish the changelog
+ * change scopes
+ * kotlin support. I believe method injections is not supported fully in kotlin because there are no member injectors
+ * support for method injections when methods throw throwables
+ * add support for Android X life cycle owners to close a scope automatically when the owner is destroyed
+ * add support for Android X view models to close a scope automatically when the view model is cleared
+ * better binding API, 1:1 relation with annotations
+ * better scope API: fluent API to define scopes, allow to define subscopes, allow lambdas to configure a scope on creation
+ * support for releasables
+ * etc
+
 ## Release version 2.1.0 (Feb 4th, 2019)
 
 * Add Toothpick.isScopeOpen method to check whether a scope is already open. Thx to terrakok for this.
