@@ -73,9 +73,8 @@ Toothpick is :
 
 ## Examples
 
-Currently Toothpick has 2 sets of examples : 
-* one [in pure Java](https://github.com/stephanenicolas/toothpick/tree/master/toothpick-sample)
-* one [for Android](https://github.com/stephanenicolas/toothpick/tree/master/smoothie-sample)
+This is the example:
+* https://github.com/stephanenicolas/toothpick/tree/master/toothpick-sample
 
 ## Setup
 
