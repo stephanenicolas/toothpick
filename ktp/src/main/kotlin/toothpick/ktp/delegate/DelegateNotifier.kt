@@ -20,15 +20,30 @@ import toothpick.Scope
 import java.util.Collections
 import java.util.WeakHashMap
 
+/**
+ * Internal KTP class that registers field injection delegates.
+ * The fields will be injected when calling {@link Scope#inject(Any)} with the object/entry point
+ * using field injection.
+ */
 class DelegateNotifier {
 
     private val delegatesMap: MutableMap<Any, MutableList<InjectDelegate<out Any>>> = Collections.synchronizedMap(WeakHashMap())
 
+    /**
+     * Registers a delegate for a field injection.
+     * @param container the entry point that is using field injection.
+     * @param delegate the delegate for this field.
+     */
     fun registerDelegate(container: Any, delegate: InjectDelegate<out Any>) {
         val delegates = delegatesMap.getOrPut(container) { mutableListOf() }
         delegates.add(delegate)
     }
 
+    /**
+     * Notify delegates that they should perform field injection.
+     * @param container the entry point that is using field injection.
+     * @param scope the scope used to inject the fields.
+     */
     fun notifyDelegates(container: Any, scope: Scope) {
         delegatesMap[container]?.forEach {
             it.onEntryPointInjected(scope)
@@ -36,6 +51,9 @@ class DelegateNotifier {
         delegatesMap.remove(container)
     }
 
+    /**
+     * @return whether or not an entry point has delegates associated to it.
+     */
     fun hasDelegates(container: Any): Boolean {
         return delegatesMap.contains(container)
     }

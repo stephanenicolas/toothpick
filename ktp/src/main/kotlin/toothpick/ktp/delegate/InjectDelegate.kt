@@ -20,6 +20,10 @@ import toothpick.Scope
 import javax.inject.Provider
 import kotlin.reflect.KProperty
 
+/**
+ * Property delegate base class. It allows to delegate the creation of fields to KTP.
+ * A typical example is
+ */
 sealed class InjectDelegate<T : Any>(protected val clz: Class<T>, protected val name: String?) {
 
     abstract val instance: T
@@ -35,6 +39,9 @@ sealed class InjectDelegate<T : Any>(protected val clz: Class<T>, protected val 
     }
 }
 
+/**
+ * Delegate for fields that should be injected eagerly.
+ */
 class EagerDelegate<T : Any>(clz: Class<T>, name: String?) : InjectDelegate<T>(clz, name) {
 
     override lateinit var instance: T
@@ -46,7 +53,10 @@ class EagerDelegate<T : Any>(clz: Class<T>, name: String?) : InjectDelegate<T>(c
     override fun isEntryPointInjected() = this::instance.isInitialized
 }
 
-class ProviderDelegate<T : Any>(clz: Class<T>, name: String?, private val lazy: Boolean) : InjectDelegate<T>(clz, name) {
+/**
+ * Delegate for fields that should be injected as a provider.
+ */
+class ProviderDelegate<T : Any>(clz: Class<T>, name: String?) : InjectDelegate<T>(clz, name) {
 
     lateinit var provider: Provider<T>
 
@@ -54,7 +64,24 @@ class ProviderDelegate<T : Any>(clz: Class<T>, name: String?, private val lazy: 
         get() = provider.get()
 
     override fun onEntryPointInjected(scope: Scope) {
-        provider = if (lazy) scope.getLazy(clz, name) else scope.getProvider(clz, name)
+        provider = scope.getProvider(clz, name)
+    }
+
+    override fun isEntryPointInjected() = this::provider.isInitialized
+}
+
+/**
+ * Delegate for fields that should be injected lazily.
+ */
+class LazyDelegate<T : Any>(clz: Class<T>, name: String?) : InjectDelegate<T>(clz, name) {
+
+    lateinit var provider: Provider<T>
+
+    override val instance: T
+        get() = provider.get()
+
+    override fun onEntryPointInjected(scope: Scope) {
+        provider = scope.getLazy(clz, name)
     }
 
     override fun isEntryPointInjected() = this::provider.isInitialized

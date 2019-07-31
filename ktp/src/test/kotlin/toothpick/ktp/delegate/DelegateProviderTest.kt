@@ -25,7 +25,7 @@ class DelegateProviderTest {
     @Test
     fun `provideDelegate should provide an EagerDelegate for the type EAGER`() {
         // GIVEN
-        val delegateProvider = DelegateProvider(MyClass::class.java, "name", InjectionType.EAGER)
+        val delegateProvider = EagerDelegateProvider(MyClass::class.java, "name")
 
         // WHEN
         val delegate = delegateProvider.provideDelegate(this, mock())
@@ -37,19 +37,19 @@ class DelegateProviderTest {
     @Test
     fun `provideDelegate should provide an ProviderDelegate for the type LAZY`() {
         // GIVEN
-        val delegateProvider = DelegateProvider(MyClass::class.java, "name", InjectionType.LAZY)
+        val delegateProvider = LazyDelegateProvider(MyClass::class.java, "name")
 
         // WHEN
         val delegate = delegateProvider.provideDelegate(this, mock())
 
         // THEN
-        delegate shouldBeInstanceOf ProviderDelegate::class
+        delegate shouldBeInstanceOf LazyDelegate::class
     }
 
     @Test
     fun `provideDelegate should provide an ProviderDelegate for the type PROVIDER`() {
         // GIVEN
-        val delegateProvider = DelegateProvider(MyClass::class.java, "name", InjectionType.PROVIDER)
+        val delegateProvider = ProviderDelegateProvider(MyClass::class.java, "name")
 
         // WHEN
         val delegate = delegateProvider.provideDelegate(this, mock())

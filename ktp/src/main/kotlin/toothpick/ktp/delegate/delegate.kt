@@ -16,6 +16,6 @@
  */
 package toothpick.ktp.delegate
 
-inline fun <reified T : Any> inject(name: String? = null) = DelegateProvider(T::class.java, name, InjectionType.EAGER)
-inline fun <reified T : Any> lazy(name: String? = null) = DelegateProvider(T::class.java, name, InjectionType.LAZY)
-inline fun <reified T : Any> provider(name: String? = null) = DelegateProvider(T::class.java, name, InjectionType.PROVIDER)
+inline fun <reified T : Any> inject(name: String? = null) = EagerDelegateProvider(T::class.java, name)
+inline fun <reified T : Any> provider(name: String? = null) = ProviderDelegateProvider(T::class.java, name)
+inline fun <reified T : Any> lazy(name: String? = null) = LazyDelegateProvider(T::class.java, name)

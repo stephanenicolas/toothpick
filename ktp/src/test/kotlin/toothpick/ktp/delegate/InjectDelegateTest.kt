@@ -105,7 +105,7 @@ class InjectDelegateTest {
         @Test
         fun `should call getLazy without name on scope when lazy is true and entry point is injected`() {
             // GIVEN
-            val delegate = ProviderDelegate(MyClass::class.java, null, true)
+            val delegate = LazyDelegate(MyClass::class.java, null)
             val lazy: Lazy<MyClass> = mock()
             val instance = MyClass()
             val scope: Scope = mock()
@@ -123,7 +123,7 @@ class InjectDelegateTest {
         @Test
         fun `should call getLazy with name on scope when lazy is true and entry point is injected`() {
             // GIVEN
-            val delegate = ProviderDelegate(MyClass::class.java, "name", true)
+            val delegate = LazyDelegate(MyClass::class.java, "name")
             val lazy: Lazy<MyClass> = mock()
             val instance = MyClass()
             val scope: Scope = mock()
@@ -141,7 +141,7 @@ class InjectDelegateTest {
         @Test
         fun `should call getProvider without name on scope when lazy is false and entry point is injected`() {
             // GIVEN
-            val delegate = ProviderDelegate(MyClass::class.java, null, false)
+            val delegate = ProviderDelegate(MyClass::class.java, null)
             val provider: Provider<MyClass> = mock()
             val instance = MyClass()
             val scope: Scope = mock()
@@ -159,7 +159,7 @@ class InjectDelegateTest {
         @Test
         fun `should call getProvider with name on scope when lazy is false and entry point is injected`() {
             // GIVEN
-            val delegate = ProviderDelegate(MyClass::class.java, "name", false)
+            val delegate = ProviderDelegate(MyClass::class.java, "name")
             val provider: Provider<MyClass> = mock()
             val instance = MyClass()
             val scope: Scope = mock()
@@ -177,7 +177,7 @@ class InjectDelegateTest {
         @Test
         fun `isEntryPointInjected should return true when entry point is injected`() {
             // GIVEN
-            val delegate = ProviderDelegate(MyClass::class.java, "name", false)
+            val delegate = ProviderDelegate(MyClass::class.java, "name")
             val provider: Provider<MyClass> = mock()
             val scope: Scope = mock()
 

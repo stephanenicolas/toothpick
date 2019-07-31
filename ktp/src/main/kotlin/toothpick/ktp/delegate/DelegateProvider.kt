@@ -19,7 +19,10 @@ package toothpick.ktp.delegate
 import toothpick.ktp.KTP
 import kotlin.reflect.KProperty
 
-class DelegateProvider<T : Any>(private val clz: Class<T>, private val name: String?, private val injectionType: InjectionType) {
+/**
+ * Internal class to KTP that will create the appropriate [InjectDelegate] for a field injection.
+ */
+sealed class DelegateProvider<T : Any>(val clz: Class<T>, val name: String?) {
 
     operator fun provideDelegate(thisRef: Any, prop: KProperty<*>): InjectDelegate<T> {
         val delegate = createDelegate()
@@ -27,9 +30,26 @@ class DelegateProvider<T : Any>(private val clz: Class<T>, private val name: Str
         return delegate
     }
 
-    private fun createDelegate() = when (injectionType) {
-        InjectionType.EAGER -> EagerDelegate(clz, name)
-        InjectionType.LAZY -> ProviderDelegate(clz, name, true)
-        InjectionType.PROVIDER -> ProviderDelegate(clz, name, false)
-    }
+    abstract fun createDelegate(): InjectDelegate<T>
+}
+
+/**
+ * DelegateProvider for eager injections.
+ */
+class EagerDelegateProvider<T : Any>(clz: Class<T>, name: String?) : DelegateProvider<T> (clz, name) {
+    override fun createDelegate() = EagerDelegate(clz, name)
+}
+
+/**
+ * DelegateProvider for lazy injections.
+ */
+class ProviderDelegateProvider<T : Any>(clz: Class<T>, name: String?) : DelegateProvider<T> (clz, name) {
+    override fun createDelegate() = ProviderDelegate(clz, name)
+}
+
+/**
+ * DelegateProvider for provider injections.
+ */
+class LazyDelegateProvider<T : Any>(clz: Class<T>, name: String?) : DelegateProvider<T> (clz, name) {
+    override fun createDelegate() = LazyDelegate(clz, name)
 }
