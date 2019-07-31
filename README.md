@@ -187,7 +187,7 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 * [proton](https://github.com/hnakagawa/proton)
 * [koin](https://github.com/InsertKoinIO/koin)
 
-# Libs using TP
+# Libs / Apps using TP 2
 
 * [Okuki](https://github.com/wongcain/okuki) is a simple, hierarchical navigation bus and back stack for Android, with optional Rx bindings, and Toothpick DI integration.
 * [KotlinWeather](https://github.com/ekamp/KotlinWeather) is a simple example of using ToothPick with Kotlin and gradle integration using kapt.
