@@ -22,7 +22,24 @@ import kotlin.reflect.KProperty
 /**
  * Internal class to KTP that will create the appropriate [InjectDelegate] for a field injection.
  */
-sealed class DelegateProvider<T : Any>(val clz: Class<T>, val name: String?) {
+sealed class DelegateProvider<T : Any> {
+    protected val clz: Class<T>
+    protected val name: String?
+
+    constructor(clz: Class<T>) {
+        this.clz = clz
+        this.name = null
+    }
+
+    constructor(clz: Class<T>, name: String) {
+        this.clz = clz
+        this.name = name
+    }
+
+    constructor(clz: Class<T>, name: Class<out Annotation>) {
+        this.clz = clz
+        this.name = name.canonicalName
+    }
 
     operator fun provideDelegate(thisRef: Any, prop: KProperty<*>): InjectDelegate<T> {
         val delegate = createDelegate()
@@ -36,20 +53,39 @@ sealed class DelegateProvider<T : Any>(val clz: Class<T>, val name: String?) {
 /**
  * DelegateProvider for eager injections.
  */
-class EagerDelegateProvider<T : Any>(clz: Class<T>, name: String?) : DelegateProvider<T> (clz, name) {
+class EagerDelegateProvider<T : Any> : DelegateProvider<T> {
+
+    constructor(clz: Class<T>) : super(clz)
+
+    constructor(clz: Class<T>, name: String) : super(clz, name)
+
+    constructor(clz: Class<T>, name: Class<out Annotation>) : super(clz, name)
+
     override fun createDelegate() = EagerDelegate(clz, name)
 }
 
 /**
  * DelegateProvider for lazy injections.
  */
-class ProviderDelegateProvider<T : Any>(clz: Class<T>, name: String?) : DelegateProvider<T> (clz, name) {
+class ProviderDelegateProvider<T : Any> : DelegateProvider<T> {
+    constructor(clz: Class<T>) : super(clz)
+
+    constructor(clz: Class<T>, name: String) : super(clz, name)
+
+    constructor(clz: Class<T>, name: Class<out Annotation>) : super(clz, name)
+
     override fun createDelegate() = ProviderDelegate(clz, name)
 }
 
 /**
  * DelegateProvider for provider injections.
  */
-class LazyDelegateProvider<T : Any>(clz: Class<T>, name: String?) : DelegateProvider<T> (clz, name) {
+class LazyDelegateProvider<T : Any> : DelegateProvider<T> {
+    constructor(clz: Class<T>) : super(clz)
+
+    constructor(clz: Class<T>, name: String) : super(clz, name)
+
+    constructor(clz: Class<T>, name: Class<out Annotation>) : super(clz, name)
+
     override fun createDelegate() = LazyDelegate(clz, name)
 }

@@ -61,25 +61,14 @@ class TestRuntime {
         // GIVEN
         When calling dependency.num() itReturns 2
         When calling namedDependency.num() itReturns 3
+        When calling qualifierDependency.num() itReturns 4
 
         // WHEN
-        val nonEntryPoint = EntryPoint()
+        val entryPoint = EntryPoint()
 
         // THEN
-        nonEntryPoint.shouldNotBeNull()
-        nonEntryPoint.dependency.shouldNotBeNull()
-        nonEntryPoint.lazyDependency.shouldNotBeNull()
-        nonEntryPoint.providerDependency.shouldNotBeNull()
-        nonEntryPoint.namedDependency.shouldNotBeNull()
-        nonEntryPoint.namedLazyDependency.shouldNotBeNull()
-        nonEntryPoint.namedProviderDependency.shouldNotBeNull()
 
-        nonEntryPoint.dependency.num() shouldEqual 2
-        nonEntryPoint.lazyDependency.num() shouldEqual 2
-        nonEntryPoint.providerDependency.num() shouldEqual 2
-        nonEntryPoint.namedDependency.num() shouldEqual 3
-        nonEntryPoint.namedLazyDependency.num() shouldEqual 3
-        nonEntryPoint.namedProviderDependency.num() shouldEqual 3
+        assertDependencies(entryPoint, 2, 3, 4)
     }
 
     @Test
@@ -152,6 +141,33 @@ class TestRuntime {
         nonEntryPoint.qualifierProviderDependency.get().num() shouldEqual qualifierDependencyValue
     }
 
+    private fun assertDependencies(
+      entryPoint: EntryPoint,
+      dependencyValue: Int,
+      namedDependencyValue: Int,
+      qualifierDependencyValue: Int
+    ) {
+        entryPoint.shouldNotBeNull()
+        entryPoint.dependency.shouldNotBeNull()
+        entryPoint.lazyDependency.shouldNotBeNull()
+        entryPoint.providerDependency.shouldNotBeNull()
+        entryPoint.namedDependency.shouldNotBeNull()
+        entryPoint.namedLazyDependency.shouldNotBeNull()
+        entryPoint.namedProviderDependency.shouldNotBeNull()
+        entryPoint.qualifierDependency.shouldNotBeNull()
+        entryPoint.qualifierLazyDependency.shouldNotBeNull()
+        entryPoint.qualifierProviderDependency.shouldNotBeNull()
+
+        entryPoint.dependency.num() shouldEqual dependencyValue
+        entryPoint.lazyDependency.num() shouldEqual dependencyValue
+        entryPoint.providerDependency.num() shouldEqual dependencyValue
+        entryPoint.namedDependency.num() shouldEqual namedDependencyValue
+        entryPoint.namedLazyDependency.num() shouldEqual namedDependencyValue
+        entryPoint.namedProviderDependency.num() shouldEqual namedDependencyValue
+        entryPoint.qualifierDependency.num() shouldEqual qualifierDependencyValue
+        entryPoint.qualifierLazyDependency.num() shouldEqual qualifierDependencyValue
+    }
+
     class EntryPoint {
         val dependency: Dependency by inject()
         val lazyDependency: Dependency by lazy()
@@ -159,6 +175,9 @@ class TestRuntime {
         val namedDependency: Dependency by inject("name")
         val namedLazyDependency: Dependency by lazy("name")
         val namedProviderDependency: Dependency by provider("name")
+        val qualifierDependency: Dependency by inject(QualifierName::class)
+        val qualifierLazyDependency: Dependency by lazy(QualifierName::class)
+        val qualifierProviderDependency: Dependency by provider(QualifierName::class)
 
         init {
             KTP.openScope("Foo").inject(this)

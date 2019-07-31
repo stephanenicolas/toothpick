@@ -16,6 +16,64 @@
  */
 package toothpick.ktp.delegate
 
-inline fun <reified T : Any> inject(name: String? = null) = EagerDelegateProvider(T::class.java, name)
-inline fun <reified T : Any> provider(name: String? = null) = ProviderDelegateProvider(T::class.java, name)
-inline fun <reified T : Any> lazy(name: String? = null) = LazyDelegateProvider(T::class.java, name)
+import kotlin.reflect.KClass
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @return a property delegate that will inject eagerly an instance.
+ */
+inline fun <reified T : Any> inject() = EagerDelegateProvider(T::class.java)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @param name a nullable name to designate a specific named binding.
+ * @return a property delegate that will inject eagerly an instance.
+ */
+inline fun <reified T : Any> inject(name: String) = EagerDelegateProvider(T::class.java, name)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @param name a nullable name to designate a specific named binding.
+ * @return a property delegate that will inject eagerly an instance.
+ */
+inline fun <reified T : Any> inject(name: KClass<out Annotation>) = EagerDelegateProvider(T::class.java, name.java)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @return a property delegate that will inject a provider.
+ */
+inline fun <reified T : Any> provider() = ProviderDelegateProvider(T::class.java)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @param name a nullable name to designate a specific named binding.
+ * @return a property delegate that will inject a provider.
+ */
+inline fun <reified T : Any> provider(name: String) = ProviderDelegateProvider(T::class.java, name)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @param name a nullable name to designate a specific named binding.
+ * @return a property delegate that will inject a provider.
+ */
+inline fun <reified T : Any> provider(name: KClass<out Annotation>) = ProviderDelegateProvider(T::class.java, name.java)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @return a property delegate that will inject a lazy.
+ */
+inline fun <reified T : Any> lazy() = LazyDelegateProvider(T::class.java)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @param name a nullable name to designate a specific named binding.
+ * @return a property delegate that will inject a lazy.
+ */
+inline fun <reified T : Any> lazy(name: String) = LazyDelegateProvider(T::class.java, name)
+
+/**
+ * @param T the type of the thing to inject, the key of the binding.
+ * @param name a nullable name to designate a specific named binding.
+ * @return a property delegate that will inject a lazy.
+ */
+inline fun <reified T : Any> lazy(name: KClass<out Annotation>) = LazyDelegateProvider(T::class.java, name.java)
