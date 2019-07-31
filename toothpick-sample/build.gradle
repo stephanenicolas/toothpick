@@ -1,0 +1,90 @@
+buildscript {
+  apply from: '../deps.gradle'
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath deps.android_plugin
+    classpath deps.kotlin_plugin
+  }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.dokka-android'
+
+android {
+  compileSdkVersion 28
+
+  compileOptions {
+    sourceCompatibility '1.8'
+    targetCompatibility '1.8'
+  }
+
+  defaultConfig {
+    applicationId 'com.example.kotlin'
+    minSdkVersion 15
+    targetSdkVersion 26
+    versionCode 1
+    versionName '1.0.0'
+    testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+  }
+
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+  }
+
+  lintOptions {
+    textReport true
+    textOutput 'stdout'
+    // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks.
+    checkReleaseBuilds false
+    abortOnError false
+  }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+    }
+  }
+}
+
+repositories {
+  google()
+  jcenter()
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+dependencies {
+  // TP
+  implementation deps.ktp
+  implementation deps.tp_androidx
+  implementation deps.tp_lifecycle_ktp
+  implementation deps.tp_viewmodel_ktp
+  kapt deps.tp_compiler
+
+  // Android X
+  implementation deps.androidxv7
+  implementation deps.lifecycle_extensions
+  implementation deps.design
+  implementation deps.coordlayout
+  implementation deps.recyclerview
+
+  // Kotlin
+  implementation deps.kotlin_runtime
+
+  // Testing
+  testRuntimeOnly deps.junit5_engine
+  testImplementation deps.junit5_api
+  testImplementation deps.mockito_kotlin
+  testImplementation deps.mockito_junit5
+  testImplementation deps.kluent
+  // testImplementation deps.tp_testing_junit5
+}
+
+//test {
+//  useJUnitPlatform()
+//}
