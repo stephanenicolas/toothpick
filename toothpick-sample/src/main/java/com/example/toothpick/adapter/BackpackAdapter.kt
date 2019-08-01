@@ -7,9 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.toothpick.R
 import com.example.toothpick.model.Backpack
 
-import javax.inject.Inject
+import toothpick.InjectConstructor
 
-class BackpackAdapter @Inject constructor(private val backpack: Backpack) : RecyclerView.Adapter<BackpackAdapter.ItemHolder>() {
+@InjectConstructor
+class BackpackAdapter(private val backpack: Backpack): IBackpackAdapter() {
 
     class ItemHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
 
