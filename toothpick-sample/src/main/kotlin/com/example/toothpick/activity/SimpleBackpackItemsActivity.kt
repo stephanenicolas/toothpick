@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.toothpick.R
-import com.example.toothpick.activity.AddNewActivity.Companion.NEW_ITEM_NAME_KEY
+import com.example.toothpick.activity.AddNewActivity.NEW_ITEM_NAME_KEY
 import com.example.toothpick.adapter.BackpackAdapter
 import com.example.toothpick.annotation.ApplicationScope
 import com.example.toothpick.helper.NotificationHelper
