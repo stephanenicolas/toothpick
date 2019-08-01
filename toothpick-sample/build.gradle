@@ -8,6 +8,7 @@ buildscript {
     classpath deps.android_plugin
     classpath deps.kotlin_plugin
     classpath deps.dokkaPlugin
+    classpath deps.spotlessPlugin
   }
 }
 
@@ -15,6 +16,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'com.diffplug.gradle.spotless'
 
 android {
   compileSdkVersion 28

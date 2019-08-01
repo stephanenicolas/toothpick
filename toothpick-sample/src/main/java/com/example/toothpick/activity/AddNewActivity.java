@@ -37,16 +37,9 @@ class AddNewActivity extends AppCompatActivity {
         setupUIComponents();
     }
 
-    private void returnNewElement() {
-        Intent intent = new Intent();
-        intent.putExtra(NEW_ITEM_NAME_KEY, editText.getText().toString());
-        setResult(Activity.RESULT_OK, intent);
-        finish();
-    }
-
     private void setupUIComponents() {
         setContentView(R.layout.backpack_new);
-        EditText editText = findViewById(R.id.new_name);
+        final EditText editText = findViewById(R.id.new_name);
         Button button = findViewById(R.id.add_item);
         button.setOnClickListener( view ->  {
             String text = editText.getText().toString();
