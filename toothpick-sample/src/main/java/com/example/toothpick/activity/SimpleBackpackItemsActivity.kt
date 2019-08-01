@@ -17,7 +17,7 @@ import com.example.toothpick.model.Backpack
 import toothpick.ktp.KTP
 import toothpick.ktp.binding.bind
 import toothpick.ktp.binding.module
-import toothpick.ktp.binding.toInstance
+import toothpick.ktp.binding.toClass
 import toothpick.ktp.delegate.inject
 import toothpick.ktp.delegate.lazy
 
@@ -33,36 +33,30 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
         const val ADD_NEW_REQUEST = 1
     }
 
+    //will be created in the app scope
+    //as it is annotated with @Singleton
     val notificationHelper: NotificationHelper by lazy()
+    //will be created in the current scope = activity scope
+    //as they are not annotated by a scope annotation.
     val backpack: Backpack by inject()
+    //will be injected in the activity scope as the binding
+    //is defined there
+    val viewAdapter: RecyclerView.Adapter<out RecyclerView.ViewHolder> by inject()
 
     private lateinit var coordinatorLayout: CoordinatorLayout
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.backpack_list)
-
-        coordinatorLayout = findViewById(R.id.coordinatorLayout)
-
         // 1. Open Activity scope as child of Application scope
         // 2. Install module inside Activity scope
         // 3. Inject dependencies
         KTP.openScopes(ApplicationScope::class.java, this)
                 .installModules(module {
-                    bind<AppCompatActivity>().toInstance { this@SimpleBackpackItemsActivity }
+                    bind<RecyclerView.Adapter<out RecyclerView.ViewHolder>>().toClass<BackpackAdapter>()
                 })
                 .inject(this)
 
-        viewAdapter = BackpackAdapter(backpack)
-        findViewById<RecyclerView>(R.id.list).apply {
-            layoutManager = LinearLayoutManager(this@SimpleBackpackItemsActivity)
-            adapter = viewAdapter
-            setHasFixedSize(true)
-            addItemDecoration(DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL))
-        }
-
-        findViewById<Button>(R.id.add_new).setOnClickListener { goToAddNewActivity() }
+        setupUIComponents()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -76,6 +70,22 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    private fun setupUIComponents() {
+        setContentView(R.layout.backpack_list)
+        coordinatorLayout = findViewById(R.id.coordinatorLayout)
+
+
+        findViewById<RecyclerView>(R.id.list).apply {
+            layoutManager = LinearLayoutManager(this@SimpleBackpackItemsActivity)
+            adapter = viewAdapter
+            setHasFixedSize(true)
+            addItemDecoration(DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL))
+        }
+
+        findViewById<Button>(R.id.add_new).setOnClickListener { goToAddNewActivity() }
     }
 
     private fun goToAddNewActivity() {

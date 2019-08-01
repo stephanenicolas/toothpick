@@ -22,9 +22,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProvider.Factory;
 import androidx.lifecycle.ViewModelProviders;
 import toothpick.Scope;
+import toothpick.config.Module;
 
 /**
  * Provides support for Android architecture components's view model. Closes scopes automatically
@@ -45,7 +46,7 @@ public class ViewModelUtil {
    */
   public static void closeOnViewModelCleared(
       @NonNull FragmentActivity activity, @NonNull Scope scope) {
-    ViewModelProvider.Factory factory = new TPViewModelFactory(scope);
+    Factory factory = new TPViewModelFactory(scope);
     ViewModelProviders.of(activity, factory).get(TPViewModel.class);
   }
 
@@ -57,11 +58,49 @@ public class ViewModelUtil {
    *     cleared.
    */
   public static void closeOnViewModelCleared(@NonNull Fragment fragment, @NonNull Scope scope) {
-    ViewModelProvider.Factory factory = new TPViewModelFactory(scope);
+    Factory factory = new TPViewModelFactory(scope);
     ViewModelProviders.of(fragment, factory).get(TPViewModel.class);
   }
 
-  private static class TPViewModelFactory implements ViewModelProvider.Factory {
+  /**
+   * Installs a binding for a view model class.
+   * It will become available by injection. Beware that such a binding
+   * should be installed on a scope that is independent of the activity life cycle.
+   *
+   * @param scope the scope where the binding should be installed.
+   * @param activity the fragment activity associated to the ViewModel.
+   * @param viewModelClass the class of the view model to inject.
+   * @param factory optional factory needed to create the view model instances.
+   */
+   public static <T extends ViewModel> void installViewModelBinding(final Scope scope,
+                                                       final FragmentActivity activity,
+                                                       final Class<T> viewModelClass,
+                                                       final Factory factory) {
+     scope.installModules(new Module() {{
+      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(activity, factory, viewModelClass));
+    }});
+  }
+
+  /**
+   * Installs a binding for a view model class.
+   * It will become available by injection. Beware that such a binding
+   * should be installed on a scope that is independent of the activity life cycle.
+   *
+   * @param scope the scope where the binding should be installed.
+   * @param fragment the fragment associated to the ViewModel.
+   * @param viewModelClass the class of the view model to inject.
+   * @param factory optional factory needed to create the view model instances.
+   */
+  public static <T extends ViewModel> void installViewModelBinding(final Scope scope,
+                                                                   final Fragment fragment,
+                                                                   final Class<T> viewModelClass,
+                                                                   final Factory factory) {
+    scope.installModules(new Module() {{
+      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(fragment, factory, viewModelClass));
+    }});
+  }
+
+  private static class TPViewModelFactory implements Factory {
     private Scope scope;
 
     private TPViewModelFactory(Scope scope) {

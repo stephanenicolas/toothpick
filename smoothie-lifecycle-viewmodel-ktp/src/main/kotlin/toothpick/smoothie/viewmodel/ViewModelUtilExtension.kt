@@ -53,9 +53,7 @@ fun Scope.closeOnViewModelCleared(fragment: Fragment): Scope {
  * @param viewModelClass the class of the view model to inject.
  */
 inline fun <reified T : ViewModel> Scope.installViewModelBinding(activity: FragmentActivity, factory: Factory? = null): Scope {
-    installModules(module {
-        bind(T::class.java).toProviderInstance(ViewModelProvider(activity, factory, T::class.java))
-    })
+    ViewModelUtil.installViewModelBinding(this, activity, T::class.java, factory)
     return this
 }
 
@@ -69,8 +67,6 @@ inline fun <reified T : ViewModel> Scope.installViewModelBinding(activity: Fragm
  * @param viewModelClass the class of the view model to inject.
  */
 inline fun <reified T : ViewModel> Scope.installViewModelBinding(fragment: Fragment, factory: Factory? = null): Scope {
-    installModules(module {
-        bind(T::class.java).toProviderInstance(ViewModelProvider(fragment, factory, T::class.java))
-    })
+    ViewModelUtil.installViewModelBinding(this, fragment, T::class.java, factory)
     return this
 }

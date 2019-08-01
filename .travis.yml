@@ -39,7 +39,7 @@ cache:
 
 script:
   - ./gradlew clean check
-  - ./gradlew -b toothpick-kotlin-android-sample/build.gradle clean check -x lint
+  - ./gradlew -b toothpick-sample/build.gradle clean check -x lint
 
 after_success:
   - ./gradlew jacocoTestReport coveralls

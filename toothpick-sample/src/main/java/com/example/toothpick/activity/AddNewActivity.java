@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import androidx.annotation.Nullable;
+import javax.inject.Inject;
+import android.widget.Button;
+import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.toothpick.R;
 import com.example.toothpick.annotation.ApplicationScope;
@@ -14,31 +17,24 @@ import javax.inject.Inject;
 import toothpick.Lazy;
 import toothpick.Toothpick;
 
-public class AddNewActivity extends AppCompatActivity {
+class AddNewActivity extends AppCompatActivity {
 
-    public static final String NEW_ITEM_NAME_KEY = "name";
+    public final static String NEW_ITEM_NAME_KEY = "name";
 
-    @Inject Lazy<BackpackItemValidator> backpackItemValidator;
-
-    private EditText editText;
+    //will be created as a singleton in the root scope
+    //and is releasable under memory pressure
+    @Inject BackpackItemValidator backpackItemValidator;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.backpack_new);
 
         // 1. Open Activity scope as child of Application scope
         // 2. Inject dependencies
         Toothpick.openScopes(ApplicationScope.class, this)
             .inject(this);
 
-        editText = findViewById(R.id.new_name);
-        Button button = findViewById(R.id.add_item);
-        button.setOnClickListener(v -> {
-            if (backpackItemValidator.get().isValidName(editText.getText().toString())) {
-                returnNewElement();
-            }
-        });
+        setupUIComponents();
     }
 
     private void returnNewElement() {
@@ -46,5 +42,20 @@ public class AddNewActivity extends AppCompatActivity {
         intent.putExtra(NEW_ITEM_NAME_KEY, editText.getText().toString());
         setResult(Activity.RESULT_OK, intent);
         finish();
+    }
+
+    private void setupUIComponents() {
+        setContentView(R.layout.backpack_new);
+        EditText editText = findViewById(R.id.new_name);
+        Button button = findViewById(R.id.add_item);
+        button.setOnClickListener( view ->  {
+            String text = editText.getText().toString();
+            if (backpackItemValidator.isValidName(text)) {
+                Intent intent = new Intent()
+                    .putExtra(NEW_ITEM_NAME_KEY, text);
+                setResult(Activity.RESULT_OK, intent);
+                finish();
+            }
+        });
     }
 }
