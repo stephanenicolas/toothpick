@@ -9,6 +9,7 @@ buildscript {
     classpath deps.kotlin_plugin
     classpath deps.coverallPlugin
     classpath deps.spotlessPlugin
+    classpath deps.dokkaPlugin
   }
 }
 

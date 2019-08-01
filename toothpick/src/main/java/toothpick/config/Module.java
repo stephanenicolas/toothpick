@@ -74,13 +74,14 @@ import toothpick.ProvidesSingleton;
  * <em>ToothPick broadens the notion of Singleton : they do not necessarily belong to the root scope
  * but can be declared in any scope.</em><br>
  * To declare a Singleton in a scope, just declare a binding for it in a module installed to this
- * scope. If there is no binding in any parent scope of the current scope when the class is first
- * injected, then Singleton will be added to root scope. This latest behavior allows to be fully
- * compatible with more traditional Singleton (e.g. in Guice / RoboGuice). <br>
+ * scope. <br>
  * To summarize : <em>a Singleton is guaranteed to be a unique instance in a given scope and its
  * sub-scopes at any point in time.</em> <br>
  * This means that there can be multiple instances of a Singleton the scope forest, or that
- * singleton can be garbage collected and recreated if their scope is closed.
+ * singleton can be garbage collected and recreated if their scope is closed and re-opened.
+ *
+ * * <p><b>{@link toothpick.Releasable} in ToothPick:</b><br>
+ * Toothpick allows to release singletons that are declared releasable.
  *
  * <p><b>{@link javax.inject.Provider} &amp; concurrency:</b><br>
  * Instances of {@link javax.inject.Provider} are guaranteed to be called in a thread safe way.

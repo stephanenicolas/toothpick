@@ -22,6 +22,9 @@ import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.ktp.delegate.DelegateNotifier
 
+/**
+ * Main Toothpick API entry point for Kotlin.
+ */
 class KTP : Toothpick() {
 
     companion object TP {

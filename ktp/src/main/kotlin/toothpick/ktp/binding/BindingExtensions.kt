@@ -47,7 +47,7 @@ fun <T : Any> Module.bind(key: KClass<T>): Binding<T>.CanBeNamed = bind(key.java
  * DSL method to start a binding statement, using reified types for a more Kotlin friendly syntax.
  * @param T the {@link KClass} used as a key for this binding.
  * @return a binding statement for this key, that can be further customized.
- * @see Module.bind(key: KClass<T>)
+ * @see toothpick.config.Module.bind(Class)
  */
 inline fun <reified T> Module.bind(): Binding<T>.CanBeNamed = bind(T::class.java)
 

@@ -20,6 +20,7 @@ ext.deps = [// Common
             // Kotlin
             kotlin_plugin       : 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.41',
             kotlin_runtime      : 'org.jetbrains.kotlin:kotlin-stdlib:1.3.41',
+            dokkaPlugin         : 'org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17',
 
             // TP artifacts for composite builds
             tp_smoothie         : 'com.github.stephanenicolas.toothpick:smoothie:3.0.0',
