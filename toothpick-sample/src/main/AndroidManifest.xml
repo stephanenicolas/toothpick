@@ -10,13 +10,13 @@
       android:name=".BackpackApplication"
       android:theme="@style/Theme.AppCompat.Light"
       tools:ignore="GoogleAppIndexingWarning,MissingApplicationIcon,UnusedAttribute">
-    <activity android:name=".activity.SimpleBackpackItemsActivity">
+    <activity android:name=".activity.AdvancedBackpackItemsActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name=".activity.AdvancedBackpackItemsActivity" />
+    <activity android:name=".activity.SimpleBackpackItemsActivity" />
     <activity android:name=".activity.AddNewActivity" />
   </application>
 </manifest>

@@ -21,6 +21,7 @@ import toothpick.ktp.binding.module
 import toothpick.ktp.binding.toClass
 import toothpick.ktp.delegate.inject
 import toothpick.ktp.delegate.lazy
+import toothpick.smoothie.lifecycle.closeOnDestroy
 
 
 /**
@@ -49,12 +50,15 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 1. Open Activity scope as child of Application scope
-        // 2. Install module inside Activity scope
-        // 3. Inject dependencies
+        // 2. Install module inside Activity scope containing:
+        //    2.1 hen injection IBackpackAdapter, use the class BackpackAdapter
+        // 3. Close when activity is destroyed
+        // 4. Inject dependencies
         KTP.openScopes(ApplicationScope::class.java, this)
                 .installModules(module {
                     bind<IBackpackAdapter>().toClass<BackpackAdapter>()
                 })
+                .closeOnDestroy(this)
                 .inject(this)
 
         setupUIComponents()

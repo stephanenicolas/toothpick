@@ -12,7 +12,7 @@ import com.example.toothpick.helper.BackpackItemValidator;
 import javax.inject.Inject;
 import toothpick.Toothpick;
 
-class AddNewActivity extends AppCompatActivity {
+public class AddNewActivity extends AppCompatActivity {
 
     public final static String NEW_ITEM_NAME_KEY = "name";
 

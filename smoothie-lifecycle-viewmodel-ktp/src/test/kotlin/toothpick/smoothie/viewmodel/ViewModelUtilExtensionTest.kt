@@ -19,6 +19,7 @@ package toothpick.smoothie.viewmodel
 import android.content.Context
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentActivity
+import androidx.test.core.app.ApplicationProvider
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.sameInstance
 import org.hamcrest.MatcherAssert.assertThat
@@ -28,7 +29,9 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import toothpick.Toothpick.isScopeOpen
 import toothpick.ktp.KTP
-import androidx.test.core.app.ApplicationProvider
+import toothpick.ktp.binding.bind
+import toothpick.ktp.binding.module
+import toothpick.ktp.binding.toInstance
 
 @RunWith(RobolectricTestRunner::class)
 class ViewModelUtilExtensionTest {
@@ -74,6 +77,9 @@ class ViewModelUtilExtensionTest {
         val scope = KTP.openScopes(application, ViewModelScope::class.java)
                 .installViewModelBinding<TestViewModel>(activity)
                 .closeOnViewModelCleared(activity)
+                .installModules(module {
+                    bind<String>().withName("name").toInstance { "dependency" }
+                })
                 .openSubScope(activity)
 
         val viewModelBeforeRotation = scope.getInstance(TestViewModel::class.java)
@@ -83,5 +89,6 @@ class ViewModelUtilExtensionTest {
         // THEN
         assertThat(isScopeOpen(activity), `is`(true))
         assertThat(viewModelAfterRotation, sameInstance(viewModelBeforeRotation))
+        assertThat(viewModelBeforeRotation.string, `is`("dependency"))
     }
 }

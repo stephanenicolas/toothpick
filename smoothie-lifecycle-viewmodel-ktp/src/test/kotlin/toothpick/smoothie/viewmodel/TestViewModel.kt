@@ -17,8 +17,11 @@
 package toothpick.smoothie.viewmodel
 
 import androidx.lifecycle.ViewModel
+import toothpick.ktp.delegate.inject
 
-class TestViewModel : ViewModel()
+class TestViewModel : ViewModel() {
+    val string: String by inject("name")
+}
 
 @javax.inject.Scope
 @Retention(AnnotationRetention.RUNTIME)
