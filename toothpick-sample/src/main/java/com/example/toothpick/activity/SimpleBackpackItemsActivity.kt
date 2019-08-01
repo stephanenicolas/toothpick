@@ -42,7 +42,7 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
     val backpack: Backpack by inject()
     //will be injected in the activity scope as the binding
     //is defined there
-    val viewAdapter: RecyclerView.Adapter<out RecyclerView.ViewHolder> by inject()
+    val viewAdapter: IBackpackAdapter by inject()
 
     private lateinit var coordinatorLayout: CoordinatorLayout
 
