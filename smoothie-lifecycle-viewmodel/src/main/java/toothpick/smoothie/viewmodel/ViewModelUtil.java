@@ -77,7 +77,7 @@ public class ViewModelUtil {
                                                        final Class<T> viewModelClass,
                                                        final Factory factory) {
      scope.installModules(new Module() {{
-      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(activity, factory, viewModelClass));
+      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(scope, activity, factory, viewModelClass));
     }});
   }
 
@@ -96,7 +96,7 @@ public class ViewModelUtil {
                                                                    final Class<T> viewModelClass,
                                                                    final Factory factory) {
     scope.installModules(new Module() {{
-      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(fragment, factory, viewModelClass));
+      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(scope, fragment, factory, viewModelClass));
     }});
   }
 

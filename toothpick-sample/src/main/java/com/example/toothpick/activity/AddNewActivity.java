@@ -5,16 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import androidx.annotation.Nullable;
-import javax.inject.Inject;
-import android.widget.Button;
-import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.toothpick.R;
 import com.example.toothpick.annotation.ApplicationScope;
 import com.example.toothpick.helper.BackpackItemValidator;
 import javax.inject.Inject;
-import toothpick.Lazy;
 import toothpick.Toothpick;
 
 class AddNewActivity extends AppCompatActivity {

@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider.Factory;
 import androidx.lifecycle.ViewModelProviders;
 import javax.inject.Provider;
+import toothpick.Scope;
 
 /**
  * Can be used in a binding to inject the view model. Beware of installing such a binding in a scope
@@ -35,19 +36,24 @@ import javax.inject.Provider;
  */
 public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
   private final T viewModel;
+  private Scope scope;
 
   /**
    * Provides instances of a {@link ViewModel} class. Internally this provider will use {@link
    * ViewModelProviders#of(FragmentActivity)} to obtain the instance. This is required so that the
    * view model is registered by the view model extension, and its onCleared method is called.
    *
+   * @param scope the scope used to install the binding.
    * @param activity holds the view model.
    * @param viewModelClass the class of the view model instance to return.
    */
   public ViewModelProvider(
-      @NonNull FragmentActivity activity, @NonNull Class<? extends T> viewModelClass) {
+      @NonNull Scope scope,
+      @NonNull FragmentActivity activity,
+      @NonNull Class<? extends T> viewModelClass) {
     // we should not keep the activity, otherwise, it will leak from the view model scope
     viewModel = ViewModelProviders.of(activity).get(viewModelClass);
+    this.scope = scope;
   }
 
   /**
@@ -55,16 +61,19 @@ public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
    * ViewModelProviders#of(FragmentActivity)} to obtain the instance. This is required so that the
    * view model is registered by the view model extension, and its onCleared method is called.
    *
+   * @param scope the scope used to install the binding.
    * @param activity holds the view model.
    * @param factory required to build view model instances.
    * @param viewModelClass the class of the view model instance to return.
    */
   public ViewModelProvider(
+      @NonNull Scope scope,
       @NonNull FragmentActivity activity,
       @Nullable Factory factory,
       @NonNull Class<? extends T> viewModelClass) {
     // we should not keep the activity, otherwise, it will leak from the view model scope
     viewModel = ViewModelProviders.of(activity, factory).get(viewModelClass);
+    this.scope = scope;
   }
 
   /**
@@ -72,12 +81,17 @@ public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
    * ViewModelProviders#of(Fragment)} to obtain the instance. This is required so that the view
    * model is registered by the view model extension, and its onCleared method is called.
    *
+   * @param scope the scope used to install the binding.
    * @param fragment holds the view model.
    * @param viewModelClass the class of the view model instance to return.
    */
-  public ViewModelProvider(@NonNull Fragment fragment, @NonNull Class<? extends T> viewModelClass) {
+  public ViewModelProvider(
+      @NonNull Scope scope,
+      @NonNull Fragment fragment,
+      @NonNull Class<? extends T> viewModelClass) {
     // we should not keep the activity, otherwise, it will leak from the view model scope
     viewModel = ViewModelProviders.of(fragment).get(viewModelClass);
+    this.scope = scope;
   }
 
   /**
@@ -85,30 +99,41 @@ public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
    * ViewModelProviders#of(Fragment)} to obtain the instance. This is required so that the view
    * model is registered by the view model extension, and its onCleared method is called.
    *
+   * @param scope the scope used to install the binding.
    * @param fragment holds the view model.
    * @param factory required to build view model instances.
    * @param viewModelClass the class of the view model instance to return.
    */
   public ViewModelProvider(
+      @NonNull Scope scope,
       @NonNull Fragment fragment,
       @Nullable Factory factory,
       @NonNull Class<? extends T> viewModelClass) {
     // we should not keep the activity, otherwise, it will leak from the view model scope
     viewModel = ViewModelProviders.of(fragment, factory).get(viewModelClass);
+    this.scope = scope;
   }
 
   /**
    * Wraps a view model instance for injection.
    *
+   * @param scope the scope used to install the binding.
    * @param viewModel the view model instance that will always be injected.
    */
-  public ViewModelProvider(@NonNull T viewModel) {
+  public ViewModelProvider(
+      @NonNull Scope scope,
+      @NonNull T viewModel) {
     // we should not keep the activity, otherwise, it will leak.
     this.viewModel = viewModel;
+    this.scope = scope;
   }
 
   @Override
   public T get() {
+    if (scope != null) {
+      scope.inject(viewModel);
+      scope = null; // No need to keep the scope longer
+    }
     return viewModel;
   }
 }
