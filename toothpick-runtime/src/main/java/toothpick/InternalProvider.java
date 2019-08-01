@@ -73,7 +73,7 @@ public class InternalProvider<T> {
     this.factory = factory;
     this.isSingleton = factory.hasSingletonAnnotation();
     this.isReleasable = this.isSingleton && factory.hasReleasableAnnotation();
-    this.isProvidingSingleton = factory.hasProvidesSingletonInScopeAnnotation();
+    this.isProvidingSingleton = factory.hasProvidesSingletonAnnotation();
     this.isProvidingReleasable =
         this.isProvidingSingleton && factory.hasProvidesReleasableAnnotation();
   }
@@ -144,7 +144,7 @@ public class InternalProvider<T> {
       providerFactory = FactoryLocator.getFactory(providerFactoryClass);
       this.isSingleton |= providerFactory.hasSingletonAnnotation();
       this.isReleasable |= (this.isSingleton && providerFactory.hasReleasableAnnotation());
-      this.isProvidingSingleton |= providerFactory.hasProvidesSingletonInScopeAnnotation();
+      this.isProvidingSingleton |= providerFactory.hasProvidesSingletonAnnotation();
       this.isProvidingReleasable |=
           (this.isProvidingSingleton && providerFactory.hasProvidesReleasableAnnotation());
 

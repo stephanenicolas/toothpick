@@ -233,7 +233,7 @@ public class BindingsMultiThreadTest {
     }
 
     @Override
-    public boolean hasProvidesSingletonInScopeAnnotation() {
+    public boolean hasProvidesSingletonAnnotation() {
       return false;
     }
 

@@ -88,7 +88,7 @@ public interface Factory<T> {
    * @return true iff the class is annotated as a producer class whose instances will produce a
    *     singleton.
    */
-  boolean hasProvidesSingletonInScopeAnnotation();
+  boolean hasProvidesSingletonAnnotation();
 
   /**
    * Signals that the class is anotated with {@link ProvidesReleasable}.

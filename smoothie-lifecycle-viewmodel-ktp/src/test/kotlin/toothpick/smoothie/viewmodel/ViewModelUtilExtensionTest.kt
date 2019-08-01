@@ -31,7 +31,7 @@ import toothpick.ktp.KTP
 import androidx.test.core.app.ApplicationProvider
 
 @RunWith(RobolectricTestRunner::class)
-class ViewModelUtilExtensionsTest {
+class ViewModelUtilExtensionTest {
     @Test
     fun testCloseOnClear() {
         // GIVEN

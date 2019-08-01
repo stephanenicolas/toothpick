@@ -75,7 +75,7 @@ public class ViewModelUtil {
       if (modelClass.isAssignableFrom(TPViewModel.class)) {
         return (T) new TPViewModel(scope);
       }
-      throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
+      throw new IllegalArgumentException("Not a ViewModel class: " + modelClass.getName());
     }
   }
 
@@ -90,8 +90,8 @@ public class ViewModelUtil {
 
     @Override
     protected void onCleared() {
-      super.onCleared();
       closeScope(scope.getName());
+      super.onCleared();
     }
   }
 }

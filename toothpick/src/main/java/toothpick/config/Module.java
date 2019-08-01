@@ -80,7 +80,9 @@ import toothpick.ProvidesSingleton;
  * This means that there can be multiple instances of a Singleton the scope forest, or that
  * singleton can be garbage collected and recreated if their scope is closed and re-opened.
  *
- * * <p><b>{@link toothpick.Releasable} in ToothPick:</b><br>
+ * <p>*
+ *
+ * <p><b>{@link toothpick.Releasable} in ToothPick:</b><br>
  * Toothpick allows to release singletons that are declared releasable.
  *
  * <p><b>{@link javax.inject.Provider} &amp; concurrency:</b><br>

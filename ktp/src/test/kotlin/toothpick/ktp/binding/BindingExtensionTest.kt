@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 import javax.inject.Provider
 import javax.inject.Qualifier
 
-class BindingExtensionsTest {
+class BindingExtensionTest {
 
     @Test
     fun testBindingApi() {

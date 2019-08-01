@@ -37,7 +37,7 @@ class KTPTest {
     }
 
     @Test
-    fun `openScope should open scope and wrap it using KTPScope`() {
+    fun `openScope should open scope`() {
         // GIVEN
         Toothpick.isScopeOpen("name").shouldBeFalse()
 
@@ -51,7 +51,7 @@ class KTPTest {
     }
 
     @Test
-    fun `openScope should open scope and wrap it using KTPScope and provide configuration`() {
+    fun `openScope should open scope and provide configuration`() {
         // GIVEN
         Toothpick.isScopeOpen("name").shouldBeFalse()
 
@@ -65,7 +65,7 @@ class KTPTest {
     }
 
     @Test
-    fun `openScopes should open scopes and wrap child scope using KTPScope`() {
+    fun `openScopes should open scopes and child scope`() {
         // GIVEN
         Toothpick.isScopeOpen("parent").shouldBeFalse()
         Toothpick.isScopeOpen("child").shouldBeFalse()
