@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.toothpick.R
 import com.example.toothpick.activity.AddNewActivity.NEW_ITEM_NAME_KEY
 import com.example.toothpick.adapter.BackpackAdapter
+import com.example.toothpick.adapter.IBackpackAdapter
 import com.example.toothpick.annotation.ApplicationScope
 import com.example.toothpick.helper.NotificationHelper
 import com.example.toothpick.model.Backpack
@@ -52,7 +53,7 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
         // 3. Inject dependencies
         KTP.openScopes(ApplicationScope::class.java, this)
                 .installModules(module {
-                    bind<RecyclerView.Adapter<out RecyclerView.ViewHolder>>().toClass<BackpackAdapter>()
+                    bind<IBackpackAdapter>().toClass<BackpackAdapter>()
                 })
                 .inject(this)
 
