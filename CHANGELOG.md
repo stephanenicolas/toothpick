@@ -1,5 +1,9 @@
 <!-- Continue from top -->
 
+## Release version 3.0.0 (Aug 2nd, 2019)
+ * Enable field injection with qualifiers for KTP
+ * Adding toothpick-sample
+
 ## Release version 3.0.0-RC1 (July 29th, 2019)
  * TP3 specs can be find at https://github.com/stephanenicolas/toothpick/issues/225
  * KTP specs can be found at https://github.com/stephanenicolas/toothpick/issues/316
