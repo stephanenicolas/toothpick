@@ -21,7 +21,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
 import toothpick.Scope
-import toothpick.ktp.binding.module
 
 /**
  * Closes a scope automatically when the view model of a {@link FragmentActivity} is cleared.

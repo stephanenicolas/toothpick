@@ -56,11 +56,13 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
         // 1. Open Activity scope as child of Application scope
         // 2. Install module inside Activity scope containing:
         //    2.1 hen injection IBackpackAdapter, use the class BackpackAdapter
+        //    2.2 install backpack as a singleton on the Activity scope via binding
         // 3. Close when activity is destroyed
         // 4. Inject dependencies
         KTP.openScopes(ApplicationScope::class.java, this)
                 .installModules(module {
                     bind<IBackpackAdapter>().toClass<BackpackAdapter>()
+                    bind<Backpack>().singleton()
                 })
                 .closeOnDestroy(this)
                 .inject(this)

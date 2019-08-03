@@ -120,9 +120,7 @@ public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
    * @param scope the scope used to install the binding.
    * @param viewModel the view model instance that will always be injected.
    */
-  public ViewModelProvider(
-      @NonNull Scope scope,
-      @NonNull T viewModel) {
+  public ViewModelProvider(@NonNull Scope scope, @NonNull T viewModel) {
     // we should not keep the activity, otherwise, it will leak.
     this.viewModel = viewModel;
     this.scope = scope;

@@ -63,41 +63,51 @@ public class ViewModelUtil {
   }
 
   /**
-   * Installs a binding for a view model class.
-   * It will become available by injection. Beware that such a binding
-   * should be installed on a scope that is independent of the activity life cycle.
+   * Installs a binding for a view model class. It will become available by injection. Beware that
+   * such a binding should be installed on a scope that is independent of the activity life cycle.
    *
    * @param scope the scope where the binding should be installed.
    * @param activity the fragment activity associated to the ViewModel.
    * @param viewModelClass the class of the view model to inject.
    * @param factory optional factory needed to create the view model instances.
    */
-   public static <T extends ViewModel> void installViewModelBinding(final Scope scope,
-                                                       final FragmentActivity activity,
-                                                       final Class<T> viewModelClass,
-                                                       final Factory factory) {
-     scope.installModules(new Module() {{
-      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(scope, activity, factory, viewModelClass));
-    }});
+  public static <T extends ViewModel> void installViewModelBinding(
+      final Scope scope,
+      final FragmentActivity activity,
+      final Class<T> viewModelClass,
+      final Factory factory) {
+    scope.installModules(
+        new Module() {
+          {
+            bind(viewModelClass)
+                .toProviderInstance(
+                    new ViewModelProvider<>(scope, activity, factory, viewModelClass));
+          }
+        });
   }
 
   /**
-   * Installs a binding for a view model class.
-   * It will become available by injection. Beware that such a binding
-   * should be installed on a scope that is independent of the activity life cycle.
+   * Installs a binding for a view model class. It will become available by injection. Beware that
+   * such a binding should be installed on a scope that is independent of the activity life cycle.
    *
    * @param scope the scope where the binding should be installed.
    * @param fragment the fragment associated to the ViewModel.
    * @param viewModelClass the class of the view model to inject.
    * @param factory optional factory needed to create the view model instances.
    */
-  public static <T extends ViewModel> void installViewModelBinding(final Scope scope,
-                                                                   final Fragment fragment,
-                                                                   final Class<T> viewModelClass,
-                                                                   final Factory factory) {
-    scope.installModules(new Module() {{
-      bind(viewModelClass).toProviderInstance(new ViewModelProvider<>(scope, fragment, factory, viewModelClass));
-    }});
+  public static <T extends ViewModel> void installViewModelBinding(
+      final Scope scope,
+      final Fragment fragment,
+      final Class<T> viewModelClass,
+      final Factory factory) {
+    scope.installModules(
+        new Module() {
+          {
+            bind(viewModelClass)
+                .toProviderInstance(
+                    new ViewModelProvider<>(scope, fragment, factory, viewModelClass));
+          }
+        });
   }
 
   private static class TPViewModelFactory implements Factory {
