@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+  <Button
+      android:id="@+id/go_to_simple"
+      android:text="@string/go_to_simple_version"
+      android:background="@android:color/holo_green_light"
+      android:layout_margin="20dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+  <Button
+      android:id="@+id/go_to_advanced"
+      android:text="@string/go_to_advanced_version"
+      android:background="@android:color/holo_green_light"
+      android:layout_margin="20dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+</LinearLayout>

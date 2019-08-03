@@ -30,7 +30,11 @@ import toothpick.smoothie.viewmodel.installViewModelBinding
 /**
  * Advanced version of the BackpackItemsActivity.
  *
- * Here we retain the backpack on configuration changes using the ViewModel Scope.
+ * In this example, the backpack is retained on configuration
+ * changes as it belongs to the view model scope which follows
+ * the lifecycle of view model instances: when an instance is
+ * destroyed, and later recreated, the scope remains unchanged
+ * and the backpack instance will be the same.
  */
 class AdvancedBackpackItemsActivity : AppCompatActivity() {
 

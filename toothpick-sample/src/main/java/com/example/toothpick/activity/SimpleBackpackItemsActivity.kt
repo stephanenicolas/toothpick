@@ -27,7 +27,11 @@ import toothpick.smoothie.lifecycle.closeOnDestroy
 /**
  * Simple version of the BackpackItemsActivity.
  *
- * Here we do not retain the backpack at all.
+ * In this example the backpack is not retained on configuration changes
+ * as it belongs to the activity scope which follows the lifecycle of activity
+ * instances: when an instance is destroyed, its associated scope is closed
+ * and a new scope with a new backpack will be created when the new instance
+ * of the activity is created.
  */
 class SimpleBackpackItemsActivity : AppCompatActivity() {
 
