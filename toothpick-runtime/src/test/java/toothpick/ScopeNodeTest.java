@@ -1,19 +1,34 @@
+/*
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.fail;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import javax.inject.Singleton;
 import org.junit.After;
 import org.junit.Test;
 import toothpick.data.CustomScope;
 import toothpick.data.NotAScope;
-
-import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public class ScopeNodeTest {
 
@@ -24,224 +39,225 @@ public class ScopeNodeTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testCreateScope_shouldFail_whenNameIsNull() {
-    //GIVEN
+    // GIVEN
 
-    //WHEN
+    // WHEN
     Scope scope = new ScopeImpl(null);
 
-    //THEN
+    // THEN
     assertThat(scope, is(scope));
   }
 
   @Test
   public void testCreateScope_shouldBindToScopeAnnotation_whenNameIsAScopeAnnotation() {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl(CustomScope.class);
 
-    //WHEN
-    boolean isBoundToScopeAnnotation = scope.isBoundToScopeAnnotation(CustomScope.class);
+    // WHEN
+    boolean isSupportingToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
 
-    //THEN
-    assertThat(isBoundToScopeAnnotation, is(true));
+    // THEN
+    assertThat(isSupportingToScopeAnnotation, is(true));
   }
 
   @Test
   public void testCreateScope_shouldNotBindToScopeAnnotation_whenNameIsNotAScopeAnnotation() {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl(NotAScope.class);
 
-    //WHEN
-    boolean isBoundToScopeAnnotation = scope.isBoundToScopeAnnotation(CustomScope.class);
+    // WHEN
+    boolean isSupportingToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
 
-    //THEN
-    assertThat(isBoundToScopeAnnotation, is(false));
+    // THEN
+    assertThat(isSupportingToScopeAnnotation, is(false));
   }
 
   @Test
   public void testGetParentScope_shouldReturnRootScope_whenAskedForSingleton() {
-    //GIVEN
+    // GIVEN
     Scope parentScope = Toothpick.openScope("root");
     Scope childScope = Toothpick.openScopes("root", "child");
 
-    //WHEN
+    // WHEN
     Scope scope = childScope.getParentScope(Singleton.class);
 
-    //THEN
+    // THEN
     assertThat(scope, is(parentScope));
   }
 
   @Test
-  public void testGetParentScope_shouldReturnItself_whenBoundToScopeAnnotation() {
-    //GIVEN
+  public void testGetParentScope_shouldReturnItself_whenScopedToScopeAnnotation() {
+    // GIVEN
     Scope childScope = Toothpick.openScopes("root", "child");
-    childScope.bindScopeAnnotation(CustomScope.class);
+    childScope.supportScopeAnnotation(CustomScope.class);
 
-    //WHEN
+    // WHEN
     Scope scope = childScope.getParentScope(CustomScope.class);
 
-    //THEN
+    // THEN
     assertThat(scope, is(childScope));
   }
 
   @Test
-  public void testGetParentScope_shouldReturnParentScope_whenParentBoundToScopeAnnotation() {
-    //GIVEN
+  public void testGetParentScope_shouldReturnParentScope_whenParentSupportsScopeAnnotation() {
+    // GIVEN
     Scope parentScope = Toothpick.openScope("root");
-    parentScope.bindScopeAnnotation(CustomScope.class);
+    parentScope.supportScopeAnnotation(CustomScope.class);
     Scope childScope = Toothpick.openScopes("root", "child");
 
-    //WHEN
+    // WHEN
     Scope scope = childScope.getParentScope(CustomScope.class);
 
-    //THEN
+    // THEN
     assertThat(scope, is(parentScope));
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testGetParentScope_shouldFail_whenNoParentBoundToScopeAnnotation() {
-    //GIVEN
+  public void testGetParentScope_shouldFail_whenNoParentSupportsScopeAnnotation() {
+    // GIVEN
     Scope scope = Toothpick.openScope("root");
 
-    //WHEN
+    // WHEN
     scope.getParentScope(CustomScope.class);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testGetParentScope_shouldFail_WhenAnnotationIsNotAScope() {
-    //GIVEN
+    // GIVEN
     Scope scope = Toothpick.openScope("root");
 
-    //WHEN
+    // WHEN
     scope.getParentScope(NotAScope.class);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test
   public void testGetRootScope_shouldReturnNodeItselfI_whenRoot() {
-    //GIVEN
+    // GIVEN
     Scope parentScope = Toothpick.openScope("root");
 
-    //WHEN
+    // WHEN
     Scope scope = parentScope.getRootScope();
 
-    //THEN
+    // THEN
     assertThat(scope, is(parentScope));
   }
 
   @Test
   public void testGetRootScope_shouldReturnRootScope_whenHasParent() {
-    //GIVEN
+    // GIVEN
     Scope parentScope = Toothpick.openScope("root");
     Scope childScope = Toothpick.openScopes("root", "child");
 
-    //WHEN
+    // WHEN
     Scope scope = childScope.getRootScope();
 
-    //THEN
+    // THEN
     assertThat(scope, is(parentScope));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testBindScopeAnnotation_shouldFail_whenSingleton() {
-    //GIVEN
+    // GIVEN
     Scope scope = Toothpick.openScope("root");
 
-    //WHEN
-    scope.bindScopeAnnotation(Singleton.class);
+    // WHEN
+    scope.supportScopeAnnotation(Singleton.class);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testBindScopeAnnotation_shouldFail_whenAnnotationIsNotAScope() {
-    //GIVEN
+    // GIVEN
     Scope scope = Toothpick.openScope("root");
 
-    //WHEN
-    scope.bindScopeAnnotation(NotAScope.class);
+    // WHEN
+    scope.supportScopeAnnotation(NotAScope.class);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnFalse_whenNotBound() {
-    //GIVEN
+  public void testSupportScopeAnnotation_shouldReturnFalse_whenNotSupported() {
+    // GIVEN
     Scope scope = Toothpick.openScope("root");
 
-    //WHEN
-    boolean isBoundToScopeAnnotation = scope.isBoundToScopeAnnotation(CustomScope.class);
+    // WHEN
+    boolean isSupportingToScopeAnnotation = scope.isScopeAnnotationSupported(CustomScope.class);
 
-    //THEN
-    assertThat(isBoundToScopeAnnotation, is(false));
+    // THEN
+    assertThat(isSupportingToScopeAnnotation, is(false));
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnTrue_whenBound() {
-    //GIVEN
+  public void testSupportScopeAnnotation_shouldReturnTrue_whenSupported() {
+    // GIVEN
     Scope parentScope = Toothpick.openScope("root");
-    parentScope.bindScopeAnnotation(CustomScope.class);
+    parentScope.supportScopeAnnotation(CustomScope.class);
 
-    //WHEN
-    boolean isBoundToScopeAnnotation = parentScope.isBoundToScopeAnnotation(CustomScope.class);
+    // WHEN
+    boolean isSupportingToScopeAnnotation =
+        parentScope.isScopeAnnotationSupported(CustomScope.class);
 
-    //THEN
-    assertThat(isBoundToScopeAnnotation, is(true));
+    // THEN
+    assertThat(isSupportingToScopeAnnotation, is(true));
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnTrue_whenRootScopeAskedForSingleton() {
-    //GIVEN
+  public void testSupportScopeAnnotation_shouldReturnTrue_whenRootScopeAskedForSingleton() {
+    // GIVEN
     Scope parentScope = Toothpick.openScope("root");
 
-    //WHEN
-    boolean isBoundToSingleton = parentScope.isBoundToScopeAnnotation(Singleton.class);
+    // WHEN
+    boolean isSupportingSingleton = parentScope.isScopeAnnotationSupported(Singleton.class);
 
-    //THEN
-    assertThat(isBoundToSingleton, is(true));
+    // THEN
+    assertThat(isSupportingSingleton, is(true));
   }
 
   @Test
-  public void testBindScopeAnnotation_shouldReturnFalse_whenNonRootScopeAskedForSingleton() {
-    //GIVEN
+  public void testSupportScopeAnnotation_shouldReturnFalse_whenNonRootScopeAskedForSingleton() {
+    // GIVEN
     Scope childScope = Toothpick.openScopes("root", "child");
 
-    //WHEN
-    boolean isBoundToSingleton = childScope.isBoundToScopeAnnotation(Singleton.class);
+    // WHEN
+    boolean isSupportingSingleton = childScope.isScopeAnnotationSupported(Singleton.class);
 
-    //THEN
-    assertThat(isBoundToSingleton, is(false));
+    // THEN
+    assertThat(isSupportingSingleton, is(false));
   }
 
   @Test
   public void testGetChildrenScopes_shouldReturnEmptyList_whenHasNoChildren() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
 
-    //WHEN
+    // WHEN
     boolean hasNoChildren = parentScope.getChildrenScopes().isEmpty();
 
-    //THEN
+    // THEN
     assertThat(hasNoChildren, is(true));
   }
 
   @Test
   public void testGetChildrenScopes_shouldReturnChildren_whenHasChildren() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode childScope = new ScopeImpl("child");
     parentScope.addChild(childScope);
 
-    //WHEN
+    // WHEN
     Collection<ScopeNode> childrenScopes = parentScope.getChildrenScopes();
 
-    //THEN
+    // THEN
     assertThat(childrenScopes.isEmpty(), is(false));
     assertThat(childrenScopes.size(), is(1));
     assertThat(childrenScopes.iterator().next(), is(childScope));
@@ -249,115 +265,115 @@ public class ScopeNodeTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testAddChild_shouldFail_whenChildIsNull() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
 
-    //WHEN
+    // WHEN
     parentScope.addChild(null);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test
   public void testAddChild_shouldReturnChild() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode childScope = new ScopeImpl("child");
     parentScope.addChild(childScope);
 
-    //WHEN
+    // WHEN
     ScopeNode child = parentScope.addChild(childScope);
 
-    //THEN
+    // THEN
     assertThat(child, is(childScope));
   }
 
   @Test(expected = IllegalStateException.class)
   public void testAddChild_shouldFail_whenChildAlreadyHasParent() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode parentScope2 = new ScopeImpl("foo");
     ScopeNode childScope = new ScopeImpl("child");
     parentScope.addChild(childScope);
 
-    //WHEN
+    // WHEN
     parentScope2.addChild(childScope);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testRemoveChild_shouldFail_whenChildIsNull() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
 
-    //WHEN
+    // WHEN
     parentScope.removeChild(null);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test(expected = IllegalStateException.class)
   public void testRemoveChild_shouldFail_whenChildHasNoParent() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode childScope = new ScopeImpl("child");
 
-    //WHEN
+    // WHEN
     parentScope.removeChild(childScope);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test(expected = IllegalStateException.class)
   public void testRemoveChild_shouldFail_whenChildHasDifferentParent() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode parentScope2 = new ScopeImpl("foo");
     ScopeNode childScope = new ScopeImpl("child");
     parentScope.addChild(childScope);
 
-    //WHEN
+    // WHEN
     parentScope2.removeChild(childScope);
 
-    //THEN
+    // THEN
     fail("Should throw an exception");
   }
 
   @Test
   public void testRemoveChild() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode childScope = new ScopeImpl("child");
     parentScope.addChild(childScope);
 
-    //WHEN
+    // WHEN
     parentScope.removeChild(childScope);
 
-    //WHEN
+    // WHEN
     Collection<ScopeNode> childrenScopes = parentScope.getChildrenScopes();
 
-    //THEN
+    // THEN
     assertThat(childrenScopes.isEmpty(), is(true));
   }
 
   @Test
   public void testEqualsAndHashCode_shouldReturnTrue_whenNodeHasSameName() {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("foo");
     Scope scope2 = new ScopeImpl("foo");
 
-    //WHEN
+    // WHEN
     boolean equals = scope.equals(scope2);
     boolean equals2 = scope2.equals(scope);
     int hashScope = scope.hashCode();
     int hashScope2 = scope2.hashCode();
 
-    //THEN
+    // THEN
     assertThat(equals, is(true));
     assertThat(equals2, is(true));
     assertThat(hashScope, is(hashScope2));
@@ -365,48 +381,48 @@ public class ScopeNodeTest {
 
   @Test
   public void testEqualsAndHashCode_shouldReturnFalse_whenNodeHasDifferentName() {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("foo");
     Scope scope2 = new ScopeImpl("bar");
 
-    //WHEN
+    // WHEN
     boolean equals = scope.equals(scope2);
     int hashScope = scope.hashCode();
     int hashScope2 = scope2.hashCode();
 
-    //THEN
+    // THEN
     assertThat(equals, is(false));
     assertThat(hashScope, not(is(hashScope2)));
   }
 
   @Test
   public void testGetParentScopeNames_shouldReturnParentNames_whenThereAreParents() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode childScope = new ScopeImpl("child");
     parentScope.addChild(childScope);
 
-    //WHEN
+    // WHEN
     final List<Object> parentScopesNames = childScope.getParentScopesNames();
 
-    //THEN
+    // THEN
     assertThat(parentScopesNames.size(), is(1));
     assertThat(parentScopesNames.iterator().next(), is(parentScope.getName()));
   }
 
   @Test
   public void testGetParentScopeNames_shouldReturnParentNamesInOrder_whenThereAreParents() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
     ScopeNode childScope = new ScopeImpl("child");
     ScopeNode grandChildScope = new ScopeImpl("grandChild");
     parentScope.addChild(childScope);
     childScope.addChild(grandChildScope);
 
-    //WHEN
+    // WHEN
     final List<Object> grandParentScopesNames = grandChildScope.getParentScopesNames();
 
-    //THEN
+    // THEN
     assertThat(grandParentScopesNames.size(), is(2));
     final Iterator<Object> iterator = grandParentScopesNames.iterator();
     assertThat(iterator.next(), is(childScope.getName()));
@@ -415,40 +431,40 @@ public class ScopeNodeTest {
 
   @Test
   public void testGetParentScopeNames_shouldReturnParentNames_whenThereAreNoParents() {
-    //GIVEN
+    // GIVEN
     ScopeNode parentScope = new ScopeImpl("root");
 
-    //WHEN
+    // WHEN
     final List<Object> parentScopesNames = parentScope.getParentScopesNames();
 
-    //THEN
+    // THEN
     assertThat(parentScopesNames.size(), is(0));
   }
 
   @Test
-  public void testReset_shouldClearBoundAnnotations_andFlagTheScopeAsOpen() throws Exception {
-    //GIVEN
+  public void testReset_shouldClearSupportedAnnotations_andFlagTheScopeAsOpen() throws Exception {
+    // GIVEN
     ScopeNode scope = new ScopeImpl("root");
-    scope.bindScopeAnnotation(CustomScope.class);
+    scope.supportScopeAnnotation(CustomScope.class);
     scope.close();
 
-    //WHEN
+    // WHEN
     scope.reset();
 
-    //THEN
-    assertThat(scope.isBoundToScopeAnnotation(CustomScope.class), is(false));
+    // THEN
+    assertThat(scope.isScopeAnnotationSupported(CustomScope.class), is(false));
     assertThat(scope.isOpen, is(true));
   }
 
   @Test
   public void testReset_shouldRebindScopeAnnotation() throws Exception {
-    //GIVEN
+    // GIVEN
     ScopeNode scope = new ScopeImpl(CustomScope.class);
 
-    //WHEN
+    // WHEN
     scope.reset();
 
-    //THEN
-    assertThat(scope.isBoundToScopeAnnotation(CustomScope.class), is(true));
+    // THEN
+    assertThat(scope.isScopeAnnotationSupported(CustomScope.class), is(true));
   }
 }

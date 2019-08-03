@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+  <string name="app_name">TP sample</string>
+  <string name="add_new">Add new</string>
+  <string name="go_to_simple_version">Go to Simple Version</string>
+  <string name="go_to_advanced_version">Go to Advanced Version</string>
+</resources>

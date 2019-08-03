@@ -1,233 +1,278 @@
+/*
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import org.junit.After;
-import org.junit.Test;
-import toothpick.configuration.Configuration;
-import toothpick.configuration.MultipleRootException;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import org.junit.After;
+import org.junit.Test;
+import toothpick.configuration.Configuration;
+import toothpick.configuration.MultipleRootException;
 
 public class ToothpickTest {
 
   @Test
-  public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() throws Exception {
-    //GIVEN
+  public void getScope_shouldNotReturnNull_whenNoScopeByThisKeyWasCreated() {
+    // GIVEN
 
-    //WHEN
+    // WHEN
     Scope scope = Toothpick.openScope(this);
 
-    //THEN
+    // THEN
     assertThat(scope, notNullValue());
   }
 
   @Test
-  public void getScope_shouldReturnAnScope_whenThisScopeByThisKeyWasCreated() throws Exception {
-    //GIVEN
+  public void getScope_shouldReturnAnScope_whenThisScopeByThisKeyWasCreated() {
+    // GIVEN
     Scope scope = Toothpick.openScope(this);
 
-    //WHEN
+    // WHEN
     Scope scope2 = Toothpick.openScope(this);
 
-    //THEN
+    // THEN
     assertThat(scope, notNullValue());
     assertThat(scope, sameInstance(scope2));
   }
 
   @Test
-  public void createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() throws Exception {
-    //GIVEN
+  public void
+      createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() {
+    // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     ScopeNode scope = (ScopeNode) Toothpick.openScope("bar");
     scopeParent.addChild(scope);
 
-    //THEN
+    // THEN
     assertThat(scope, notNullValue());
     assertThat(scope.getParentScope(), sameInstance(scopeParent));
   }
 
   @Test
-  public void createScope_shouldMarkThisScopeAsOpen() throws Exception {
-    //GIVEN
+  public void createScope_shouldMarkThisScopeAsOpen() {
+    // GIVEN
 
-    //WHEN
+    // WHEN
     ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo");
 
-    //THEN
+    // THEN
     assertThat(scope.isOpen, is(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void openScopes_shouldFail_whenScopeNamesAreNull() throws Exception {
-    //GIVEN
+  @Test
+  public void openScope_shouldApplyScopeConfig_whenNewScopeCreated() {
+    // GIVEN
+    TestScopeConfig scopeConfig = new TestScopeConfig();
+    ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo", scopeConfig);
 
-    //WHEN
-    Toothpick.openScopes((Object[]) null);
+    // WHEN
+    Toothpick.closeScope("foo");
 
-    //THEN
+    // THEN
+    assertThat(scope.isOpen, is(false));
+    assertThat(scopeConfig.wasApplied, is(true));
   }
 
   @Test
-  public void reset_shouldClear_WhenSomeScopesWereCreated() throws Exception {
-    //GIVEN
+  public void openScope_shouldNotApplyScopeConfig_whenNoNewScopeCreated() {
+    // GIVEN
+    TestScopeConfig scopeConfig = new TestScopeConfig();
+    Toothpick.openScope("foo");
+    ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo", scopeConfig);
+
+    // WHEN
+    Toothpick.closeScope("foo");
+
+    // THEN
+    assertThat(scope.isOpen, is(false));
+    assertThat(scopeConfig.wasApplied, is(false));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void openScopes_shouldFail_whenScopeNamesAreNull() {
+    // GIVEN
+
+    // WHEN
+    Toothpick.openScopes((Object[]) null);
+
+    // THEN
+  }
+
+  @Test
+  public void reset_shouldClear_WhenSomeScopesWereCreated() {
+    // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     Scope scope0 = Toothpick.openScope("foo");
     Scope scope1 = Toothpick.openScope("bar");
 
-    //WHEN
+    // WHEN
     Toothpick.reset();
     Scope scope0AfterReset = Toothpick.openScope("foo");
     Scope scope1AfterReset = Toothpick.openScope("bar");
 
-    //THEN
+    // THEN
     assertThat(scope0AfterReset, not(sameInstance(scope0)));
     assertThat(scope1AfterReset, not(sameInstance(scope1)));
   }
 
   @Test
-  public void destroyScope_shouldClearThisScope_WhenThisScopesWasCreated() throws Exception {
-    //GIVEN
+  public void destroyScope_shouldClearThisScope_WhenThisScopesWasCreated() {
+    // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     Scope scope = Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     Toothpick.closeScope("foo");
     Scope scopeAfterReset = Toothpick.openScope("foo");
 
-    //THEN
+    // THEN
     assertThat(scopeAfterReset, not(sameInstance(scope)));
   }
 
   @Test
-  public void closeScope_shouldMarkThisScopeAsClosed() throws Exception {
-    //GIVEN
+  public void closeScope_shouldMarkThisScopeAsClosed() {
+    // GIVEN
     ScopeImpl scope = (ScopeImpl) Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     Toothpick.closeScope("foo");
 
-    //THEN
+    // THEN
     assertThat(scope.isOpen, is(false));
   }
 
   @Test(expected = MultipleRootException.class)
-  public void openingAClosedChildScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() throws Exception {
-    //GIVEN
+  public void
+      openingAClosedChildScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() {
+    // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
     Toothpick.openScopes("foo", "bar");
     Toothpick.closeScope("bar");
 
-    //WHEN
+    // WHEN
     Toothpick.openScope("bar");
 
-    //THEN
+    // THEN
   }
 
   @Test(expected = MultipleRootException.class)
-  public void opening2rootScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() throws Exception {
-    //GIVEN
+  public void
+      opening2rootScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() {
+    // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
     Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     Toothpick.openScope("bar");
 
-    //THEN
+    // THEN
   }
 
   @Test
-  public void getOrCreateScope_shouldReturnSameScope_WhenOneWasCreatedWithSameKey() throws Exception {
-    //GIVEN
+  public void getOrCreateScope_shouldReturnSameScope_WhenOneWasCreatedWithSameKey() {
+    // GIVEN
     Scope scope = Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     Scope scope2 = Toothpick.openScope("foo");
 
-    //THEN
+    // THEN
     assertThat(scope, sameInstance(scope2));
   }
 
   @Test
-  public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() throws Exception {
-    //GIVEN
+  public void getOrCreateScope_shouldReturnANewScopeScope_WhenOneWasNotCreatedWithSameKey() {
+    // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("bar");
 
-    //WHEN
+    // WHEN
     ScopeNode scope = (ScopeNode) Toothpick.openScope("foo");
     scopeParent.addChild(scope);
     ScopeNode scope2 = (ScopeNode) Toothpick.openScope("foo");
 
-    //THEN
+    // THEN
     assertThat(scope, notNullValue());
     assertThat(scope2, sameInstance(scope));
     assertThat(scope.getParentScope(), sameInstance(scopeParent));
   }
 
   @Test
-  public void closeScope_shouldNotFail_WhenThisScopesWasNotCreated() throws Exception {
-    //GIVEN
+  public void closeScope_shouldNotFail_WhenThisScopesWasNotCreated() {
+    // GIVEN
 
-    //WHEN
+    // WHEN
     Toothpick.closeScope("foo");
 
-    //THEN
+    // THEN
   }
 
   @Test
-  public void closeScope_shouldRemoveChildScope_whenChildScopeIsClosed() throws Exception {
-    //GIVEN
+  public void closeScope_shouldRemoveChildScope_whenChildScopeIsClosed() {
+    // GIVEN
     Toothpick.openScopes("foo", "bar");
 
-    //WHEN
+    // WHEN
     Toothpick.closeScope("bar");
 
-    //THEN
+    // THEN
     assertThat(((ScopeNode) Toothpick.openScope("foo")).getChildrenScopes().isEmpty(), is(true));
   }
 
   @Test
   public void constructor_shouldBePrivate() throws Exception {
-    //GIVEN
+    // GIVEN
 
-    //WHEN
+    // WHEN
     Constructor constructor = Toothpick.class.getDeclaredConstructor();
 
-    //THEN
+    // THEN
     assertThat(constructor, notNullValue());
     assertThat(constructor.isAccessible(), is(false));
   }
 
   @Test(expected = InvocationTargetException.class)
   public void constructor_shouldThrowException_whenCalled() throws Exception {
-    //GIVEN
+    // GIVEN
 
-    //WHEN
+    // WHEN
     Constructor constructor = Toothpick.class.getDeclaredConstructor();
     constructor.setAccessible(true);
     constructor.newInstance();
 
-    //THEN
+    // THEN
   }
 
   @Test
-  public void reset_shouldCallResetForProvidedScope() throws Exception {
+  public void reset_shouldCallResetForProvidedScope() {
     // GIVEN
-    ScopeNode mockScope = createMock(ScopeNode.class);
+    ScopeNode mockScope = mock(ScopeNode.class);
     mockScope.reset();
-    replay(mockScope);
 
     // WHEN
     Toothpick.reset(mockScope);
@@ -237,56 +282,69 @@ public class ToothpickTest {
   }
 
   @Test
-  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasNotCreated() throws Exception {
-    //GIVEN
+  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasNotCreated() {
+    // GIVEN
 
-    //WHEN
+    // WHEN
     boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
 
-    //THEN
+    // THEN
     assertThat(isFooScopeOpen, is(false));
   }
 
   @Test
-  public void isScopeOpen_shouldReturnTrue_WhenThisScopesWasCreated() throws Exception {
-    //GIVEN
+  public void isScopeOpen_shouldReturnTrue_WhenThisScopesWasCreated() {
+    // GIVEN
     Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
 
-    //THEN
+    // THEN
     assertThat(isFooScopeOpen, is(true));
   }
 
   @Test
-  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasClosed() throws Exception {
-    //GIVEN
+  public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasClosed() {
+    // GIVEN
     Toothpick.openScope("foo");
 
-    //WHEN
+    // WHEN
     Toothpick.closeScope("foo");
     boolean isFooScopeOpen = Toothpick.isScopeOpen("foo");
 
-    //THEN
+    // THEN
     assertThat(isFooScopeOpen, is(false));
   }
 
   @Test
-  public void isScopeOpen_shouldReturnFalse_WhenParentScopesWasClosed() throws Exception {
-    //GIVEN
+  public void isScopeOpen_shouldReturnFalse_WhenParentScopesWasClosed() {
+    // GIVEN
     Toothpick.openScopes("foo", "bar");
 
-    //WHEN
+    // WHEN
     Toothpick.closeScope("foo");
     boolean isBarScopeOpen = Toothpick.isScopeOpen("bar");
 
-    //THEN
+    // THEN
     assertThat(isBarScopeOpen, is(false));
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     Toothpick.reset();
+  }
+
+  private static class TestScopeConfig implements Scope.ScopeConfig {
+    private boolean wasApplied = false;
+
+    @Override
+    public void configure(Scope scope) {
+      wasApplied = true;
+    }
+
+    public boolean wasApplied() {
+      return wasApplied;
+    }
   }
 }

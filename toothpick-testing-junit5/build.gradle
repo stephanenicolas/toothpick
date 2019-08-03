@@ -8,13 +8,14 @@ dependencies {
   implementation deps.junit5_api
 
   testRuntimeOnly deps.junit5_engine
-  testImplementation deps.easymock
+  testImplementation deps.mockito
   testImplementation deps.hamcrest
   testAnnotationProcessor project(':toothpick-compiler')
 }
 
 test {
   useJUnitPlatform()
+  jvmArgs '-noverify'
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

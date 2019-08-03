@@ -1,4 +1,25 @@
+/*
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.getInstance;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -15,14 +36,9 @@ import toothpick.data.CyclicNamedFoo;
 import toothpick.data.IFoo;
 import toothpick.locators.NoFactoryFoundException;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
 /*
  * Creates a instance in the simplest possible way
-  * without any module.
+ * without any module.
  */
 public class CycleCheckTest {
 
@@ -43,31 +59,32 @@ public class CycleCheckTest {
 
   @Test(expected = CyclicDependencyException.class)
   public void testSimpleCycleDetection() {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     scope.getInstance(CyclicFoo.class);
 
-    //THEN
+    // THEN
     fail("Should throw an exception as a cycle is detected");
   }
 
   @Test
   public void testCycleDetection_whenSameClass_and_differentName_shouldNotCrash() {
-    //GIVEN
+    // GIVEN
     final CyclicNamedFoo instance1 = new CyclicNamedFoo();
     Scope scope = new ScopeImpl("");
-    scope.installModules(new Module() {
-      {
-        bind(CyclicNamedFoo.class).withName("foo").toInstance(instance1);
-      }
-    });
+    scope.installModules(
+        new Module() {
+          {
+            bind(CyclicNamedFoo.class).withName("foo").toInstance(instance1);
+          }
+        });
 
-    //WHEN
+    // WHEN
     CyclicNamedFoo instance2 = scope.getInstance(CyclicNamedFoo.class);
 
-    //THEN
+    // THEN
     // Should not crashed
     assertThat(instance2, notNullValue());
     assertThat(instance2.cyclicFoo, sameInstance(instance1));
@@ -75,10 +92,10 @@ public class CycleCheckTest {
 
   @Test(expected = NoFactoryFoundException.class)
   public void testCycleDetection_whenGetInstanceFails_shouldCloseCycle() {
-    //GIVEN
+    // GIVEN
     Scope scope = new ScopeImpl("");
 
-    //WHEN
+    // WHEN
     try {
       scope.getInstance(IFoo.class);
     } catch (NoFactoryFoundException nfe) {
@@ -87,8 +104,9 @@ public class CycleCheckTest {
 
     scope.getInstance(IFoo.class);
 
-    //THEN
-    fail("Should throw NoFactoryFoundException as IFoo does not have any implementation bound."
-        + "But It should not throw CyclicDependencyException as it was removed from the stack.");
+    // THEN
+    fail(
+        "Should throw NoFactoryFoundException as IFoo does not have any implementation bound."
+            + "But It should not throw CyclicDependencyException as it was removed from the stack.");
   }
 }

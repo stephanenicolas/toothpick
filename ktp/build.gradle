@@ -1,0 +1,24 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.dokka'
+
+dependencies {
+  api project(':toothpick-runtime')
+  implementation deps.kotlin_runtime
+
+  testImplementation project(':toothpick-testing-junit5')
+  testImplementation deps.junit5_api
+  testRuntimeOnly deps.junit5_engine
+
+  testImplementation deps.mockito_kotlin
+  testImplementation deps.mockito_junit5
+  testImplementation deps.kluent
+  kaptTest project(':toothpick-compiler')
+}
+
+test {
+  useJUnitPlatform()
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

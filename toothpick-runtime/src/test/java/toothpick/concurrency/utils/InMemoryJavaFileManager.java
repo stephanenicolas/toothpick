@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.concurrency.utils;
 
 import java.io.ByteArrayInputStream;
@@ -18,10 +34,12 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 
-//from https://github.com/OpenHFT/Java-Runtime-Compiler/blob/master/compiler/src/main/java/net/openhft/compiler/CachedCompiler.java
+// from
+// https://github.com/OpenHFT/Java-Runtime-Compiler/blob/master/compiler/src/main/java/net/openhft/compiler/CachedCompiler.java
 public class InMemoryJavaFileManager implements JavaFileManager {
   private final StandardJavaFileManager fileManager;
-  private final Map<String, ByteArrayOutputStream> buffers = new LinkedHashMap<String, ByteArrayOutputStream>();
+  private final Map<String, ByteArrayOutputStream> buffers =
+      new LinkedHashMap<String, ByteArrayOutputStream>();
 
   InMemoryJavaFileManager(StandardJavaFileManager fileManager) {
     this.fileManager = fileManager;
@@ -31,7 +49,8 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     return fileManager.getClassLoader(location);
   }
 
-  public Iterable<JavaFileObject> list(Location location, String packageName, Set<Kind> kinds, boolean recurse) throws IOException {
+  public Iterable<JavaFileObject> list(
+      Location location, String packageName, Set<Kind> kinds, boolean recurse) throws IOException {
     return fileManager.list(location, packageName, kinds, recurse);
   }
 
@@ -51,8 +70,11 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     return fileManager.hasLocation(location);
   }
 
-  public JavaFileObject getJavaFileForInput(Location location, String className, Kind kind) throws IOException {
-    if (location == StandardLocation.CLASS_OUTPUT && buffers.containsKey(className) && kind == Kind.CLASS) {
+  public JavaFileObject getJavaFileForInput(Location location, String className, Kind kind)
+      throws IOException {
+    if (location == StandardLocation.CLASS_OUTPUT
+        && buffers.containsKey(className)
+        && kind == Kind.CLASS) {
       final byte[] bytes = buffers.get(className).toByteArray();
       return new SimpleJavaFileObject(URI.create(className), kind) {
         public InputStream openInputStream() {
@@ -63,7 +85,8 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     return fileManager.getJavaFileForInput(location, className, kind);
   }
 
-  public JavaFileObject getJavaFileForOutput(Location location, final String className, Kind kind, FileObject sibling) throws IOException {
+  public JavaFileObject getJavaFileForOutput(
+      Location location, final String className, Kind kind, FileObject sibling) throws IOException {
     return new SimpleJavaFileObject(URI.create(className), kind) {
       public OutputStream openOutputStream() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -73,11 +96,14 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     };
   }
 
-  public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException {
+  public FileObject getFileForInput(Location location, String packageName, String relativeName)
+      throws IOException {
     return fileManager.getFileForInput(location, packageName, relativeName);
   }
 
-  public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException {
+  public FileObject getFileForOutput(
+      Location location, String packageName, String relativeName, FileObject sibling)
+      throws IOException {
     return fileManager.getFileForOutput(location, packageName, relativeName, sibling);
   }
 

@@ -43,39 +43,38 @@ It is a full-featured, runtime based, but reflection free, implementation of [JS
 ```
 //a typical Toothpick scope tree during the execution of an Android app.
 
-       @ApplicationSingleton 
-         /              |    \  
-        /               |     \
-       /                |      \
-   @PresenterSingleton  |   Service 2
+           @ApplicationScope 
+             /          |    \  
+            /           |     \
+           /            |      \
+   @ViewModelScope      |   Service 2
          /              | 
         /            Service 1  
        /            
+ @Activity1Scope
+      /
+     /
 Activity 1
-    /   \
-   /   Fragment 2
-  /
+   /   \
+  /   Fragment 2
+ /
 Fragment 1
 ```
 
 Toothpick is :
-* pure java (and Android helped is provided: "Smoothie")
+* pure java (and Android helped is provided: "Smoothie", Kotlin support is provided by "KTP")
 * [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but [annotation processing](https://github.com/stephanenicolas/toothpick/wiki/Factories-and-Member-Injectors)
 * simple, flexible, extensible & powerful, [robust & tested](https://coveralls.io/github/stephanenicolas/toothpick?branch=master)
 * thread safe
 * [documented](https://github.com/stephanenicolas/toothpick/wiki) & [Open Source](https://raw.githubusercontent.com/stephanenicolas/toothpick/master/LICENSE)
 * [scope safe](https://github.com/stephanenicolas/toothpick/wiki/Scope-Resolution) : it enforces leak free apps
 * [test oriented](https://github.com/stephanenicolas/toothpick/blob/master/toothpick-sample/src/test/java/toothpick/sample/SimpleEntryPointTestWithRules.java) : it makes tests easier
-* it works very well with Android or any other context based framework (such as web containers)
-
-Hey, Android Devs, you can use TP to [create MVP apps so easily](https://github.com/stephanenicolas/toothpick/blob/master/smoothie-sample/src/main/java/com/example/smoothie/RxMVPActivity.java) !
-
+* is a candidate of choice for Android or any other context based framework (such as web containers)
 
 ## Examples
 
-Currently Toothpick has 2 sets of examples : 
-* one [in pure Java](https://github.com/stephanenicolas/toothpick/tree/master/toothpick-sample)
-* one [for Android](https://github.com/stephanenicolas/toothpick/tree/master/smoothie-sample)
+This is the example:
+* https://github.com/stephanenicolas/toothpick/tree/master/toothpick-sample
 
 ## Setup
 
@@ -83,28 +82,39 @@ The latest version of TP is provided by a badge at the top of this page.
 
 For Android : 
 ```groovy
-#android setup using gradle 3.3.0
+#android setup using gradle 5.5.1
 buildscript {
   repositories {
     google()
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.0'
+    classpath 'com.android.tools.build:gradle:3.4.x'
   }
 }
 
 ...
-
+#for java
 dependencies {
-  implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.x'
-  // and for android -> implementation 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.x'
-  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:2.x'
+  implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:3.x'
+  // and for android -> implementation 'com.github.stephanenicolas.toothpick:smoothie-androidx:3.x'
+  annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:3.x'
 
   //highly recommended
   testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:2.x'
   testImplementation 'mockito or easymock'
 }
+
+#for kotlin
+dependencies {
+  implementation 'com.github.stephanenicolas.toothpick:ktp:3.x'
+  kapt 'com.github.stephanenicolas.toothpick:toothpick-compiler:3.x'
+
+  //highly recommended
+  testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:3.x'
+  testImplementation 'mockito or easymock'
+}
+
 ```
 
 For java:
@@ -114,13 +124,13 @@ For java:
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-compiler</artifactId>
-      <version>2.x</version>
+      <version>3.x</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-runtime</artifactId>
-      <version>2.x</version>
+      <version>3.x</version>
       <scope>compile</scope>
     </dependency>
     
@@ -128,7 +138,7 @@ For java:
     <dependency> 
       <groupId>com.github.stephanenicolas.toothpick</groupId>
       <artifactId>toothpick-testing</artifactId>
-      <version>2.x</version>
+      <version>3.x</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -174,12 +184,14 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 * [tiger](https://github.com/google/tiger)
 * [feather](https://github.com/zsoltherpai/feather)
 * [proton](https://github.com/hnakagawa/proton)
+* [koin](https://github.com/InsertKoinIO/koin)
 
-# Libs using TP
+# Libs / Apps using TP 2
 
 * [Okuki](https://github.com/wongcain/okuki) is a simple, hierarchical navigation bus and back stack for Android, with optional Rx bindings, and Toothpick DI integration.
 * [KotlinWeather](https://github.com/ekamp/KotlinWeather) is a simple example of using ToothPick with Kotlin and gradle integration using kapt.
 
 # Credits
 
+TP 1 & 3 have been developped by Stephane Nicolas and Daniel Molinero Reguera.
 Most of the effort on version 2 has been actively supported by Groupon. Thanks for this awesome OSS commitment !

@@ -1,5 +1,24 @@
 <!-- Continue from top -->
 
+## Release version 3.0.0-RC1 (July 29th, 2019)
+ * TP3 specs can be find at https://github.com/stephanenicolas/toothpick/issues/225
+ * KTP specs can be found at https://github.com/stephanenicolas/toothpick/issues/316
+ * Scope annotations are not backward compatible with version 2. In version 2, scope annotations had 2 meaning: @ActivitySingleton meant
+   both that a class could only be injected in a scope that supported this annotation and that the class would provide singletons of this scope.
+   In TP 3, it is now more fine grained: @ActivityScope means a class can only be injected in a scope that supports this annotation 
+   and it can be combined with @Singleton or not to denote that a class produces singletons of this scope or not.
+ * The scope API is now a fluent API. It is possible to define all scopes and sub scope in the same method chain, and to configure them
+   at the same time. See the new samples. https://github.com/stephanenicolas/toothpick/issues/217 and https://github.com/stephanenicolas/toothpick/issues/218
+ * Kotlin is now a first class citizen of TP 3. KTP supports both field and constructor injection. Extensions are published to make things
+   even more kotlin friendly. KTP doesn't offer method injections. KTP and TP are compatible. You can migrate classes to Kotlin incrementally
+   in a java app using TP3.
+ * Support for releasable singletons. TP can release @Releasable annotated singletons under memory pressure to save memory.
+ * TP (java) supports method injections for methods throwing exceptions https://github.com/stephanenicolas/toothpick/issues/200
+ * Support for package-protected classes https://github.com/stephanenicolas/toothpick/issues/227
+ * Extension package for AndroidX life cycle allow to close a scope automatically when a FragmentActivity is closed. See sample.
+ * Extension package for AndroidX view models allow to inject a view model and get things injected in a view model automatically. See sample. 
+ * The binding API now is absolutely equivalent to the expressivity of the annotations. The 2 are strictly compatible.
+
 ## Release version 2.1.0 (Feb 4th, 2019)
 
 * Add Toothpick.isScopeOpen method to check whether a scope is already open. Thx to terrakok for this.

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 Stephane Nicolas
+ * Copyright 2019 Daniel Molinero Reguera
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package toothpick.concurrency.utils;
 
 import java.io.IOException;
@@ -15,19 +31,19 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 
-//from http://stackoverflow.com/a/2320465/693752
+// from http://stackoverflow.com/a/2320465/693752
 
 /**
- * We create classes dynamically with this class.
- * It can seem a bit far fetched. We could also have enumerated a thousand real classes
- * from the JDK or create them by hand for real. But this is more scalable and allow more testing.
- * We also have full control on the classes.
+ * We create classes dynamically with this class. It can seem a bit far fetched. We could also have
+ * enumerated a thousand real classes from the JDK or create them by hand for real. But this is more
+ * scalable and allow more testing. We also have full control on the classes.
  *
- * They are used as injection parameters and bindings.
+ * <p>They are used as injection parameters and bindings.
  */
 public class ClassCreator {
-  private ByteClassLoader byteClassLoader = new ByteClassLoader(ClassCreator.class.getClassLoader());
-  private final static int CLASSES_COUNT = 1000;
+  private ByteClassLoader byteClassLoader =
+      new ByteClassLoader(ClassCreator.class.getClassLoader());
+  private static final int CLASSES_COUNT = 1000;
 
   public Class[] allClasses;
 
@@ -62,18 +78,23 @@ public class ClassCreator {
   private Map<String, byte[]> compile(Map<String, String> mapClassNameToJavaSource) {
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    InMemoryJavaFileManager fileManager = new InMemoryJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
+    InMemoryJavaFileManager fileManager =
+        new InMemoryJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
 
     List<JavaFileObject> compilationUnit = new ArrayList<>();
     for (Map.Entry<String, String> classNameToSourceEntry : mapClassNameToJavaSource.entrySet()) {
-      JavaFileObject source = new JavaSourceFromString(classNameToSourceEntry.getKey(), classNameToSourceEntry.getValue());
+      JavaFileObject source =
+          new JavaSourceFromString(
+              classNameToSourceEntry.getKey(), classNameToSourceEntry.getValue());
       compilationUnit.add(source);
     }
 
-    JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnit);
+    JavaCompiler.CompilationTask task =
+        compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnit);
     if (!task.call()) {
       for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-        System.out.format("Error on line %d in %s%n", diagnostic.getLineNumber(), diagnostic.getSource());
+        System.out.format(
+            "Error on line %d in %s%n", diagnostic.getLineNumber(), diagnostic.getSource());
       }
       return null;
     }
@@ -86,7 +107,8 @@ public class ClassCreator {
       super(new URL[0], parent);
     }
 
-    public Class<?> defineClass(final String name, byte[] classBytes) throws ClassNotFoundException {
+    public Class<?> defineClass(final String name, byte[] classBytes)
+        throws ClassNotFoundException {
       if (classBytes != null) {
         return defineClass(name, classBytes, 0, classBytes.length);
       }
