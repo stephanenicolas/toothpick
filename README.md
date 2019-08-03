@@ -101,7 +101,7 @@ dependencies {
   annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:3.x'
 
   //highly recommended
-  testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:2.x'
+  testImplementation 'com.github.stephanenicolas.toothpick:toothpick-testing-junit5:3.x'
   testImplementation 'mockito or easymock'
 }
 
