@@ -6,7 +6,7 @@
 
 ## Release version 3.0.0-RC1 (July 29th, 2019)
  * TP3 specs can be find at https://github.com/stephanenicolas/toothpick/issues/225
- * KTP specs can be found at https://github.com/stephanenicolas/toothpick/issues/316
+ * KTP specs can be found at https://github.com/stephanenicolas/toothpick/issues/316. Thx to @chenthorne and @dpreussler for their contributions to the Kotlin extensions of TP.
  * Scope annotations are not backward compatible with version 2. In version 2, scope annotations had 2 meaning: @ActivitySingleton meant
    both that a class could only be injected in a scope that supported this annotation and that the class would provide singletons of this scope.
    In TP 3, it is now more fine grained: @ActivityScope means a class can only be injected in a scope that supports this annotation 
