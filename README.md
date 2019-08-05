@@ -23,6 +23,10 @@
       <br/>
       <a alt="Android Arsenal" href="http://android-arsenal.com/details/1/3646">
       <img src="https://img.shields.io/badge/Android%20Arsenal-Toothpick-brightgreen.svg?style=flat"/></a>
+      <br/>
+      <a alt="Incap: isolating" href="https://github.com/gradle/gradle/blob/master/subprojects/docs/src/docs/userguide/java_plugin.adoc#isolating-annotation-processors">
+      <img src="https://img.shields.io/badge/incap-isolating-00FF00?style=flat"/></a>
+      
     </td>
     <td>
       <a href="https://github.com/stephanenicolas/toothpick/wiki">
