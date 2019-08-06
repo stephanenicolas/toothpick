@@ -66,8 +66,12 @@ Activity 1
 Fragment 1
 ```
 
+Scopes offer to compartimentalize memory during the runtime of an app and prevent memory leaks.
+All dependencies created via Toothpick, and available for injections, will be fully garbage collected when this scope is closed.
+To lean more about scopes, read [TP wiki](https://github.com/stephanenicolas/toothpick/wiki/Scopes#what-is-a-scope-).
+
 Toothpick is :
-* pure java (and Android helped is provided: "Smoothie", Kotlin support is provided by "KTP")
+* pure java (Android support is provided: "Smoothie", Kotlin support is provided by "KTP")
 * [fast](https://github.com/stephanenicolas/toothpick/wiki/FAQ#how-does-toothpick-perform-compared-to-dagger-2-), it doesn't use reflection but [annotation processing](https://github.com/stephanenicolas/toothpick/wiki/Factories-and-Member-Injectors)
 * TP supports [incremental annotation processing (isolating)](https://github.com/gradle/gradle/blob/master/subprojects/docs/src/docs/userguide/java_plugin.adoc#isolating-annotation-processors).
 * simple, flexible, extensible & powerful, [robust & tested](https://coveralls.io/github/stephanenicolas/toothpick?branch=master)
