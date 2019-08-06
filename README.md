@@ -18,6 +18,8 @@
       <a alt="Maven Central" href="http://search.maven.org/#search|gav|1|g:'com.github.stephanenicolas.toothpick'%20AND%20a:'toothpick'">
       <img src="https://img.shields.io/maven-central/v/com.github.stephanenicolas.toothpick/toothpick.svg?style=flat"/></a>
       <br/>
+    </td>
+    <td  style="border:0px">
       <a alt="Android Dev Weekly" href="http://androidweekly.net/issues/issue-207">
       <img src="https://img.shields.io/badge/Android%20Weekly-%23207-brightgreen.svg"/></a>
       <br/>
