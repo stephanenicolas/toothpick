@@ -26,21 +26,17 @@ class MultipleRootScopeCheckOnConfiguration implements MultipleRootScopeCheckCon
   private Scope rootScope;
 
   @Override
-  public synchronized void checkMultipleRootScopes(Scope scope) {
-    if (rootScope == null && scope != null) {
-      rootScope = scope;
+  public synchronized void checkMultipleRootScopes(Scope newRootScope) {
+    if (rootScope == null && newRootScope != null) {
+      rootScope = newRootScope;
       return;
     }
 
-    if (scope == rootScope) {
+    if (newRootScope == rootScope) {
       return;
     }
 
-    if (scope.getParentScope() != null) {
-      return;
-    }
-
-    throw new MultipleRootException(scope);
+    throw new MultipleRootException(newRootScope);
   }
 
   @Override

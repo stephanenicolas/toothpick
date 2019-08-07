@@ -21,6 +21,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -28,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.MultipleRootException;
 
@@ -44,8 +47,19 @@ public class ToothpickTest {
     assertThat(scope, notNullValue());
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void getScope_shouldFail_whenScopeNameIsNull() {
+    // GIVEN
+
+    // WHEN
+    Toothpick.openScope(null);
+
+    // THEN
+    fail("Should throw an exception");
+  }
+
   @Test
-  public void getScope_shouldReturnAnScope_whenThisScopeByThisKeyWasCreated() {
+  public void getScope_shouldReturnAScope_whenThisScopeByThisKeyWasCreated() {
     // GIVEN
     Scope scope = Toothpick.openScope(this);
 
@@ -59,7 +73,7 @@ public class ToothpickTest {
 
   @Test
   public void
-      createScope_shouldReturnAnScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() {
+      createScope_shouldReturnAScopeWithAParent_whenThisScopeByThisKeyWasCreatedWithAParent() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forProduction());
     ScopeNode scopeParent = (ScopeNode) Toothpick.openScope("foo");
@@ -119,6 +133,16 @@ public class ToothpickTest {
 
     // WHEN
     Toothpick.openScopes((Object[]) null);
+
+    // THEN
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void openScopes_shouldFail_whenScopeNamesAreEmpty() {
+    // GIVEN
+
+    // WHEN
+    Toothpick.openScopes(new Object[0]);
 
     // THEN
   }
@@ -185,6 +209,30 @@ public class ToothpickTest {
       opening2rootScope_shouldThrowAnException_whenConfigurationPreventsMultipleRootScopes() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
+    Toothpick.openScope("foo");
+
+    // WHEN
+    Toothpick.openScope("bar");
+
+    // THEN
+  }
+
+  @Test(expected = MultipleRootException.class)
+  public void opening2rootScope_shouldPass_whenSameRootScope() {
+    // GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
+    Toothpick.openScope("foo");
+
+    // WHEN
+    Toothpick.openScope("bar");
+
+    // THEN
+  }
+
+  @Test
+  public void opening2rootScope_shouldPass_whenConfigurationDoesNotPreventsMultipleRootScopes() {
+    // GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment());
     Toothpick.openScope("foo");
 
     // WHEN
@@ -281,6 +329,17 @@ public class ToothpickTest {
     verify(mockScope);
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void isScopeOpen_shouldThrowException_WhenNameIsNull() {
+    // GIVEN
+
+    // WHEN
+    Toothpick.isScopeOpen(null);
+
+    // THEN
+    fail("Should throw an exception");
+  }
+
   @Test
   public void isScopeOpen_shouldReturnFalse_WhenThisScopesWasNotCreated() {
     // GIVEN
@@ -328,6 +387,19 @@ public class ToothpickTest {
 
     // THEN
     assertThat(isBarScopeOpen, is(false));
+  }
+
+  @Test
+  public void release_shouldCallScopeRelease() {
+    // GIVEN
+    Scope scope = mock(ScopeNode.class);
+    doNothing().when(scope).release();
+
+    // WHEN
+    Toothpick.release(scope);
+
+    // THEN
+    verify(scope, Mockito.atLeastOnce()).release();
   }
 
   @After
