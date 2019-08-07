@@ -16,16 +16,6 @@
  */
 package toothpick;
 
-import org.junit.After;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import toothpick.configuration.Configuration;
-import toothpick.configuration.MultipleRootException;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -35,6 +25,14 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import org.junit.After;
+import org.junit.Test;
+import org.mockito.Mockito;
+import toothpick.configuration.Configuration;
+import toothpick.configuration.MultipleRootException;
 
 public class ToothpickTest {
 
@@ -220,8 +218,7 @@ public class ToothpickTest {
   }
 
   @Test(expected = MultipleRootException.class)
-  public void
-  opening2rootScope_shouldPass_whenSameRootScope() {
+  public void opening2rootScope_shouldPass_whenSameRootScope() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
     Toothpick.openScope("foo");
@@ -233,8 +230,7 @@ public class ToothpickTest {
   }
 
   @Test
-  public void
-  opening2rootScope_shouldPass_whenConfigurationDoesNotPreventsMultipleRootScopes() {
+  public void opening2rootScope_shouldPass_whenConfigurationDoesNotPreventsMultipleRootScopes() {
     // GIVEN
     Toothpick.setConfiguration(Configuration.forDevelopment());
     Toothpick.openScope("foo");
@@ -395,14 +391,14 @@ public class ToothpickTest {
 
   @Test
   public void release_shouldCallScopeRelease() {
-    //GIVEN
+    // GIVEN
     Scope scope = mock(ScopeNode.class);
     doNothing().when(scope).release();
 
-    //WHEN
+    // WHEN
     Toothpick.release(scope);
 
-    //THEN
+    // THEN
     verify(scope, Mockito.atLeastOnce()).release();
   }
 
