@@ -195,6 +195,7 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 * [feather](https://github.com/zsoltherpai/feather)
 * [proton](https://github.com/hnakagawa/proton)
 * [koin](https://github.com/InsertKoinIO/koin)
+* [Kodein-DI](https://github.com/Kodein-Framework/Kodein-DI)
 
 # Libs / Apps using TP 2
 
