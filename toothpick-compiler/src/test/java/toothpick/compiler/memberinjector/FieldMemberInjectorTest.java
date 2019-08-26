@@ -826,6 +826,55 @@ public class FieldMemberInjectorTest {
   }
 
   @Test
+  public void
+      testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument() {
+    JavaFileObject source =
+        JavaFileObjects.forSourceString(
+            "test.TestMemberInjection",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "import javax.inject.Inject;", //
+                    "public class TestMemberInjection extends TestMemberInjectionParent<Integer> {", //
+                    "  @Inject Foo foo;", //
+                    "}", //
+                    "class TestMemberInjectionParent<T> {", //
+                    "  @Inject Foo foo;", //
+                    "}", //
+                    "class Foo {}" //
+                    ));
+    JavaFileObject expectedSource =
+        JavaFileObjects.forSourceString(
+            "test/TestMemberInjection__MemberInjector",
+            Joiner.on('\n')
+                .join( //
+                    "package test;", //
+                    "", //
+                    "import java.lang.Override;", //
+                    "import toothpick.MemberInjector;", //
+                    "import toothpick.Scope;", //
+                    "", //
+                    "public final class TestMemberInjection__MemberInjector implements MemberInjector<TestMemberInjection> {", //
+                    "  private MemberInjector<TestMemberInjectionParent> superMemberInjector "
+                        + "= new test.TestMemberInjectionParent__MemberInjector();",
+                    //
+                    "  @Override", //
+                    "  public void inject(TestMemberInjection target, Scope scope) {", //
+                    "    superMemberInjector.inject(target, scope);", //
+                    "    target.foo = scope.getInstance(Foo.class);", //
+                    "  }", //
+                    "}" //
+                    ));
+    assert_()
+        .about(javaSource())
+        .that(source)
+        .processedWith(memberInjectorProcessors())
+        .compilesWithoutError()
+        .and()
+        .generatesSources(expectedSource);
+  }
+
+  @Test
   public void testFieldInjection_shouldFail_WhenFieldIsPrimitive() {
     JavaFileObject source =
         JavaFileObjects.forSourceString(

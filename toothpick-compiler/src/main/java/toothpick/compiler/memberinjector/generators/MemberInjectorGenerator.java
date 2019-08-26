@@ -90,7 +90,7 @@ public class MemberInjectorGenerator extends CodeGenerator {
           FieldSpec.builder(
                   ParameterizedTypeName.get(
                       ClassName.get(MemberInjector.class),
-                      TypeName.get(superClassThatNeedsInjection.asType())),
+                      TypeName.get(typeUtil.erasure(superClassThatNeedsInjection.asType()))),
                   "superMemberInjector",
                   Modifier.PRIVATE)
               // TODO use proper typing here
