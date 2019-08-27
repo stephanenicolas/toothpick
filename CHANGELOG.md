@@ -1,5 +1,8 @@
 <!-- Continue from top -->
 
+## Release version 3.0.1 (Aug 27nd, 2019)
+ * Fixing issue #360: Member injectors contains and invalid reference to the parent member injector if it contains a generic. Thanks to @zawadz88 for the this contribution!
+
 ## Release version 3.0.0 (Aug 2nd, 2019)
  * Enable field injection with qualifiers for KTP
  * Adding toothpick-sample
