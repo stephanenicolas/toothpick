@@ -25,12 +25,14 @@ import toothpick.config.Binding;
  * even possible to use a composition of the built-in configurations.
  */
 public class Configuration
-    implements RuntimeCheckConfiguration, MultipleRootScopeCheckConfiguration {
+    implements RuntimeCheckConfiguration,
+        MultipleRootScopeCheckConfiguration,
+        UsesScopesConfiguration {
 
   private RuntimeCheckConfiguration runtimeCheckConfiguration = new RuntimeCheckOffConfiguration();
   private MultipleRootScopeCheckConfiguration multipleRootScopeCheckConfiguration =
       new MultipleRootScopeCheckOffConfiguration();
-  boolean usesScopes = true;
+  private UsesScopesConfiguration usesScopesConfiguration = new UsesScopeOnConfiguration();
 
   /**
    * Performs many runtime checks. This configuration reduces performance. It should be used only
@@ -84,7 +86,7 @@ public class Configuration
   }
 
   public Configuration disableScopes() {
-    this.usesScopes = false;
+    this.usesScopesConfiguration = new UsesScopeOffConfiguration();
     return this;
   }
 
@@ -113,7 +115,8 @@ public class Configuration
     multipleRootScopeCheckConfiguration.onScopeForestReset();
   }
 
+  @Override
   public boolean usesScopes() {
-    return usesScopes;
+    return usesScopesConfiguration.usesScopes();
   }
 }

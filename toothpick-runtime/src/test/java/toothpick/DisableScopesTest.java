@@ -16,6 +16,7 @@
  */
 package toothpick;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
@@ -24,6 +25,7 @@ import org.junit.After;
 import org.junit.Test;
 import toothpick.config.Module;
 import toothpick.configuration.Configuration;
+import toothpick.data.Bar;
 import toothpick.data.Foo;
 
 public class DisableScopesTest {
@@ -77,6 +79,21 @@ public class DisableScopesTest {
     assertThat(foo.bar, notNullValue());
   }
 
+  @Test()
+  public void installModules_shouldCreateCorrectBindings_whenScopesAreDisabled() {
+    // GIVEN
+    Toothpick.setConfiguration(Configuration.forDevelopment().disableScopes());
+
+    Foo foo = new Foo();
+    // WHEN
+    Toothpick.installModules(new TestModule());
+    Toothpick.inject(foo);
+
+    // THEN
+    assertThat(foo.bar, notNullValue());
+    assertThat(foo.bar, instanceOf(Bar2.class));
+  }
+
   @After
   public void tearDown() {
     Toothpick.reset();
@@ -84,7 +101,9 @@ public class DisableScopesTest {
 
   private static class TestModule extends Module {
     public TestModule() {
-      // do some bindings here
+      bind(Bar.class).toInstance(new Bar2());
     }
   }
+
+  private static class Bar2 extends Bar {}
 }

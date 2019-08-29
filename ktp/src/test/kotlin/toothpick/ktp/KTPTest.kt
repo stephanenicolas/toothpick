@@ -34,6 +34,7 @@ class KTPTest {
     @AfterEach
     fun tearDown() {
         Toothpick.reset()
+        Toothpick.setConfiguration(Configuration())
     }
 
     @Test
