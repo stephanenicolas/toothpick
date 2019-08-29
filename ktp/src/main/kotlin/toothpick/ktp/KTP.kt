@@ -19,6 +19,7 @@ package toothpick.ktp
 import toothpick.InjectorImpl
 import toothpick.Scope
 import toothpick.Toothpick
+import toothpick.config.Module
 import toothpick.configuration.Configuration
 import toothpick.ktp.delegate.DelegateNotifier
 import toothpick.setToothpickInjector
@@ -40,6 +41,10 @@ object KTP {
             }
         })
     }
+
+    fun inject(obj: Any) = Toothpick.inject(obj)
+
+    fun installModules(vararg modules: Module) = Toothpick.installModules(*modules)
 
     fun openScope(name: Any): Scope = Toothpick.openScope(name)
 

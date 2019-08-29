@@ -19,6 +19,7 @@ package toothpick;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import toothpick.Scope.ScopeConfig;
+import toothpick.config.Module;
 import toothpick.configuration.Configuration;
 import toothpick.configuration.ConfigurationHolder;
 
@@ -43,6 +44,42 @@ public class Toothpick {
 
   protected Toothpick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
+  }
+
+  /**
+   * use this method when you disable scopes
+   *
+   * @see toothpick.Scope#inject(Object)
+   * @param object the object to be injected.
+   */
+  public static void inject(Object object) {
+    if (ConfigurationHolder.configuration.usesScopes()) {
+      throw new RuntimeException(
+          "This configuration uses scopes, cannot call Toothpick.inject() use Toothpick.openScopes()!");
+    }
+    getDefaultScope().inject(object);
+  }
+
+  /**
+   * use this method when you disable scopes
+   *
+   * @see toothpick.Scope#installModules(Module...)
+   * @param modules an array of modules that define bindings.
+   */
+  public static void installModules(Module... modules) {
+    if (ConfigurationHolder.configuration.usesScopes()) {
+      throw new RuntimeException(
+          "This configuration uses scopes, cannot call Toothpick.inject() use Toothpick.openScopes()!");
+    }
+    getDefaultScope().installModules(modules);
+  }
+
+  /**
+   * @return a default scope to be used when you are disabling scopes, this will be the only scope
+   *     being used internally
+   */
+  private static Scope getDefaultScope() {
+    return openScopeInternal(Toothpick.class, false);
   }
 
   /**
@@ -131,6 +168,14 @@ public class Toothpick {
    *     introducing a second tree in TP forest of scopes.
    */
   private static Scope openScope(Object name, boolean shouldCheckMultipleRootScopes) {
+    if (!ConfigurationHolder.configuration.usesScopes()) {
+      throw new RuntimeException(
+          "This configuration doesn't use scopes, call Toothpick.inject() instead!");
+    }
+    return openScopeInternal(name, shouldCheckMultipleRootScopes);
+  }
+
+  private static Scope openScopeInternal(Object name, boolean shouldCheckMultipleRootScopes) {
     if (name == null) {
       throw new IllegalArgumentException("null scope names are not allowed.");
     }

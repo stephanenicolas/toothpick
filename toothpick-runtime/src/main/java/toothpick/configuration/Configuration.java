@@ -30,6 +30,7 @@ public class Configuration
   private RuntimeCheckConfiguration runtimeCheckConfiguration = new RuntimeCheckOffConfiguration();
   private MultipleRootScopeCheckConfiguration multipleRootScopeCheckConfiguration =
       new MultipleRootScopeCheckOffConfiguration();
+  boolean usesScopes = true;
 
   /**
    * Performs many runtime checks. This configuration reduces performance. It should be used only
@@ -82,6 +83,11 @@ public class Configuration
     return this;
   }
 
+  public Configuration disableScopes() {
+    this.usesScopes = false;
+    return this;
+  }
+
   @Override
   public void checkIllegalBinding(Binding binding, Scope scope) {
     runtimeCheckConfiguration.checkIllegalBinding(binding, scope);
@@ -105,5 +111,9 @@ public class Configuration
   @Override
   public void onScopeForestReset() {
     multipleRootScopeCheckConfiguration.onScopeForestReset();
+  }
+
+  public boolean usesScopes() {
+    return usesScopes;
   }
 }
