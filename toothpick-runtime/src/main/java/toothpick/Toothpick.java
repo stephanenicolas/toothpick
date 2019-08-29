@@ -39,7 +39,7 @@ public class Toothpick {
   // its transformation
   private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE =
       new ConcurrentHashMap<>();
-  protected static Injector injector = new InjectorImpl();
+  static Injector injector = new InjectorImpl();
 
   protected Toothpick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");

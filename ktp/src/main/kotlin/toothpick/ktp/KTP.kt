@@ -16,11 +16,12 @@
  */
 package toothpick.ktp
 
-import toothpick.InjectorReplacer
+import toothpick.InjectorImpl
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.ktp.delegate.DelegateNotifier
+import toothpick.setToothpickInjector
 
 /**
  * Main Toothpick API entry point for Kotlin.
@@ -30,7 +31,14 @@ object KTP {
     val delegateNotifier = DelegateNotifier()
 
     init {
-        InjectorReplacer.replace()
+        setToothpickInjector(object : InjectorImpl() {
+            override fun <T : Any> inject(obj: T, scope: Scope) {
+                if (delegateNotifier.hasDelegates(obj)) {
+                    delegateNotifier.notifyDelegates(obj, scope)
+                }
+                super.inject(obj, scope)
+            }
+        })
     }
 
     fun openScope(name: Any): Scope = Toothpick.openScope(name)
