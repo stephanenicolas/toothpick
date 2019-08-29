@@ -9,12 +9,12 @@ object InjectorReplacer {
 
     fun replace() {
         Toothpick.injector = object : InjectorImpl() {
-            override fun <T : Any> inject(obj: T, scope: Scope) =
+            override fun <T : Any> inject(obj: T, scope: Scope) {
                 if (KTP.delegateNotifier.hasDelegates(obj)) {
                     KTP.delegateNotifier.notifyDelegates(obj, scope)
-                } else {
-                    super.inject(obj, scope)
                 }
+                super.inject(obj, scope)
+            }
         }
     }
 }
