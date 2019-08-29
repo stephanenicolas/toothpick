@@ -18,7 +18,6 @@ import com.example.toothpick.model.Backpack
 import toothpick.ktp.KTP
 import toothpick.ktp.binding.bind
 import toothpick.ktp.binding.module
-import toothpick.ktp.binding.toClass
 import toothpick.ktp.delegate.inject
 import toothpick.ktp.delegate.lazy
 import toothpick.smoothie.lifecycle.closeOnDestroy

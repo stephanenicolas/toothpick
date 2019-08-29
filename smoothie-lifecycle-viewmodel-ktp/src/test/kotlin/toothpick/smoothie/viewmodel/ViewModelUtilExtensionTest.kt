@@ -31,7 +31,6 @@ import toothpick.Toothpick.isScopeOpen
 import toothpick.ktp.KTP
 import toothpick.ktp.binding.bind
 import toothpick.ktp.binding.module
-import toothpick.ktp.binding.toInstance
 
 @RunWith(RobolectricTestRunner::class)
 class ViewModelUtilExtensionTest {
@@ -44,7 +43,7 @@ class ViewModelUtilExtensionTest {
 
         // WHEN
         KTP.openScopes(application, activity)
-                .closeOnViewModelCleared(activity)
+            .closeOnViewModelCleared(activity)
         activityController.destroy()
 
         // THEN
@@ -60,7 +59,7 @@ class ViewModelUtilExtensionTest {
 
         // WHEN
         KTP.openScopes(application, activity)
-                .closeOnViewModelCleared(activity)
+            .closeOnViewModelCleared(activity)
         activityController.configurationChange(Configuration())
 
         // THEN
@@ -75,12 +74,12 @@ class ViewModelUtilExtensionTest {
         val application: Context = ApplicationProvider.getApplicationContext()
         // WHEN
         val scope = KTP.openScopes(application, ViewModelScope::class.java)
-                .installViewModelBinding<TestViewModel>(activity)
-                .closeOnViewModelCleared(activity)
-                .installModules(module {
-                    bind<String>().withName("name").toInstance { "dependency" }
-                })
-                .openSubScope(activity)
+            .installViewModelBinding<TestViewModel>(activity)
+            .closeOnViewModelCleared(activity)
+            .installModules(module {
+                bind<String>().withName("name").toInstance { "dependency" }
+            })
+            .openSubScope(activity)
 
         val viewModelBeforeRotation = scope.getInstance(TestViewModel::class.java)
         activityController.configurationChange(Configuration())
