@@ -6,7 +6,6 @@ import toothpick.Scope
 import toothpick.ktp.KTP
 import toothpick.ktp.binding.bind
 import toothpick.ktp.binding.module
-import toothpick.ktp.binding.toInstance
 
 class BackpackApplication : Application() {
 

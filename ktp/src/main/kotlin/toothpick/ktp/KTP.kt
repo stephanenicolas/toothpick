@@ -21,36 +21,35 @@ import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.ktp.delegate.DelegateNotifier
+import toothpick.setToothpickInjector
 
 /**
  * Main Toothpick API entry point for Kotlin.
  */
-class KTP : Toothpick() {
+object KTP {
 
-    companion object TP {
-        val delegateNotifier = DelegateNotifier()
+    val delegateNotifier = DelegateNotifier()
 
-        init {
-            injector = object : InjectorImpl() {
-                override fun <T : Any> inject(obj: T, scope: Scope) =
-                    if (delegateNotifier.hasDelegates(obj)) {
-                        delegateNotifier.notifyDelegates(obj, scope)
-                    } else {
-                        super.inject(obj, scope)
-                    }
+    init {
+        setToothpickInjector(object : InjectorImpl() {
+            override fun <T : Any> inject(obj: T, scope: Scope) {
+                if (delegateNotifier.hasDelegates(obj)) {
+                    delegateNotifier.notifyDelegates(obj, scope)
+                }
+                super.inject(obj, scope)
             }
-        }
-
-        fun openScope(name: Any): Scope = Toothpick.openScope(name)
-
-        fun openScope(name: Any, scopeConfig: Scope.ScopeConfig): Scope = Toothpick.openScope(name, scopeConfig)
-
-        fun openScopes(vararg names: Any): Scope = Toothpick.openScopes(*names)
-
-        fun closeScope(name: Any) = Toothpick.closeScope(name)
-
-        fun isScopeOpen(name: Any) = Toothpick.isScopeOpen(name)
-
-        fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
+        })
     }
+
+    fun openScope(name: Any): Scope = Toothpick.openScope(name)
+
+    fun openScope(name: Any, scopeConfig: Scope.ScopeConfig): Scope = Toothpick.openScope(name, scopeConfig)
+
+    fun openScopes(vararg names: Any): Scope = Toothpick.openScopes(*names)
+
+    fun closeScope(name: Any) = Toothpick.closeScope(name)
+
+    fun isScopeOpen(name: Any) = Toothpick.isScopeOpen(name)
+
+    fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
 }

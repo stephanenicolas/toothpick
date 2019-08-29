@@ -43,7 +43,7 @@ class BindingExtensionTest {
             bind<CharSequence>().toInstance("")
             bind<CharSequence>().toInstance { "" } // equivalent to previous one
             bind<CharSequence>().withName("").toInstance { "" }
-            bind<CharSequence>().withName(QualifierName::class).toClass<String>()
+            bind<CharSequence>().withName(QualifierName::class).toInstance { "" }
 
             // toProvider
             bind<CharSequence>().toProvider(StringProvider::class)
