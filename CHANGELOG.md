@@ -1,6 +1,11 @@
 <!-- Continue from top -->
 
-## Release version 3.0.1 (Aug 27nd, 2019)
+## Release version 3.0.2 (Aug 30th, 2019)
+ * Fixing issue #362: Improving IDE autocompletion for Binding API.
+ * Improving KTP class autocompletion.
+ * Trigger member injection even when delegates are used. This will allow to use method injection and inject parent dependencies on roots using KTP.
+
+## Release version 3.0.1 (Aug 27th, 2019)
  * Fixing issue #360: Member injectors contains and invalid reference to the parent member injector if it contains a generic. Thanks to @zawadz88 for the this contribution!
 
 ## Release version 3.0.0 (Aug 2nd, 2019)
