@@ -22,6 +22,7 @@ import org.amshove.kluent.shouldBeFalse
 import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBe
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import toothpick.Scope
@@ -34,6 +35,17 @@ class KTPTest {
     @AfterEach
     fun tearDown() {
         Toothpick.reset()
+    }
+
+    @Test
+    fun `openRootScope should open default root scope`() {
+        // GIVEN
+
+        // WHEN
+        val scope = KTP.openRootScope()
+
+        // THEN
+        scope.shouldNotBeNull()
     }
 
     @Test

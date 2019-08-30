@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToObject;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -400,6 +401,44 @@ public class ToothpickTest {
 
     // THEN
     verify(scope, Mockito.atLeastOnce()).release();
+  }
+
+  @Test
+  public void openRootScope_shouldReturnTheRootScope_WhenRootScopeIsDefined() {
+    // GIVEN
+    Toothpick.openScopes("foo", "bar");
+
+    // WHEN
+    Scope rootScope = Toothpick.openRootScope();
+
+    // THEN
+    assertThat(rootScope, notNullValue());
+    assertThat(rootScope.getName(), equalToObject("foo"));
+  }
+
+  @Test
+  public void openRootScope_shouldReturnDefaultScope_WhenThereIsNoScopeTreeDefined() {
+    // GIVEN
+
+    // WHEN
+    Scope rootScope = Toothpick.openRootScope();
+
+    // THEN
+    assertThat(rootScope, notNullValue());
+    assertThat(rootScope.getName(), equalToObject(Toothpick.class));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void openRootScope_shouldThrowException_WhenThereAreMultipleScopeTreesDefined() {
+    // GIVEN
+    Toothpick.openScope("foo");
+    Toothpick.openScope("bar");
+
+    // WHEN
+    Toothpick.openRootScope();
+
+    // THEN
+    fail("Should throw an exception for multiple scope trees!");
   }
 
   @After
