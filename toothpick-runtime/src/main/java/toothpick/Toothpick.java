@@ -39,10 +39,35 @@ public class Toothpick {
   // its transformation
   private static final ConcurrentHashMap<Object, Scope> MAP_KEY_TO_SCOPE =
       new ConcurrentHashMap<>();
+  // ConcurrentHashSet doesn't exist so we're not using a Set ;)
+  private static final ConcurrentHashMap<Object, Scope> ROOT_SCOPES = new ConcurrentHashMap<>();
   static Injector injector = new InjectorImpl();
 
   protected Toothpick() {
     throw new RuntimeException("Constructor can't be invoked even via reflection.");
+  }
+
+  /**
+   * Returns or opens a root scope as follows:<br>
+   *
+   * <ul>
+   *   <li>if there's an existing scope tree the root scope of that tree;
+   *   <li>creates a default root scope if there's none;
+   *   <li>throws an exception if there are multiple scope trees (e.g. a forest);
+   * </ul>
+   *
+   * @return the root scope.
+   */
+  public static Scope openRootScope() {
+    synchronized (ROOT_SCOPES) {
+      if (ROOT_SCOPES.size() > 1) {
+        throw new RuntimeException(
+            "openRootScope() is not supported when multiple root scopes are enabled. Use 'Configuration.preventMultipleRootScopes()' to enable it.");
+      } else if (ROOT_SCOPES.size() == 1) {
+        return ROOT_SCOPES.values().iterator().next();
+      }
+      return openScope(Toothpick.class);
+    }
   }
 
   /**
@@ -127,27 +152,29 @@ public class Toothpick {
    * returned. Otherwise a new scope is created.
    *
    * @param name the name of the scope to open.
-   * @param shouldCheckMultipleRootScopes whether or not to check that the return scope is not
-   *     introducing a second tree in TP forest of scopes.
+   * @param isRootScope whether or not this is a root scope
    */
-  private static Scope openScope(Object name, boolean shouldCheckMultipleRootScopes) {
-    if (name == null) {
-      throw new IllegalArgumentException("null scope names are not allowed.");
-    }
+  private static Scope openScope(Object name, boolean isRootScope) {
+    synchronized (ROOT_SCOPES) {
+      if (name == null) {
+        throw new IllegalArgumentException("null scope names are not allowed.");
+      }
 
-    Scope scope = MAP_KEY_TO_SCOPE.get(name);
-    if (scope != null) {
+      Scope scope = MAP_KEY_TO_SCOPE.get(name);
+      if (scope != null) {
+        return scope;
+      }
+      scope = new ScopeImpl(name);
+      Scope previous = MAP_KEY_TO_SCOPE.putIfAbsent(name, scope);
+      if (previous != null) {
+        // if there was already a scope by this name, we return it
+        scope = previous;
+      } else if (isRootScope) {
+        ROOT_SCOPES.put(name, scope);
+        ConfigurationHolder.configuration.checkMultipleRootScopes(scope);
+      }
       return scope;
     }
-    scope = new ScopeImpl(name);
-    Scope previous = MAP_KEY_TO_SCOPE.putIfAbsent(name, scope);
-    if (previous != null) {
-      // if there was already a scope by this name, we return it
-      scope = previous;
-    } else if (shouldCheckMultipleRootScopes) {
-      ConfigurationHolder.configuration.checkMultipleRootScopes(scope);
-    }
-    return scope;
   }
 
   /**
@@ -157,17 +184,20 @@ public class Toothpick {
    * @param name the name of the scope to close.
    */
   public static void closeScope(Object name) {
-    // we remove the scope first, so that other threads don't see it, and see the next snapshot of
-    // the tree
-    ScopeNode scope = (ScopeNode) MAP_KEY_TO_SCOPE.remove(name);
-    if (scope != null) {
-      ScopeNode parentScope = scope.getParentScope();
-      if (parentScope != null) {
-        parentScope.removeChild(scope);
-      } else {
-        ConfigurationHolder.configuration.onScopeForestReset();
+    synchronized (ROOT_SCOPES) {
+      // we remove the scope first, so that other threads don't see it, and see the next snapshot of
+      // the tree
+      ScopeNode scope = (ScopeNode) MAP_KEY_TO_SCOPE.remove(name);
+      if (scope != null) {
+        ScopeNode parentScope = scope.getParentScope();
+        if (parentScope != null) {
+          parentScope.removeChild(scope);
+        } else {
+          ConfigurationHolder.configuration.onScopeForestReset();
+          ROOT_SCOPES.remove(name);
+        }
+        removeScopeAndChildrenFromMap(scope);
       }
-      removeScopeAndChildrenFromMap(scope);
     }
   }
 

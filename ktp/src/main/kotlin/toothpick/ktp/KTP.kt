@@ -41,6 +41,8 @@ object KTP {
         })
     }
 
+    fun openRootScope(): Scope = Toothpick.openRootScope()
+
     fun openScope(name: Any): Scope = Toothpick.openScope(name)
 
     fun openScope(name: Any, scopeConfig: Scope.ScopeConfig): Scope = Toothpick.openScope(name, scopeConfig)
