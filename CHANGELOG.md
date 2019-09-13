@@ -1,5 +1,8 @@
 <!-- Continue from top -->
 
+## Release version 3.1.0 (Sep 13th, 2019)
+ * Adding method getRootScope to Toothpick and KTP. Thanks to @code-twister for the this contribution!
+
 ## Release version 3.0.2 (Aug 30th, 2019)
  * Fixing issue #362: Improving IDE autocompletion for Binding API.
  * Improving KTP class autocompletion.
