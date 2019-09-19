@@ -37,7 +37,6 @@ dependencies {
   api project(':smoothie-lifecycle')
   implementation project(':ktp')
   implementation deps.lifecycle
-  implementation deps.androidxv4
   implementation deps.kotlin_runtime
 
   testImplementation deps.junit4
