@@ -33,6 +33,7 @@ dependencies {
   implementation deps.lifecycle
 
   testImplementation project(':toothpick-testing')
+  testImplementation deps.fragment
   testImplementation deps.junit4
   testImplementation deps.mockito
   testImplementation deps.robolectric

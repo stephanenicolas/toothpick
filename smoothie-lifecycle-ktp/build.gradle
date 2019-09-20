@@ -39,6 +39,7 @@ dependencies {
   implementation deps.lifecycle
   implementation deps.kotlin_runtime
 
+  testImplementation deps.fragment
   testImplementation deps.junit4
   testImplementation deps.robolectric
   testImplementation deps.androidx_test_core
