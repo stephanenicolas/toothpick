@@ -191,7 +191,7 @@ Visit [Toothpick's wiki](https://github.com/stephanenicolas/toothpick/wiki) !
 * [Dagger 2](https://github.com/google/dagger)
 * [transfuse](http://androidtransfuse.org/)
 * [lightsaber](https://github.com/MichaelRocks/lightsaber)
-* ~~[tiger](https://github.com/google/tiger)~~
+* ~~[tiger](https://github.com/google/tiger)~~ (deprecated)
 * [feather](https://github.com/zsoltherpai/feather)
 * [proton](https://github.com/hnakagawa/proton)
 * [koin](https://github.com/InsertKoinIO/koin)
