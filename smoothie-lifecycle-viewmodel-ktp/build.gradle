@@ -37,7 +37,7 @@ dependencies {
   implementation project(':ktp')
   implementation deps.lifecycle_viewmodel
   implementation deps.lifecycle_extensions
-  implementation deps.androidxv4
+  implementation deps.fragment
   implementation deps.kotlin_runtime
 
   testImplementation deps.inject

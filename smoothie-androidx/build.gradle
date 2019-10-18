@@ -28,9 +28,9 @@ dependencies {
   compileOnly project(':toothpick')
   api project(':smoothie')
   compileOnly deps.inject
-  compileOnly deps.androidxv4
+  compileOnly deps.fragment
 
-  testImplementation deps.androidxv4
+  testImplementation deps.fragment
   testImplementation project(':toothpick-testing')
   testImplementation deps.junit4
   testImplementation deps.mockito
