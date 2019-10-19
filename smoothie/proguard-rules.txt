@@ -2,18 +2,26 @@
 -keepattributes *Annotation*
 # Do not obfuscate classes with Injected Constructors
 -keepclasseswithmembernames class * { @javax.inject.Inject <init>(...); }
+-keepnames @toothpick.InjectConstructor class *
 # Do not obfuscate classes with Injected Fields
 -keepclasseswithmembernames class * { @javax.inject.Inject <fields>; }
 # Do not obfuscate classes with Injected Methods
 -keepclasseswithmembernames class * { @javax.inject.Inject <methods>; }
--keep @android.support.annotation.Keep class *
--dontwarn javax.inject.**
--dontwarn javax.annotation.**
+# Do not obfuscate classes with Inject delegates
+-keepclasseswithmembernames class * { toothpick.ktp.delegate.* *; }
+-keep class javax.inject.**
+-keep class javax.annotation.**
 -keep class **__Factory { *; }
 -keep class **__MemberInjector { *; }
-
--adaptclassstrings
+-keepclassmembers class * {
+	@javax.inject.Inject <init>(...);
+	@javax.inject.Inject <init>();
+	@javax.inject.Inject <fields>;
+	public <init>(...);
+    toothpick.ktp.delegate.* *;
+}
 -keep class toothpick.** { *; }
 
 -keep @javax.inject.Singleton class *
-#You need to keep your custom scopes too
+# You need to keep your custom scopes too, e.g.
+# -keepnames @foo.bar.ActivityScope class *
