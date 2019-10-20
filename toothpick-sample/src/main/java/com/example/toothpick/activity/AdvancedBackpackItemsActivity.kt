@@ -3,6 +3,7 @@ package com.example.toothpick.activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -55,6 +56,11 @@ class AdvancedBackpackItemsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        injectDependencies()
+        setupUIComponents()
+    }
+
+    @VisibleForTesting fun injectDependencies() {
         // 1. Open Application scope
         // 2. Open ViewModelScope as child of Application scope and
         //    2.1 install the viewmodel
@@ -66,21 +72,19 @@ class AdvancedBackpackItemsActivity : AppCompatActivity() {
         // 5. Close activity scope when activity is destroyed
         // 6. Inject dependencies
         KTP.openScopes(ApplicationScope::class.java)
-                .openSubScope(ViewModelScope::class.java) { scope: Scope ->
-                    scope.installViewModelBinding<BackpackViewModel>(this)
-                            .closeOnViewModelCleared(this)
-                            .installModules(module {
-                                bind<Backpack>().singleton()
-                            })
-                }
-                .openSubScope(this)
-                .installModules(module {
-                    bind<IBackpackAdapter>().toClass<BackpackAdapter>()
-                })
-                .closeOnDestroy(this)
-                .inject(this)
-
-        setupUIComponents()
+            .openSubScope(ViewModelScope::class.java) { scope: Scope ->
+                scope.installViewModelBinding<BackpackViewModel>(this)
+                    .closeOnViewModelCleared(this)
+                    .installModules(module {
+                        bind<Backpack>().singleton()
+                    })
+            }
+            .openSubScope(this)
+            .installModules(module {
+                bind<IBackpackAdapter>().toClass<BackpackAdapter>()
+            })
+            .closeOnDestroy(this)
+            .inject(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

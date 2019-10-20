@@ -51,6 +51,7 @@ android {
   testOptions {
     unitTests {
       includeAndroidResources = true
+      returnDefaultValues = true
     }
   }
 }
@@ -85,9 +86,6 @@ dependencies {
   testImplementation deps.mockito_kotlin
   testImplementation deps.mockito_junit5
   testImplementation deps.kluent
-  // testImplementation deps.tp_testing_junit5
+  testImplementation deps.truth
+  testImplementation deps.tp_testing_junit5
 }
-
-//test {
-//  useJUnitPlatform()
-//}
