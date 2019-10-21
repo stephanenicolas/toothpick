@@ -3,6 +3,7 @@ package com.example.toothpick.activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -52,6 +53,11 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        injectDependencies()
+        setupUIComponents()
+    }
+
+    @VisibleForTesting fun injectDependencies() {
         // 1. Open Activity scope as child of Application scope
         // 2. Install module inside Activity scope containing:
         //    2.1 hen injection IBackpackAdapter, use the class BackpackAdapter
@@ -59,14 +65,12 @@ class SimpleBackpackItemsActivity : AppCompatActivity() {
         // 3. Close when activity is destroyed
         // 4. Inject dependencies
         KTP.openScopes(ApplicationScope::class.java, this)
-                .installModules(module {
-                    bind<IBackpackAdapter>().toClass<BackpackAdapter>()
-                    bind<Backpack>().singleton()
-                })
-                .closeOnDestroy(this)
-                .inject(this)
-
-        setupUIComponents()
+            .installModules(module {
+                bind<IBackpackAdapter>().toClass<BackpackAdapter>()
+                bind<Backpack>().singleton()
+            })
+            .closeOnDestroy(this)
+            .inject(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
