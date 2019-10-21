@@ -30,7 +30,7 @@ import org.mockito.Mock;
 class TestMocking {
 
   @RegisterExtension ToothPickExtension toothPickExtension = new ToothPickExtension(this, "Foo");
-  @RegisterExtension MockitoExtension easyMockExtension = new MockitoExtension(this);
+  @RegisterExtension MockitoExtension mockitoExtension = new MockitoExtension(this);
 
   @Mock Dependency dependency;
 
