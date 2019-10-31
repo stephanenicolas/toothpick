@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
@@ -116,7 +115,7 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
     }
 
     private boolean equal(Object a, Object b) {
-      return Objects.equals(a, b);
+      return (a == b) || (a != null && a.equals(b));
     }
 
     private static List<Class<?>> getClassList(Collection<Pair> pairCollection) {
