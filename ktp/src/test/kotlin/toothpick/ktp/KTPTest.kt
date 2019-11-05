@@ -49,6 +49,17 @@ class KTPTest {
     }
 
     @Test
+    fun `openRootScope should open default root scope with a scope config`() {
+        // GIVEN
+
+        // WHEN
+        val scope = KTP.openRootScope {}
+
+        // THEN
+        scope.shouldNotBeNull()
+    }
+
+    @Test
     fun `openScope should open scope`() {
         // GIVEN
         Toothpick.isScopeOpen("name").shouldBeFalse()
@@ -68,7 +79,7 @@ class KTPTest {
         Toothpick.isScopeOpen("name").shouldBeFalse()
 
         // WHEN
-        val scope = KTP.openScope("name", Scope.ScopeConfig { })
+        val scope = KTP.openScope("name") { }
 
         // THEN
         scope.name shouldEqual "name"
