@@ -40,12 +40,14 @@ class KTPTest {
     @Test
     fun `openRootScope should open default root scope`() {
         // GIVEN
+        KTP.isRootScopeOpen().shouldBeFalse()
 
         // WHEN
         val scope = KTP.openRootScope()
 
         // THEN
         scope.shouldNotBeNull()
+        KTP.isRootScopeOpen().shouldBeTrue()
     }
 
     @Test
@@ -57,6 +59,7 @@ class KTPTest {
 
         // THEN
         scope.shouldNotBeNull()
+        KTP.isRootScopeOpen().shouldBeTrue()
     }
 
     @Test

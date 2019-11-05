@@ -45,6 +45,8 @@ object KTP {
 
     fun openRootScope(scopeConfig: (Scope) -> Unit): Scope = Toothpick.openRootScope(scopeConfig)
 
+    fun isRootScopeOpen(): Boolean = Toothpick.isRootScopeOpen()
+
     fun openScope(name: Any): Scope = Toothpick.openScope(name)
 
     fun openScope(name: Any, scopeConfig: (Scope) -> Unit): Scope = Toothpick.openScope(name, scopeConfig)

@@ -85,15 +85,21 @@ public class Toothpick {
    * @return the root scope.
    */
   public static Scope openRootScope(ScopeConfig scopeConfig) {
-    synchronized (ROOT_SCOPES) {
-      if (ROOT_SCOPES.size() > 1) {
-        throw new RuntimeException(
-            "openRootScope() is not supported when multiple root scopes are enabled. Use 'Configuration.preventMultipleRootScopes()' to enable it.");
-      } else if (ROOT_SCOPES.size() == 1) {
-        return ROOT_SCOPES.values().iterator().next();
-      }
-      return openScope(Toothpick.class, scopeConfig);
+    if (isRootScopeOpen()) {
+      return openRootScope();
     }
+    Scope scope = openRootScope();
+    scopeConfig.configure(scope);
+    return scope;
+  }
+
+  /**
+   * Indicates whether the root scope is open.
+   *
+   * @return true if the root scope has been opened and not yet closed.
+   */
+  public static boolean isRootScopeOpen() {
+    return !ROOT_SCOPES.isEmpty();
   }
 
   /**
