@@ -29,6 +29,8 @@ import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -426,6 +428,20 @@ public class ToothpickTest {
     // THEN
     assertThat(rootScope, notNullValue());
     assertThat(rootScope.getName(), equalToObject(Toothpick.class));
+  }
+
+  @Test
+  public void openRootScope_shouldApplyConfig() {
+    // GIVEN
+    TestScopeConfig scopeConfig = new TestScopeConfig();
+
+    // WHEN
+    Scope rootScope = Toothpick.openRootScope(scopeConfig);
+
+    // THEN
+    assertThat(rootScope, notNullValue());
+    assertThat(rootScope.getName(), equalToObject(Toothpick.class));
+    assertThat(scopeConfig.wasApplied, is(true));
   }
 
   @Test(expected = RuntimeException.class)
