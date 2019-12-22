@@ -75,13 +75,13 @@ public class Toothpick {
    *
    * <ul>
    *   <li>if there's an existing scope tree the root scope of that tree;
-   *   <li>creates a default root scope if there's none; In this case, {@code scopeConfig}
-   *       is applied to the new scope.
+   *   <li>creates a default root scope if there's none; In this case, {@code scopeConfig} is
+   *       applied to the new scope.
    *   <li>throws an exception if there are multiple scope trees (e.g. a forest);
    * </ul>
    *
    * @param scopeConfig a lambda to configure the scope if it is created. The lambda is not applied
-   * if the scope existed already.
+   *     if the scope existed already.
    * @return the root scope.
    */
   public static Scope openRootScope(ScopeConfig scopeConfig) {

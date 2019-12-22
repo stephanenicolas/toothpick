@@ -29,8 +29,6 @@ import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;

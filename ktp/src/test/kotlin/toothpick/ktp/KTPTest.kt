@@ -25,7 +25,6 @@ import org.amshove.kluent.shouldNotBe
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.configuration.ConfigurationHolder
@@ -56,7 +55,7 @@ class KTPTest {
         var configApplied = false
 
         // WHEN
-        val scope = KTP.openRootScope { configApplied = true}
+        val scope = KTP.openRootScope { configApplied = true }
 
         // THEN
         scope.shouldNotBeNull()
