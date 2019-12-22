@@ -22,3 +22,4 @@ classes/
 .idea/
 build/
 .gradle
+android-studio.*
