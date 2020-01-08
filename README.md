@@ -180,6 +180,7 @@ Ask questions on Stack Over Flow while keeping the GitHub issue board for real i
 * DevFest Belgium 2016 - [video in French](https://www.youtube.com/watch?v=ytBmu5ciPCQ)
 * DevFest Siberia 2017 - [video in Russian](https://www.youtube.com/watch?v=EOFrA-MHbjU)
 * DevFest North 2017 - [video in Russian](https://www.youtube.com/watch?v=t55nFVurCHw)
+* [Toothpick: a simple DI for Android development (Russian)](https://medium.com/@alaershov/toothpick-di-android-1-intro-ru-151015616f0?source=friends_link&sk=ccfdda35cd968f1cd9986ab4a8cf0016)
 
 # Wanna know more ?
 
