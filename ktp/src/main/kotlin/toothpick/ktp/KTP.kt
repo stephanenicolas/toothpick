@@ -54,4 +54,10 @@ object KTP {
     fun isScopeOpen(name: Any) = Toothpick.isScopeOpen(name)
 
     fun setConfiguration(configuration: Configuration) = Toothpick.setConfiguration(configuration)
+
+    fun reset() = Toothpick.reset()
+
+    fun reset(scope: Scope) = Toothpick.reset(scope)
+
+    fun release(scope: Scope) = Toothpick.release(scope)
 }

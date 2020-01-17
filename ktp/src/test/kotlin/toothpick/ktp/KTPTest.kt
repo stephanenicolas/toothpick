@@ -34,7 +34,7 @@ class KTPTest {
 
     @AfterEach
     fun tearDown() {
-        Toothpick.reset()
+        KTP.reset()
     }
 
     @Test
