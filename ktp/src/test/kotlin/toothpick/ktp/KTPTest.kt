@@ -25,7 +25,6 @@ import org.amshove.kluent.shouldNotBe
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.configuration.ConfigurationHolder
@@ -40,12 +39,28 @@ class KTPTest {
     @Test
     fun `openRootScope should open default root scope`() {
         // GIVEN
+        KTP.isRootScopeOpen().shouldBeFalse()
 
         // WHEN
         val scope = KTP.openRootScope()
 
         // THEN
         scope.shouldNotBeNull()
+        KTP.isRootScopeOpen().shouldBeTrue()
+    }
+
+    @Test
+    fun `openRootScope should open default root scope with a scope config`() {
+        // GIVEN
+        var configApplied = false
+
+        // WHEN
+        val scope = KTP.openRootScope { configApplied = true }
+
+        // THEN
+        scope.shouldNotBeNull()
+        KTP.isRootScopeOpen().shouldBeTrue()
+        configApplied.shouldBeTrue()
     }
 
     @Test
@@ -63,17 +78,19 @@ class KTPTest {
     }
 
     @Test
-    fun `openScope should open scope and provide configuration`() {
+    fun `openScope should open scope with a scope config`() {
         // GIVEN
         Toothpick.isScopeOpen("name").shouldBeFalse()
+        var configApplied = false
 
         // WHEN
-        val scope = KTP.openScope("name", Scope.ScopeConfig { })
+        val scope = KTP.openScope("name") { configApplied = true }
 
         // THEN
         scope.name shouldEqual "name"
         Toothpick.isScopeOpen("name").shouldBeTrue()
         KTP.isScopeOpen("name").shouldBeTrue()
+        configApplied.shouldBeTrue()
     }
 
     @Test

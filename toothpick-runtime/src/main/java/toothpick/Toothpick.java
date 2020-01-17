@@ -48,7 +48,7 @@ public class Toothpick {
   }
 
   /**
-   * Returns or opens a root scope as follows:<br>
+   * Creates or opens the previously created root scope as follows:<br>
    *
    * <ul>
    *   <li>if there's an existing scope tree the root scope of that tree;
@@ -68,6 +68,38 @@ public class Toothpick {
       }
       return openScope(Toothpick.class);
     }
+  }
+
+  /**
+   * Creates or opens the previously created root scope as follows:<br>
+   *
+   * <ul>
+   *   <li>if there's an existing scope tree the root scope of that tree;
+   *   <li>creates a default root scope if there's none; In this case, {@code scopeConfig} is
+   *       applied to the new scope.
+   *   <li>throws an exception if there are multiple scope trees (e.g. a forest);
+   * </ul>
+   *
+   * @param scopeConfig a lambda to configure the scope if it is created. The lambda is not applied
+   *     if the scope existed already.
+   * @return the root scope.
+   */
+  public static Scope openRootScope(ScopeConfig scopeConfig) {
+    if (isRootScopeOpen()) {
+      return openRootScope();
+    }
+    Scope scope = openRootScope();
+    scopeConfig.configure(scope);
+    return scope;
+  }
+
+  /**
+   * Indicates whether the root scope is open.
+   *
+   * @return true if the root scope has been opened and not yet closed.
+   */
+  public static boolean isRootScopeOpen() {
+    return !ROOT_SCOPES.isEmpty();
   }
 
   /**

@@ -428,6 +428,20 @@ public class ToothpickTest {
     assertThat(rootScope.getName(), equalToObject(Toothpick.class));
   }
 
+  @Test
+  public void openRootScope_shouldApplyConfig() {
+    // GIVEN
+    TestScopeConfig scopeConfig = new TestScopeConfig();
+
+    // WHEN
+    Scope rootScope = Toothpick.openRootScope(scopeConfig);
+
+    // THEN
+    assertThat(rootScope, notNullValue());
+    assertThat(rootScope.getName(), equalToObject(Toothpick.class));
+    assertThat(scopeConfig.wasApplied, is(true));
+  }
+
   @Test(expected = RuntimeException.class)
   public void openRootScope_shouldThrowException_WhenThereAreMultipleScopeTreesDefined() {
     // GIVEN
