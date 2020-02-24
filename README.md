@@ -165,7 +165,7 @@ Ask questions on Stack Over Flow while keeping the GitHub issue board for real i
 ## Talks & Articles
 
 * A Dependency Injection Showdown - [Pro Android Dev article](https://proandroiddev.com/a-dependency-injection-showdown-213339c76515)
-* Toothpick 3 — a hidden gem in the DI world [Medium article](https://medium.com/swlh/toothpick-3-a-hidden-gem-194ae6ee8671)
+* Toothpick 3 — a hidden gem in the DI world - [Medium article](https://medium.com/swlh/toothpick-3-a-hidden-gem-194ae6ee8671)
 * How I learned to love unit testing with Toothpick - [Groupon's medium blog article](https://medium.com/groupon-eng/how-i-learned-to-love-unit-testing-with-toothpick-13ad305b35d)
 * Droidcon, Boston 2017 - [Slides](https://speakerdeck.com/dlemures/toothpick-a-fresh-approach-to-di-including-unit-testing) & [Video](https://news.realm.io/news/droidcon-boston-daniel-molinero-toothpick-dependency-injection-android/)
 * Migrating off RoboGuice 3 (to Toothpick) - [Part 1](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-1-cee0875f6620) & [Part 2](https://medium.com/@markchristopherng/migrating-off-roboguice-3-part-2-c06644d2d1ef)
