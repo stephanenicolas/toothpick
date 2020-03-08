@@ -66,9 +66,9 @@ Activity 1
 Fragment 1
 ```
 
-Scopes offer to compartimentalize memory during the runtime of an app and prevent memory leaks.
+Scopes offer to compartmentalize memory during the runtime of an app and prevent memory leaks.
 All dependencies created via Toothpick, and available for injections, will be fully garbage collected when this scope is closed.
-To lean more about scopes, read [TP wiki](https://github.com/stephanenicolas/toothpick/wiki/Scopes#what-is-a-scope-).
+To learn more about scopes, read [TP wiki](https://github.com/stephanenicolas/toothpick/wiki/Scopes#what-is-a-scope-).
 
 Toothpick is :
 * pure java (Android support is provided: "Smoothie", Kotlin support is provided by "KTP")
