@@ -132,8 +132,12 @@ public class InternalProvider<T> {
     if (factory != null) {
       if (isSingleton) {
         instance = factory.createInstance(scope);
-        // gc
-        factory = null;
+
+        if (!isReleasable) {
+          // gc
+          factory = null;
+        }
+
         return instance;
       }
 
@@ -155,8 +159,12 @@ public class InternalProvider<T> {
     if (providerFactory != null) {
       if (isSingleton) {
         providerInstance = providerFactory.createInstance(scope);
-        // gc
-        providerFactory = null;
+
+        if (!isReleasable) {
+          // gc
+          providerFactory = null;
+        }
+
         if (isProvidingSingleton) {
           instance = providerInstance.get();
           return instance;
@@ -166,8 +174,11 @@ public class InternalProvider<T> {
 
       if (isProvidingSingleton) {
         instance = providerFactory.createInstance(scope).get();
-        // gc
-        providerFactory = null;
+
+        if (!isProvidingReleasable) {
+          // gc
+          providerFactory = null;
+        }
         return instance;
       }
 
