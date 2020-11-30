@@ -18,15 +18,17 @@ package toothpick.smoothie.provider;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class LayoutInflaterProvider implements Provider<LayoutInflater> {
   Activity activity;
 
-  public LayoutInflaterProvider(Activity activity) {
+  public LayoutInflaterProvider(@NonNull Activity activity) {
     this.activity = activity;
   }
 
+  @NonNull
   @Override
   public LayoutInflater get() {
     return LayoutInflater.from(activity);

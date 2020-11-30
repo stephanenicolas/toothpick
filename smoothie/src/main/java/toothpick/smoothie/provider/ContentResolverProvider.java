@@ -18,15 +18,17 @@ package toothpick.smoothie.provider;
 
 import android.app.Application;
 import android.content.ContentResolver;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class ContentResolverProvider implements Provider<ContentResolver> {
   Application application;
 
-  public ContentResolverProvider(Application application) {
+  public ContentResolverProvider(@NonNull Application application) {
     this.application = application;
   }
 
+  @NonNull
   @Override
   public ContentResolver get() {
     return application.getContentResolver();

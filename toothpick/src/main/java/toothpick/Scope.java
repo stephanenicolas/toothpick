@@ -16,6 +16,8 @@
  */
 package toothpick;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -68,9 +70,11 @@ public interface Scope {
    * @return the name of the scope. It is only used to access a node via the ToothPick class. The
    *     name can't be null.
    */
+  @NonNull
   Object getName();
 
   /** @return the parentScope of this scope. Can be null for a root scope. */
+  @Nullable
   Scope getParentScope();
 
   /**
@@ -84,12 +88,14 @@ public interface Scope {
    *     Singleton}, the root scope is always returned. Thus the {@link Singleton} scope annotation
    *     class doesn't need to be explicitely supported, it's built-in.
    */
-  <A extends Annotation> Scope getParentScope(Class<A> scopeAnnotationClass);
+  @NonNull
+  <A extends Annotation> Scope getParentScope(@NonNull Class<A> scopeAnnotationClass);
 
   /**
    * @return the root scope of this scope. The root scope is the scope itself if the scope has no
    *     parent. Otherwise, if it has parents, it is the highest parent in the hierarchy of parents.
    */
+  @NonNull
   Scope getRootScope();
 
   /**
@@ -102,7 +108,8 @@ public interface Scope {
    *     all root scopes (scopes with no parents).
    * @see #getParentScope(Class)
    */
-  Scope supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass);
+  @NonNull
+  Scope supportScopeAnnotation(@NonNull Class<? extends Annotation> scopeAnnotationClass);
 
   boolean isScopeAnnotationSupported(Class<? extends Annotation> scopeAnnotationClass);
 
@@ -112,7 +119,8 @@ public interface Scope {
    * @see #getInstance(Class, String)
    * @see toothpick.config.Module
    */
-  <T> T getInstance(Class<T> clazz);
+  @NonNull
+  <T> T getInstance(@NonNull Class<T> clazz);
 
   /**
    * Returns the instance of {@code clazz} named {@code name} if one is scoped in the current scope,
@@ -127,7 +135,8 @@ public interface Scope {
    * @return a scoped instance or a new one produced by the factory associated to {@code clazz}.
    * @see toothpick.config.Binding
    */
-  <T> T getInstance(Class<T> clazz, String name);
+  @NonNull
+  <T> T getInstance(@NonNull Class<T> clazz, @Nullable String name);
 
   /**
    * Requests a provider via an unnamed binding.
@@ -135,7 +144,8 @@ public interface Scope {
    * @see #getProvider(Class, String)
    * @see toothpick.config.Module
    */
-  <T> Provider<T> getProvider(Class<T> clazz);
+  @NonNull
+  <T> Provider<T> getProvider(@NonNull Class<T> clazz);
 
   /**
    * Returns a named {@code Provider} named {@code name} of {@code clazz} if one is scoped in the
@@ -151,7 +161,8 @@ public interface Scope {
    *     providers are thread safe.
    * @see toothpick.config.Module
    */
-  <T> Provider<T> getProvider(Class<T> clazz, String name);
+  @NonNull
+  <T> Provider<T> getProvider(@NonNull Class<T> clazz, @Nullable String name);
 
   /**
    * Requests a Lazy via an unnamed binding.
@@ -159,7 +170,8 @@ public interface Scope {
    * @see #getLazy(Class, String)
    * @see toothpick.config.Module
    */
-  <T> Lazy<T> getLazy(Class<T> clazz);
+  @NonNull
+  <T> Lazy<T> getLazy(@NonNull Class<T> clazz);
 
   /**
    * Returns a {@code Lazy} named {@code name} of {@code clazz} if one provider is scoped in the
@@ -177,7 +189,8 @@ public interface Scope {
    *     lazies are thread safe.
    * @see toothpick.config.Module
    */
-  <T> Lazy<T> getLazy(Class<T> clazz, String name);
+  @NonNull
+  <T> Lazy<T> getLazy(@NonNull Class<T> clazz, @Nullable String name);
 
   /**
    * Allows to install modules.
@@ -185,7 +198,8 @@ public interface Scope {
    * @param modules an array of modules that define bindings.
    * @see #installTestModules
    */
-  Scope installModules(Module... modules);
+  @NonNull
+  Scope installModules(@NonNull Module... modules);
 
   /**
    * <em>DO NOT USE IT IN PRODUCTION.</em><br>
@@ -197,7 +211,8 @@ public interface Scope {
    *
    * @param modules an array of modules that define test bindings.
    */
-  Scope installTestModules(Module... modules);
+  @NonNull
+  Scope installTestModules(@NonNull Module... modules);
 
   /**
    * Injects all dependencies (transitively) in {@code obj}, dependencies will be obtained in the
@@ -205,7 +220,7 @@ public interface Scope {
    *
    * @param obj the object to be injected.
    */
-  void inject(Object obj);
+  void inject(@NonNull Object obj);
 
   /**
    * Release all releasable singletons. Factories and internal providers won't be released.
@@ -220,7 +235,8 @@ public interface Scope {
    * @param subScopeName the <em>name of the scope</em>.
    * @see #openSubScope(Object)
    */
-  Scope openSubScope(Object subScopeName);
+  @NonNull
+  Scope openSubScope(@NonNull Object subScopeName);
 
   /**
    * Opens a sub scope of this scope. If a child scope by this {@code name} already exists, it is
@@ -232,10 +248,11 @@ public interface Scope {
    *     if the scope existed already.
    * @see #openSubScope(Object)
    */
-  Scope openSubScope(Object subScopeName, ScopeConfig scopeConfig);
+  @NonNull
+  Scope openSubScope(@NonNull Object subScopeName, @NonNull ScopeConfig scopeConfig);
 
   @FunctionalInterface
   interface ScopeConfig {
-    void configure(Scope scope);
+    void configure(@NonNull Scope scope);
   }
 }

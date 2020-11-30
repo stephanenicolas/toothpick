@@ -126,6 +126,7 @@ public class ViewModelProvider<T extends ViewModel> implements Provider<T> {
     this.scope = scope;
   }
 
+  @NonNull
   @Override
   public T get() {
     if (scope != null) {

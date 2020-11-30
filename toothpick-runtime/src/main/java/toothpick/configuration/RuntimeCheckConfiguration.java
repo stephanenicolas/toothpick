@@ -16,6 +16,7 @@
  */
 package toothpick.configuration;
 
+import androidx.annotation.NonNull;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
@@ -27,7 +28,7 @@ interface RuntimeCheckConfiguration {
    * @param binding the binding being installed.
    * @param scope the scope where the binding is installed.
    */
-  void checkIllegalBinding(Binding binding, Scope scope);
+  void checkIllegalBinding(@NonNull Binding binding, @NonNull Scope scope);
 
   /**
    * Called when the class {@code class} starts being injected using the qualifier {@code name}.
@@ -37,7 +38,7 @@ interface RuntimeCheckConfiguration {
    * @param clazz the class to be injected.
    * @param name the name of the required injection.
    */
-  void checkCyclesStart(Class clazz, String name);
+  void checkCyclesStart(@NonNull Class clazz, @NonNull String name);
 
   /**
    * Called when the class {@code class} ends being injected using the qualifier {@code name}. Will
@@ -47,5 +48,5 @@ interface RuntimeCheckConfiguration {
    * @param clazz the class to be injected.
    * @param name the name of the required injection.
    */
-  void checkCyclesEnd(Class clazz, String name);
+  void checkCyclesEnd(@NonNull Class clazz, @NonNull String name);
 }

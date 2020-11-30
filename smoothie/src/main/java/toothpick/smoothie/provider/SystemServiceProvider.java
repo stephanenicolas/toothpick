@@ -17,18 +17,20 @@
 package toothpick.smoothie.provider;
 
 import android.content.Context;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class SystemServiceProvider<T> implements Provider<T> {
   private Context context;
   private String serviceName;
 
-  public SystemServiceProvider(Context context, String serviceName) {
+  public SystemServiceProvider(@NonNull Context context, @NonNull String serviceName) {
     this.context = context;
     this.serviceName = serviceName;
   }
 
   @SuppressWarnings("unchecked")
+  @NonNull
   @Override
   public T get() {
     return (T) context.getSystemService(serviceName);

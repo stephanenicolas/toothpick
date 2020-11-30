@@ -16,6 +16,7 @@
  */
 package toothpick.configuration;
 
+import androidx.annotation.NonNull;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
@@ -44,6 +45,7 @@ public class Configuration
    *
    * @return a development configuration.
    */
+  @NonNull
   public static Configuration forDevelopment() {
     final Configuration configuration = new Configuration();
     configuration.runtimeCheckConfiguration = new RuntimeCheckOnConfiguration();
@@ -56,6 +58,7 @@ public class Configuration
    *
    * @return a production configuration.
    */
+  @NonNull
   public static Configuration forProduction() {
     return new Configuration();
   }
@@ -65,6 +68,7 @@ public class Configuration
    *
    * @return a configuration that allows multiple root scopes.
    */
+  @NonNull
   public Configuration allowMultipleRootScopes() {
     this.multipleRootScopeCheckConfiguration = new MultipleRootScopeCheckOffConfiguration();
     return this;
@@ -77,28 +81,29 @@ public class Configuration
    *
    * @return a configuration that allows a single root scope.
    */
+  @NonNull
   public Configuration preventMultipleRootScopes() {
     this.multipleRootScopeCheckConfiguration = new MultipleRootScopeCheckOnConfiguration();
     return this;
   }
 
   @Override
-  public void checkIllegalBinding(Binding binding, Scope scope) {
+  public void checkIllegalBinding(@NonNull Binding binding, @NonNull Scope scope) {
     runtimeCheckConfiguration.checkIllegalBinding(binding, scope);
   }
 
   @Override
-  public void checkCyclesStart(Class clazz, String name) {
+  public void checkCyclesStart(@NonNull Class clazz, @NonNull String name) {
     runtimeCheckConfiguration.checkCyclesStart(clazz, name);
   }
 
   @Override
-  public void checkCyclesEnd(Class clazz, String name) {
+  public void checkCyclesEnd(@NonNull Class clazz, @NonNull String name) {
     runtimeCheckConfiguration.checkCyclesEnd(clazz, name);
   }
 
   @Override
-  public void checkMultipleRootScopes(Scope scope) {
+  public void checkMultipleRootScopes(@NonNull Scope scope) {
     multipleRootScopeCheckConfiguration.checkMultipleRootScopes(scope);
   }
 

@@ -18,15 +18,17 @@ package toothpick.smoothie.provider;
 
 import android.accounts.AccountManager;
 import android.app.Application;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class AccountManagerProvider implements Provider<AccountManager> {
   Application application;
 
-  public AccountManagerProvider(Application application) {
+  public AccountManagerProvider(@NonNull Application application) {
     this.application = application;
   }
 
+  @NonNull
   @Override
   public AccountManager get() {
     return AccountManager.get(application);

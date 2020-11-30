@@ -18,15 +18,17 @@ package toothpick.smoothie.provider;
 
 import android.app.Application;
 import android.content.res.AssetManager;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class AssetManagerProvider implements Provider<AssetManager> {
   Application application;
 
-  public AssetManagerProvider(Application application) {
+  public AssetManagerProvider(@NonNull Application application) {
     this.application = application;
   }
 
+  @NonNull
   @Override
   public AssetManager get() {
     return application.getAssets();

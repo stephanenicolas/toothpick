@@ -17,16 +17,18 @@
 package toothpick.smoothie.provider;
 
 import android.app.Activity;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 @SuppressWarnings("deprecation")
 public class FragmentManagerProvider implements Provider<android.app.FragmentManager> {
   Activity activity;
 
-  public FragmentManagerProvider(Activity activity) {
+  public FragmentManagerProvider(@NonNull Activity activity) {
     this.activity = activity;
   }
 
+  @NonNull
   @Override
   public android.app.FragmentManager get() {
     return activity.getFragmentManager();

@@ -20,21 +20,25 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import javax.inject.Provider;
 
 public class SharedPreferencesProvider implements Provider<SharedPreferences> {
   Application application;
   String preferencesName;
 
-  public SharedPreferencesProvider(Application application) {
+  public SharedPreferencesProvider(@NonNull Application application) {
     this(application, null);
   }
 
-  public SharedPreferencesProvider(Application application, String preferencesName) {
+  public SharedPreferencesProvider(
+      @NonNull Application application, @Nullable String preferencesName) {
     this.application = application;
     this.preferencesName = preferencesName;
   }
 
+  @NonNull
   @Override
   public SharedPreferences get() {
     if (preferencesName != null) {

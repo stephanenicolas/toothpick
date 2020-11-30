@@ -16,6 +16,7 @@
  */
 package toothpick.smoothie.provider;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.loader.app.LoaderManager;
 import javax.inject.Provider;
@@ -23,10 +24,11 @@ import javax.inject.Provider;
 public class AndroidXLoaderManagerProvider implements Provider<LoaderManager> {
   FragmentActivity activity;
 
-  public AndroidXLoaderManagerProvider(FragmentActivity activity) {
+  public AndroidXLoaderManagerProvider(@NonNull FragmentActivity activity) {
     this.activity = activity;
   }
 
+  @NonNull
   @Override
   public LoaderManager get() {
     return LoaderManager.getInstance(activity);

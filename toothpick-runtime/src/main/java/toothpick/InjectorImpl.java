@@ -16,6 +16,7 @@
  */
 package toothpick;
 
+import androidx.annotation.NonNull;
 import toothpick.locators.MemberInjectorLocator;
 
 /** Default implementation of an injector. */
@@ -28,7 +29,7 @@ public class InjectorImpl implements Injector {
    */
   @Override
   @SuppressWarnings("unchecked")
-  public <T> void inject(T obj, Scope scope) {
+  public <T> void inject(@NonNull T obj, @NonNull Scope scope) {
     Class<? super T> currentClass = (Class<T>) obj.getClass();
     do {
       MemberInjector<? super T> memberInjector =

@@ -16,6 +16,7 @@
  */
 package toothpick;
 
+import androidx.annotation.NonNull;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import toothpick.Scope.ScopeConfig;
@@ -58,7 +59,7 @@ public class Toothpick {
    *
    * @return the root scope.
    */
-  public static Scope openRootScope() {
+  public static @NonNull Scope openRootScope() {
     synchronized (ROOT_SCOPES) {
       if (ROOT_SCOPES.size() > 1) {
         throw new RuntimeException(
@@ -84,7 +85,7 @@ public class Toothpick {
    *     if the scope existed already.
    * @return the root scope.
    */
-  public static Scope openRootScope(ScopeConfig scopeConfig) {
+  public static @NonNull Scope openRootScope(@NonNull ScopeConfig scopeConfig) {
     if (isRootScopeOpen()) {
       return openRootScope();
     }
@@ -108,7 +109,7 @@ public class Toothpick {
    * @param name the name of the scope.
    * @return true if the scope has been opened and not yet closed.
    */
-  public static boolean isScopeOpen(Object name) {
+  public static boolean isScopeOpen(@NonNull Object name) {
     if (name == null) {
       throw new IllegalArgumentException("null scope names are not allowed.");
     }
@@ -124,7 +125,7 @@ public class Toothpick {
    * @param names of the scopes to open hierarchically.
    * @return the last opened scope, leaf node of the created subtree of scopes.
    */
-  public static Scope openScopes(Object... names) {
+  public static Scope openScopes(@NonNull Object... names) {
 
     if (names == null) {
       throw new IllegalArgumentException("null scope names are not allowed.");
@@ -154,7 +155,7 @@ public class Toothpick {
    * @see #openScope(Object, ScopeConfig)
    * @see #closeScope(Object)
    */
-  public static Scope openScope(Object name) {
+  public static @NonNull Scope openScope(@NonNull Object name) {
     return openScope(name, true);
   }
 
@@ -170,7 +171,7 @@ public class Toothpick {
    * @see #openScope(Object)
    * @see #closeScope(Object)
    */
-  public static Scope openScope(Object name, ScopeConfig scopeConfig) {
+  public static @NonNull Scope openScope(@NonNull Object name, ScopeConfig scopeConfig) {
     if (isScopeOpen(name)) {
       return openScope(name);
     }
@@ -186,7 +187,7 @@ public class Toothpick {
    * @param name the name of the scope to open.
    * @param isRootScope whether or not this is a root scope
    */
-  private static Scope openScope(Object name, boolean isRootScope) {
+  private static @NonNull Scope openScope(@NonNull Object name, boolean isRootScope) {
     synchronized (ROOT_SCOPES) {
       if (name == null) {
         throw new IllegalArgumentException("null scope names are not allowed.");
@@ -215,7 +216,7 @@ public class Toothpick {
    *
    * @param name the name of the scope to close.
    */
-  public static void closeScope(Object name) {
+  public static void closeScope(@NonNull Object name) {
     synchronized (ROOT_SCOPES) {
       // we remove the scope first, so that other threads don't see it, and see the next snapshot of
       // the tree
@@ -248,7 +249,7 @@ public class Toothpick {
    *
    * @param scope the scope we want to reset.
    */
-  public static void reset(Scope scope) {
+  public static void reset(@NonNull Scope scope) {
     ScopeNode scopeNode = (ScopeNode) scope;
     scopeNode.reset();
   }
@@ -259,7 +260,7 @@ public class Toothpick {
    *
    * @param scope the scope we want to reset.
    */
-  public static void release(Scope scope) {
+  public static void release(@NonNull Scope scope) {
     ScopeNode scopeNode = (ScopeNode) scope;
     scopeNode.release();
   }
@@ -271,7 +272,7 @@ public class Toothpick {
    * @param obj the object to be injected.
    * @param scope the scope in which all dependencies are obtained.
    */
-  public static void inject(Object obj, Scope scope) {
+  public static void inject(@NonNull Object obj, @NonNull Scope scope) {
     injector.inject(obj, scope);
   }
 
@@ -282,7 +283,7 @@ public class Toothpick {
    *     We don't do anything else to the children nodes are they will be garbage collected soon. We
    *     just cut a whole sub-graph in the references graph of the JVM normally.
    */
-  private static void removeScopeAndChildrenFromMap(ScopeNode scope) {
+  private static void removeScopeAndChildrenFromMap(@NonNull ScopeNode scope) {
     MAP_KEY_TO_SCOPE.remove(scope.getName());
     scope.close();
     for (ScopeNode childScope : scope.childrenScopes.values()) {
@@ -295,7 +296,7 @@ public class Toothpick {
    *
    * @param configuration the configuration to use
    */
-  public static void setConfiguration(Configuration configuration) {
+  public static void setConfiguration(@NonNull Configuration configuration) {
     ConfigurationHolder.configuration = configuration;
   }
 
