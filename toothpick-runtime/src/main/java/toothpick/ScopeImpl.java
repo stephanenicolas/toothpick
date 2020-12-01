@@ -18,6 +18,7 @@ package toothpick;
 
 import static java.lang.String.format;
 
+import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,13 +80,15 @@ public class ScopeImpl extends ScopeNode {
     installBindingForScopeClass();
   }
 
+  @NonNull
   @Override
-  public <T> T getInstance(Class<T> clazz) {
+  public <T> T getInstance(@NonNull Class<T> clazz) {
     return getInstance(clazz, null);
   }
 
+  @NonNull
   @Override
-  public <T> T getInstance(Class<T> clazz, String name) {
+  public <T> T getInstance(@NonNull Class<T> clazz, String name) {
     crashIfClosed();
     ConfigurationHolder.configuration.checkCyclesStart(clazz, name);
     T t;
@@ -97,30 +100,35 @@ public class ScopeImpl extends ScopeNode {
     return t;
   }
 
+  @NonNull
   @Override
-  public <T> Provider<T> getProvider(Class<T> clazz) {
+  public <T> Provider<T> getProvider(@NonNull Class<T> clazz) {
     return getProvider(clazz, null);
   }
 
+  @NonNull
   @Override
-  public <T> Provider<T> getProvider(Class<T> clazz, String name) {
+  public <T> Provider<T> getProvider(@NonNull Class<T> clazz, String name) {
     crashIfClosed();
     return new ThreadSafeProviderImpl<>(this, clazz, name, false);
   }
 
+  @NonNull
   @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz) {
+  public <T> Lazy<T> getLazy(@NonNull Class<T> clazz) {
     return getLazy(clazz, null);
   }
 
+  @NonNull
   @Override
-  public <T> Lazy<T> getLazy(Class<T> clazz, String name) {
+  public <T> Lazy<T> getLazy(@NonNull Class<T> clazz, String name) {
     crashIfClosed();
     return new ThreadSafeProviderImpl<>(this, clazz, name, true);
   }
 
+  @NonNull
   @Override
-  public synchronized Scope installTestModules(Module... modules) {
+  public synchronized Scope installTestModules(@NonNull Module... modules) {
     if (hasTestModules) {
       throw new IllegalStateException("TestModules can only be installed once per scope.");
     }
@@ -129,14 +137,15 @@ public class ScopeImpl extends ScopeNode {
     return this;
   }
 
+  @NonNull
   @Override
-  public Scope installModules(Module... modules) {
+  public Scope installModules(@NonNull Module... modules) {
     installModules(false, modules);
     return this;
   }
 
   @Override
-  public void inject(Object obj) {
+  public void inject(@NonNull Object obj) {
     Toothpick.inject(obj, this);
   }
 
@@ -606,14 +615,16 @@ public class ScopeImpl extends ScopeNode {
     installBindingForScopeClass();
   }
 
+  @NonNull
   @Override
-  public Scope openSubScope(Object subScopeName) {
+  public Scope openSubScope(@NonNull Object subScopeName) {
     // we already check later that sub scope is a child of this
     return Toothpick.openScopes(getName(), subScopeName);
   }
 
+  @NonNull
   @Override
-  public Scope openSubScope(Object subScopeName, ScopeConfig scopeConfig) {
+  public Scope openSubScope(@NonNull Object subScopeName, @NonNull ScopeConfig scopeConfig) {
     // we already check later that sub scope is a child of this
     boolean wasOpen = Toothpick.isScopeOpen(subScopeName);
     Scope scope = Toothpick.openScopes(getName(), subScopeName);

@@ -16,6 +16,7 @@
  */
 package toothpick.configuration;
 
+import androidx.annotation.NonNull;
 import toothpick.Scope;
 
 /** Check strategy to detect when mutiple roots are created in TP scope forest. */
@@ -25,7 +26,7 @@ interface MultipleRootScopeCheckConfiguration {
    *
    * @param scope a newly created scope.
    */
-  void checkMultipleRootScopes(Scope scope);
+  void checkMultipleRootScopes(@NonNull Scope scope);
 
   /** Reset the state of the detector. */
   void onScopeForestReset();
