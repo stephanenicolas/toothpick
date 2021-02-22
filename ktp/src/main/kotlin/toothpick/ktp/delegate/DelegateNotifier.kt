@@ -16,9 +16,9 @@
  */
 package toothpick.ktp.delegate
 
-import toothpick.Scope
 import java.util.Collections
 import java.util.WeakHashMap
+import toothpick.Scope
 
 /**
  * Internal KTP class that registers field injection delegates.

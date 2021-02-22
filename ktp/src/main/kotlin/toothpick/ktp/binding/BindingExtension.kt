@@ -16,10 +16,10 @@
  */
 package toothpick.ktp.binding
 
-import toothpick.config.Binding
-import toothpick.config.Module
 import javax.inject.Provider
 import kotlin.reflect.KClass
+import toothpick.config.Binding
+import toothpick.config.Module
 
 /**
  * DSL method to define bindings. A typical example is

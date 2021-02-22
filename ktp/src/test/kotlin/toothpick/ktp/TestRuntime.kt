@@ -16,6 +16,9 @@
  */
 package toothpick.ktp
 
+import javax.inject.Named
+import javax.inject.Provider
+import javax.inject.Qualifier
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
@@ -34,9 +37,6 @@ import toothpick.ktp.extension.getInstance
 import toothpick.ktp.extension.getLazy
 import toothpick.ktp.extension.getProvider
 import toothpick.testing.ToothPickExtension
-import javax.inject.Named
-import javax.inject.Provider
-import javax.inject.Qualifier
 
 class TestRuntime {
 

@@ -16,8 +16,8 @@
  */
 package toothpick.ktp.delegate
 
-import toothpick.ktp.KTP
 import kotlin.reflect.KProperty
+import toothpick.ktp.KTP
 
 /**
  * Internal class to KTP that will create the appropriate [InjectDelegate] for a field injection.

@@ -16,9 +16,9 @@
  */
 package toothpick.ktp.delegate
 
-import toothpick.Scope
 import javax.inject.Provider
 import kotlin.reflect.KProperty
+import toothpick.Scope
 
 /**
  * Property delegate base class. It allows to delegate the creation of fields to KTP.
