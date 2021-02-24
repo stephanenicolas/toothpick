@@ -17,6 +17,7 @@
 package toothpick.ktp.delegate
 
 import com.nhaarman.mockitokotlin2.mock
+import javax.inject.Provider
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.invoking
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import toothpick.Lazy
 import toothpick.Scope
-import javax.inject.Provider
 
 class InjectDelegateTest {
 

@@ -16,9 +16,9 @@
  */
 package toothpick.ktp.binding
 
-import org.junit.jupiter.api.Test
 import javax.inject.Provider
 import javax.inject.Qualifier
+import org.junit.jupiter.api.Test
 
 class BindingExtensionTest {
 

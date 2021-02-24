@@ -85,7 +85,7 @@ subprojects { project ->
 
   apply plugin: 'jacoco'
   apply plugin: 'maven'
-  apply plugin: 'com.diffplug.gradle.spotless'
+  apply plugin: 'com.diffplug.spotless'
 
   tasks.withType(JavaCompile) {
     options.compilerArgs << '-Xlint:unchecked'

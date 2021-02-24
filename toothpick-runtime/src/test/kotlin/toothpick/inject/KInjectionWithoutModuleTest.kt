@@ -16,15 +16,14 @@
  */
 package toothpick.inject
 
-import org.hamcrest.CoreMatchers.sameInstance
-import org.hamcrest.CoreMatchers.not
 import org.hamcrest.CoreMatchers.isA
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.sameInstance
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import toothpick.ScopeImpl
 import toothpick.Toothpick
-
-import org.hamcrest.MatcherAssert.assertThat
 import toothpick.config.Module
 import toothpick.data.KBar
 import toothpick.data.KFoo

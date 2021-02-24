@@ -64,5 +64,5 @@ ext.deps = [// Common
 
             //build
             coverallPlugin      : 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3',
-            spotlessPlugin: 'com.diffplug.spotless:spotless-plugin-gradle:3.23.1',
+            spotlessPlugin: 'com.diffplug.spotless:spotless-plugin-gradle:5.10.2',
 ]

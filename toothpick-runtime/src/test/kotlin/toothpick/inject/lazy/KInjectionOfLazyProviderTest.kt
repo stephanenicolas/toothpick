@@ -16,19 +16,18 @@
  */
 package toothpick.inject.lazy
 
+import org.hamcrest.CoreMatchers.isA
+import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.sameInstance
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import toothpick.Lazy
 import toothpick.ScopeImpl
 import toothpick.Toothpick
 import toothpick.config.Module
+import toothpick.data.KBar
 import toothpick.data.KFooWithLazy
 import toothpick.data.KFooWithNamedLazy
-
-import org.hamcrest.CoreMatchers.isA
-import org.hamcrest.CoreMatchers.notNullValue
-import org.hamcrest.CoreMatchers.sameInstance
-import org.hamcrest.MatcherAssert.assertThat
-import toothpick.data.KBar
 
 /*
  * Test injection of {@code Lazy}s.
