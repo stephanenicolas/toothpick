@@ -16,12 +16,13 @@
  */
 package toothpick.configuration;
 
+import androidx.annotation.NonNull;
 import toothpick.Scope;
 
 /** Dummy implementation of the {@link MultipleRootScopeCheckConfiguration} strategy. */
 class MultipleRootScopeCheckOffConfiguration implements MultipleRootScopeCheckConfiguration {
   @Override
-  public void checkMultipleRootScopes(Scope scope) {}
+  public void checkMultipleRootScopes(@NonNull Scope scope) {}
 
   @Override
   public void onScopeForestReset() {}

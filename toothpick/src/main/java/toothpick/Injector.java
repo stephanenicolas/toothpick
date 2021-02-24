@@ -16,6 +16,8 @@
  */
 package toothpick;
 
+import androidx.annotation.NonNull;
+
 /** Allows to inject members of a given instance. An injector works with a scope. */
 public interface Injector {
   /**
@@ -36,5 +38,5 @@ public interface Injector {
    * @param scope the scope in which all dependencies are obtained.
    * @param <T> the type of {@code clazz}.
    */
-  <T> void inject(T obj, Scope scope);
+  <T> void inject(@NonNull T obj, @NonNull Scope scope);
 }

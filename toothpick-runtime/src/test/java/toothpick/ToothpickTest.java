@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import androidx.annotation.NonNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.junit.After;
@@ -464,7 +465,7 @@ public class ToothpickTest {
     private boolean wasApplied = false;
 
     @Override
-    public void configure(Scope scope) {
+    public void configure(@NonNull Scope scope) {
       wasApplied = true;
     }
 

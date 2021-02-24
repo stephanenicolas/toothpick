@@ -17,16 +17,18 @@
 package toothpick.smoothie.provider;
 
 import android.app.Activity;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 @SuppressWarnings("deprecation")
 public class LoaderManagerProvider implements Provider<android.app.LoaderManager> {
   Activity activity;
 
-  public LoaderManagerProvider(Activity activity) {
+  public LoaderManagerProvider(@NonNull Activity activity) {
     this.activity = activity;
   }
 
+  @NonNull
   @Override
   public android.app.LoaderManager get() {
     return activity.getLoaderManager();

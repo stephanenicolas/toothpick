@@ -16,6 +16,8 @@
  */
 package toothpick;
 
+import androidx.annotation.NonNull;
+
 /**
  * Inject member of an instance of a class. All injected members are gonna be obtained in the scope
  * of the current scope. MemberInjector are discovered via the {@code MemberInjectorLocator}.
@@ -32,5 +34,5 @@ public interface MemberInjector<T> {
    * @param t the object in which to inject all dependencies.
    * @param scope the scope in which all dependencies of {@code t} will be looked for.
    */
-  void inject(T t, Scope scope);
+  void inject(@NonNull T t, @NonNull Scope scope);
 }

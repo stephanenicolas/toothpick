@@ -18,15 +18,17 @@ package toothpick.smoothie.provider;
 
 import android.app.Application;
 import android.content.pm.PackageManager;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class PackageManagerProvider implements Provider<PackageManager> {
   Application application;
 
-  public PackageManagerProvider(Application application) {
+  public PackageManagerProvider(@NonNull Application application) {
     this.application = application;
   }
 
+  @NonNull
   @Override
   public PackageManager get() {
     return application.getPackageManager();

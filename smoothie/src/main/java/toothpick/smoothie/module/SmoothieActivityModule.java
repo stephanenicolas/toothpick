@@ -18,6 +18,7 @@ package toothpick.smoothie.module;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import androidx.annotation.NonNull;
 import toothpick.config.Module;
 import toothpick.smoothie.provider.FragmentManagerProvider;
 import toothpick.smoothie.provider.LayoutInflaterProvider;
@@ -25,7 +26,7 @@ import toothpick.smoothie.provider.LoaderManagerProvider;
 
 @SuppressWarnings("deprecation")
 public class SmoothieActivityModule extends Module {
-  public SmoothieActivityModule(Activity activity) {
+  public SmoothieActivityModule(@NonNull Activity activity) {
     bind(Activity.class).toInstance(activity);
     bind(android.app.FragmentManager.class)
         .toProviderInstance(new FragmentManagerProvider(activity));

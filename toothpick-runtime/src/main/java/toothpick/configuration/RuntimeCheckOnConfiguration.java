@@ -18,6 +18,7 @@ package toothpick.configuration;
 
 import static java.lang.String.format;
 
+import androidx.annotation.NonNull;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +46,7 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
    * @param scope the scope where the binding is installed.
    */
   @Override
-  public void checkIllegalBinding(Binding binding, Scope scope) {
+  public void checkIllegalBinding(@NonNull Binding binding, @NonNull Scope scope) {
     Class<?> clazz;
     switch (binding.getMode()) {
       case SIMPLE:
@@ -76,7 +77,7 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
   }
 
   @Override
-  public void checkCyclesStart(Class clazz, String name) {
+  public void checkCyclesStart(@NonNull Class clazz, @NonNull String name) {
     final Pair pair = new Pair(clazz, name);
     final LinkedHashSet<Pair> linkedHashSet = cycleDetectionStack.get();
     if (linkedHashSet.contains(pair)) {
@@ -87,7 +88,7 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
   }
 
   @Override
-  public void checkCyclesEnd(Class clazz, String name) {
+  public void checkCyclesEnd(@NonNull Class clazz, @NonNull String name) {
     cycleDetectionStack.get().remove(new Pair(clazz, name));
   }
 

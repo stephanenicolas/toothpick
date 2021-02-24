@@ -18,6 +18,7 @@ package toothpick;
 
 import static java.lang.String.format;
 
+import androidx.annotation.NonNull;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,6 +97,7 @@ public abstract class ScopeNode implements Scope {
     bindScopeAnnotationIfNameIsScopeAnnotation();
   }
 
+  @NonNull
   @Override
   public Object getName() {
     return name;
@@ -135,9 +137,10 @@ public abstract class ScopeNode implements Scope {
    *     Singleton}, the root scope is always returned. Thus the {@link Singleton} scope annotation
    *     class doesn't need to be supported, it's built-in.
    */
+  @NonNull
   @SuppressWarnings({"unused", "used by generated code"})
   @Override
-  public <A extends Annotation> ScopeNode getParentScope(Class<A> scopeAnnotationClass) {
+  public <A extends Annotation> ScopeNode getParentScope(@NonNull Class<A> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
 
     if (scopeAnnotationClass == Singleton.class) {
@@ -162,6 +165,7 @@ public abstract class ScopeNode implements Scope {
    * @return the root scope of this scope. The root scope is the scope itself if the scope has no
    *     parent. Otherwise, if it has parents, it is the highest parent in the hierarchy of parents.
    */
+  @NonNull
   @SuppressWarnings({"unused", "used by generated code"})
   @Override
   public ScopeNode getRootScope() {
@@ -181,8 +185,9 @@ public abstract class ScopeNode implements Scope {
    *     all root scopes (scopes without parent).
    * @see #getParentScope(Class)
    */
+  @NonNull
   @Override
-  public Scope supportScopeAnnotation(Class<? extends Annotation> scopeAnnotationClass) {
+  public Scope supportScopeAnnotation(@NonNull Class<? extends Annotation> scopeAnnotationClass) {
     checkIsAnnotationScope(scopeAnnotationClass);
     if (scopeAnnotationClass == Singleton.class) {
       throw new IllegalArgumentException(

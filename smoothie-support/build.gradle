@@ -1,9 +1,5 @@
 apply plugin: 'com.android.library'
 
-repositories {
-  google()
-}
-
 android {
   compileSdkVersion 28
 

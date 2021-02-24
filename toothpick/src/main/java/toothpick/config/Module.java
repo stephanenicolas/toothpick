@@ -16,6 +16,7 @@
  */
 package toothpick.config;
 
+import androidx.annotation.NonNull;
 import java.util.HashSet;
 import java.util.Set;
 import toothpick.ProvidesSingleton;
@@ -99,12 +100,14 @@ import toothpick.ProvidesSingleton;
 public class Module {
   private Set<Binding> bindingSet = new HashSet<>();
 
-  public <T> Binding<T>.CanBeNamed bind(Class<T> key) {
+  @NonNull
+  public <T> Binding<T>.CanBeNamed bind(@NonNull Class<T> key) {
     Binding<T> binding = new Binding<>(key);
     bindingSet.add(binding);
     return binding.new CanBeNamed();
   }
 
+  @NonNull
   public Set<Binding> getBindingSet() {
     return bindingSet;
   }

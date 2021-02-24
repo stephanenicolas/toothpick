@@ -18,11 +18,13 @@ package toothpick.smoothie.provider;
 
 import android.os.Handler;
 import android.os.Looper;
+import androidx.annotation.NonNull;
 import javax.inject.Provider;
 
 public class HandlerProvider implements Provider<Handler> {
   public HandlerProvider() {}
 
+  @NonNull
   @Override
   public Handler get() {
     return new Handler(Looper.getMainLooper());

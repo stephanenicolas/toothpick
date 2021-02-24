@@ -16,16 +16,17 @@
  */
 package toothpick.configuration;
 
+import androidx.annotation.NonNull;
 import toothpick.Scope;
 import toothpick.config.Binding;
 
 class RuntimeCheckOffConfiguration implements RuntimeCheckConfiguration {
   @Override
-  public void checkIllegalBinding(Binding binding, Scope scope) {}
+  public void checkIllegalBinding(@NonNull Binding binding, @NonNull Scope scope) {}
 
   @Override
-  public void checkCyclesStart(Class clazz, String name) {}
+  public void checkCyclesStart(@NonNull Class clazz, @NonNull String name) {}
 
   @Override
-  public void checkCyclesEnd(Class clazz, String name) {}
+  public void checkCyclesEnd(@NonNull Class clazz, @NonNull String name) {}
 }

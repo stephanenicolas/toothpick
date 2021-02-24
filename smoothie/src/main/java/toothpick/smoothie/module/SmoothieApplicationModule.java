@@ -60,6 +60,8 @@ import android.os.Vibrator;
 import android.telephony.TelephonyManager;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import toothpick.config.Module;
 import toothpick.smoothie.provider.AccountManagerProvider;
 import toothpick.smoothie.provider.AssetManagerProvider;
@@ -71,11 +73,12 @@ import toothpick.smoothie.provider.SharedPreferencesProvider;
 import toothpick.smoothie.provider.SystemServiceProvider;
 
 public class SmoothieApplicationModule extends Module {
-  public SmoothieApplicationModule(Application application) {
+  public SmoothieApplicationModule(@NonNull Application application) {
     this(application, null);
   }
 
-  public SmoothieApplicationModule(Application application, String preferencesName) {
+  public SmoothieApplicationModule(
+      @NonNull Application application, @Nullable String preferencesName) {
     bind(Application.class).toInstance(application);
     bind(AccountManager.class).toProviderInstance(new AccountManagerProvider(application));
     bind(AssetManager.class).toProviderInstance(new AssetManagerProvider(application));
@@ -89,7 +92,7 @@ public class SmoothieApplicationModule extends Module {
     bindPackageInfo(application);
   }
 
-  private void bindPackageInfo(Application application) {
+  private void bindPackageInfo(@NonNull Application application) {
     final PackageInfo packageInfo;
     try {
       packageInfo = application.getPackageManager().getPackageInfo(application.getPackageName(), 0);
@@ -99,7 +102,7 @@ public class SmoothieApplicationModule extends Module {
     }
   }
 
-  private void bindSystemServices(Application application) {
+  private void bindSystemServices(@NonNull Application application) {
     bindSystemService(application, LocationManager.class, LOCATION_SERVICE);
     bindSystemService(application, WindowManager.class, WINDOW_SERVICE);
     bindSystemService(application, ActivityManager.class, ACTIVITY_SERVICE);

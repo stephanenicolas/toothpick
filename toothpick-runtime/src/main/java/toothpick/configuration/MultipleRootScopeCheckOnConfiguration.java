@@ -16,6 +16,7 @@
  */
 package toothpick.configuration;
 
+import androidx.annotation.NonNull;
 import toothpick.Scope;
 
 /**
@@ -26,7 +27,7 @@ class MultipleRootScopeCheckOnConfiguration implements MultipleRootScopeCheckCon
   private Scope rootScope;
 
   @Override
-  public synchronized void checkMultipleRootScopes(Scope newRootScope) {
+  public synchronized void checkMultipleRootScopes(@NonNull Scope newRootScope) {
     if (rootScope == null && newRootScope != null) {
       rootScope = newRootScope;
       return;

@@ -16,6 +16,7 @@
  */
 package toothpick.config;
 
+import androidx.annotation.NonNull;
 import java.lang.annotation.Annotation;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -33,40 +34,48 @@ public class Binding<T> {
   private boolean isProvidingSingleton;
   private boolean isProvidingReleasable;
 
-  public Binding(Class<T> key) {
+  public Binding(@NonNull Class<T> key) {
     this.key = key;
     mode = Mode.SIMPLE;
   }
 
+  @NonNull
   public CanBeReleasable singleton() {
     isCreatingSingleton = true;
     return new CanBeReleasable();
   }
 
+  @NonNull
   public Mode getMode() {
     return mode;
   }
 
+  @NonNull
   public Class<T> getKey() {
     return key;
   }
 
+  @NonNull
   public Class<? extends T> getImplementationClass() {
     return implementationClass;
   }
 
+  @NonNull
   public T getInstance() {
     return instance;
   }
 
+  @NonNull
   public Provider<? extends T> getProviderInstance() {
     return providerInstance;
   }
 
+  @NonNull
   public Class<? extends Provider<? extends T>> getProviderClass() {
     return providerClass;
   }
 
+  @NonNull
   public String getName() {
     return name;
   }
@@ -100,13 +109,15 @@ public class Binding<T> {
   // *************************
 
   public class CanBeNamed extends CanBeBound {
-    public CanBeBound withName(String name) {
+    @NonNull
+    public CanBeBound withName(@NonNull String name) {
       Binding.this.name = name;
       return new CanBeBound();
     }
 
+    @NonNull
     public <A extends Annotation> CanBeBound withName(
-        Class<A> annotationClassWithQualifierAnnotation) {
+        @NonNull Class<A> annotationClassWithQualifierAnnotation) {
       if (!annotationClassWithQualifierAnnotation.isAnnotationPresent(Qualifier.class)) {
         throw new IllegalArgumentException(
             String.format(
@@ -124,17 +135,19 @@ public class Binding<T> {
       return new CanBeReleasable();
     }
 
-    public void toInstance(T instance) {
+    public void toInstance(@NonNull T instance) {
       Binding.this.instance = instance;
       mode = Mode.INSTANCE;
     }
 
-    public CanBeSingleton to(Class<? extends T> implClass) {
+    @NonNull
+    public CanBeSingleton to(@NonNull Class<? extends T> implClass) {
       Binding.this.implementationClass = implClass;
       mode = Mode.CLASS;
       return new CanBeSingleton();
     }
 
+    @NonNull
     public CanProvideSingletonOrSingleton toProvider(
         Class<? extends Provider<? extends T>> providerClass) {
       Binding.this.providerClass = providerClass;
@@ -142,7 +155,8 @@ public class Binding<T> {
       return new CanProvideSingletonOrSingleton();
     }
 
-    public CanProvideSingleton toProviderInstance(Provider<? extends T> providerInstance) {
+    @NonNull
+    public CanProvideSingleton toProviderInstance(@NonNull Provider<? extends T> providerInstance) {
       Binding.this.providerInstance = providerInstance;
       mode = Mode.PROVIDER_INSTANCE;
       return new CanProvideSingleton();
@@ -151,6 +165,7 @@ public class Binding<T> {
 
   public class CanBeSingleton {
     /** to provide a singleton using the binding's scope and reuse it inside the binding's scope */
+    @NonNull
     public CanBeReleasable singleton() {
       Binding.this.isCreatingSingleton = true;
       return new CanBeReleasable();
@@ -165,6 +180,7 @@ public class Binding<T> {
   }
 
   public class CanProvideSingleton {
+    @NonNull
     public CanProvideReleasable providesSingleton() {
       isProvidingSingleton = true;
       return new CanProvideReleasable();
@@ -178,6 +194,7 @@ public class Binding<T> {
   }
 
   public class CanProvideSingletonOrSingleton extends CanBeSingleton {
+    @NonNull
     public CanProvideReleasableAndThenOnlySingleton providesSingleton() {
       isProvidingSingleton = true;
       return new CanProvideReleasableAndThenOnlySingleton();
@@ -185,6 +202,7 @@ public class Binding<T> {
   }
 
   public class CanProvideReleasableAndThenOnlySingleton {
+    @NonNull
     public CanBeOnlySingleton providesReleasable() {
       Binding.this.isProvidingReleasable = true;
       return new CanBeOnlySingleton();

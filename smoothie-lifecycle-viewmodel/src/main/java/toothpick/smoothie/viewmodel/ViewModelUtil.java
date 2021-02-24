@@ -113,7 +113,7 @@ public class ViewModelUtil {
   private static class TPViewModelFactory implements Factory {
     private Scope scope;
 
-    private TPViewModelFactory(Scope scope) {
+    private TPViewModelFactory(@NonNull Scope scope) {
       this.scope = scope;
     }
 
@@ -132,8 +132,7 @@ public class ViewModelUtil {
   private static class TPViewModel extends ViewModel {
     private Scope scope;
 
-    private TPViewModel(Scope scope) {
-
+    private TPViewModel(@NonNull Scope scope) {
       this.scope = scope;
     }
 
