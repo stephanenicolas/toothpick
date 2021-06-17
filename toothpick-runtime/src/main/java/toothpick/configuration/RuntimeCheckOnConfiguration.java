@@ -29,10 +29,10 @@ import toothpick.config.Binding;
 class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
   // We need a LIFO structure here, but stack is thread safe and we use thread local,
   // so this property is overkill and LinkedHashSet is faster on retrieval.
-  private ThreadLocal<LinkedHashSet<Pair>> cycleDetectionStack =
-      new ThreadLocal<LinkedHashSet<Pair>>() {
+  private ThreadLocal<LinkedHashSet<Entry>> cycleDetectionStack =
+      new ThreadLocal<LinkedHashSet<Entry>>() {
         @Override
-        protected LinkedHashSet<Pair> initialValue() {
+        protected LinkedHashSet<Entry> initialValue() {
           return new LinkedHashSet<>();
         }
       };
@@ -76,52 +76,54 @@ class RuntimeCheckOnConfiguration implements RuntimeCheckConfiguration {
   }
 
   @Override
-  public void checkCyclesStart(Class clazz, String name) {
-    final Pair pair = new Pair(clazz, name);
-    final LinkedHashSet<Pair> linkedHashSet = cycleDetectionStack.get();
-    if (linkedHashSet.contains(pair)) {
-      throw new CyclicDependencyException(Pair.getClassList(linkedHashSet), clazz);
+  public void checkCyclesStart(Scope scope, Class clazz, String name) {
+    final Entry entry = new Entry(scope, clazz, name);
+    final LinkedHashSet<Entry> linkedHashSet = cycleDetectionStack.get();
+    if (linkedHashSet.contains(entry)) {
+      throw new CyclicDependencyException(Entry.getClassList(linkedHashSet), clazz);
     }
 
-    linkedHashSet.add(pair);
+    linkedHashSet.add(entry);
   }
 
   @Override
-  public void checkCyclesEnd(Class clazz, String name) {
-    cycleDetectionStack.get().remove(new Pair(clazz, name));
+  public void checkCyclesEnd(Scope scope, Class clazz, String name) {
+    cycleDetectionStack.get().remove(new Entry(scope, clazz, name));
   }
 
-  private static class Pair {
+  private static class Entry {
+    public final Scope scope;
     public final Class clazz;
     public final String name;
 
-    Pair(Class clazz, String name) {
+    Entry(Scope scope, Class clazz, String name) {
+      this.scope = scope;
       this.clazz = clazz;
       this.name = name;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (!(o instanceof Pair)) {
+      if (!(o instanceof Entry)) {
         return false;
       }
-      Pair p = (Pair) o;
-      return equal(p.clazz, clazz) && equal(p.name, name);
+      Entry p = (Entry) o;
+      return equal(p.scope, scope) && equal(p.clazz, clazz) && equal(p.name, name);
     }
 
     @Override
     public int hashCode() {
-      return (clazz == null ? 0 : clazz.hashCode()) ^ (name == null ? 0 : name.hashCode());
+      return (scope == null ? 0 : scope.hashCode()) ^ (clazz == null ? 0 : clazz.hashCode()) ^ (name == null ? 0 : name.hashCode());
     }
 
     private boolean equal(Object a, Object b) {
       return (a == b) || (a != null && a.equals(b));
     }
 
-    private static List<Class<?>> getClassList(Collection<Pair> pairCollection) {
+    private static List<Class<?>> getClassList(Collection<Entry> entryCollection) {
       List<Class<?>> classList = new ArrayList<>();
-      for (Pair pair : pairCollection) {
-        classList.add(pair.clazz);
+      for (Entry entry : entryCollection) {
+        classList.add(entry.clazz);
       }
       return classList;
     }

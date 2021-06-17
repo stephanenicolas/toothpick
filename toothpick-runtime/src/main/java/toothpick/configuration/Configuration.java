@@ -88,13 +88,13 @@ public class Configuration
   }
 
   @Override
-  public void checkCyclesStart(Class clazz, String name) {
-    runtimeCheckConfiguration.checkCyclesStart(clazz, name);
+  public void checkCyclesStart(Scope scope, Class clazz, String name) {
+    runtimeCheckConfiguration.checkCyclesStart(scope, clazz, name);
   }
 
   @Override
-  public void checkCyclesEnd(Class clazz, String name) {
-    runtimeCheckConfiguration.checkCyclesEnd(clazz, name);
+  public void checkCyclesEnd(Scope scope, Class clazz, String name) {
+    runtimeCheckConfiguration.checkCyclesEnd(scope, clazz, name);
   }
 
   @Override

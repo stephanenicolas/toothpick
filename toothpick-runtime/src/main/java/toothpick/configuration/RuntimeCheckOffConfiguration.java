@@ -24,8 +24,8 @@ class RuntimeCheckOffConfiguration implements RuntimeCheckConfiguration {
   public void checkIllegalBinding(Binding binding, Scope scope) {}
 
   @Override
-  public void checkCyclesStart(Class clazz, String name) {}
+  public void checkCyclesStart(Scope scope, Class clazz, String name) {}
 
   @Override
-  public void checkCyclesEnd(Class clazz, String name) {}
+  public void checkCyclesEnd(Scope scope, Class clazz, String name) {}
 }
