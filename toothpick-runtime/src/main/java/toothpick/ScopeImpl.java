@@ -87,12 +87,12 @@ public class ScopeImpl extends ScopeNode {
   @Override
   public <T> T getInstance(Class<T> clazz, String name) {
     crashIfClosed();
-    ConfigurationHolder.configuration.checkCyclesStart(clazz, name);
+    ConfigurationHolder.configuration.checkCyclesStart(this, clazz, name);
     T t;
     try {
       t = lookupProvider(clazz, name).get(this);
     } finally {
-      ConfigurationHolder.configuration.checkCyclesEnd(clazz, name);
+      ConfigurationHolder.configuration.checkCyclesEnd(this, clazz, name);
     }
     return t;
   }

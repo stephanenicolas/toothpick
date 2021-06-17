@@ -37,7 +37,7 @@ interface RuntimeCheckConfiguration {
    * @param clazz the class to be injected.
    * @param name the name of the required injection.
    */
-  void checkCyclesStart(Class clazz, String name);
+  void checkCyclesStart(Scope scope, Class clazz, String name);
 
   /**
    * Called when the class {@code class} ends being injected using the qualifier {@code name}. Will
@@ -47,5 +47,5 @@ interface RuntimeCheckConfiguration {
    * @param clazz the class to be injected.
    * @param name the name of the required injection.
    */
-  void checkCyclesEnd(Class clazz, String name);
+  void checkCyclesEnd(Scope scope, Class clazz, String name);
 }
