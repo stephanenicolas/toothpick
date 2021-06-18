@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Provider;
 import toothpick.config.Binding;
 import toothpick.config.Module;
@@ -226,9 +228,29 @@ public class ScopeImpl extends ScopeNode {
     }
   }
 
+  private InternalProvider installInternalProviderCyclic(Set<Binding> allBindings, Binding bindingToFind, boolean isTestModule) {
+    InternalProvider provider = getInternalProvider(bindingToFind.getImplementationClass(), bindingToFind.getName(), true);
+    if (provider == null) {
+      for (Binding binding : allBindings) {
+        if (binding.getKey() == bindingToFind.getImplementationClass()) {
+          InternalProvider foundProvider = installInternalProviderCyclic(allBindings, binding, isTestModule);
+          installScopedProvider(bindingToFind.getKey(), bindingToFind.getName(), foundProvider, isTestModule);
+          return foundProvider;
+        }
+      }
+      InternalProvider createdProvider = toProvider(bindingToFind);
+      installScopedProvider(bindingToFind.getKey(), bindingToFind.getName(), createdProvider, isTestModule);
+      return createdProvider;
+    } else {
+      installScopedProvider(bindingToFind.getKey(), bindingToFind.getName(), provider, isTestModule);
+      return provider;
+    }
+  }
+
   @SuppressWarnings("unchecked")
   private void installModule(boolean isTestModule, Module module) {
-    for (Binding binding : module.getBindingSet()) {
+    Set<Binding> bindings = module.getBindingSet();
+    for (Binding binding : bindings) {
       if (binding == null) {
         throw new IllegalStateException("A module can't have a null binding : " + module);
       }
@@ -237,8 +259,7 @@ public class ScopeImpl extends ScopeNode {
       String bindingName = binding.getName();
       try {
         if (isTestModule || getScopedProvider(clazz, bindingName) == null) {
-          InternalProvider provider = toProvider(binding);
-          installScopedProvider(clazz, bindingName, provider, isTestModule);
+          installInternalProviderCyclic(bindings, binding, isTestModule);
         }
       } catch (Exception e) {
         throw new IllegalBindingException(
