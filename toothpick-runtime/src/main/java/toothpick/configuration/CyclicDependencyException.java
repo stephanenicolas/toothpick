@@ -21,7 +21,7 @@ import java.util.List;
 public class CyclicDependencyException extends RuntimeException {
 
   private static final int MARGIN_SIZE = 3;
-  private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  private static final String LINE_SEPARATOR = "\n";
 
   CyclicDependencyException() {}
 
@@ -45,7 +45,7 @@ public class CyclicDependencyException extends RuntimeException {
   CyclicDependencyException(List<Class<?>> path, Class startClass) {
     this(
         String.format(
-            "Class %s creates a cycle:%n%s", startClass.getName(), format(path, startClass)));
+            "Class %s creates a cycle:\n%s", startClass.getName(), format(path, startClass)));
   }
 
   private static String format(List<Class<?>> path, Class startClass) {

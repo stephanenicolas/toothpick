@@ -16,6 +16,7 @@
  */
 package toothpick.concurrency.utils;
 
+import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -24,12 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.ToolProvider;
 
 // from http://stackoverflow.com/a/2320465/693752
 
@@ -94,7 +89,7 @@ public class ClassCreator {
     if (!task.call()) {
       for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
         System.out.format(
-            "Error on line %d in %s%n", diagnostic.getLineNumber(), diagnostic.getSource());
+            "Error on line %d in %s\n", diagnostic.getLineNumber(), diagnostic.getSource());
       }
       return null;
     }
