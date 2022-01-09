@@ -1,3 +1,4 @@
 include ':toothpick-compiler'
+include ':toothpick-compiler-ksp'
 
 rootProject.name = 'toothpick-parent'
