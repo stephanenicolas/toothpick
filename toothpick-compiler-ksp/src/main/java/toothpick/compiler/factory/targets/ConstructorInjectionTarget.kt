@@ -20,7 +20,7 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget
 import javax.lang.model.element.TypeElement
 
 /** Basically all information to create an object / call a constructor of a class.  */
-class ConstructorInjectionTarget(
+data class ConstructorInjectionTarget(
     val builtClass: TypeElement,
     val scopeName: String?,
     val hasSingletonAnnotation: Boolean,
@@ -28,8 +28,7 @@ class ConstructorInjectionTarget(
     val hasProvidesSingletonInScopeAnnotation: Boolean,
     val hasProvidesReleasableAnnotation: Boolean,
     /** true if the class as @Injected members  */
-    val superClassThatNeedsMemberInjection: TypeElement?
-) {
-    val parameters: MutableList<ParamInjectionTarget> = ArrayList()
-    var throwsThrowable = false
-}
+    val superClassThatNeedsMemberInjection: TypeElement?,
+    val parameters: List<ParamInjectionTarget> = emptyList(),
+    val throwsThrowable: Boolean = false
+)

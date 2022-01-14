@@ -37,19 +37,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getInstance(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getInstance(Foo::class.java)
               }
             }
             """
@@ -78,19 +79,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getInstance(Foo.class, "bar");
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getInstance(Foo::class.java, "bar")
               }
             }
             """
@@ -122,19 +124,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getInstance(Foo.class, "test.Bar");
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getInstance(Foo::class.java, "test.Bar")
               }
             }
             """
@@ -164,19 +167,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getInstance(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getInstance(Foo::class.java)
               }
             }
             """
@@ -209,19 +213,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getProvider(Foo.class, "test.Bar");
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getProvider(Foo::class.java, "test.Bar")
               }
             }
             """
@@ -252,19 +257,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getProvider(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getProvider(Foo::class.java)
               }
             }
             """
@@ -297,19 +303,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getInstance(Foo.class, "test.Bar");
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getInstance(Foo::class.java, "test.Bar")
               }
             }
             """
@@ -368,19 +375,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getProvider(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getProvider(Foo::class.java)
               }
             }
             """
@@ -409,19 +417,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getLazy(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getLazy(Foo::class.java)
               }
             }
             """
@@ -450,19 +459,20 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getLazy(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getLazy(Foo::class.java)
               }
             }
             """
@@ -491,20 +501,21 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestFieldInjection__MemberInjector",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestFieldInjection__MemberInjector implements MemberInjector<TestFieldInjection> {
-              @Override
-              public void inject(TestFieldInjection target, Scope scope) {
-                target.foo = scope.getInstance(Foo.class);
-                target.foo2 = scope.getInstance(Foo.class);
+            @Suppress("ClassName")
+            internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getInstance(Foo::class.java)
+                target.foo2 = scope.getInstance(Foo::class.java)
               }
             }
             """
@@ -684,7 +695,7 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestMemberInjection\$InnerClass__MemberInjector",
             """
             package test;
@@ -729,7 +740,7 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestMemberInjection__MemberInjector",
             """
             package test;
@@ -774,7 +785,7 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestMemberInjection__MemberInjector",
             """
             package test;

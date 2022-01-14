@@ -35,56 +35,43 @@ class RelaxedFactoryForClassContainingMethodsTest {
             class Foo {}
            """
         )
-        val expectedSource = expectedJavaSource(
+
+        val expectedSource = expectedKtSource(
             "TestRelaxedFactoryCreationForInjectMethod__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestRelaxedFactoryCreationForInjectMethod__Factory implements Factory<TestRelaxedFactoryCreationForInjectMethod> {
-              private MemberInjector<TestRelaxedFactoryCreationForInjectMethod> memberInjector = new test.TestRelaxedFactoryCreationForInjectMethod__MemberInjector();
+            @Suppress("ClassName")
+            internal class TestRelaxedFactoryCreationForInjectMethod__Factory :
+                Factory<TestRelaxedFactoryCreationForInjectMethod> {
+              private val memberInjector: MemberInjector<TestRelaxedFactoryCreationForInjectMethod> =
+                  TestRelaxedFactoryCreationForInjectMethod__MemberInjector()
             
-              @Override
-              public TestRelaxedFactoryCreationForInjectMethod createInstance(Scope scope) {
-                scope = getTargetScope(scope);
-                TestRelaxedFactoryCreationForInjectMethod testRelaxedFactoryCreationForInjectMethod = new TestRelaxedFactoryCreationForInjectMethod();
-                memberInjector.inject(testRelaxedFactoryCreationForInjectMethod, scope);
-                return testRelaxedFactoryCreationForInjectMethod;
+              public override fun createInstance(scope: Scope): TestRelaxedFactoryCreationForInjectMethod {
+                val scope = getTargetScope(scope)
+                val testRelaxedFactoryCreationForInjectMethod: TestRelaxedFactoryCreationForInjectMethod =
+                    TestRelaxedFactoryCreationForInjectMethod()
+                memberInjector.inject(testRelaxedFactoryCreationForInjectMethod, scope)
+                return testRelaxedFactoryCreationForInjectMethod
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )

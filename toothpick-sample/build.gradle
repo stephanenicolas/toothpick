@@ -2,7 +2,6 @@ buildscript {
   apply from: '../deps.gradle'
   repositories {
     google()
-    jcenter()
   }
   dependencies {
     classpath deps.android_plugin
@@ -58,7 +57,7 @@ android {
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
   maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 

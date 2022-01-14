@@ -18,10 +18,12 @@ package toothpick.compiler.common
 
 import org.jetbrains.annotations.TestOnly
 import toothpick.compiler.common.generators.CodeGenerator
+import toothpick.compiler.common.generators.asElement
+import toothpick.compiler.common.generators.erased
+import toothpick.compiler.common.generators.hasAnnotation
 import toothpick.compiler.common.generators.targets.ParamInjectionTarget
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget
 import java.io.IOException
-import java.io.Writer
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
@@ -57,130 +59,90 @@ abstract class ToothpickProcessor : AbstractProcessor() {
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
 
-    protected fun writeToFile(
-        codeGenerator: CodeGenerator,
-        fileDescription: String?,
-        originatingElement: Element?
-    ): Boolean {
-        var writer: Writer? = null
-        var success = true
-        try {
-            val jfo = filer.createSourceFile(codeGenerator.fqcn, originatingElement)
-            writer = jfo.openWriter()
-            writer.write(codeGenerator.brewJava())
+    protected fun writeToFile(codeGenerator: CodeGenerator, fileDescription: String): Boolean {
+        return try {
+            codeGenerator.brewCode().writeTo(filer)
+            true
         } catch (e: IOException) {
             error("Error writing %s file: %s", fileDescription, e.message)
-            success = false
-        } finally {
-            try {
-                writer?.close()
-            } catch (e: IOException) {
-                error("Error closing %s file: %s", fileDescription, e.message)
-                success = false
-            }
+            false
         }
-        return success
     }
 
-    protected fun error(message: String, vararg args: Any?) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, String.format(message, *args))
-    }
-
-    protected fun error(element: Element?, message: String, vararg args: Any?) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, String.format(message, *args), element)
-    }
-
-    protected fun warning(element: Element?, message: String, vararg args: Any?) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, String.format(message, *args), element)
-    }
-
-    protected fun warning(message: String, vararg args: Any?) {
-        processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, String.format(message, *args))
-    }
-
-    private fun crashOrWarnWhenMethodIsNotPackageVisible(element: Element, message: String) {
-        if (options.crashWhenInjectedMethodIsNotPackageVisible) error(element, message)
-        else warning(element, message)
-    }
-
-    protected fun isValidInjectAnnotatedFieldOrParameter(variableElement: VariableElement): Boolean {
-        val enclosingElement = variableElement.enclosingElement as TypeElement
+    protected fun VariableElement.isValidInjectAnnotatedFieldOrParameter(): Boolean {
+        val enclosingElement = enclosingElement as TypeElement
 
         // Verify modifiers.
-        val modifiers = variableElement.modifiers
+        val modifiers = modifiers
         if (modifiers.contains(Modifier.PRIVATE)) {
             error(
-                variableElement,
+                this,
                 "@Inject annotated fields must be non private : %s#%s",
                 enclosingElement.qualifiedName,
-                variableElement.simpleName
+                simpleName
             )
             return false
         }
 
         // Verify parentScope modifiers.
-        val parentModifiers = enclosingElement.modifiers
-        if (parentModifiers.contains(Modifier.PRIVATE)) {
+        if (enclosingElement.modifiers.contains(Modifier.PRIVATE)) {
             error(
-                variableElement,
+                this,
                 "@Injected fields in class %s. The class must be non private.",
                 enclosingElement.simpleName
             )
             return false
         }
-        return isValidInjectedType(variableElement)
+
+        return isValidInjectedType()
     }
 
-    protected fun isValidInjectAnnotatedMethod(methodElement: ExecutableElement): Boolean {
-        val enclosingElement = methodElement.enclosingElement as TypeElement
+    protected fun ExecutableElement.isValidInjectAnnotatedMethod(): Boolean {
+        val enclosingElement = enclosingElement as TypeElement
 
         // Verify modifiers.
-        val modifiers = methodElement.modifiers
         if (modifiers.contains(Modifier.PRIVATE)) {
             error(
-                methodElement,
+                this,
                 "@Inject annotated methods must not be private : %s#%s",
                 enclosingElement.qualifiedName,
-                methodElement.simpleName
+                simpleName
             )
             return false
         }
 
         // Verify parentScope modifiers.
-        val parentModifiers = enclosingElement.modifiers
-        if (parentModifiers.contains(Modifier.PRIVATE)) {
+        if (enclosingElement.modifiers.contains(Modifier.PRIVATE)) {
             error(
-                methodElement,
+                this,
                 "@Injected fields in class %s. The class must be non private.",
                 enclosingElement.simpleName
             )
             return false
         }
 
-        if (methodElement.parameters.any { paramElement -> !isValidInjectedType(paramElement) }) {
+        if (parameters.any { paramElement -> !paramElement.isValidInjectedType() }) {
             return false
         }
 
         if (modifiers.contains(Modifier.PUBLIC) || modifiers.contains(Modifier.PROTECTED)) {
-            if (!hasWarningSuppressed(methodElement, SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
+            if (!hasWarningSuppressed(SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
                 crashOrWarnWhenMethodIsNotPackageVisible(
-                    methodElement, String.format(
-                        "@Inject annotated methods should have package visibility: %s#%s",
-                        enclosingElement.qualifiedName, methodElement.simpleName
-                    )
+                    this,
+                    "@Inject annotated methods should have package visibility: ${enclosingElement.qualifiedName}#$simpleName"
                 )
             }
         }
         return true
     }
 
-    protected fun isValidInjectedType(injectedTypeElement: VariableElement): Boolean {
-        return if (!isValidInjectedElementKind(injectedTypeElement)) false
-        else !isProviderOrLazy(injectedTypeElement) || isValidProviderOrLazy(injectedTypeElement)
+    protected fun VariableElement.isValidInjectedType(): Boolean {
+        return if (!isValidInjectedElementKind()) false
+        else !isProviderOrLazy() || isValidProviderOrLazy()
     }
 
-    private fun isValidInjectedElementKind(injectedTypeElement: VariableElement): Boolean {
-        val typeElement: Element? = typeUtils.asElement(injectedTypeElement.asType())
+    private fun VariableElement.isValidInjectedElementKind(): Boolean {
+        val typeElement: Element? = asType().asElement(typeUtils)
 
         // typeElement can be null for primitives.
         // https://github.com/stephanenicolas/toothpick/issues/261
@@ -191,16 +153,16 @@ abstract class ToothpickProcessor : AbstractProcessor() {
         ) {
             // find the class containing the element
             // the element can be a field or a parameter
-            var enclosingElement = injectedTypeElement.enclosingElement
-            val typeName = typeElement?.toString() ?: injectedTypeElement.asType().toString()
+            var enclosingElement = enclosingElement
+            val typeName = typeElement?.toString() ?: asType().toString()
 
             when (enclosingElement) {
                 is TypeElement -> {
                     error(
-                        injectedTypeElement,
+                        this,
                         "Field %s#%s is of type %s which is not supported by Toothpick.",
                         enclosingElement.qualifiedName,
-                        injectedTypeElement.simpleName,
+                        simpleName,
                         typeName
                     )
                 }
@@ -208,9 +170,9 @@ abstract class ToothpickProcessor : AbstractProcessor() {
                     val methodOrConstructorElement = enclosingElement
                     enclosingElement = enclosingElement.enclosingElement
                     error(
-                        injectedTypeElement,
+                        this,
                         "Parameter %s in method/constructor %s#%s is of type %s which is not supported by Toothpick.",
-                        injectedTypeElement.simpleName,
+                        simpleName,
                         (enclosingElement as TypeElement).qualifiedName,
                         methodOrConstructorElement.simpleName,
                         typeName
@@ -222,25 +184,25 @@ abstract class ToothpickProcessor : AbstractProcessor() {
         return true
     }
 
-    private fun isValidProviderOrLazy(element: Element): Boolean {
-        val declaredType = element.asType() as DeclaredType
+    private fun Element.isValidProviderOrLazy(): Boolean {
+        val declaredType = asType() as DeclaredType
 
         // Contains type parameter
         if (declaredType.typeArguments.isEmpty()) {
-            val enclosingElement = element.enclosingElement
+            val enclosingElement = enclosingElement
             if (enclosingElement is TypeElement) {
                 error(
-                    element,
+                    this,
                     "Field %s#%s is not a valid %s.",
                     enclosingElement.qualifiedName,
-                    element.simpleName,
+                    simpleName,
                     declaredType
                 )
             } else {
                 error(
-                    element,
+                    this,
                     "Parameter %s in method/constructor %s#%s is not a valid %s.",
-                    element.simpleName,
+                    simpleName,
                     (enclosingElement.enclosingElement as TypeElement).qualifiedName,
                     enclosingElement.simpleName,
                     declaredType
@@ -248,15 +210,16 @@ abstract class ToothpickProcessor : AbstractProcessor() {
             }
             return false
         }
+
         val firstParameterTypeMirror = declaredType.typeArguments[0]
         if (firstParameterTypeMirror.kind == TypeKind.DECLARED) {
             val size = (firstParameterTypeMirror as DeclaredType).typeArguments.size
             if (size != 0) {
-                val enclosingElement = element.enclosingElement
+                val enclosingElement = enclosingElement
                 error(
-                    element,
+                    this,
                     "Lazy/Provider %s is not a valid in %s. Lazy/Provider cannot be used on generic types.",
-                    element.simpleName,
+                    simpleName,
                     enclosingElement.simpleName
                 )
                 return false
@@ -265,36 +228,19 @@ abstract class ToothpickProcessor : AbstractProcessor() {
         return true
     }
 
-    protected fun getParamInjectionTargetList(executableElement: ExecutableElement): List<ParamInjectionTarget> {
-        return executableElement.parameters.map { variableElement ->
-            createFieldOrParamInjectionTarget(variableElement)
-        }
-    }
+    protected fun ExecutableElement.getParamInjectionTargetList(): List<ParamInjectionTarget> =
+        parameters.map { variableElement -> variableElement.createFieldOrParamInjectionTarget() }
 
-    protected fun getExceptionTypes(methodElement: ExecutableElement): List<TypeElement> {
-        val exceptionClassNames: MutableList<TypeElement> = ArrayList()
-        for (thrownTypeMirror in methodElement.thrownTypes) {
-            val thrownDeclaredType = thrownTypeMirror as DeclaredType
-            val thrownType = thrownDeclaredType.asElement() as TypeElement
-            exceptionClassNames.add(thrownType)
-        }
-        return exceptionClassNames
-    }
+    protected fun ExecutableElement.getExceptionTypes(): List<TypeElement> =
+        thrownTypes.map { type -> (type as DeclaredType).asElement() as TypeElement }
 
-    protected fun createFieldOrParamInjectionTarget(
-        variableElement: VariableElement
-    ): FieldInjectionTarget {
-        val memberTypeElement = typeUtils.asElement(variableElement.asType()) as TypeElement
-        val memberName = variableElement.simpleName.toString()
-        val kind = getParamInjectionTargetKind(variableElement)
-        val kindParameterTypeElement = getInjectedType(variableElement)
-        val name = findQualifierName(variableElement)
+    protected fun VariableElement.createFieldOrParamInjectionTarget(): FieldInjectionTarget {
         return FieldInjectionTarget(
-            memberClass = memberTypeElement,
-            memberName = memberName,
-            kind = kind,
-            kindParamClass = kindParameterTypeElement,
-            name = name
+            memberClass = asType().asElement(typeUtils) as TypeElement,
+            memberName = simpleName.toString(),
+            kind = getParamInjectionTargetKind(),
+            kindParamClass = getInjectedType(),
+            name = findQualifierName()
         )
     }
 
@@ -305,43 +251,45 @@ abstract class ToothpickProcessor : AbstractProcessor() {
      * @param variableElement the field or variable element. NOT his type !
      * @return the type has defined above.
      */
-    private fun getInjectedType(variableElement: VariableElement): TypeElement {
-        return when (getParamInjectionTargetKind(variableElement)) {
-            ParamInjectionTarget.Kind.INSTANCE -> {
-                typeUtils.asElement(typeUtils.erasure(variableElement.asType())) as TypeElement
-            }
-            else -> getKindParameter(variableElement)
+    private fun VariableElement.getInjectedType(): TypeElement {
+        return when (getParamInjectionTargetKind()) {
+            ParamInjectionTarget.Kind.INSTANCE ->
+                asType()
+                    .erased(typeUtils)
+                    .asElement(typeUtils)
+                    as TypeElement
+            else -> getKindParameter()
         }
     }
 
-    protected fun isExcludedByFilters(typeElement: TypeElement): Boolean {
-        val typeElementName = typeElement.qualifiedName.toString()
-        for (exclude in options.excludes.toTypedArray()) {
-            val regEx = exclude.toRegex()
-            if (typeElementName.matches(regEx)) {
-                warning(
-                    typeElement,
-                    "The class %s was excluded by filters set at the annotation processor level. "
-                        + "No factory will be generated by toothpick.",
-                    typeElement.qualifiedName
-                )
-                return true
+    protected fun TypeElement.isExcludedByFilters(): Boolean {
+        val typeElementName = qualifiedName.toString()
+        return options.excludes
+            .map { exclude -> exclude.toRegex() }
+            .any { exclude -> typeElementName.matches(exclude) }
+            .also { isExcluded ->
+                if (isExcluded) {
+                    warning(
+                        this,
+                        "The class %s was excluded by filters set at the annotation processor level. "
+                            + "No factory will be generated by toothpick.",
+                        qualifiedName
+                    )
+                }
             }
-        }
-        return false
     }
 
     // overrides are simpler in this case as methods can only be package or protected.
     // a method with the same name in the type hierarchy would necessarily mean that
     // the {@code methodElement} would be an override of this method.
-    protected fun isOverride(typeElement: TypeElement, methodElement: ExecutableElement): Boolean {
-        var currentTypeElement: TypeElement? = typeElement
+    protected fun TypeElement.isOverride(methodElement: ExecutableElement): Boolean {
+        var currentTypeElement: TypeElement? = this
         do {
-            if (currentTypeElement !== typeElement) {
+            if (currentTypeElement !== this) {
                 val enclosedElements = currentTypeElement!!.enclosedElements
                 for (enclosedElement in enclosedElements) {
                     if (enclosedElement.simpleName == methodElement.simpleName
-                        && enclosedElement.getAnnotation(Inject::class.java) != null
+                        && enclosedElement.hasAnnotation<Inject>()
                         && enclosedElement.kind == ElementKind.METHOD
                     ) {
                         return true
@@ -359,18 +307,15 @@ abstract class ToothpickProcessor : AbstractProcessor() {
         return false
     }
 
-    protected fun getMostDirectSuperClassWithInjectedMembers(
-        typeElement: TypeElement,
-        onlyParents: Boolean
-    ): TypeElement? {
-        var currentTypeElement: TypeElement? = typeElement
+    protected fun TypeElement.getMostDirectSuperClassWithInjectedMembers(onlyParents: Boolean): TypeElement? {
+        var currentTypeElement: TypeElement? = this
         do {
-            if (currentTypeElement !== typeElement || !onlyParents) {
+            if (currentTypeElement !== this || !onlyParents) {
                 val enclosedElements = currentTypeElement!!.enclosedElements
                 for (enclosedElement in enclosedElements) {
-                    if ((enclosedElement.getAnnotation(Inject::class.java) != null
+                    if ((enclosedElement.hasAnnotation<Inject>()
                             && enclosedElement.kind == ElementKind.FIELD)
-                        || (enclosedElement.getAnnotation(Inject::class.java) != null
+                        || (enclosedElement.hasAnnotation<Inject>()
                             && enclosedElement.kind == ElementKind.METHOD)
                     ) {
                         return currentTypeElement
@@ -410,8 +355,8 @@ abstract class ToothpickProcessor : AbstractProcessor() {
      * @param warningSuppressString the value of the SuppressWarning annotation.
      * @return true is the injectable warning is suppressed, false otherwise.
      */
-    protected fun hasWarningSuppressed(element: Element, warningSuppressString: String?): Boolean {
-        return element.getAnnotation(SuppressWarnings::class.java)
+    protected fun Element.hasWarningSuppressed(warningSuppressString: String?): Boolean {
+        return getAnnotation(SuppressWarnings::class.java)
             ?.let { suppressWarnings ->
                 suppressWarnings.value.any { value ->
                     value.equals(warningSuppressString, ignoreCase = true)
@@ -426,19 +371,19 @@ abstract class ToothpickProcessor : AbstractProcessor() {
      * @param element the element for which a qualifier is to be found.
      * @return the name of this element or null if it has no qualifier annotations.
      */
-    private fun findQualifierName(element: VariableElement): String? {
-        if (element.annotationMirrors.isEmpty()) return null
+    private fun VariableElement.findQualifierName(): String? {
+        if (annotationMirrors.isEmpty()) return null
 
         var name: String? = null
-        for (annotationMirror in element.annotationMirrors) {
+        for (annotationMirror in annotationMirrors) {
             val annotationTypeElement = annotationMirror.annotationType.asElement() as TypeElement
             when {
-                isSameType(annotationTypeElement, "javax.inject.Named") -> {
-                    checkIfAlreadyHasName(element, name)
-                    name = getValueOfAnnotation(annotationMirror)
+                annotationTypeElement.isSameType("javax.inject.Named") -> {
+                    checkIfAlreadyHasName(name)
+                    name = annotationMirror.getValueOfAnnotation()
                 }
-                annotationTypeElement.getAnnotation(Qualifier::class.java) != null -> {
-                    checkIfAlreadyHasName(element, name)
+                annotationTypeElement.hasAnnotation<Qualifier>() -> {
+                    checkIfAlreadyHasName(name)
                     name = annotationTypeElement.qualifiedName.toString()
                 }
             }
@@ -446,57 +391,57 @@ abstract class ToothpickProcessor : AbstractProcessor() {
         return name
     }
 
-    private fun isSameType(typeElement: TypeElement, typeName: String): Boolean {
-        return isSameType(typeElement.asType(), typeName)
+    private fun TypeElement.isSameType(typeName: String): Boolean {
+        return asType().isSameType(typeName)
     }
 
-    private fun isSameType(typeMirror: TypeMirror, typeName: String): Boolean {
+    private fun TypeMirror.isSameType(typeName: String): Boolean {
         return typeUtils.isSameType(
-            typeUtils.erasure(typeMirror),
+            typeUtils.erasure(this),
             typeUtils.erasure(elementUtils.getTypeElement(typeName).asType())
         )
     }
 
-    private fun checkIfAlreadyHasName(element: VariableElement, name: Any?) {
+    private fun VariableElement.checkIfAlreadyHasName(name: Any?) {
         if (name != null) {
-            error(element, "Only one javax.inject.Qualifier annotation is allowed to name injections.")
+            error(this, "Only one javax.inject.Qualifier annotation is allowed to name injections.")
         }
     }
 
-    private fun getValueOfAnnotation(annotationMirror: AnnotationMirror): String? {
-        return annotationMirror.elementValues
+    private fun AnnotationMirror.getValueOfAnnotation(): String? {
+        return elementValues
             .toList()
             .firstOrNull { (key, _) -> key.simpleName.contentEquals("value") }
             ?.second
             ?.toString()
-            ?.replace("\"".toRegex(), "")
+            ?.replace("\"", "")
     }
 
-    private fun isProviderOrLazy(element: Element): Boolean {
-        val kind = getParamInjectionTargetKind(element)
+    private fun Element.isProviderOrLazy(): Boolean {
+        val kind = getParamInjectionTargetKind()
         return kind === ParamInjectionTarget.Kind.PROVIDER || kind === ParamInjectionTarget.Kind.LAZY
     }
 
-    private fun getParamInjectionTargetKind(variableElement: Element): ParamInjectionTarget.Kind? {
-        val elementTypeMirror = variableElement.asType()
+    private fun Element.getParamInjectionTargetKind(): ParamInjectionTarget.Kind? {
+        val elementTypeMirror = this.asType()
         return when {
-            isSameType(elementTypeMirror, "javax.inject.Provider") -> ParamInjectionTarget.Kind.PROVIDER
-            isSameType(elementTypeMirror, "toothpick.Lazy") -> ParamInjectionTarget.Kind.LAZY
+            elementTypeMirror.isSameType("javax.inject.Provider") -> ParamInjectionTarget.Kind.PROVIDER
+            elementTypeMirror.isSameType("toothpick.Lazy") -> ParamInjectionTarget.Kind.LAZY
             else -> {
-                val typeElement = typeUtils.asElement(variableElement.asType())
+                val typeElement = elementTypeMirror.asElement(typeUtils)!!
                 if (typeElement.kind != ElementKind.CLASS
                     && typeElement.kind != ElementKind.INTERFACE
                     && typeElement.kind != ElementKind.ENUM
                 ) {
-                    var enclosingElement = variableElement.enclosingElement
+                    var enclosingElement = this.enclosingElement
                     while (enclosingElement !is TypeElement) {
                         enclosingElement = enclosingElement.enclosingElement
                     }
                     error(
-                        variableElement,
+                        this,
                         "Field %s#%s is of type %s which is not supported by Toothpick.",
                         enclosingElement.qualifiedName,
-                        variableElement.simpleName,
+                        simpleName,
                         typeElement
                     )
                     return null
@@ -506,10 +451,31 @@ abstract class ToothpickProcessor : AbstractProcessor() {
         }
     }
 
-    private fun getKindParameter(element: Element): TypeElement {
-        val elementTypeMirror = element.asType()
+    private fun Element.getKindParameter(): TypeElement {
+        val elementTypeMirror = asType()
         val firstParameterTypeMirror = (elementTypeMirror as DeclaredType).typeArguments[0]
-        return typeUtils.asElement(typeUtils.erasure(firstParameterTypeMirror)) as TypeElement
+        return firstParameterTypeMirror.erased(typeUtils).asElement(typeUtils) as TypeElement
+    }
+
+    protected fun error(message: String, vararg args: Any?) {
+        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, String.format(message, *args))
+    }
+
+    protected fun error(element: Element?, message: String, vararg args: Any?) {
+        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, String.format(message, *args), element)
+    }
+
+    protected fun warning(element: Element?, message: String, vararg args: Any?) {
+        processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, String.format(message, *args), element)
+    }
+
+    protected fun warning(message: String, vararg args: Any?) {
+        processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, String.format(message, *args))
+    }
+
+    private fun crashOrWarnWhenMethodIsNotPackageVisible(element: Element, message: String) {
+        if (options.crashWhenInjectedMethodIsNotPackageVisible) error(element, message)
+        else warning(element, message)
     }
 
     @TestOnly

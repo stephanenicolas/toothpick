@@ -2,7 +2,7 @@ buildscript {
   apply from: 'deps.gradle'
   repositories {
     google()
-    jcenter()
+    mavenCentral()
   }
   dependencies {
     classpath deps.android_plugin
@@ -17,7 +17,7 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 //from https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac
@@ -80,7 +80,7 @@ subprojects { project ->
   version = VERSION_NAME
 
   repositories {
-    jcenter()
+    mavenCentral()
   }
 
   apply plugin: 'jacoco'

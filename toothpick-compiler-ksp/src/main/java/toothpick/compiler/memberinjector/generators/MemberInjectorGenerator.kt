@@ -16,13 +16,13 @@
  */
 package toothpick.compiler.memberinjector.generators
 
-import com.squareup.javapoet.*
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import toothpick.MemberInjector
 import toothpick.Scope
-import toothpick.compiler.common.generators.CodeGenerator
+import toothpick.compiler.common.generators.*
 import toothpick.compiler.memberinjector.targets.FieldInjectionTarget
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget
-import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Types
 
@@ -31,69 +31,74 @@ import javax.lang.model.util.Types
  * Typically a [MemberInjector] is created for a class a soon as it contains an [ ] annotated field or method.
  */
 class MemberInjectorGenerator(
-    private val targetClass: TypeElement,
+    val targetClass: TypeElement,
     private val superClassThatNeedsInjection: TypeElement?,
     private val fieldInjectionTargetList: List<FieldInjectionTarget>?,
     private val methodInjectionTargetList: List<MethodInjectionTarget>?,
-    types: Types
-) : CodeGenerator(types) {
+    private val typeUtil: Types
+) : CodeGenerator {
 
     init {
-        require(!(fieldInjectionTargetList == null && methodInjectionTargetList == null)) {
+        require(fieldInjectionTargetList != null || methodInjectionTargetList != null) {
             "At least one memberInjectorInjectionTarget is needed."
         }
     }
 
-    override fun brewJava(): String {
+    private val targetMemberInjectorClassName: ClassName = targetClass.asClassName().memberInjectorClassName
+    override val fqcn: String = targetMemberInjectorClassName.toString()
+
+    override fun brewCode(): FileSpec {
         // Interface to implement
-        val className = ClassName.get(targetClass)
-        val memberInjectorInterfaceParameterizedTypeName =
-            ParameterizedTypeName.get(ClassName.get(MemberInjector::class.java), className)
+        val className = targetClass.asClassName()
 
         // Build class
-        val scopeMemberTypeSpec =
-            TypeSpec.classBuilder(getGeneratedSimpleClassName(targetClass) + MEMBER_INJECTOR_SUFFIX)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(memberInjectorInterfaceParameterizedTypeName)
+        return FileSpec.get(
+            packageName = className.packageName,
+            TypeSpec.classBuilder(targetMemberInjectorClassName)
+                .addModifiers(KModifier.INTERNAL)
+                .addSuperinterface(
+                    MemberInjector::class.asClassName().parameterizedBy(className)
+                )
+                .addAnnotation(
+                    AnnotationSpec.builder(Suppress::class)
+                        .addMember("%S", "ClassName")
+                        .build()
+                )
                 .emitSuperMemberInjectorFieldIfNeeded()
                 .emitInjectMethod(fieldInjectionTargetList, methodInjectionTargetList)
-
-        return JavaFile.builder(className.packageName(), scopeMemberTypeSpec.build())
-            .build()
-            .toString()
+                .build()
+        )
     }
 
     private fun TypeSpec.Builder.emitSuperMemberInjectorFieldIfNeeded(): TypeSpec.Builder = apply {
-        if (superClassThatNeedsInjection != null) {
-            addField(
-                // TODO use proper typing here
-                FieldSpec.builder(
-                    ParameterizedTypeName.get(
-                        ClassName.get(MemberInjector::class.java),
-                        TypeName.get(typeUtil.erasure(superClassThatNeedsInjection.asType()))
-                    ),
-                    "superMemberInjector",
-                    Modifier.PRIVATE
-                )
-                    .initializer(
-                        "new \$L__MemberInjector()",
-                        getGeneratedFQNClassName(superClassThatNeedsInjection)
-                    )
-                    .build()
-            )
+        if (superClassThatNeedsInjection == null) {
+            return this
         }
+
+        addProperty(
+            // TODO use proper typing here
+            PropertySpec.builder(
+                "superMemberInjector",
+                MemberInjector::class.asClassName()
+                    .parameterizedBy(
+                        superClassThatNeedsInjection.asType().erased(typeUtil).asTypeName()
+                    ),
+                KModifier.PRIVATE
+            )
+                .initializer("%T()", superClassThatNeedsInjection.asClassName())
+                .build()
+        )
     }
 
     private fun TypeSpec.Builder.emitInjectMethod(
         fieldInjectionTargetList: List<FieldInjectionTarget>?,
         methodInjectionTargetList: List<MethodInjectionTarget>?
     ): TypeSpec.Builder = apply {
-        addMethod(
-            MethodSpec.methodBuilder("inject")
-                .addAnnotation(Override::class.java)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.get(targetClass), "target")
-                .addParameter(ClassName.get(Scope::class.java), "scope")
+        addFunction(
+            FunSpec.builder("inject")
+                .addModifiers(KModifier.OVERRIDE)
+                .addParameter("target", targetClass.asClassName())
+                .addParameter("scope", Scope::class)
                 .apply {
                     if (superClassThatNeedsInjection != null) {
                         addStatement("superMemberInjector.inject(target, scope)")
@@ -105,79 +110,65 @@ class MemberInjectorGenerator(
         )
     }
 
-    private fun MethodSpec.Builder.emitInjectMethods(
+    private fun FunSpec.Builder.emitInjectMethods(
         methodInjectionTargetList: List<MethodInjectionTarget>?
-    ): MethodSpec.Builder = apply {
-        if (methodInjectionTargetList != null) {
-            var counter = 1
-            for (methodInjectionTarget in methodInjectionTargetList) {
-                if (methodInjectionTarget.isOverride) {
-                    continue
-                }
-                val injectedMethodCallStatement = StringBuilder()
-                injectedMethodCallStatement.append("target.")
-                injectedMethodCallStatement.append(methodInjectionTarget.methodName)
-                injectedMethodCallStatement.append("(")
-                var prefix = ""
-                for (paramInjectionTarget in methodInjectionTarget.parameters) {
-                    val invokeScopeGetMethodWithNameCodeBlock =
-                        getInvokeScopeGetMethodWithNameCodeBlock(paramInjectionTarget)
-                    val paramName = "param" + counter++
-                    addCode(
-                        "\$T \$L = scope.", getParamType(paramInjectionTarget), paramName
-                    )
-                    addCode(invokeScopeGetMethodWithNameCodeBlock)
-                    addCode(";")
-                    addCode(LINE_SEPARATOR)
-                    injectedMethodCallStatement.append(prefix)
-                    injectedMethodCallStatement.append(paramName)
-                    prefix = ", "
-                }
+    ): FunSpec.Builder = apply {
+        methodInjectionTargetList
+            ?.filterNot { it.isOverride }
+            ?.forEach { methodInjectionTarget ->
+                methodInjectionTarget.parameters
+                    .forEachIndexed { paramIndex, paramInjectionTarget ->
+                        addStatement(
+                            "val %N: %T = scope.%L",
+                            "param${paramIndex + 1}",
+                            paramInjectionTarget.getParamType(typeUtil),
+                            paramInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock()
+                        )
+                    }
 
-                injectedMethodCallStatement.append(")")
 
-                val isMethodThrowingExceptions = !methodInjectionTarget.exceptionTypes.isEmpty()
+                val isMethodThrowingExceptions = methodInjectionTarget.exceptionTypes.isNotEmpty()
                 if (isMethodThrowingExceptions) {
                     beginControlFlow("try")
                 }
 
-                addStatement(injectedMethodCallStatement.toString())
+                addStatement(
+                    "target.%N(%L)",
+                    methodInjectionTarget.methodName,
+                    List(methodInjectionTarget.parameters.size) { paramIndex -> "param${paramIndex + 1}" }
+                        .joinToString(", ")
+                )
 
                 if (isMethodThrowingExceptions) {
-                    var exceptionCounter = 1
-                    for (exceptionType in methodInjectionTarget.exceptionTypes) {
-                        nextControlFlow("catch (\$T e\$L)", exceptionType, exceptionCounter)
-                        addStatement(
-                            "throw new \$T(e\$L)", RuntimeException::class.java, exceptionCounter
+                    methodInjectionTarget.exceptionTypes.forEachIndexed { exceptionCounter, exceptionType ->
+                        val exceptionName = "e${exceptionCounter + 1}"
+                        nextControlFlow(
+                            "catch (%N: %T)",
+                            exceptionName,
+                            exceptionType
                         )
-                        exceptionCounter++
+
+                        addStatement(
+                            "throw %T(%N)",
+                            RuntimeException::class,
+                            exceptionName
+                        )
                     }
+
                     endControlFlow()
                 }
             }
-        }
     }
 
-    private fun MethodSpec.Builder.emitInjectFields(
+    private fun FunSpec.Builder.emitInjectFields(
         fieldInjectionTargetList: List<FieldInjectionTarget>?
-    ): MethodSpec.Builder = apply {
-        if (fieldInjectionTargetList != null) {
-            for (memberInjectionTarget in fieldInjectionTargetList) {
-                val invokeScopeGetMethodWithNameCodeBlock =
-                    getInvokeScopeGetMethodWithNameCodeBlock(memberInjectionTarget)
-
-                addCode("target.\$L = scope.", memberInjectionTarget.memberName)
-                addCode(invokeScopeGetMethodWithNameCodeBlock)
-                addCode(";")
-                addCode(LINE_SEPARATOR)
-            }
+    ): FunSpec.Builder = apply {
+        fieldInjectionTargetList?.forEach { memberInjectionTarget ->
+            addStatement(
+                "target.%N = scope.%L",
+                memberInjectionTarget.memberName,
+                memberInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock()
+            )
         }
-    }
-
-    override val fqcn: String
-        get() = getGeneratedFQNClassName(targetClass) + MEMBER_INJECTOR_SUFFIX
-
-    companion object {
-        private const val MEMBER_INJECTOR_SUFFIX = "__MemberInjector"
     }
 }

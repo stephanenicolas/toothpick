@@ -37,51 +37,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestEmptyConstructor__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {
-              @Override
-              public TestEmptyConstructor createInstance(Scope scope) {
-                TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();
-                return testEmptyConstructor;
+            @Suppress("ClassName")
+            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+              public override fun createInstance(scope: Scope): TestEmptyConstructor {
+                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                return testEmptyConstructor
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -106,51 +89,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestEmptyConstructor__Factory",
             """
-            package test;
-
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            package test
             
-            public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {
-              @Override
-              public TestEmptyConstructor createInstance(Scope scope) {
-                TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();
-                return testEmptyConstructor;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
+            
+            @Suppress("ClassName")
+            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+              public override fun createInstance(scope: Scope): TestEmptyConstructor {
+                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                return testEmptyConstructor
               }
-
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
-
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
-
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
-
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
-
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
-
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+            
+              public override fun getTargetScope(scope: Scope): Scope = scope
+            
+              public override fun hasScopeAnnotation(): Boolean = false
+            
+              public override fun hasSingletonAnnotation(): Boolean = false
+            
+              public override fun hasReleasableAnnotation(): Boolean = false
+            
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
+            
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -175,51 +141,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestEmptyConstructor__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {
-              @Override
-              public TestEmptyConstructor createInstance(Scope scope) {
-                TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();
-                return testEmptyConstructor;
+            @Suppress("ClassName")
+            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+              public override fun createInstance(scope: Scope): TestEmptyConstructor {
+                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                return testEmptyConstructor
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -292,7 +241,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "Wrapper\$TestConstructorInProtectedClass__Factory",
             """
             package test;
@@ -361,51 +310,35 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestConstructorInPackageClass__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class TestConstructorInPackageClass__Factory implements Factory<TestConstructorInPackageClass> {
-              @Override
-              public TestConstructorInPackageClass createInstance(Scope scope) {
-                TestConstructorInPackageClass testConstructorInPackageClass = new TestConstructorInPackageClass();
-                return testConstructorInPackageClass;
+            @Suppress("ClassName")
+            internal class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
+              public override fun createInstance(scope: Scope): TestConstructorInPackageClass {
+                val testConstructorInPackageClass: TestConstructorInPackageClass =
+                    TestConstructorInPackageClass()
+                return testConstructorInPackageClass
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -454,51 +387,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "Test2Constructors__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class Test2Constructors__Factory implements Factory<Test2Constructors> {
-              @Override
-              public Test2Constructors createInstance(Scope scope) {
-                Test2Constructors test2Constructors = new Test2Constructors();
-                return test2Constructors;
+            @Suppress("ClassName")
+            internal class Test2Constructors__Factory : Factory<Test2Constructors> {
+              public override fun createInstance(scope: Scope): Test2Constructors {
+                val test2Constructors: Test2Constructors = Test2Constructors()
+                return test2Constructors
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -524,7 +440,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestAClassThatNeedsInjection__Factory",
             """
             package test;
@@ -601,7 +517,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestAInnerClassThatNeedsInjection\$InnerClass__Factory",
             """
             package test;
@@ -679,7 +595,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestAClassThatNeedsInjection__Factory",
             """
             package test;
@@ -754,7 +670,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestAClassThatNeedsInjection__Factory",
             """
             package test;
@@ -828,7 +744,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -903,7 +819,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -979,7 +895,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -1101,7 +1017,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -1243,7 +1159,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestClassConstructorThrowingException__Factory",
             """
             package test;
@@ -1321,7 +1237,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -1396,51 +1312,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestEmptyConstructor__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {
-              @Override
-              public TestEmptyConstructor createInstance(Scope scope) {
-                TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();
-                return testEmptyConstructor;
+            @Suppress("ClassName")
+            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+              public override fun createInstance(scope: Scope): TestEmptyConstructor {
+                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                return testEmptyConstructor
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope.getRootScope();
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope.rootScope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return true;
-              }
+              public override fun hasScopeAnnotation(): Boolean = true
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return true;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = true
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -1473,7 +1372,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -1553,51 +1452,35 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestEmptyConstructor__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class TestEmptyConstructor__Factory implements Factory<TestEmptyConstructor> {
-              @Override
-              public TestEmptyConstructor createInstance(Scope scope) {
-                TestEmptyConstructor testEmptyConstructor = new TestEmptyConstructor();
-                return testEmptyConstructor;
+            @Suppress("ClassName")
+            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+              public override fun createInstance(scope: Scope): TestEmptyConstructor {
+                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                return testEmptyConstructor
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope.getParentScope(test.CustomScope.class);
-              }
+              public override fun getTargetScope(scope: Scope): Scope =
+                  scope.getParentScope(test.CustomScope::class.java)
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return true;
-              }
+              public override fun hasScopeAnnotation(): Boolean = true
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
@@ -1631,7 +1514,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -1708,7 +1591,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;

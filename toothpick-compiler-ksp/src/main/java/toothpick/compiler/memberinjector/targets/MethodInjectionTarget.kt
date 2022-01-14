@@ -20,14 +20,10 @@ import toothpick.compiler.common.generators.targets.ParamInjectionTarget
 import javax.lang.model.element.TypeElement
 
 /** Basically all information to create an object / call a constructor of a class.  */
-class MethodInjectionTarget(
+data class MethodInjectionTarget(
     val enclosingClass: TypeElement,
     val methodName: String,
-    val isOverride: Boolean
-) {
-    @JvmField
-    val parameters: MutableList<ParamInjectionTarget> = ArrayList()
-
-    @JvmField
-    val exceptionTypes: MutableList<TypeElement> = ArrayList()
-}
+    val isOverride: Boolean,
+    val parameters: List<ParamInjectionTarget>,
+    val exceptionTypes: List<TypeElement>
+)

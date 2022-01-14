@@ -59,7 +59,7 @@ class RelaxedFactoryForInjectConstructorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -138,7 +138,7 @@ class RelaxedFactoryForInjectConstructorTest {
             """
         )
 
-        val expectedSource = expectedJavaSource(
+        val expectedSource = expectedKtSource(
             "TestNonEmptyConstructor__Factory",
             """
             package test;
@@ -225,7 +225,7 @@ class RelaxedFactoryForInjectConstructorTest {
             .processedWith(factoryAndMemberInjectorProcessors())
             .failsToCompile()
             .withErrorContaining(
-                "Class test.TestNonEmptyConstructorInjected is annotated with @InjectInjectConstructor. "
+                "Class test.TestNonEmptyConstructorInjected is annotated with @InjectConstructor. "
                     + "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
             )
     }
@@ -252,7 +252,7 @@ class RelaxedFactoryForInjectConstructorTest {
             .processedWith(factoryAndMemberInjectorProcessors())
             .failsToCompile()
             .withErrorContaining(
-                "Class test.TestMultipleConstructors is annotated with @InjectInjectConstructor. "
+                "Class test.TestMultipleConstructors is annotated with @InjectConstructor. "
                     + "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
             )
     }
