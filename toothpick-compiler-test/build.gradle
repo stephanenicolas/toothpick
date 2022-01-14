@@ -19,9 +19,8 @@ compileTestKotlin {
 }
 
 dependencies {
-    implementation deps.ksp
-    api project(":toothpick-compiler-ksp-factory")
-    api project(":toothpick-compiler-ksp-memberinjector")
+    implementation deps.kotlinpoet
+    implementation deps.junit4
+    implementation deps.compiletesting_kt
+    implementation deps.compiletesting_ksp
 }
-
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

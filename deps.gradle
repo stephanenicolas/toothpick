@@ -5,6 +5,8 @@ ext.deps = [// Common
             javapoet            : 'com.squareup:javapoet:1.11.1',
             kotlinpoet          : 'com.squareup:kotlinpoet:1.10.2',
             kotlinpoet_metadata : 'com.squareup:kotlinpoet-metadata:1.10.2',
+            kotlinpoet_ksp      : 'com.squareup:kotlinpoet-ksp:1.10.2',
+            ksp                 : 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.2',
 
             // Android
             android             : 'com.google.android:android:4.1.1.4',
@@ -52,6 +54,7 @@ ext.deps = [// Common
             truth               : 'com.google.truth:truth:0.42',
             compiletesting      : 'com.google.testing.compile:compile-testing:0.15',
             compiletesting_kt   : 'com.github.tschuchortdev:kotlin-compile-testing:1.4.7',
+            compiletesting_ksp  : 'com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.7',
             mockito             : 'org.mockito:mockito-core:2.4.0',
             mockito_junit5      : 'org.mockito:mockito-junit-jupiter:2.23.0',
             mockito_kotlin      : 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0',

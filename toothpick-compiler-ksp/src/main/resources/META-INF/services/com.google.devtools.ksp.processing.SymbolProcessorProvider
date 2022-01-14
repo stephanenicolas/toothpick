@@ -1,0 +1,2 @@
+toothpick.compiler.factory.FactoryProcessorProvider
+toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
