@@ -16,6 +16,7 @@
  */
 package toothpick.compiler.memberinjector
 
+import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -63,7 +64,9 @@ class MemberInjectorProcessor(
         val typeElementToMethodInjectorTargetList: Map<KSClassDeclaration, List<MethodInjectionTarget>> =
             injectedElements
                 .filterIsInstance<KSFunctionDeclaration>()
-                .mapNotNull { property -> property.getParentClassOrNull()?.let { parent -> parent to property } }
+                .filter { function -> function.functionKind == FunctionKind.MEMBER }
+                .filterNot { function -> function.isConstructor() }
+                .mapNotNull { function -> function.getParentClassOrNull()?.let { parent -> parent to function } }
                 .filterNot { (parentClass, _) -> parentClass.isExcludedByFilters() }
                 .filter { (_, method) -> method.isValidInjectAnnotatedMethod() }
                 .groupBy(
@@ -77,7 +80,7 @@ class MemberInjectorProcessor(
             .map { sourceClass ->
                 MemberInjectorGenerator(
                     sourceClass = sourceClass,
-                    superClassThatNeedsInjection = sourceClass.getMostDirectSuperClassWithInjectedMembers(onlyParents = true),
+                    superClassThatNeedsInjection = sourceClass.getMostDirectSuperClassWithInjectedMembers(),
                     fieldInjectionTargetList = typeElementToFieldInjectorTargetList[sourceClass],
                     methodInjectionTargetList = typeElementToMethodInjectorTargetList[sourceClass]
                 )

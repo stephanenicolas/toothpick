@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.compiler.factory
+package toothpick.compiler
 
 import org.junit.Test
-import toothpick.compiler.*
-import toothpick.compiler.factory.ProcessorTestUtilities.factoryAndMemberInjectorProcessors
+import toothpick.compiler.factory.FactoryProcessorProvider
+import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 
 class RelaxedFactoryForScopeInstancesTest {
 
@@ -38,7 +38,7 @@ class RelaxedFactoryForScopeInstancesTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
                 "The type test.TestOptimisticFactoryCreationForHasScopeInstances"
@@ -68,10 +68,10 @@ class RelaxedFactoryForScopeInstancesTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .compilesWithoutError()
             .generatesFileNamed(
-                "TestOptimisticFactoryCreationForHasScopeInstances__Factory.class"
+                "test/TestOptimisticFactoryCreationForHasScopeInstances__Factory.kt"
             )
     }
 
@@ -97,7 +97,7 @@ class RelaxedFactoryForScopeInstancesTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
     }
 }

@@ -7,7 +7,7 @@ import javax.inject.Singleton
 
 data class ToothpickOptions(
     val excludes: Set<String> = setOf("java.*", "android.*"),
-    val annotationTypes: Set<String> = setOf(
+    val supportedAnnotationTypes: Set<String> = setOf(
         Inject::class.qualifiedName!!,
         Singleton::class.qualifiedName!!,
         ProvidesSingleton::class.qualifiedName!!,
@@ -34,7 +34,7 @@ data class ToothpickOptions(
          * always use this option so that developers can use the new scope annotation in a very free way
          * without having to consider the annotation processing internals.
          */
-        const val AnnotationTypes = "toothpick_annotations"
+        const val AdditionalAnnotationTypes = "toothpick_annotations"
 
         /**
          * The name of the annotation processor option to make the TP annotation processor crash when it
@@ -62,8 +62,8 @@ fun Map<String, String>.readOptions(): ToothpickOptions {
             ?.map { it.trim() }
             ?.toSet()
             ?: default.excludes,
-        annotationTypes = default.annotationTypes + (
-            this[ToothpickOptions.AnnotationTypes]
+        supportedAnnotationTypes = default.supportedAnnotationTypes + (
+            this[ToothpickOptions.AdditionalAnnotationTypes]
                 ?.split(',')
                 ?.map { it.trim() }
                 ?: emptyList()

@@ -18,7 +18,7 @@ package toothpick.compiler.factory
 
 import org.junit.Test
 import toothpick.compiler.*
-import toothpick.compiler.factory.ProcessorTestUtilities.factoryProcessorsFailingOnNonInjectableClasses
+import toothpick.compiler.common.ToothpickOptions.Companion.CrashWhenNoFactoryCanBeCreated
 
 class RelaxedFactoryWarningsTest {
 
@@ -39,7 +39,8 @@ class RelaxedFactoryWarningsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsFailingOnNonInjectableClasses())
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
             .failsToCompile()
     }
 
@@ -61,7 +62,8 @@ class RelaxedFactoryWarningsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsFailingOnNonInjectableClasses())
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
             .compilesWithoutError()
     }
 
@@ -81,7 +83,8 @@ class RelaxedFactoryWarningsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsFailingOnNonInjectableClasses())
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
             .failsToCompile()
     }
 
@@ -102,7 +105,8 @@ class RelaxedFactoryWarningsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsFailingOnNonInjectableClasses())
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
             .compilesWithoutError()
     }
 }

@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.compiler.factory
+package toothpick.compiler
 
 import org.junit.Test
-import toothpick.compiler.*
-import toothpick.compiler.factory.ProcessorTestUtilities.factoryAndMemberInjectorProcessors
+import toothpick.compiler.factory.FactoryProcessorProvider
+import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 
 class RelaxedFactoryForClassContainingMethodsTest {
 
@@ -78,7 +78,7 @@ class RelaxedFactoryForClassContainingMethodsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .compilesWithoutError()
             .generatesSources(expectedSource)
     }
@@ -99,10 +99,10 @@ class RelaxedFactoryForClassContainingMethodsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "@Inject-annotated methods must not be private: test.TestRelaxedFactoryCreationForInjectMethod#m"
+                "@Inject-annotated methods must not be private: test.TestRelaxedFactoryCreationForInjectMethod.m"
             )
     }
 
@@ -124,10 +124,10 @@ class RelaxedFactoryForClassContainingMethodsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "@Injected fields in class InnerClass. The class must not be private."
+                "@Injected test.TestRelaxedFactoryCreationForInjectMethod.InnerClass.m; the parent class must not be private."
             )
     }
 
@@ -148,10 +148,10 @@ class RelaxedFactoryForClassContainingMethodsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid toothpick.Lazy."
+                "Type of test.TestRelaxedFactoryCreationForInjectMethod.m is not a valid toothpick.Lazy."
             )
     }
 
@@ -172,10 +172,10 @@ class RelaxedFactoryForClassContainingMethodsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Parameter foo in method/constructor test.TestRelaxedFactoryCreationForInjectMethod#m is not a valid javax.inject.Provider."
+                "Type of test.TestRelaxedFactoryCreationForInjectMethod.m is not a valid javax.inject.Provider."
             )
     }
 

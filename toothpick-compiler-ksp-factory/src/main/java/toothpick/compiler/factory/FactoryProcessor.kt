@@ -16,23 +16,16 @@
  */
 package toothpick.compiler.factory
 
-import com.google.devtools.ksp.KspExperimental
-import com.google.devtools.ksp.getAnnotationsByType
-import com.google.devtools.ksp.isAbstract
-import com.google.devtools.ksp.isPrivate
+import com.google.devtools.ksp.*
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSDeclaration
-import org.jetbrains.annotations.TestOnly
+import com.google.devtools.ksp.symbol.*
 import toothpick.*
 import toothpick.compiler.common.ToothpickProcessor
 import toothpick.compiler.common.generators.*
 import toothpick.compiler.factory.generators.FactoryGenerator
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget
-import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import javax.inject.Inject
 import javax.inject.Scope
@@ -71,6 +64,7 @@ import javax.lang.model.element.*
  * error.
  */
 // http://stackoverflow.com/a/2067863/693752
+@OptIn(KspExperimental::class)
 class FactoryProcessor(
     processorOptions: Map<String, String>,
     codeGenerator: CodeGenerator,
@@ -79,15 +73,15 @@ class FactoryProcessor(
     processorOptions, codeGenerator, logger
 ) {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val mapTypeElementToConstructorInjectionTarget: Map<TypeElement, ConstructorInjectionTarget> =
-            with(roundEnv) {
+        val mapTypeElementToConstructorInjectionTarget: Map<KSClassDeclaration, ConstructorInjectionTarget> =
+            with(resolver) {
                 createFactoriesForClassesAnnotatedWithInjectConstructor() +
                     createFactoriesForClassesWithInjectAnnotatedConstructors() +
-                    createFactoriesForClassesAnnotatedWith(ProvidesSingleton::class.java) +
+                    createFactoriesForClassesAnnotatedWith(ProvidesSingleton::class.qualifiedName!!) +
                     createFactoriesForClassesWithInjectAnnotatedFields() +
                     createFactoriesForClassesWithInjectAnnotatedMethods() +
-                    createFactoriesForClassesAnnotatedWithScopeAnnotations(annotations)
-            }
+                    createFactoriesForClassesAnnotatedWithScopeAnnotations(supportedAnnotationTypes)
+            }.toMap()
 
         // Generate Factories
         mapTypeElementToConstructorInjectionTarget
@@ -107,211 +101,203 @@ class FactoryProcessor(
                 }
             }
 
-        return false
+        return emptyList()
     }
 
-    private fun RoundEnvironment.createFactoriesForClassesAnnotatedWithScopeAnnotations(annotations: Set<TypeElement>): List<Pair<TypeElement, ConstructorInjectionTarget>> {
+    private val Resolver.supportedAnnotationTypes: Set<KSClassDeclaration>
+        get() = options.supportedAnnotationTypes
+            .mapNotNull { className -> getClassDeclarationByName(className) }
+            .toSet()
+
+    private fun Resolver.createFactoriesForClassesAnnotatedWithScopeAnnotations(annotations: Set<KSClassDeclaration>): List<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
         return annotations
-            .filter { annotation -> annotation.hasAnnotation<Scope>() }
-            .flatMap { annotation ->
-                checkScopeAnnotationValidity(annotation)
-                createFactoriesForClassesAnnotatedWith(annotation)
-            }
+            .filter { annotation -> annotation.isAnnotationPresent(Scope::class) }
+            .filter { annotation -> annotation.checkScopeAnnotationValidity() }
+            .mapNotNull { annotation -> annotation.qualifiedName?.asString() }
+            .flatMap { annotationName -> createFactoriesForClassesAnnotatedWith(annotationName) }
     }
 
-    private fun RoundEnvironment.createFactoriesForClassesWithInjectAnnotatedMethods(): List<Pair<TypeElement, ConstructorInjectionTarget>> {
-        return getElementsAnnotatedWith(Inject::class.java)
-            .methods
-            .mapNotNull { methodElement ->
-                methodElement.enclosingElement.processClassContainingInjectAnnotatedMember()
-            }
+    private fun Resolver.createFactoriesForClassesWithInjectAnnotatedMethods(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
+        return getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
+            .filterIsInstance<KSFunctionDeclaration>()
+            .filter { function -> function.functionKind == FunctionKind.MEMBER }
+            .mapNotNull { function -> function.getParentClassOrNull() }
+            .distinct()
+            .mapNotNull { parentClass -> parentClass.processClassContainingInjectAnnotatedMember() }
     }
 
-    private fun RoundEnvironment.createFactoriesForClassesWithInjectAnnotatedFields(): List<Pair<TypeElement, ConstructorInjectionTarget>> {
-        return getElementsAnnotatedWith(Inject::class.java)
-            .fields
-            .mapNotNull { fieldElement ->
-                fieldElement.enclosingElement.processClassContainingInjectAnnotatedMember()
-            }
+    private fun Resolver.createFactoriesForClassesWithInjectAnnotatedFields(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
+        return getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
+            .filterIsInstance<KSPropertyDeclaration>()
+            .mapNotNull { property -> property.getParentClassOrNull() }
+            .distinct()
+            .mapNotNull { parentClass -> parentClass.processClassContainingInjectAnnotatedMember() }
     }
 
-    private fun RoundEnvironment.createFactoriesForClassesAnnotatedWith(annotationClass: Class<out Annotation?>): List<Pair<TypeElement, ConstructorInjectionTarget>> {
-        return getElementsAnnotatedWith(annotationClass)
-            .types
-            .mapNotNull { annotatedElement ->
-                annotatedElement.processClassContainingInjectAnnotatedMember()
-            }
+    private fun Resolver.createFactoriesForClassesAnnotatedWith(annotationName: String): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
+        return getSymbolsWithAnnotation(annotationName)
+            .filterIsInstance<KSClassDeclaration>()
+            .mapNotNull { element -> element.processClassContainingInjectAnnotatedMember() }
     }
 
-    private fun RoundEnvironment.createFactoriesForClassesAnnotatedWith(annotationType: TypeElement): List<Pair<TypeElement, ConstructorInjectionTarget>> {
-        return getElementsAnnotatedWith(annotationType)
-            .types
-            .mapNotNull { type ->
-                type.processClassContainingInjectAnnotatedMember()
-            }
-    }
-
-    private fun RoundEnvironment.createFactoriesForClassesWithInjectAnnotatedConstructors(): Map<TypeElement, ConstructorInjectionTarget> {
-        return getElementsAnnotatedWith(Inject::class.java)
-            .constructors
-            .mapNotNull { constructorElement ->
-                val enclosingElement = constructorElement.enclosingElement as TypeElement
-                if (!constructorElement.isSingleInjectAnnotatedConstructor()) {
+    private fun Resolver.createFactoriesForClassesWithInjectAnnotatedConstructors(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
+        return getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
+            .filterIsInstance<KSFunctionDeclaration>()
+            .filter { function -> function.functionKind == FunctionKind.MEMBER }
+            .filter { function -> function.isConstructor() }
+            .mapNotNull { constructor ->
+                if (!constructor.isSingleInjectAnnotatedConstructor()) {
                     logger.error(
-                        constructorElement,
+                        constructor,
                         "Class %s cannot have more than one @Inject-annotated constructor.",
-                        enclosingElement.qualifiedName
+                        constructor.parentDeclaration?.qualifiedName?.asString()
                     )
                 }
 
-                constructorElement.processInjectAnnotatedConstructor()
+                constructor.processInjectAnnotatedConstructor()
             }
-            .toMap()
     }
 
-    private fun RoundEnvironment.createFactoriesForClassesAnnotatedWithInjectConstructor(): Map<TypeElement, ConstructorInjectionTarget> {
-        return getElementsAnnotatedWith(InjectConstructor::class.java)
-            .types
-            .mapNotNull { annotatedTypeElement ->
-                val constructorElements = annotatedTypeElement.enclosedElements.constructors
+    private fun Resolver.createFactoriesForClassesAnnotatedWithInjectConstructor(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
+        return getSymbolsWithAnnotation(InjectConstructor::class.qualifiedName!!)
+            .filterIsInstance<KSClassDeclaration>()
+            .mapNotNull { element ->
+                val constructorElements = element.getConstructors()
                 val firstConstructor = constructorElements.firstOrNull()
 
-                if (constructorElements.size == 1
+                if (constructorElements.count() == 1
                     && firstConstructor != null
-                    && !firstConstructor.hasAnnotation<Inject>()
+                    && !firstConstructor.isAnnotationPresent(Inject::class)
                 ) {
                     firstConstructor.processInjectAnnotatedConstructor()
                 } else {
                     logger.error(
                         constructorElements.firstOrNull(),
                         "Class %s is annotated with @InjectConstructor. Therefore, It must have one unique constructor and it should not be annotated with @Inject.",
-                        annotatedTypeElement.qualifiedName
+                        element.qualifiedName?.asString()
                     )
                     null
                 }
             }
-            .toMap()
     }
 
-    private fun Element.processClassContainingInjectAnnotatedMember(): Pair<TypeElement, ConstructorInjectionTarget>? {
-        val typeElement = asType().asElement(types) as TypeElement
-        if (typeElement.isExcludedByFilters()) return null
+    private fun KSClassDeclaration.processClassContainingInjectAnnotatedMember(): Pair<KSClassDeclaration, ConstructorInjectionTarget>? {
+        if (isExcludedByFilters()) return null
 
         // Verify common generated code restrictions.
-        if (!typeElement.canTypeHaveAFactory()) return null
+        if (!canTypeHaveAFactory()) return null
 
-        val target = typeElement.createConstructorInjectionTarget()
-        return if (target == null) null else typeElement to target
+        val target = createConstructorInjectionTarget()
+        return if (target == null) null else this to target
     }
 
-    private fun Element.isSingleInjectAnnotatedConstructor(): Boolean {
-        return enclosingElement
-            .enclosedElements
-            .constructors
-            .all { element -> element == this || !element.hasAnnotation<Inject>() }
+    private fun KSFunctionDeclaration.isSingleInjectAnnotatedConstructor(): Boolean {
+        return (parentDeclaration as KSClassDeclaration)
+            .getConstructors()
+            .all { constructor ->
+                constructor == this || !constructor.isAnnotationPresent(Inject::class)
+            }
     }
 
-    private fun ExecutableElement.processInjectAnnotatedConstructor(): Pair<TypeElement, ConstructorInjectionTarget>? {
-        val enclosingElement = enclosingElement as TypeElement
+    private fun KSFunctionDeclaration.processInjectAnnotatedConstructor(): Pair<KSClassDeclaration, ConstructorInjectionTarget>? {
+        val parentClass = parentDeclaration as KSClassDeclaration
 
         // Verify common generated code restrictions.
         if (!isValidInjectAnnotatedConstructor()) return null
-        if (enclosingElement.isExcludedByFilters()) return null
-        if (!enclosingElement.canTypeHaveAFactory()) {
+        if (parentClass.isExcludedByFilters()) return null
+        if (!parentClass.canTypeHaveAFactory()) {
             logger.error(
-                enclosingElement,
+                parentClass,
                 "The class %s is abstract or private. It cannot have an injected constructor.",
-                enclosingElement.qualifiedName
+                parentClass.qualifiedName?.asString()
             )
             return null
         }
 
-        return enclosingElement to createConstructorInjectionTarget()
+        return parentClass to createConstructorInjectionTarget()
     }
 
-    private fun ExecutableElement.isValidInjectAnnotatedConstructor(): Boolean {
-        val enclosingElement = enclosingElement as TypeElement
+    private fun KSFunctionDeclaration.isValidInjectAnnotatedConstructor(): Boolean {
+        val parentClass = parentDeclaration as KSClassDeclaration
 
         // Verify modifiers.
-        val modifiers = modifiers
-        if (modifiers.contains(Modifier.PRIVATE)) {
+        if (isPrivate()) {
             logger.error(
                 this,
                 "@Inject constructors must not be private in class %s.",
-                enclosingElement.qualifiedName
+                parentClass.qualifiedName?.asString()
             )
             return false
         }
 
         // Verify parentScope modifiers.
-        val parentModifiers = enclosingElement.modifiers
-        if (parentModifiers.contains(Modifier.PRIVATE)) {
+        if (parentClass.isPrivate()) {
             logger.error(
                 this,
                 "Class %s is private. @Inject constructors are not allowed in private classes.",
-                enclosingElement.qualifiedName
+                parentClass.qualifiedName?.asString()
             )
             return false
         }
 
-        if (isNonStaticInnerClass(enclosingElement)) return false
+        if (parentClass.isNonStaticInnerClass()) return false
 
-        return parameters.all { param -> param.isValidInjectedType() }
+        return parameters.all { param ->
+            param.type.resolve().isValidInjectedType(
+                node = this,
+                qualifiedName = qualifiedName?.asString()
+            )
+        }
     }
 
-    private fun ExecutableElement.createConstructorInjectionTarget(): ConstructorInjectionTarget {
-        val enclosingElement = enclosingElement as TypeElement
-        val scopeName = enclosingElement.getScopeName()
+    private fun KSFunctionDeclaration.createConstructorInjectionTarget(): ConstructorInjectionTarget {
+        val parentClass = parentDeclaration as KSClassDeclaration
+        val scopeName = parentClass.getScopeName()
 
-        enclosingElement.checkReleasableAnnotationValidity()
-        enclosingElement.checkProvidesReleasableAnnotationValidity()
+        parentClass.checkReleasableAnnotationValidity()
+        parentClass.checkProvidesReleasableAnnotationValidity()
 
-        if (enclosingElement.hasAnnotation<ProvidesSingleton>() && scopeName == null) {
+        if (parentClass.isAnnotationPresent(ProvidesSingleton::class) && scopeName == null) {
             logger.error(
-                enclosingElement,
+                parentClass,
                 "The type %s uses @ProvidesSingleton but doesn't have a scope annotation.",
-                enclosingElement.qualifiedName.toString()
+                parentClass.qualifiedName?.asString()
             )
         }
 
-        val superClassWithInjectedMembers =
-            enclosingElement.getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
-
         return ConstructorInjectionTarget(
-            builtClass = enclosingElement,
+            builtClass = parentClass,
             scopeName = scopeName,
-            hasSingletonAnnotation = enclosingElement.hasAnnotation<Singleton>(),
-            hasReleasableAnnotation = enclosingElement.hasAnnotation<Releasable>(),
-            hasProvidesSingletonInScopeAnnotation = enclosingElement.hasAnnotation<ProvidesSingletonInScope>(),
-            hasProvidesReleasableAnnotation = enclosingElement.hasAnnotation<ProvidesReleasable>(),
-            superClassThatNeedsMemberInjection = superClassWithInjectedMembers,
-            parameters = getParamInjectionTargetList(),
-            throwsThrowable = thrownTypes.isNotEmpty()
+            hasSingletonAnnotation = parentClass.isAnnotationPresent(Singleton::class),
+            hasReleasableAnnotation = parentClass.isAnnotationPresent(Releasable::class),
+            hasProvidesSingletonAnnotation = parentClass.isAnnotationPresent(ProvidesSingleton::class),
+            hasProvidesReleasableAnnotation = parentClass.isAnnotationPresent(ProvidesReleasable::class),
+            superClassThatNeedsMemberInjection = parentClass.getMostDirectSuperClassWithInjectedMembers(),
+            parameters = getParamInjectionTargetList()
         )
     }
 
-    private fun TypeElement.createConstructorInjectionTarget(): ConstructorInjectionTarget? {
+    private fun KSClassDeclaration.createConstructorInjectionTarget(): ConstructorInjectionTarget? {
         val scopeName = getScopeName()
         checkReleasableAnnotationValidity()
         checkProvidesReleasableAnnotationValidity()
 
-        if (hasAnnotation<ProvidesSingleton>() && scopeName == null) {
+        if (isAnnotationPresent(ProvidesSingleton::class) && scopeName == null) {
             logger.error(
                 this,
                 "The type %s uses @ProvidesSingleton but doesn't have a scope annotation.",
-                qualifiedName.toString()
+                qualifiedName?.asString()
             )
         }
 
-        val superClassWithInjectedMembers = getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
-        val constructorElements = enclosedElements.constructors
+        val constructors = getConstructors()
 
         // we just need to deal with the case of the default constructor only.
         // like Guice, we will call it by default in the optimistic factory
         // injected constructors will be handled at some point in the compilation cycle
 
         // if there is an injected constructor, it will be caught later, just leave
-        if (constructorElements.any { element -> element.hasAnnotation<Inject>() }) return null
+        if (constructors.any { element -> element.isAnnotationPresent(Inject::class) }) return null
 
         val cannotCreateAFactoryMessage = (" Toothpick can't create a factory for it."
             + " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), "
@@ -320,44 +306,44 @@ class FactoryProcessor(
             + " but it needs a parameter for its constructor and this parameter is not injectable.")
 
         // search for default constructor
-        for (constructorElement in constructorElements) {
-            if (constructorElement.parameters.isEmpty()) {
-                if (constructorElement.modifiers.contains(Modifier.PRIVATE)) {
+        for (constructor in constructors) {
+            if (constructor.parameters.isEmpty()) {
+                if (constructor.isPrivate()) {
                     if (!isInjectableWarningSuppressed()) {
                         val message = String.format(
                             "The class %s has a private default constructor. $cannotCreateAFactoryMessage",
-                            qualifiedName.toString()
+                            qualifiedName?.asString()
                         )
 
-                        constructorElement.crashOrWarnWhenNoFactoryCanBeCreated(message)
+                        constructor.crashOrWarnWhenNoFactoryCanBeCreated(message)
                     }
+
                     return null
                 }
 
                 return ConstructorInjectionTarget(
                     builtClass = this,
                     scopeName = scopeName,
-                    hasSingletonAnnotation = hasAnnotation<Singleton>(),
-                    hasReleasableAnnotation = hasAnnotation<Releasable>(),
-                    hasProvidesSingletonInScopeAnnotation = hasAnnotation<ProvidesSingletonInScope>(),
-                    hasProvidesReleasableAnnotation = hasAnnotation<ProvidesReleasable>(),
-                    superClassThatNeedsMemberInjection = superClassWithInjectedMembers
+                    hasSingletonAnnotation = isAnnotationPresent(Singleton::class),
+                    hasReleasableAnnotation = isAnnotationPresent(Releasable::class),
+                    hasProvidesSingletonAnnotation = isAnnotationPresent(ProvidesSingleton::class),
+                    hasProvidesReleasableAnnotation = isAnnotationPresent(ProvidesReleasable::class),
+                    superClassThatNeedsMemberInjection = getMostDirectSuperClassWithInjectedMembers()
                 )
             }
         }
 
         if (!isInjectableWarningSuppressed()) {
-            val message =
-                "The class $qualifiedName has injected members or a scope annotation but has no " +
+            crashOrWarnWhenNoFactoryCanBeCreated(
+                "The class ${qualifiedName?.asString()} has injected members or a scope annotation but has no " +
                     "@Inject-annotated (non-private) constructor  nor a non-private default constructor. " +
                     cannotCreateAFactoryMessage
-
-            crashOrWarnWhenNoFactoryCanBeCreated(message)
+            )
         }
         return null
     }
 
-    private fun Element.crashOrWarnWhenNoFactoryCanBeCreated(message: String) {
+    private fun KSNode.crashOrWarnWhenNoFactoryCanBeCreated(message: String) {
         if (options.crashWhenNoFactoryCanBeCreated) {
             logger.error(this, message)
         } else {
@@ -370,25 +356,25 @@ class FactoryProcessor(
      * `typeElement` belongs to. The method logs an error if the `typeElement` has
      * multiple scope annotations.
      *
-     * @param typeElement the element for which a scope is to be found.
+     * @receiver the element for which a scope is to be found.
      * @return the scope of this `typeElement` or `null` if it has no scope annotations.
      */
-    private fun TypeElement.getScopeName(): String? {
+    private fun KSAnnotated.getScopeName(): String? {
         var scopeName: String? = null
         var hasScopeAnnotation = false
 
-        annotationMirrors
-            .map { annotationMirror -> annotationMirror.annotationType.asElement() as TypeElement }
-            .forEach { annotationTypeElement ->
+        annotations
+            .mapNotNull { annotationMirror -> annotationMirror.annotationType.resolve().declaration as? KSClassDeclaration }
+            .forEach { annotation ->
                 val isSingletonAnnotation =
-                    annotationTypeElement.qualifiedName.contentEquals(Singleton::class.qualifiedName!!)
+                    annotation.qualifiedName?.asString() == Singleton::class.qualifiedName!!
 
-                if (!isSingletonAnnotation && annotationTypeElement.hasAnnotation<Scope>()) {
-                    annotationTypeElement.checkScopeAnnotationValidity()
+                if (!isSingletonAnnotation && annotation.isAnnotationPresent(Scope::class)) {
+                    annotation.checkScopeAnnotationValidity()
                     if (scopeName != null) {
                         logger.error(this, "Only one @Scope qualified annotation is allowed : %s", scopeName)
                     }
-                    scopeName = annotationTypeElement.qualifiedName.toString()
+                    scopeName = annotation.qualifiedName?.asString()
                 }
 
                 if (isSingletonAnnotation) {
@@ -403,45 +389,48 @@ class FactoryProcessor(
         return scopeName
     }
 
-    private fun TypeElement.checkReleasableAnnotationValidity() {
-        if (hasAnnotation<Releasable>() && !hasAnnotation<Singleton>()) {
+    private fun KSAnnotated.checkReleasableAnnotationValidity() {
+        if (isAnnotationPresent(Releasable::class) && !isAnnotationPresent(Singleton::class)) {
             logger.error(
                 this,
                 "Class %s is annotated with @Releasable, it should also be annotated with @Singleton.",
-                qualifiedName
+                (this as? KSDeclaration)?.qualifiedName?.asString()
             )
         }
     }
 
-    private fun TypeElement.checkProvidesReleasableAnnotationValidity() {
-        if (hasAnnotation<ProvidesReleasable>() && !hasAnnotation<ProvidesSingletonInScope>()) {
+    private fun KSAnnotated.checkProvidesReleasableAnnotationValidity() {
+        if (isAnnotationPresent(ProvidesReleasable::class) && !isAnnotationPresent(ProvidesSingletonInScope::class)) {
             logger.error(
-                this, "Class %s is annotated with @ProvidesReleasable, "
-                    + "it should also be annotated with either @ProvidesSingleton.",
-                qualifiedName
+                this,
+                "Class %s is annotated with @ProvidesReleasable, it should also be annotated with either @ProvidesSingleton.",
+                (this as? KSDeclaration)?.qualifiedName?.asString()
             )
         }
     }
 
-    @OptIn(KspExperimental::class)
-    private fun KSAnnotated.checkScopeAnnotationValidity() {
-        if (hasAnnotation<Scope>()) {
+    private fun KSAnnotated.checkScopeAnnotationValidity(): Boolean {
+        if (!isAnnotationPresent(Scope::class)) {
             logger.error(
                 this,
                 "Scope Annotation %s does not contain Scope annotation.",
-                (this as? KSDeclaration)?.qualifiedName
+                (this as? KSDeclaration)?.qualifiedName?.asString()
             )
-            return
+            return false
         }
 
-        val retention = getAnnotationsByType(Retention::class).firstOrNull()
-        if (retention == null || retention.value != RetentionPolicy.RUNTIME) {
+        val javaRetention = getAnnotationsByType(java.lang.annotation.Retention::class).firstOrNull()?.value
+        val ktRetention = getAnnotationsByType(Retention::class).firstOrNull()?.value
+
+        if (javaRetention != RetentionPolicy.RUNTIME && ktRetention != AnnotationRetention.RUNTIME) {
             logger.error(
                 this,
                 "Scope Annotation %s does not have RUNTIME retention policy.",
-                (this as? KSDeclaration)?.qualifiedName
+                (this as? KSDeclaration)?.qualifiedName?.asString()
             )
+            return false
         }
+        return true
     }
 
     /**
@@ -457,12 +446,6 @@ class FactoryProcessor(
     private fun KSClassDeclaration.canTypeHaveAFactory(): Boolean {
         return !isAbstract() && !isPrivate()
     }
-
-    private val allRoundsGeneratedToTypeElement = mutableMapOf<String, TypeElement>()
-
-    @TestOnly
-    internal fun getOriginatingElement(generatedQualifiedName: String): TypeElement? =
-        allRoundsGeneratedToTypeElement[generatedQualifiedName]
 
     companion object {
         private const val SUPPRESS_WARNING_ANNOTATION_INJECTABLE_VALUE = "injectable"

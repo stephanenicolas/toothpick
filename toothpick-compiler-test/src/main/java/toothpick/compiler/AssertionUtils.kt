@@ -104,6 +104,18 @@ private fun AssertCompiled.generatesSource(expected: RawSource) = apply {
 }
 
 fun AssertCompiled.generatesFileNamed(relativeName: String) = apply {
-    val generatedFile = result.generatedFiles.find { file -> file.name == relativeName }
-    assertNotNull(generatedFile)
+    val outputDir = compilable.compilation.kspSourcesDir.resolve("kotlin")
+    val expected = outputDir.resolve(relativeName)
+
+    if (!expected.exists()) {
+        fail(
+            "Expected file %s does not exist on disk. Actual files: %s".format(
+                expected.toRelativeString(outputDir),
+                outputDir.walk()
+                    .filter { it.isFile }
+                    .map { it.name }
+                    .toList()
+            )
+        )
+    }
 }

@@ -22,6 +22,10 @@ dependencies {
     implementation deps.ksp
     api project(":toothpick-compiler-ksp-factory")
     api project(":toothpick-compiler-ksp-memberinjector")
+
+    testImplementation project(':toothpick-compiler-test')
+    testImplementation deps.junit4
+    testImplementation deps.compiletesting_kt
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

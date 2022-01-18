@@ -71,8 +71,10 @@ open class FactoryGenerator(
     }
 
     private fun TypeSpec.Builder.emitSuperMemberInjectorFieldIfNeeded() = apply {
-        val superTypeThatNeedsInjection =
-            constructorInjectionTarget.superClassThatNeedsMemberInjection?.toClassName()
+        val superTypeThatNeedsInjection: ClassName =
+            constructorInjectionTarget
+                .superClassThatNeedsMemberInjection
+                ?.toClassName()
                 ?: return this
 
         val memberInjectorSuper: ParameterizedTypeName =
@@ -82,13 +84,7 @@ open class FactoryGenerator(
         addProperty(
             PropertySpec
                 .builder("memberInjector", memberInjectorSuper, KModifier.PRIVATE)
-                .initializer(
-                    "%T()",
-                    constructorInjectionTarget
-                        .superClassThatNeedsMemberInjection
-                        .toClassName()
-                        .memberInjectorClassName
-                )
+                .initializer("%T()", superTypeThatNeedsInjection.memberInjectorClassName)
                 .build()
         )
     }
@@ -114,14 +110,8 @@ open class FactoryGenerator(
         val varName = className.simpleName
             .replaceFirstChar { first -> first.lowercaseChar() }
 
-        val throwsThrowable = constructorInjectionTarget.throwsThrowable
-
         val codeBlockBuilder = CodeBlock.builder()
             .apply {
-                if (throwsThrowable) {
-                    beginControlFlow("try")
-                }
-
                 constructorInjectionTarget.parameters.forEachIndexed { i, param ->
                     addStatement(
                         "val %N: %T = scope.%L",
@@ -145,12 +135,6 @@ open class FactoryGenerator(
                 }
 
                 addStatement("return %N", varName)
-
-                if (throwsThrowable) {
-                    nextControlFlow("catch(ex: %T)", Throwable::class.asClassName())
-                    addStatement("throw %T(ex)", RuntimeException::class.asClassName())
-                    endControlFlow()
-                }
             }
 
         createInstanceBuilder.addCode(codeBlockBuilder.build())
@@ -218,7 +202,7 @@ open class FactoryGenerator(
                 .returns(Boolean::class)
                 .addStatement(
                     "return %L",
-                    constructorInjectionTarget.hasProvidesSingletonInScopeAnnotation
+                    constructorInjectionTarget.hasProvidesSingletonAnnotation
                 )
                 .build()
         )

@@ -18,8 +18,7 @@ package toothpick.compiler.factory
 
 import org.junit.Test
 import toothpick.compiler.*
-import toothpick.compiler.factory.ProcessorTestUtilities.factoryAndMemberInjectorProcessors
-import toothpick.compiler.factory.ProcessorTestUtilities.factoryProcessorsWithAdditionalTypes
+import toothpick.compiler.common.ToothpickOptions.Companion.AdditionalAnnotationTypes
 
 class RelaxedFactoryForSingletonsTest {
 
@@ -36,12 +35,13 @@ class RelaxedFactoryForSingletonsTest {
             }
             """
         )
+
         compilationAssert()
             .that(source)
-            .processedWith(factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider()) // TODO used to use MemberInjector as well; really necessary?
             .compilesWithoutError()
             .generatesFileNamed(
-                "TestOptimisticFactoryCreationForSingleton__Factory.class"
+                "test/TestOptimisticFactoryCreationForSingleton__Factory.kt"
             )
     }
 
@@ -63,12 +63,14 @@ class RelaxedFactoryForSingletonsTest {
             }
             """
         )
+
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
             .compilesWithoutError()
             .generatesFileNamed(
-                "TestOptimisticFactoryCreationForScopeAnnotation__Factory.class"
+                "test/TestOptimisticFactoryCreationForScopeAnnotation__Factory.kt"
             )
     }
 
@@ -89,9 +91,11 @@ class RelaxedFactoryForSingletonsTest {
             }
             """
         )
+
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
             .failsToCompile()
     }
 
@@ -113,9 +117,11 @@ class RelaxedFactoryForSingletonsTest {
             }
             """
         )
+
         compilationAssert()
             .that(source)
-            .processedWith(factoryProcessorsWithAdditionalTypes("test.CustomScope"))
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
             .failsToCompile()
     }
 }

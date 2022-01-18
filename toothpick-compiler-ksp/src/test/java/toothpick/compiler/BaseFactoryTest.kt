@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package toothpick.compiler.factory
+package toothpick.compiler
 
 import com.tschuchort.compiletesting.SourceFile
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import toothpick.compiler.*
+import toothpick.compiler.factory.FactoryProcessorProvider
+import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 
 fun assertThatCompileWithoutErrorButNoFactoryIsCreated(
     source: SourceFile,
@@ -28,9 +29,9 @@ fun assertThatCompileWithoutErrorButNoFactoryIsCreated(
     try {
         compilationAssert()
             .that(source)
-            .processedWith(ProcessorTestUtilities.factoryAndMemberInjectorProcessors())
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .compilesWithoutError()
-            .generatesFileNamed("${noFactoryClass}__Factory.class")
+            .generatesFileNamed("test/${noFactoryClass}__Factory.kt")
 
         fail("A factory was created when it shouldn't.")
     } catch (e: Error) {

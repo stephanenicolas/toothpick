@@ -16,10 +16,9 @@
  */
 package toothpick.compiler.factory
 
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import toothpick.compiler.*
+import toothpick.compiler.common.ToothpickOptions
 
 class FactoryOriginatingElementTest {
 
@@ -36,17 +35,13 @@ class FactoryOriginatingElementTest {
             """
         )
 
-        val processors = ProcessorTestUtilities.factoryProcessors()
         compilationAssert()
             .that(source)
-            .processedWith(processors)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(ToothpickOptions.DebugLogOriginatingElements to "true")
             .compilesWithoutError()
-
-        val factoryProcessor = processors.firstIsInstance<FactoryProcessor>()
-        val enclosingElement = factoryProcessor.getOriginatingElement("test.TestOriginatingElement__Factory")
-
-        assertTrue(
-            enclosingElement!!.qualifiedName.contentEquals("test.TestOriginatingElement")
-        )
+            .assertLogs(
+                "test.TestOriginatingElement generated class test.TestOriginatingElement__Factory"
+            )
     }
 }

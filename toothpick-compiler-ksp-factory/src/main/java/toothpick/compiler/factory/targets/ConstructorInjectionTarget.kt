@@ -25,10 +25,9 @@ data class ConstructorInjectionTarget(
     val scopeName: String?,
     val hasSingletonAnnotation: Boolean,
     val hasReleasableAnnotation: Boolean,
-    val hasProvidesSingletonInScopeAnnotation: Boolean,
+    val hasProvidesSingletonAnnotation: Boolean,
     val hasProvidesReleasableAnnotation: Boolean,
-    /** true if the class as @Injected members  */
+    /** true if the class has @Injected members  */
     val superClassThatNeedsMemberInjection: KSClassDeclaration?,
-    val parameters: List<ParamInjectionTarget> = emptyList(),
-    val throwsThrowable: Boolean = false
+    val parameters: List<ParamInjectionTarget> = emptyList()
 )

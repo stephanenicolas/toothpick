@@ -32,6 +32,7 @@ import javax.inject.Named
 import javax.inject.Qualifier
 
 /** Base processor class.  */
+@OptIn(KspExperimental::class)
 abstract class ToothpickProcessor(
     processorOptions: Map<String, String>,
     private val codeGenerator: CodeGenerator,
@@ -98,7 +99,7 @@ abstract class ToothpickProcessor(
             logger.error(
                 this,
                 "@Inject-annotated field %s must be part of a function.",
-                name
+                name?.asString()
             )
             return false
         }
@@ -260,12 +261,11 @@ abstract class ToothpickProcessor(
     // overrides are simpler in this case as methods can only be package or protected.
     // a method with the same name in the type hierarchy would necessarily mean that
     // the {@code methodElement} would be an override of this method.
-    @OptIn(KspExperimental::class)
     protected fun KSFunctionDeclaration.isOverride(): Boolean {
         return findOverridee()?.isAnnotationPresent(Inject::class) == true
     }
 
-    protected fun KSClassDeclaration.getMostDirectSuperClassWithInjectedMembers(onlyParents: Boolean): KSClassDeclaration? {
+    protected fun KSClassDeclaration.getMostDirectSuperClassWithInjectedMembers(onlyParents: Boolean = true): KSClassDeclaration? {
         if (!onlyParents && hasInjectAnnotatedMembers()) return this
 
         val parentClass: KSClassDeclaration? = superTypes
@@ -277,7 +277,6 @@ abstract class ToothpickProcessor(
         return parentClass?.getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
     }
 
-    @OptIn(KspExperimental::class)
     private fun KSClassDeclaration.hasInjectAnnotatedMembers(): Boolean {
         val members: Sequence<KSAnnotated> = getAllFunctions() + getAllProperties()
         return members.any { member -> member.isAnnotationPresent(Inject::class) }
@@ -288,7 +287,7 @@ abstract class ToothpickProcessor(
             logger.error(
                 this,
                 "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",
-                qualifiedName
+                qualifiedName?.asString()
             )
             return true
         }
@@ -325,7 +324,6 @@ abstract class ToothpickProcessor(
      * @param warningSuppressString the value of the SuppressWarning annotation.
      * @return true is the injectable warning is suppressed, false otherwise.
      */
-    @OptIn(KspExperimental::class)
     protected fun KSAnnotated.hasWarningSuppressed(warningSuppressString: String): Boolean {
         return hasAnnotation<SuppressWarnings> { annotation ->
             annotation.arguments
@@ -341,7 +339,6 @@ abstract class ToothpickProcessor(
      * @param element the element for which a qualifier is to be found.
      * @return the name of this element or null if it has no qualifier annotations.
      */
-    @OptIn(KspExperimental::class)
     private fun KSAnnotated.findQualifierName(): String? {
         val qualifierAnnotationNames = annotations
             .mapNotNull { annotation ->
