@@ -1,0 +1,38 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.dokka'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    api deps.inject
+    api deps.tp
+
+    implementation project(':toothpick-compiler-ksp-core')
+
+    implementation deps.ksp
+
+    implementation deps.kotlinpoet
+    implementation deps.kotlinpoet_ksp
+    implementation deps.kotlinpoet_metadata
+
+    testImplementation project(':toothpick-compiler-test')
+    testImplementation deps.junit4
+    testImplementation deps.compiletesting_kt
+}
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
