@@ -17,8 +17,14 @@
 package toothpick.compiler.factory
 
 import org.junit.Test
-import toothpick.compiler.*
 import toothpick.compiler.common.ToothpickOptions.Companion.CrashWhenNoFactoryCanBeCreated
+import toothpick.compiler.compilationAssert
+import toothpick.compiler.compilesWithoutError
+import toothpick.compiler.failsToCompile
+import toothpick.compiler.javaSource
+import toothpick.compiler.processedWith
+import toothpick.compiler.that
+import toothpick.compiler.withOptions
 
 class RelaxedFactoryWarningsTest {
 

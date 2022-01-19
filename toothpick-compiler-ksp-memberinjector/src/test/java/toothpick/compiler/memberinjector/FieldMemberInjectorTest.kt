@@ -18,7 +18,15 @@ package toothpick.compiler.memberinjector
 
 import org.junit.Ignore
 import org.junit.Test
-import toothpick.compiler.*
+import toothpick.compiler.assertLogs
+import toothpick.compiler.compilationAssert
+import toothpick.compiler.compilesWithoutError
+import toothpick.compiler.expectedKtSource
+import toothpick.compiler.failsToCompile
+import toothpick.compiler.generatesSources
+import toothpick.compiler.javaSource
+import toothpick.compiler.processedWith
+import toothpick.compiler.that
 
 class FieldMemberInjectorTest {
 

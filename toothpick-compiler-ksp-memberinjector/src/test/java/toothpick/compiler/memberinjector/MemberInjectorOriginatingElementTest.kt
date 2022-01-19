@@ -17,8 +17,14 @@
 package toothpick.compiler.memberinjector
 
 import org.junit.Test
-import toothpick.compiler.*
+import toothpick.compiler.assertLogs
 import toothpick.compiler.common.ToothpickOptions.Companion.DebugLogOriginatingElements
+import toothpick.compiler.compilationAssert
+import toothpick.compiler.compilesWithoutError
+import toothpick.compiler.javaSource
+import toothpick.compiler.processedWith
+import toothpick.compiler.that
+import toothpick.compiler.withOptions
 
 class MemberInjectorOriginatingElementTest {
 

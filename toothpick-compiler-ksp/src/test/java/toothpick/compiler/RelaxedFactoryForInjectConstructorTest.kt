@@ -187,8 +187,8 @@ class RelaxedFactoryForInjectConstructorTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Class test.TestNonEmptyConstructorInjected is annotated with @InjectConstructor. "
-                    + "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+                "Class test.TestNonEmptyConstructorInjected is annotated with @InjectConstructor. " +
+                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
             )
     }
 
@@ -214,8 +214,8 @@ class RelaxedFactoryForInjectConstructorTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Class test.TestMultipleConstructors is annotated with @InjectConstructor. "
-                    + "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+                "Class test.TestMultipleConstructors is annotated with @InjectConstructor. " +
+                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
             )
     }
 }

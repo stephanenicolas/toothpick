@@ -16,21 +16,39 @@
  */
 package toothpick.compiler.factory
 
-import com.google.devtools.ksp.*
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
+import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.getConstructors
+import com.google.devtools.ksp.isAbstract
+import com.google.devtools.ksp.isAnnotationPresent
+import com.google.devtools.ksp.isConstructor
+import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.*
-import toothpick.*
+import com.google.devtools.ksp.symbol.FunctionKind
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSNode
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import toothpick.InjectConstructor
+import toothpick.ProvidesReleasable
+import toothpick.ProvidesSingleton
+import toothpick.ProvidesSingletonInScope
+import toothpick.Releasable
 import toothpick.compiler.common.ToothpickProcessor
-import toothpick.compiler.common.generators.*
+import toothpick.compiler.common.generators.error
+import toothpick.compiler.common.generators.info
+import toothpick.compiler.common.generators.warn
 import toothpick.compiler.factory.generators.FactoryGenerator
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget
 import java.lang.annotation.RetentionPolicy
 import javax.inject.Inject
 import javax.inject.Scope
 import javax.inject.Singleton
-import javax.lang.model.element.*
 
 /**
  * This processor's role is to create [Factory]. We create factories in different situations :
@@ -165,9 +183,9 @@ class FactoryProcessor(
                 val constructorElements = element.getConstructors()
                 val firstConstructor = constructorElements.firstOrNull()
 
-                if (constructorElements.count() == 1
-                    && firstConstructor != null
-                    && !firstConstructor.isAnnotationPresent(Inject::class)
+                if (constructorElements.count() == 1 &&
+                    firstConstructor != null &&
+                    !firstConstructor.isAnnotationPresent(Inject::class)
                 ) {
                     firstConstructor.processInjectAnnotatedConstructor()
                 } else {
@@ -299,11 +317,13 @@ class FactoryProcessor(
         // if there is an injected constructor, it will be caught later, just leave
         if (constructors.any { element -> element.isAnnotationPresent(Inject::class) }) return null
 
-        val cannotCreateAFactoryMessage = (" Toothpick can't create a factory for it."
-            + " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), "
-            + " then you can remove this warning by adding @SuppressWarnings(\"Injectable\") to the class."
-            + " A typical example is a class using injection to assign its fields, that calls TP.inject(this),"
-            + " but it needs a parameter for its constructor and this parameter is not injectable.")
+        val cannotCreateAFactoryMessage = (
+            " Toothpick can't create a factory for it." +
+                " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " +
+                " then you can remove this warning by adding @SuppressWarnings(\"Injectable\") to the class." +
+                " A typical example is a class using injection to assign its fields, that calls TP.inject(this)," +
+                " but it needs a parameter for its constructor and this parameter is not injectable."
+            )
 
         // search for default constructor
         for (constructor in constructors) {

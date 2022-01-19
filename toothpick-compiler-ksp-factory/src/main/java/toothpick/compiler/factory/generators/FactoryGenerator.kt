@@ -17,14 +17,27 @@
 package toothpick.compiler.factory.generators
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
 import toothpick.Factory
 import toothpick.MemberInjector
 import toothpick.Scope
-import toothpick.compiler.common.generators.*
+import toothpick.compiler.common.generators.TPCodeGenerator
+import toothpick.compiler.common.generators.factoryClassName
+import toothpick.compiler.common.generators.getInvokeScopeGetMethodWithNameCodeBlock
+import toothpick.compiler.common.generators.getParamType
+import toothpick.compiler.common.generators.memberInjectorClassName
 import toothpick.compiler.factory.targets.ConstructorInjectionTarget
 import javax.inject.Singleton
 
@@ -99,8 +112,8 @@ open class FactoryGenerator(
                 .apply {
                     // change the scope to target scope so that all dependencies are created in the target scope
                     // and the potential injection take place in the target scope too
-                    if (constructorInjectionTarget.parameters.isNotEmpty()
-                        || constructorInjectionTarget.superClassThatNeedsMemberInjection != null
+                    if (constructorInjectionTarget.parameters.isNotEmpty() ||
+                        constructorInjectionTarget.superClassThatNeedsMemberInjection != null
                     ) {
                         // We only need it when the constructor contains parameters or dependencies
                         addStatement("val scope = getTargetScope(scope)")

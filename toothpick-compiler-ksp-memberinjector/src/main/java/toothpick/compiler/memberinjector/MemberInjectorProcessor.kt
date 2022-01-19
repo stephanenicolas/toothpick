@@ -20,7 +20,11 @@ import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.*
+import com.google.devtools.ksp.symbol.FunctionKind
+import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import toothpick.compiler.common.ToothpickProcessor
 import toothpick.compiler.common.generators.info
 import toothpick.compiler.common.generators.targets.FieldInjectionTarget

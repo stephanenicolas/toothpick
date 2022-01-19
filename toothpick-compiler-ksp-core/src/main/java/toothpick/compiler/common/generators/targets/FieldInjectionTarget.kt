@@ -19,7 +19,6 @@ package toothpick.compiler.common.generators.targets
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
-import toothpick.compiler.common.generators.targets.ParamInjectionTarget
 
 class FieldInjectionTarget(
     memberClass: KSClassDeclaration,

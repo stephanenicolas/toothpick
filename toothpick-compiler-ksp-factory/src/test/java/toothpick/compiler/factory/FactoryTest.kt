@@ -18,8 +18,17 @@ package toothpick.compiler.factory
 
 import org.junit.Ignore
 import org.junit.Test
-import toothpick.compiler.*
+import toothpick.compiler.assertLogs
 import toothpick.compiler.common.ToothpickOptions.Companion.AdditionalAnnotationTypes
+import toothpick.compiler.compilationAssert
+import toothpick.compiler.compilesWithoutError
+import toothpick.compiler.expectedKtSource
+import toothpick.compiler.failsToCompile
+import toothpick.compiler.generatesSources
+import toothpick.compiler.javaSource
+import toothpick.compiler.processedWith
+import toothpick.compiler.that
+import toothpick.compiler.withOptions
 
 class FactoryTest {
 
