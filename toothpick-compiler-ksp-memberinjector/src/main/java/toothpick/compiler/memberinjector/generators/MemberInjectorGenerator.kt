@@ -45,7 +45,7 @@ import toothpick.compiler.memberinjector.targets.MethodInjectionTarget
  * Typically a [MemberInjector] is created for a class a soon as it contains an [ ] annotated field or method.
  */
 @OptIn(KotlinPoetKspPreview::class)
-class MemberInjectorGenerator(
+internal class MemberInjectorGenerator(
     private val sourceClass: KSClassDeclaration,
     private val superClassThatNeedsInjection: KSClassDeclaration?,
     private val fieldInjectionTargetList: List<FieldInjectionTarget>?,
@@ -62,7 +62,6 @@ class MemberInjectorGenerator(
     val generatedClassName: ClassName = sourceClassName.memberInjectorClassName
 
     override fun brewCode(): FileSpec {
-        // Build class
         return FileSpec.get(
             packageName = sourceClassName.packageName,
             TypeSpec.classBuilder(generatedClassName)
@@ -109,7 +108,7 @@ class MemberInjectorGenerator(
         addFunction(
             FunSpec.builder("inject")
                 .addModifiers(KModifier.OVERRIDE)
-                .addParameter("target", sourceClass.toClassName())
+                .addParameter("target", sourceClassName)
                 .addParameter("scope", Scope::class)
                 .apply {
                     if (superClassThatNeedsInjection != null) {

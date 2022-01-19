@@ -29,7 +29,7 @@ fun javaSource(name: String, @Language("java") contents: String): SourceFile =
     SourceFile.java("$name.java", contents, trimIndent = true)
 
 fun ktSource(name: String, @Language("kotlin") contents: String): SourceFile =
-    SourceFile.java("$name.kt", contents, trimIndent = true)
+    SourceFile.kotlin("$name.kt", contents, trimIndent = true)
 
 fun expectedKtSource(name: String, @Language("kotlin") contents: String): RawSource =
     RawSource("$name.kt", contents.trimIndent())

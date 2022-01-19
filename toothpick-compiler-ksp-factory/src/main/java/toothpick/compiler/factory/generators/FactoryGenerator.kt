@@ -30,6 +30,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import toothpick.Factory
 import toothpick.MemberInjector
@@ -48,7 +49,7 @@ import javax.inject.Singleton
  * constructor. See Optimistic creation of factories in TP wiki.
  */
 @OptIn(KotlinPoetKspPreview::class)
-open class FactoryGenerator(
+internal class FactoryGenerator(
     private val constructorInjectionTarget: ConstructorInjectionTarget
 ) : TPCodeGenerator {
 
@@ -58,13 +59,12 @@ open class FactoryGenerator(
     val generatedClassName: ClassName = sourceClassName.factoryClassName
 
     override fun brewCode(): FileSpec {
-        // Build class
         return FileSpec.get(
             packageName = sourceClassName.packageName,
             TypeSpec.classBuilder(generatedClassName)
+                .addOriginatingKSFile(sourceClass.containingFile!!)
                 .addModifiers(KModifier.INTERNAL)
                 .addSuperinterface(
-                    // Interface to implement
                     Factory::class.asClassName().parameterizedBy(sourceClassName)
                 )
                 .addAnnotation(
@@ -104,12 +104,11 @@ open class FactoryGenerator(
     }
 
     private fun TypeSpec.Builder.emitCreateInstance(): TypeSpec.Builder = apply {
-        val className = sourceClass.toClassName()
         val createInstanceBuilder =
             FunSpec.builder("createInstance")
                 .addModifiers(KModifier.OVERRIDE)
                 .addParameter("scope", Scope::class)
-                .returns(className)
+                .returns(sourceClassName)
                 .apply {
                     // change the scope to target scope so that all dependencies are created in the target scope
                     // and the potential injection take place in the target scope too
@@ -121,7 +120,7 @@ open class FactoryGenerator(
                     }
                 }
 
-        val varName = className.simpleName
+        val varName = sourceClassName.simpleName
             .replaceFirstChar { first -> first.lowercaseChar() }
 
         val codeBlockBuilder = CodeBlock.builder()
@@ -138,8 +137,8 @@ open class FactoryGenerator(
                 addStatement(
                     "val %N: %T = %T(%L)",
                     varName,
-                    className,
-                    className,
+                    sourceClassName,
+                    sourceClassName,
                     List(constructorInjectionTarget.parameters.size) { i -> "param${i + 1}" }
                         .joinToString(", ")
                 )
