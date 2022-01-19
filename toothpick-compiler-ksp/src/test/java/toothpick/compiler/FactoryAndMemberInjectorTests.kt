@@ -1,4 +1,5 @@
 /*
+ * Copyright 2022 Baptiste Candellier
  * Copyright 2019 Stephane Nicolas
  * Copyright 2019 Daniel Molinero Reguera
  *
