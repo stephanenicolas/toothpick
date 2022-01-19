@@ -56,7 +56,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
@@ -108,7 +112,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
@@ -160,7 +168,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
@@ -329,7 +341,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
               public override fun createInstance(scope: Scope): TestConstructorInPackageClass {
                 val testConstructorInPackageClass: TestConstructorInPackageClass =
@@ -406,7 +422,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class Test2Constructors__Factory : Factory<Test2Constructors> {
               public override fun createInstance(scope: Scope): Test2Constructors {
                 val test2Constructors: Test2Constructors = Test2Constructors()
@@ -460,7 +480,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -519,7 +543,11 @@ class FactoryTest {
             import toothpick.Lazy
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -578,7 +606,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -681,7 +713,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -806,7 +842,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestClassConstructorThrowingException__Factory :
                 Factory<TestClassConstructorThrowingException> {
               public override fun createInstance(scope: Scope): TestClassConstructorThrowingException {
@@ -866,7 +906,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -922,7 +966,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
@@ -984,7 +1032,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -1046,7 +1098,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
@@ -1111,7 +1167,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -1172,7 +1232,11 @@ class FactoryTest {
             import toothpick.Factory
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)

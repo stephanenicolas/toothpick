@@ -73,7 +73,11 @@ class RelaxedFactoryForInjectConstructorTest {
             import toothpick.Lazy
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -136,7 +140,11 @@ class RelaxedFactoryForInjectConstructorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               private val memberInjector: MemberInjector<TestNonEmptyConstructor> =
                   TestNonEmptyConstructor__MemberInjector()

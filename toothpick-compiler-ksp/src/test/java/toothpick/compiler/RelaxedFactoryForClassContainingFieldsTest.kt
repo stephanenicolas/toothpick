@@ -48,7 +48,11 @@ class RelaxedFactoryForClassContainingFieldsTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestRelaxedFactoryCreationForInjectField__Factory :
                 Factory<TestRelaxedFactoryCreationForInjectField> {
               private val memberInjector: MemberInjector<TestRelaxedFactoryCreationForInjectField> =

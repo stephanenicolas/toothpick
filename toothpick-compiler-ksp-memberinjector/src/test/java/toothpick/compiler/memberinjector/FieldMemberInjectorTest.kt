@@ -56,7 +56,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getInstance(Foo::class.java)
@@ -98,7 +102,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getInstance(Foo::class.java, "bar")
@@ -143,7 +151,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getInstance(Foo::class.java, "test.Bar")
@@ -186,7 +198,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getInstance(Foo::class.java)
@@ -232,7 +248,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getProvider(Foo::class.java, "test.Bar")
@@ -276,7 +296,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getProvider(Foo::class.java)
@@ -322,7 +346,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getInstance(Foo::class.java, "test.Bar")
@@ -394,7 +422,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getProvider(Foo::class.java)
@@ -436,7 +468,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getLazy(Foo::class.java)
@@ -478,7 +514,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getLazy(Foo::class.java)
@@ -520,7 +560,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
                 target.foo = scope.getInstance(Foo::class.java)
@@ -759,7 +803,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestMemberInjection__MemberInjector : MemberInjector<TestMemberInjection> {
               private val superMemberInjector: MemberInjector<TestMemberInjectionParent> =
                   TestMemberInjectionParent__MemberInjector()
@@ -806,7 +854,11 @@ class FieldMemberInjectorTest {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestMemberInjection__MemberInjector : MemberInjector<TestMemberInjection> {
               private val superMemberInjector: MemberInjector<TestMemberInjectionParent<*>> =
                   TestMemberInjectionParent__MemberInjector()

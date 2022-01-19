@@ -48,7 +48,11 @@ class FactoryAndMemberInjectorTests {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
                   TestAClassThatNeedsInjection__MemberInjector()
@@ -187,7 +191,11 @@ class FactoryAndMemberInjectorTests {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<SuperClassThatNeedsInjection> =
                   SuperClassThatNeedsInjection__MemberInjector()
@@ -246,7 +254,11 @@ class FactoryAndMemberInjectorTests {
             import toothpick.MemberInjector
             import toothpick.Scope
             
-            @Suppress("ClassName")
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
             internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
                   TestAClassThatNeedsInjection__MemberInjector()
