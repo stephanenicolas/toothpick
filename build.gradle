@@ -1,127 +1,129 @@
 buildscript {
-  apply from: 'deps.gradle'
-  repositories {
-    google()
-    mavenCentral()
-  }
-  dependencies {
-    classpath deps.kotlin_plugin
-    classpath deps.coverallPlugin
-    classpath deps.spotlessPlugin
-    classpath deps.dokkaPlugin
-  }
+    apply from: 'deps.gradle'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath deps.kotlin_plugin
+        classpath deps.coverallPlugin
+        classpath deps.spotlessPlugin
+        classpath deps.dokkaPlugin
+    }
 }
 
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 //from https://gist.github.com/aalmiray/e6f54aa4b3803be0bcac
 task jacocoTestReport {
-  doLast {
-    FileCollection executionData = files()
+    doLast {
+        FileCollection executionData = files()
 
-    subprojects.findAll { subproject ->
-      subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
-    }.each { subproject -> executionData += subproject.tasks.jacocoTestReport.executionData
-    }
-
-    executionData = files(executionData.findAll {
-      it.exists()
-    })
-
-    ant.taskdef(name: 'jacocoReport', classname: 'org.jacoco.ant.ReportTask',
-        classpath: configurations.jacocoAnt.asPath)
-
-    ant.jacocoReport {
-      executiondata {
-        executionData.addToAntBuilder(ant, 'resources')
-      }
-      structure(name: project.name) {
-        subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java')
+        subprojects.findAll { subproject ->
+            subproject.pluginManager.hasPlugin('java') && subproject.pluginManager.hasPlugin('jacoco')
         }.each { subproject ->
-          group(name: subproject.name) {
-            classfiles {
-              ((FileCollection) subproject.sourceSets.main.output).filter {
-                it.exists()
-              }.addToAntBuilder(ant, 'resources')
-            }
-            sourcefiles {
-              files((Set<File>) subproject.sourceSets.main.allJava.srcDirs).filter {
-                it.exists()
-              }.addToAntBuilder(ant, 'resources')
-            }
-          }
+            executionData += subproject.tasks.jacocoTestReport.executionData
         }
-      }
-      html(destdir: "${buildDir}/reports/jacoco/${name}/html")
-      xml(destfile: "${buildDir}/reports/jacoco/${name}/${name}.xml")
-      // Uncomment for CSV
-      //csv(destfile: "${buildDir}/reports/jacoco/${name}/${name}.csv")
+
+        executionData = files(executionData.findAll {
+            it.exists()
+        })
+
+        ant.taskdef(
+                name: 'jacocoReport',
+                classname: 'org.jacoco.ant.ReportTask',
+                classpath: configurations.jacocoAnt.asPath
+        )
+
+        ant.jacocoReport {
+            executiondata {
+                executionData.addToAntBuilder(ant, 'resources')
+            }
+
+            structure(name: project.name) {
+                subprojects.findAll { subproject -> subproject.pluginManager.hasPlugin('java')
+                }.each { subproject ->
+                    group(name: subproject.name) {
+                        classfiles {
+                            ((FileCollection) subproject.sourceSets.main.output).filter {
+                                it.exists()
+                            }.addToAntBuilder(ant, 'resources')
+                        }
+                        sourcefiles {
+                            files((Set<File>) subproject.sourceSets.main.allJava.srcDirs).filter {
+                                it.exists()
+                            }.addToAntBuilder(ant, 'resources')
+                        }
+                    }
+                }
+            }
+
+            html(destdir: "${buildDir}/reports/jacoco/${name}/html")
+            xml(destfile: "${buildDir}/reports/jacoco/${name}/${name}.xml")
+            // Uncomment for CSV
+            //csv(destfile: "${buildDir}/reports/jacoco/${name}/${name}.csv")
+        }
     }
-  }
 }
 
 coveralls {
-  jacocoReportPath = 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
-  sourceDirs = files(subprojects.collect { subproject -> "${subproject.projectDir}/src/main/java" }).files.absolutePath
+    jacocoReportPath = 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+    sourceDirs = files(subprojects.collect { subproject -> "${subproject.projectDir}/src/main/java" }).files.absolutePath
 }
 
 tasks.coveralls {
-  dependsOn 'jacocoTestReport'
+    dependsOn 'jacocoTestReport'
 }
 
 subprojects { project ->
-  group = GROUP
-  version = VERSION_NAME
+    group = GROUP
+    version = VERSION_NAME
 
-  repositories {
-    mavenCentral()
-  }
-
-  apply plugin: 'jacoco'
-  apply plugin: 'maven'
-  apply plugin: 'com.diffplug.spotless'
-
-  tasks.withType(JavaCompile) {
-    options.compilerArgs << '-Xlint:unchecked'
-    options.deprecation = true
-  }
-
-  spotless {
-    java {
-      licenseHeaderFile rootProject.file('spotless.license.java.txt')
-      googleJavaFormat() // use a specific formatter for Java files
-      target '**/*.java'
+    repositories {
+        mavenCentral()
     }
-    kotlin {
-      // optionally takes a version
-      ktlint().userData(['indent_size': '2'])
-      target '**/*.kt'
 
-      // also supports license headers
-      licenseHeaderFile rootProject.file('spotless.license.java.txt')
+    apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.diffplug.spotless'
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << '-Xlint:unchecked'
+        options.deprecation = true
     }
-  }
 
-  afterEvaluate {
-    if (project.tasks.findByName('check') && project.pluginManager.hasPlugin('java')) {
-      check.dependsOn('spotlessCheck')
-      check.dependsOn('jacocoTestReport')
+    spotless {
+        kotlin {
+            // optionally takes a version
+            ktlint()
+            target '**/*.kt'
 
-      tasks.withType(Test) {
-
-        testLogging {
-          events "passed", "skipped", "failed"
+            // also supports license headers
+            licenseHeaderFile rootProject.file('spotless.license.java.txt')
         }
-        // ensure tasks don't overwrite the default report directories used by the 'test' task
-        reports.html.setDestination(new File("${buildDir}/reports/${name}"))
-        reports.junitXml.setDestination(new File("${buildDir}/reports/${name}/results"))
-        binResultsDir = file("${buildDir}/reports/${name}/results/binary/${name}")
-      }
     }
-  }
+
+    afterEvaluate {
+        if (project.tasks.findByName('check') && project.pluginManager.hasPlugin('java')) {
+            check.dependsOn('spotlessCheck')
+            check.dependsOn('jacocoTestReport')
+
+            tasks.withType(Test) {
+                testLogging {
+                    events "passed", "skipped", "failed"
+                }
+
+                // ensure tasks don't overwrite the default report directories used by the 'test' task
+                reports.html.outputLocation.set(new File("${buildDir}/reports/${name}"))
+                reports.junitXml.outputLocation.set(new File("${buildDir}/reports/${name}/results"))
+                binaryResultsDirectory.set(file("${buildDir}/reports/${name}/results/binary/${name}"))
+            }
+        }
+    }
 }
