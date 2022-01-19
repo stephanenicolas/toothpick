@@ -47,14 +47,8 @@ tasks {
         from sourceSets.main.allSource
     }
 
-    task kotlindocJar(type: Jar, dependsOn: dokka) {
-        archiveClassifier.set('javadoc')
-        from dokka.outputDirectory
-    }
-
     artifacts {
         archives sourcesJar
-        archives kotlindocJar
     }
 }
 

@@ -9,7 +9,7 @@ ext.deps = [
 
     // Kotlin
     kotlin_plugin     : 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10',
-    dokkaPlugin       : 'org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17',
+    kotlin_kover      : 'org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin:0.5.0-RC2',
 
     // TP artifacts
     tp                : 'com.github.stephanenicolas.toothpick:toothpick:3.1.0',
@@ -22,6 +22,5 @@ ext.deps = [
     mockito_kotlin    : 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0',
 
     //build
-    coverallPlugin    : 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3',
     spotlessPlugin    : 'com.diffplug.spotless:spotless-plugin-gradle:6.2.0',
 ]
