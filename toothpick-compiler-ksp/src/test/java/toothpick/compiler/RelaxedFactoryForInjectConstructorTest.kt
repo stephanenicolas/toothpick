@@ -133,15 +133,20 @@ class RelaxedFactoryForInjectConstructorTest {
             import kotlin.Suppress
             import toothpick.Factory
             import toothpick.Lazy
+            import toothpick.MemberInjector
             import toothpick.Scope
             
             @Suppress("ClassName")
             internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+              private val memberInjector: MemberInjector<TestNonEmptyConstructor> =
+                  TestNonEmptyConstructor__MemberInjector()
+            
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: Lazy<String> = scope.getLazy(String::class.java)
                 val param2: Int = scope.getInstance(Int::class.java)
                 val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                memberInjector.inject(testNonEmptyConstructor, scope)
                 return testNonEmptyConstructor
               }
             

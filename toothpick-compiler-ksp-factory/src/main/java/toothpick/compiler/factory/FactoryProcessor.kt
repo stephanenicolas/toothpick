@@ -291,7 +291,7 @@ class FactoryProcessor(
             hasReleasableAnnotation = parentClass.isAnnotationPresent(Releasable::class),
             hasProvidesSingletonAnnotation = parentClass.isAnnotationPresent(ProvidesSingleton::class),
             hasProvidesReleasableAnnotation = parentClass.isAnnotationPresent(ProvidesReleasable::class),
-            superClassThatNeedsMemberInjection = parentClass.getMostDirectSuperClassWithInjectedMembers(),
+            superClassThatNeedsMemberInjection = parentClass.getMostDirectSuperClassWithInjectedMembers(onlyParents = false),
             parameters = getParamInjectionTargetList()
         )
     }
@@ -331,10 +331,8 @@ class FactoryProcessor(
             if (constructor.parameters.isEmpty()) {
                 if (constructor.isPrivate()) {
                     if (!isInjectableWarningSuppressed()) {
-                        val message = String.format(
-                            "The class %s has a private default constructor. $cannotCreateAFactoryMessage",
-                            qualifiedName?.asString()
-                        )
+                        val message = "The class %s has a private default constructor. %s"
+                            .format(qualifiedName?.asString(), cannotCreateAFactoryMessage)
 
                         constructor.crashOrWarnWhenNoFactoryCanBeCreated(message)
                     }
@@ -349,7 +347,7 @@ class FactoryProcessor(
                     hasReleasableAnnotation = isAnnotationPresent(Releasable::class),
                     hasProvidesSingletonAnnotation = isAnnotationPresent(ProvidesSingleton::class),
                     hasProvidesReleasableAnnotation = isAnnotationPresent(ProvidesReleasable::class),
-                    superClassThatNeedsMemberInjection = getMostDirectSuperClassWithInjectedMembers()
+                    superClassThatNeedsMemberInjection = getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
                 )
             }
         }

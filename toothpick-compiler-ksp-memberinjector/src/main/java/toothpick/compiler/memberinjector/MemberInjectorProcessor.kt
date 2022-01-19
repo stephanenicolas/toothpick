@@ -85,7 +85,7 @@ class MemberInjectorProcessor(
             .map { sourceClass ->
                 MemberInjectorGenerator(
                     sourceClass = sourceClass,
-                    superClassThatNeedsInjection = sourceClass.getMostDirectSuperClassWithInjectedMembers(),
+                    superClassThatNeedsInjection = sourceClass.getMostDirectSuperClassWithInjectedMembers(onlyParents = true),
                     fieldInjectionTargetList = typeElementToFieldInjectorTargetList[sourceClass],
                     methodInjectionTargetList = typeElementToMethodInjectorTargetList[sourceClass]
                 )

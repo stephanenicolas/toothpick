@@ -45,12 +45,18 @@ class FactoryAndMemberInjectorTests {
             import kotlin.Boolean
             import kotlin.Suppress
             import toothpick.Factory
+            import toothpick.MemberInjector
             import toothpick.Scope
             
             @Suppress("ClassName")
             internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
+              private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
+                  TestAClassThatNeedsInjection__MemberInjector()
+            
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
+                val scope = getTargetScope(scope)
                 val testAClassThatNeedsInjection: TestAClassThatNeedsInjection = TestAClassThatNeedsInjection()
+                memberInjector.inject(testAClassThatNeedsInjection, scope)
                 return testAClassThatNeedsInjection
               }
             
@@ -232,53 +238,37 @@ class FactoryAndMemberInjectorTests {
         val expectedSource = expectedKtSource(
             "test/TestAClassThatNeedsInjection__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.MemberInjector
+            import toothpick.Scope
             
-            public final class TestAClassThatNeedsInjection__Factory implements Factory<TestAClassThatNeedsInjection> {
-              private MemberInjector<TestAClassThatNeedsInjection> memberInjector = new test.TestAClassThatNeedsInjection__MemberInjector();
+            @Suppress("ClassName")
+            internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
+              private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
+                  TestAClassThatNeedsInjection__MemberInjector()
             
-              @Override
-              public TestAClassThatNeedsInjection createInstance(Scope scope) {
-                scope = getTargetScope(scope);
-                TestAClassThatNeedsInjection testAClassThatNeedsInjection = new TestAClassThatNeedsInjection();
-                memberInjector.inject(testAClassThatNeedsInjection, scope);
-                return testAClassThatNeedsInjection;
+              public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
+                val scope = getTargetScope(scope)
+                val testAClassThatNeedsInjection: TestAClassThatNeedsInjection = TestAClassThatNeedsInjection()
+                memberInjector.inject(testAClassThatNeedsInjection, scope)
+                return testAClassThatNeedsInjection
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )

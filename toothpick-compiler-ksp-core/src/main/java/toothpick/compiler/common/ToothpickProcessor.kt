@@ -21,6 +21,7 @@ import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.isAnnotationPresent
+import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.isInternal
 import com.google.devtools.ksp.isJavaPackagePrivate
 import com.google.devtools.ksp.isPrivate
@@ -287,7 +288,7 @@ abstract class ToothpickProcessor(
         return findOverridee()?.isAnnotationPresent(Inject::class) == true
     }
 
-    protected fun KSClassDeclaration.getMostDirectSuperClassWithInjectedMembers(onlyParents: Boolean = true): KSClassDeclaration? {
+    protected fun KSClassDeclaration.getMostDirectSuperClassWithInjectedMembers(onlyParents: Boolean): KSClassDeclaration? {
         if (!onlyParents && hasInjectAnnotatedMembers()) return this
 
         val parentClass: KSClassDeclaration? = superTypes
@@ -301,7 +302,9 @@ abstract class ToothpickProcessor(
 
     private fun KSClassDeclaration.hasInjectAnnotatedMembers(): Boolean {
         val members: Sequence<KSAnnotated> = getAllFunctions() + getAllProperties()
-        return members.any { member -> member.isAnnotationPresent(Inject::class) }
+        return members
+            .filterNot { function -> function is KSFunctionDeclaration && function.isConstructor() }
+            .any { member -> member.isAnnotationPresent(Inject::class) }
     }
 
     protected fun KSClassDeclaration.isNonStaticInnerClass(): Boolean {
