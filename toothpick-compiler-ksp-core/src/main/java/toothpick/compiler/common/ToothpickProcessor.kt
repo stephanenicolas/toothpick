@@ -301,9 +301,9 @@ abstract class ToothpickProcessor(
     }
 
     private fun KSClassDeclaration.hasInjectAnnotatedMembers(): Boolean {
-        val members: Sequence<KSAnnotated> = getAllFunctions() + getAllProperties()
-        return members
-            .filterNot { function -> function is KSFunctionDeclaration && function.isConstructor() }
+        // Ignore overridden members. They will be injected by the parent MemberInjector.
+        return getAllFunctions().filter { function -> function.findOverridee() == null && !function.isConstructor() }
+            .plus(getAllProperties().filter { property -> property.findOverridee() == null })
             .any { member -> member.isAnnotationPresent(Inject::class) }
     }
 
