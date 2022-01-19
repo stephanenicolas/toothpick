@@ -22,7 +22,12 @@ jobs:
         with:
           arguments: build
 
+      - name: Run lint
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: spotlessCheck
+
       - name: Run tests
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: test
