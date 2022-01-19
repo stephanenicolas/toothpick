@@ -265,48 +265,37 @@ class FactoryTest {
         val expectedSource = expectedKtSource(
             "test/Wrapper\$TestConstructorInProtectedClass__Factory",
             """
-            package test;
+            package test
             
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.Scope;
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.Scope
             
-            public final class Wrapper${'$'}TestConstructorInProtectedClass__Factory implements Factory<Wrapper.TestConstructorInProtectedClass> {
-              @Override
-              public Wrapper.TestConstructorInProtectedClass createInstance(Scope scope) {
-                Wrapper.TestConstructorInProtectedClass testConstructorInProtectedClass = new Wrapper.TestConstructorInProtectedClass();
-                return testConstructorInProtectedClass;
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier",
+              "RedundantExplicitType"
+            )
+            internal class `Wrapper${'$'}TestConstructorInProtectedClass__Factory` :
+                Factory<Wrapper.TestConstructorInProtectedClass> {
+              public override fun createInstance(scope: Scope): Wrapper.TestConstructorInProtectedClass {
+                val testConstructorInProtectedClass: Wrapper.TestConstructorInProtectedClass =
+                    Wrapper.TestConstructorInProtectedClass()
+                return testConstructorInProtectedClass
               }
             
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
+              public override fun getTargetScope(scope: Scope): Scope = scope
             
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
+              public override fun hasScopeAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasReleasableAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
             
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
-              }
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
         )
