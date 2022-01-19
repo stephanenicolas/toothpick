@@ -28,7 +28,6 @@ dependencies {
 
     implementation deps.kotlinpoet
     implementation deps.kotlinpoet_ksp
-    implementation deps.kotlinpoet_metadata
 
     testImplementation project(':toothpick-compiler-test')
     testImplementation deps.junit4

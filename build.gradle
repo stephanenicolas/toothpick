@@ -5,7 +5,6 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath deps.android_plugin
     classpath deps.kotlin_plugin
     classpath deps.coverallPlugin
     classpath deps.spotlessPlugin

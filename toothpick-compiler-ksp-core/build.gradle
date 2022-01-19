@@ -26,7 +26,6 @@ dependencies {
 
     implementation deps.kotlinpoet
     implementation deps.kotlinpoet_ksp
-    implementation deps.kotlinpoet_metadata
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
