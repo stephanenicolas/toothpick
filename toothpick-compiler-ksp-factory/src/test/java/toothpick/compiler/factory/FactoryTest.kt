@@ -61,7 +61,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+            public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
@@ -117,7 +117,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+            public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
@@ -173,7 +173,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+            public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
@@ -335,7 +335,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
+            public class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
               public override fun createInstance(scope: Scope): TestConstructorInPackageClass {
                 val testConstructorInPackageClass: TestConstructorInPackageClass =
                     TestConstructorInPackageClass()
@@ -416,7 +416,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class Test2Constructors__Factory : Factory<Test2Constructors> {
+            public class Test2Constructors__Factory : Factory<Test2Constructors> {
               public override fun createInstance(scope: Scope): Test2Constructors {
                 val test2Constructors: Test2Constructors = Test2Constructors()
                 return test2Constructors
@@ -474,7 +474,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: String = scope.getInstance(String::class.java)
@@ -537,7 +537,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: Lazy<String> = scope.getLazy(String::class.java)
@@ -600,7 +600,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: Provider<String> = scope.getProvider(String::class.java)
@@ -707,7 +707,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: MutableList<*> = scope.getInstance(MutableList::class.java)
@@ -836,7 +836,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestClassConstructorThrowingException__Factory :
+            public class TestClassConstructorThrowingException__Factory :
                 Factory<TestClassConstructorThrowingException> {
               public override fun createInstance(scope: Scope): TestClassConstructorThrowingException {
                 val scope = getTargetScope(scope)
@@ -900,7 +900,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: String = scope.getInstance(String::class.java)
@@ -960,7 +960,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+            public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
@@ -1026,7 +1026,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: String = scope.getInstance(String::class.java)
@@ -1092,7 +1092,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
+            public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
                 val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
@@ -1161,7 +1161,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: String = scope.getInstance(String::class.java)
@@ -1226,7 +1226,7 @@ class FactoryTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: String = scope.getInstance(String::class.java)

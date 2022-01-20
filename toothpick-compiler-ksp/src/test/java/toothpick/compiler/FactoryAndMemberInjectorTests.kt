@@ -53,7 +53,7 @@ class FactoryAndMemberInjectorTests {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
+            public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
                   TestAClassThatNeedsInjection__MemberInjector()
             
@@ -196,7 +196,7 @@ class FactoryAndMemberInjectorTests {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
+            public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<SuperClassThatNeedsInjection> =
                   SuperClassThatNeedsInjection__MemberInjector()
             
@@ -259,7 +259,7 @@ class FactoryAndMemberInjectorTests {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
+            public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
                   TestAClassThatNeedsInjection__MemberInjector()
             

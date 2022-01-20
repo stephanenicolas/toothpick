@@ -53,7 +53,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestRelaxedFactoryCreationForInjectField__Factory :
+            public class TestRelaxedFactoryCreationForInjectField__Factory :
                 Factory<TestRelaxedFactoryCreationForInjectField> {
               private val memberInjector: MemberInjector<TestRelaxedFactoryCreationForInjectField> =
                   TestRelaxedFactoryCreationForInjectField__MemberInjector()

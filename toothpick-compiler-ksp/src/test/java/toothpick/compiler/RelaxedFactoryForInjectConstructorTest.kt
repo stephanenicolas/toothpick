@@ -78,7 +78,7 @@ class RelaxedFactoryForInjectConstructorTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1: Lazy<String> = scope.getLazy(String::class.java)
@@ -145,7 +145,7 @@ class RelaxedFactoryForInjectConstructorTest {
               "RedundantVisibilityModifier",
               "RedundantExplicitType"
             )
-            internal class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
+            public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               private val memberInjector: MemberInjector<TestNonEmptyConstructor> =
                   TestNonEmptyConstructor__MemberInjector()
             

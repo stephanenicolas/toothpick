@@ -17,6 +17,7 @@
  */
 package toothpick.compiler.memberinjector.generators
 
+import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -30,6 +31,7 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import toothpick.MemberInjector
 import toothpick.Scope
@@ -66,7 +68,7 @@ internal class MemberInjectorGenerator(
             packageName = sourceClassName.packageName,
             TypeSpec.classBuilder(generatedClassName)
                 .addOriginatingKSFile(sourceClass.containingFile!!)
-                .addModifiers(KModifier.INTERNAL)
+                .addModifiers(sourceClass.getVisibility().toKModifier() ?: KModifier.PUBLIC)
                 .addSuperinterface(
                     MemberInjector::class.asClassName().parameterizedBy(sourceClassName)
                 )
