@@ -26,33 +26,31 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import toothpick.compiler.common.generators.targets.ParamInjectionTarget
+import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 
-fun ParamInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock(): CodeBlock {
-    checkNotNull(kind) { "The kind can't be null." }
-
+fun VariableInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock(): CodeBlock {
     val scopeGetMethodName: String = when (kind) {
-        ParamInjectionTarget.Kind.INSTANCE -> "getInstance"
-        ParamInjectionTarget.Kind.PROVIDER -> "getProvider"
-        ParamInjectionTarget.Kind.LAZY -> "getLazy"
+        VariableInjectionTarget.Kind.INSTANCE -> "getInstance"
+        VariableInjectionTarget.Kind.PROVIDER -> "getProvider"
+        VariableInjectionTarget.Kind.LAZY -> "getLazy"
     }
 
     val className: ClassName = when (kind) {
-        ParamInjectionTarget.Kind.INSTANCE -> memberType.toClassName()
-        ParamInjectionTarget.Kind.PROVIDER -> kindParamClass.toClassName()
-        ParamInjectionTarget.Kind.LAZY -> kindParamClass.toClassName()
+        VariableInjectionTarget.Kind.INSTANCE -> memberType.toClassName()
+        VariableInjectionTarget.Kind.PROVIDER -> kindParamClass.toClassName()
+        VariableInjectionTarget.Kind.LAZY -> kindParamClass.toClassName()
     }
 
     return CodeBlock.builder()
         .add("%N(%T::class.java", scopeGetMethodName, className)
-        .apply { if (name != null) add(", %S", name) }
+        .apply { if (qualifierName != null) add(", %S", qualifierName) }
         .add(")")
         .build()
 }
 
-fun ParamInjectionTarget.getParamType(): TypeName {
+fun VariableInjectionTarget.getParamType(): TypeName {
     return when (kind) {
-        ParamInjectionTarget.Kind.INSTANCE -> memberType.toTypeName()
+        VariableInjectionTarget.Kind.INSTANCE -> memberType.toTypeName()
         else -> memberType.toClassName().parameterizedBy(kindParamClass.toTypeName())
     }
 }

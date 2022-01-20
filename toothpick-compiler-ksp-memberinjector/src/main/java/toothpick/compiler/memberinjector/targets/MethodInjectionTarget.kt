@@ -18,11 +18,11 @@
 package toothpick.compiler.memberinjector.targets
 
 import com.google.devtools.ksp.symbol.KSName
-import toothpick.compiler.common.generators.targets.ParamInjectionTarget
+import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 
 /** Basically all information to create an object / call a constructor of a class.  */
 data class MethodInjectionTarget(
     val methodName: KSName,
     val isOverride: Boolean,
-    val parameters: List<ParamInjectionTarget>
+    val parameters: List<VariableInjectionTarget>
 )

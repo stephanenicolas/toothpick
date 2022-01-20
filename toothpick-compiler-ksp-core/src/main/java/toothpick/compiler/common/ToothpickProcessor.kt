@@ -43,8 +43,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import toothpick.compiler.common.generators.TPCodeGenerator
 import toothpick.compiler.common.generators.error
 import toothpick.compiler.common.generators.hasAnnotation
-import toothpick.compiler.common.generators.targets.FieldInjectionTarget
-import toothpick.compiler.common.generators.targets.ParamInjectionTarget
+import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.common.generators.warn
 import java.io.IOException
 import javax.inject.Inject
@@ -225,10 +224,10 @@ abstract class ToothpickProcessor(
         return true
     }
 
-    protected fun KSFunctionDeclaration.getParamInjectionTargetList(): List<ParamInjectionTarget> =
+    protected fun KSFunctionDeclaration.getParamInjectionTargetList(): List<VariableInjectionTarget> =
         parameters.map { variable ->
             val type = variable.type.resolve()
-            FieldInjectionTarget(
+            VariableInjectionTarget(
                 memberType = type,
                 memberName = variable.name!!,
                 kind = type.getParamInjectionTargetKind(),
@@ -237,9 +236,9 @@ abstract class ToothpickProcessor(
             )
         }
 
-    protected fun KSPropertyDeclaration.createFieldOrParamInjectionTarget(): FieldInjectionTarget {
+    protected fun KSPropertyDeclaration.createFieldOrParamInjectionTarget(): VariableInjectionTarget {
         val type = type.resolve()
-        return FieldInjectionTarget(
+        return VariableInjectionTarget(
             memberType = type,
             memberName = simpleName,
             kind = type.getParamInjectionTargetKind(),
@@ -258,7 +257,7 @@ abstract class ToothpickProcessor(
      */
     private fun KSType.getInjectedType(): KSType {
         return when (getParamInjectionTargetKind()) {
-            ParamInjectionTarget.Kind.INSTANCE -> this
+            VariableInjectionTarget.Kind.INSTANCE -> this
             else -> arguments.first().type!!.resolve()
         }
     }
@@ -375,15 +374,15 @@ abstract class ToothpickProcessor(
 
     private fun KSType.isProviderOrLazy(): Boolean =
         getParamInjectionTargetKind() in arrayOf(
-            ParamInjectionTarget.Kind.PROVIDER,
-            ParamInjectionTarget.Kind.LAZY
+            VariableInjectionTarget.Kind.PROVIDER,
+            VariableInjectionTarget.Kind.LAZY
         )
 
-    private fun KSType.getParamInjectionTargetKind(): ParamInjectionTarget.Kind =
+    private fun KSType.getParamInjectionTargetKind(): VariableInjectionTarget.Kind =
         when (declaration.qualifiedName?.asString()) {
-            javax.inject.Provider::class.qualifiedName -> ParamInjectionTarget.Kind.PROVIDER
-            toothpick.Lazy::class.qualifiedName -> ParamInjectionTarget.Kind.LAZY
-            else -> ParamInjectionTarget.Kind.INSTANCE
+            javax.inject.Provider::class.qualifiedName -> VariableInjectionTarget.Kind.PROVIDER
+            toothpick.Lazy::class.qualifiedName -> VariableInjectionTarget.Kind.LAZY
+            else -> VariableInjectionTarget.Kind.INSTANCE
         }
 
     private val validInjectableTypes = arrayOf(ClassKind.CLASS, ClassKind.INTERFACE, ClassKind.ENUM_CLASS)

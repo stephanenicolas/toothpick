@@ -92,7 +92,7 @@ class FactoryProcessor(
     processorOptions, codeGenerator, logger
 ) {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val mapTypeElementToConstructorInjectionTarget: Map<KSClassDeclaration, ConstructorInjectionTarget> =
+        val parentAndConstructorToInject: Map<KSClassDeclaration, ConstructorInjectionTarget> =
             with(resolver) {
                 createFactoriesForClassesAnnotatedWithInjectConstructor() +
                     createFactoriesForClassesWithInjectAnnotatedConstructors() +
@@ -103,7 +103,7 @@ class FactoryProcessor(
             }.toMap()
 
         // Generate Factories
-        mapTypeElementToConstructorInjectionTarget
+        parentAndConstructorToInject
             .mapValues { (_, target) -> FactoryGenerator(target) }
             .forEach { (typeElement, factoryGenerator) ->
                 writeToFile(

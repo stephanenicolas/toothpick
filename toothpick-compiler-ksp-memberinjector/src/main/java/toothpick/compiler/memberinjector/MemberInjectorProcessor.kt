@@ -28,7 +28,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import toothpick.compiler.common.ToothpickProcessor
 import toothpick.compiler.common.generators.info
-import toothpick.compiler.common.generators.targets.FieldInjectionTarget
+import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.memberinjector.generators.MemberInjectorGenerator
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget
 import javax.inject.Inject
@@ -55,7 +55,7 @@ class MemberInjectorProcessor(
         val injectedElements: Sequence<KSAnnotated> =
             resolver.getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
 
-        val typeElementToFieldInjectorTargetList: Map<KSClassDeclaration, List<FieldInjectionTarget>> =
+        val parentAndPropertiesToInject: Map<KSClassDeclaration, List<VariableInjectionTarget>> =
             injectedElements
                 .filterIsInstance<KSPropertyDeclaration>()
                 .mapNotNull { property -> property.getParentClassOrNull()?.let { parent -> parent to property } }
@@ -66,7 +66,7 @@ class MemberInjectorProcessor(
                     { (_, property) -> property.createFieldOrParamInjectionTarget() }
                 )
 
-        val typeElementToMethodInjectorTargetList: Map<KSClassDeclaration, List<MethodInjectionTarget>> =
+        val parentAndMethodsToInject: Map<KSClassDeclaration, List<MethodInjectionTarget>> =
             injectedElements
                 .filterIsInstance<KSFunctionDeclaration>()
                 .filter { function -> function.functionKind == FunctionKind.MEMBER }
@@ -80,14 +80,14 @@ class MemberInjectorProcessor(
                 )
 
         // Generate member scopes
-        typeElementToFieldInjectorTargetList.keys
-            .plus(typeElementToMethodInjectorTargetList.keys)
+        parentAndPropertiesToInject.keys
+            .plus(parentAndMethodsToInject.keys)
             .map { sourceClass ->
                 MemberInjectorGenerator(
                     sourceClass = sourceClass,
                     superClassThatNeedsInjection = sourceClass.getMostDirectSuperClassWithInjectedMembers(onlyParents = true),
-                    fieldInjectionTargetList = typeElementToFieldInjectorTargetList[sourceClass],
-                    methodInjectionTargetList = typeElementToMethodInjectorTargetList[sourceClass]
+                    variableInjectionTargetList = parentAndPropertiesToInject[sourceClass],
+                    methodInjectionTargetList = parentAndMethodsToInject[sourceClass]
                 )
             }
             .forEach { generator ->

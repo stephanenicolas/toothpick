@@ -18,7 +18,7 @@
 package toothpick.compiler.factory.targets
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import toothpick.compiler.common.generators.targets.ParamInjectionTarget
+import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 
 /** Basically all information to create an object / call a constructor of a class.  */
 data class ConstructorInjectionTarget(
@@ -29,5 +29,5 @@ data class ConstructorInjectionTarget(
     val hasProvidesSingletonAnnotation: Boolean,
     val hasProvidesReleasableAnnotation: Boolean,
     val superClassThatNeedsMemberInjection: KSClassDeclaration?,
-    val parameters: List<ParamInjectionTarget> = emptyList()
+    val parameters: List<VariableInjectionTarget> = emptyList()
 )

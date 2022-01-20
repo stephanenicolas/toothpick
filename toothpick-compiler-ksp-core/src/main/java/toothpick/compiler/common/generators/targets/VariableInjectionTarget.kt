@@ -20,12 +20,12 @@ package toothpick.compiler.common.generators.targets
 import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
 
-open class ParamInjectionTarget(
+class VariableInjectionTarget(
     val memberType: KSType,
     val memberName: KSName,
-    val kind: Kind?,
+    val kind: Kind,
     val kindParamClass: KSType,
-    val name: Any?
+    val qualifierName: Any?
 ) {
     enum class Kind {
         INSTANCE, PROVIDER, LAZY

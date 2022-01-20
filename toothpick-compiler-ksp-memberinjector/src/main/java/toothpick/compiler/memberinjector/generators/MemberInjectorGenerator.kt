@@ -39,23 +39,23 @@ import toothpick.compiler.common.generators.TPCodeGenerator
 import toothpick.compiler.common.generators.getInvokeScopeGetMethodWithNameCodeBlock
 import toothpick.compiler.common.generators.getParamType
 import toothpick.compiler.common.generators.memberInjectorClassName
-import toothpick.compiler.common.generators.targets.FieldInjectionTarget
+import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget
 
 /**
- * Generates a [MemberInjector] for a given collection of [FieldInjectionTarget].
+ * Generates a [MemberInjector] for a given collection of [VariableInjectionTarget].
  * Typically a [MemberInjector] is created for a class a soon as it contains an [ ] annotated field or method.
  */
 @OptIn(KotlinPoetKspPreview::class)
 internal class MemberInjectorGenerator(
     private val sourceClass: KSClassDeclaration,
     private val superClassThatNeedsInjection: KSClassDeclaration?,
-    private val fieldInjectionTargetList: List<FieldInjectionTarget>?,
+    private val variableInjectionTargetList: List<VariableInjectionTarget>?,
     private val methodInjectionTargetList: List<MethodInjectionTarget>?
 ) : TPCodeGenerator {
 
     init {
-        require(fieldInjectionTargetList != null || methodInjectionTargetList != null) {
+        require(variableInjectionTargetList != null || methodInjectionTargetList != null) {
             "At least one memberInjectorInjectionTarget is needed."
         }
     }
@@ -79,7 +79,7 @@ internal class MemberInjectorGenerator(
                         .build()
                 )
                 .emitSuperMemberInjectorFieldIfNeeded()
-                .emitInjectMethod(fieldInjectionTargetList, methodInjectionTargetList)
+                .emitInjectMethod(variableInjectionTargetList, methodInjectionTargetList)
                 .build()
         )
     }
@@ -105,7 +105,7 @@ internal class MemberInjectorGenerator(
     }
 
     private fun TypeSpec.Builder.emitInjectMethod(
-        fieldInjectionTargetList: List<FieldInjectionTarget>?,
+        variableInjectionTargetList: List<VariableInjectionTarget>?,
         methodInjectionTargetList: List<MethodInjectionTarget>?
     ): TypeSpec.Builder = apply {
         addFunction(
@@ -118,7 +118,7 @@ internal class MemberInjectorGenerator(
                         addStatement("superMemberInjector.inject(target, scope)")
                     }
                 }
-                .emitInjectFields(fieldInjectionTargetList)
+                .emitInjectFields(variableInjectionTargetList)
                 .emitInjectMethods(methodInjectionTargetList)
                 .build()
         )
@@ -150,9 +150,9 @@ internal class MemberInjectorGenerator(
     }
 
     private fun FunSpec.Builder.emitInjectFields(
-        fieldInjectionTargetList: List<FieldInjectionTarget>?
+        variableInjectionTargetList: List<VariableInjectionTarget>?
     ): FunSpec.Builder = apply {
-        fieldInjectionTargetList?.forEach { memberInjectionTarget ->
+        variableInjectionTargetList?.forEach { memberInjectionTarget ->
             addStatement(
                 "target.%N = scope.%L as %T",
                 memberInjectionTarget.memberName.asString(),
