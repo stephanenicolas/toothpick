@@ -119,10 +119,10 @@ abstract class ToothpickProcessor(
         parameters.map { param -> VariableInjectionTarget.create(param, logger) }
 
     protected fun KSDeclaration.isExcludedByFilters(): Boolean {
-        val typeElementName = qualifiedName.toString()
+        val qualifiedName = qualifiedName?.asString() ?: return true
         return options.excludes
             .map { exclude -> exclude.toRegex() }
-            .any { exclude -> typeElementName.matches(exclude) }
+            .any { exclude -> qualifiedName.matches(exclude) }
             .also { isExcluded ->
                 if (isExcluded) {
                     logger.warn(

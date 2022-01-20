@@ -92,28 +92,24 @@ class FactoryProcessor(
 ) : ToothpickProcessor(
     processorOptions, codeGenerator, logger
 ) {
-    private lateinit var resolver: Resolver
-
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        this.resolver = resolver
+        val supportedAnnotationTypes: Set<KSClassDeclaration> =
+            options.supportedAnnotationTypes
+                .mapNotNull { className -> resolver.getClassDeclarationByName(className) }
+                .toSet()
 
-        val parentAndConstructorToInject: Map<KSClassDeclaration, ConstructorInjectionTarget> =
-            with(resolver) {
-                createFactoriesForClassesAnnotatedWithInjectConstructor() +
-                    createFactoriesForClassesWithInjectAnnotatedConstructors() +
-                    createFactoriesForClassesAnnotatedWith(ProvidesSingleton::class.qualifiedName!!) +
-                    createFactoriesForClassesWithInjectAnnotatedFields() +
-                    createFactoriesForClassesWithInjectAnnotatedMethods() +
-                    createFactoriesForClassesAnnotatedWithScopeAnnotations(supportedAnnotationTypes)
-            }.toMap()
-
-        // Generate Factories
-        parentAndConstructorToInject
-            .mapValues { (_, target) -> FactoryGenerator(target) }
-            .forEach { (typeElement, factoryGenerator) ->
+        createFactoriesForClassesAnnotatedWithInjectConstructor(resolver)
+            .plus(createFactoriesForClassesWithInjectAnnotatedConstructors(resolver))
+            .plus(createFactoriesForClassesAnnotatedWith(resolver, ProvidesSingleton::class.qualifiedName!!))
+            .plus(createFactoriesForClassesWithInjectAnnotatedFields(resolver))
+            .plus(createFactoriesForClassesWithInjectAnnotatedMethods(resolver))
+            .plus(createFactoriesForClassesAnnotatedWithScopeAnnotations(resolver, supportedAnnotationTypes))
+            .distinctBy { target -> target.sourceClass }
+            .forEach { target ->
+                val factoryGenerator = FactoryGenerator(target)
                 writeToFile(
                     tpCodeGenerator = factoryGenerator,
-                    fileDescription = "Factory for type $typeElement"
+                    fileDescription = "Factory for type ${target.sourceClass.qualifiedName?.asString()}"
                 )
 
                 if (options.debugLogOriginatingElements) {
@@ -128,44 +124,45 @@ class FactoryProcessor(
         return emptyList()
     }
 
-    private val Resolver.supportedAnnotationTypes: Set<KSClassDeclaration>
-        get() = options.supportedAnnotationTypes
-            .mapNotNull { className -> getClassDeclarationByName(className) }
-            .toSet()
-
-    private fun Resolver.createFactoriesForClassesAnnotatedWithScopeAnnotations(annotations: Set<KSClassDeclaration>): List<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
-        return annotations
+    private fun createFactoriesForClassesAnnotatedWithScopeAnnotations(
+        resolver: Resolver,
+        annotations: Set<KSClassDeclaration>
+    ): Sequence<ConstructorInjectionTarget> {
+        return annotations.asSequence()
             .filter { annotation -> annotation.isAnnotationPresent(Scope::class) }
             .filter { annotation -> annotation.checkScopeAnnotationValidity() }
             .mapNotNull { annotation -> annotation.qualifiedName?.asString() }
-            .flatMap { annotationName -> createFactoriesForClassesAnnotatedWith(annotationName) }
+            .flatMap { annotationName -> createFactoriesForClassesAnnotatedWith(resolver, annotationName) }
     }
 
-    private fun Resolver.createFactoriesForClassesWithInjectAnnotatedMethods(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
-        return getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
+    private fun createFactoriesForClassesWithInjectAnnotatedMethods(resolver: Resolver): Sequence<ConstructorInjectionTarget> {
+        return resolver.getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
             .filterIsInstance<KSFunctionDeclaration>()
             .filter { function -> function.functionKind == FunctionKind.MEMBER }
             .mapNotNull { function -> function.getParentClassOrNull() }
             .distinct()
-            .mapNotNull { parentClass -> parentClass.processClassContainingInjectAnnotatedMember() }
+            .mapNotNull { parentClass -> parentClass.processClassContainingInjectAnnotatedMember(resolver) }
     }
 
-    private fun Resolver.createFactoriesForClassesWithInjectAnnotatedFields(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
-        return getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
+    private fun createFactoriesForClassesWithInjectAnnotatedFields(resolver: Resolver): Sequence<ConstructorInjectionTarget> {
+        return resolver.getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
             .filterIsInstance<KSPropertyDeclaration>()
             .mapNotNull { property -> property.getParentClassOrNull() }
             .distinct()
-            .mapNotNull { parentClass -> parentClass.processClassContainingInjectAnnotatedMember() }
+            .mapNotNull { parentClass -> parentClass.processClassContainingInjectAnnotatedMember(resolver) }
     }
 
-    private fun Resolver.createFactoriesForClassesAnnotatedWith(annotationName: String): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
-        return getSymbolsWithAnnotation(annotationName)
+    private fun createFactoriesForClassesAnnotatedWith(
+        resolver: Resolver,
+        annotationName: String
+    ): Sequence<ConstructorInjectionTarget> {
+        return resolver.getSymbolsWithAnnotation(annotationName)
             .filterIsInstance<KSClassDeclaration>()
-            .mapNotNull { element -> element.processClassContainingInjectAnnotatedMember() }
+            .mapNotNull { element -> element.processClassContainingInjectAnnotatedMember(resolver) }
     }
 
-    private fun Resolver.createFactoriesForClassesWithInjectAnnotatedConstructors(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
-        return getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
+    private fun createFactoriesForClassesWithInjectAnnotatedConstructors(resolver: Resolver): Sequence<ConstructorInjectionTarget> {
+        return resolver.getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
             .filterIsInstance<KSFunctionDeclaration>()
             .filter { function -> function.functionKind == FunctionKind.MEMBER }
             .filter { function -> function.isConstructor() }
@@ -178,12 +175,12 @@ class FactoryProcessor(
                     )
                 }
 
-                constructor.processInjectAnnotatedConstructor()
+                constructor.processInjectAnnotatedConstructor(resolver)
             }
     }
 
-    private fun Resolver.createFactoriesForClassesAnnotatedWithInjectConstructor(): Sequence<Pair<KSClassDeclaration, ConstructorInjectionTarget>> {
-        return getSymbolsWithAnnotation(InjectConstructor::class.qualifiedName!!)
+    private fun createFactoriesForClassesAnnotatedWithInjectConstructor(resolver: Resolver): Sequence<ConstructorInjectionTarget> {
+        return resolver.getSymbolsWithAnnotation(InjectConstructor::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
             .mapNotNull { element ->
                 val constructorElements = element.getConstructors()
@@ -193,7 +190,7 @@ class FactoryProcessor(
                     firstConstructor != null &&
                     !firstConstructor.isAnnotationPresent(Inject::class)
                 ) {
-                    firstConstructor.processInjectAnnotatedConstructor()
+                    firstConstructor.processInjectAnnotatedConstructor(resolver)
                 } else {
                     logger.error(
                         constructorElements.firstOrNull(),
@@ -205,14 +202,13 @@ class FactoryProcessor(
             }
     }
 
-    private fun KSClassDeclaration.processClassContainingInjectAnnotatedMember(): Pair<KSClassDeclaration, ConstructorInjectionTarget>? {
+    private fun KSClassDeclaration.processClassContainingInjectAnnotatedMember(resolver: Resolver): ConstructorInjectionTarget? {
         if (isExcludedByFilters()) return null
 
         // Verify common generated code restrictions.
         if (!canTypeHaveAFactory()) return null
 
-        val target = createConstructorInjectionTarget()
-        return if (target == null) null else this to target
+        return createConstructorInjectionTarget(resolver)
     }
 
     private fun KSFunctionDeclaration.isSingleInjectAnnotatedConstructor(): Boolean {
@@ -223,7 +219,7 @@ class FactoryProcessor(
             }
     }
 
-    private fun KSFunctionDeclaration.processInjectAnnotatedConstructor(): Pair<KSClassDeclaration, ConstructorInjectionTarget>? {
+    private fun KSFunctionDeclaration.processInjectAnnotatedConstructor(resolver: Resolver): ConstructorInjectionTarget? {
         val parentClass = parentDeclaration as KSClassDeclaration
 
         // Verify common generated code restrictions.
@@ -238,7 +234,7 @@ class FactoryProcessor(
             return null
         }
 
-        return parentClass to createConstructorInjectionTarget()
+        return createConstructorInjectionTarget(resolver)
     }
 
     private fun KSFunctionDeclaration.isValidInjectAnnotatedConstructor(): Boolean {
@@ -274,9 +270,9 @@ class FactoryProcessor(
         }
     }
 
-    private fun KSFunctionDeclaration.createConstructorInjectionTarget(): ConstructorInjectionTarget {
+    private fun KSFunctionDeclaration.createConstructorInjectionTarget(resolver: Resolver): ConstructorInjectionTarget {
         val parentClass = parentDeclaration as KSClassDeclaration
-        val scopeName = parentClass.getScopeName()
+        val scopeName = parentClass.getScopeName(resolver)
 
         parentClass.checkReleasableAnnotationValidity()
         parentClass.checkProvidesReleasableAnnotationValidity()
@@ -290,7 +286,7 @@ class FactoryProcessor(
         }
 
         return ConstructorInjectionTarget(
-            builtClass = parentClass,
+            sourceClass = parentClass,
             scopeName = scopeName,
             hasSingletonAnnotation = parentClass.isAnnotationPresent(Singleton::class),
             hasReleasableAnnotation = parentClass.isAnnotationPresent(Releasable::class),
@@ -301,8 +297,8 @@ class FactoryProcessor(
         )
     }
 
-    private fun KSClassDeclaration.createConstructorInjectionTarget(): ConstructorInjectionTarget? {
-        val scopeName = getScopeName()
+    private fun KSClassDeclaration.createConstructorInjectionTarget(resolver: Resolver): ConstructorInjectionTarget? {
+        val scopeName = getScopeName(resolver)
         checkReleasableAnnotationValidity()
         checkProvidesReleasableAnnotationValidity()
 
@@ -346,7 +342,7 @@ class FactoryProcessor(
                 }
 
                 return ConstructorInjectionTarget(
-                    builtClass = this,
+                    sourceClass = this,
                     scopeName = scopeName,
                     hasSingletonAnnotation = isAnnotationPresent(Singleton::class),
                     hasReleasableAnnotation = isAnnotationPresent(Releasable::class),
@@ -383,7 +379,7 @@ class FactoryProcessor(
      * @receiver the element for which a scope is to be found.
      * @return the scope of this `typeElement` or `null` if it has no scope annotations.
      */
-    private fun KSAnnotated.getScopeName(): KSName? {
+    private fun KSAnnotated.getScopeName(resolver: Resolver): KSName? {
         var scopeName: KSName? = null
         var hasScopeAnnotation = false
 

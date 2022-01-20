@@ -55,7 +55,7 @@ internal class FactoryGenerator(
     private val constructorInjectionTarget: ConstructorInjectionTarget
 ) : TPCodeGenerator {
 
-    private val sourceClass: KSClassDeclaration = constructorInjectionTarget.builtClass
+    private val sourceClass: KSClassDeclaration = constructorInjectionTarget.sourceClass
 
     val sourceClassName: ClassName = sourceClass.toClassName()
     val generatedClassName: ClassName = sourceClassName.factoryClassName
