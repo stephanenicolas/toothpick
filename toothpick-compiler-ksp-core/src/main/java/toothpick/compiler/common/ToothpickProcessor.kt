@@ -21,8 +21,6 @@ import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.isConstructor
-import com.google.devtools.ksp.isInternal
-import com.google.devtools.ksp.isJavaPackagePrivate
 import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
@@ -33,9 +31,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
-import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSValueParameter
 import com.google.devtools.ksp.symbol.Variance
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -48,7 +44,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 /** Base processor class.  */
-@OptIn(KspExperimental::class)
+@OptIn(KspExperimental::class, KotlinPoetKspPreview::class)
 abstract class ToothpickProcessor(
     processorOptions: Map<String, String>,
     private val codeGenerator: CodeGenerator,
@@ -57,7 +53,6 @@ abstract class ToothpickProcessor(
 
     protected val options = processorOptions.readOptions()
 
-    @OptIn(KotlinPoetKspPreview::class)
     protected fun writeToFile(tpCodeGenerator: TPCodeGenerator, fileDescription: String): Boolean {
         return try {
             tpCodeGenerator
@@ -68,107 +63,6 @@ abstract class ToothpickProcessor(
             logger.error("Error writing %s file: %s", fileDescription, e.message)
             false
         }
-    }
-
-    protected fun KSDeclaration.hasParentDeclaration(): Boolean {
-        if (parentDeclaration == null) {
-            logger.error(
-                this,
-                "Top-level element %s cannot be injected. Remove @Inject annotation or move this element to a Class.",
-                qualifiedName?.asString()
-            )
-            return false
-        }
-        return true
-    }
-
-    protected fun KSPropertyDeclaration.isValidInjectAnnotatedProperty(): Boolean {
-        // Verify modifiers.
-        if (isPrivate()) {
-            logger.error(
-                this,
-                "@Inject-annotated fields must not be private: %s",
-                qualifiedName?.asString()
-            )
-            return false
-        }
-
-        return type.resolve().isValidInjectedType(
-            node = this,
-            qualifiedName = qualifiedName?.asString()
-        )
-    }
-
-    protected fun KSValueParameter.isValidInjectAnnotatedParameter(): Boolean {
-        val parentClass = (parent as? KSDeclaration)?.closestClassDeclaration()
-        if (parentClass == null) {
-            logger.error(
-                this,
-                "@Inject-annotated field %s must be part of a class.",
-                name?.asString()
-            )
-            return false
-        }
-
-        val parentFun = parent as? KSFunctionDeclaration
-        if (parentFun == null) {
-            logger.error(
-                this,
-                "@Inject-annotated field %s must be part of a function.",
-                name?.asString()
-            )
-            return false
-        }
-
-        return type.resolve().isValidInjectedType(
-            node = this,
-            qualifiedName = "${parentFun.qualifiedName?.asString()}#$name"
-        )
-    }
-
-    protected fun KSFunctionDeclaration.isValidInjectAnnotatedMethod(): Boolean {
-        // Verify modifiers.
-        if (isPrivate()) {
-            logger.error(
-                this,
-                "@Inject-annotated methods must not be private: %s",
-                qualifiedName?.asString()
-            )
-            return false
-        }
-
-        val parentClass = closestClassDeclaration()
-        if (parentClass == null) {
-            logger.error(
-                this,
-                "@Inject-annotated function %s must be part of a class.",
-                qualifiedName?.asString()
-            )
-            return false
-        }
-
-        val areParametersValid =
-            parameters
-                .map { param -> param.type.resolve() }
-                .all { type ->
-                    type.isValidInjectedType(
-                        node = this,
-                        qualifiedName = qualifiedName?.asString()
-                    )
-                }
-
-        if (!areParametersValid) return false
-
-        if (!isJavaPackagePrivate() && !isInternal()) {
-            if (!hasWarningSuppressed(SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
-                crashOrWarnWhenMethodIsNotPackageVisible(
-                    this,
-                    "@Inject-annotated methods should have package/internal visibility: ${qualifiedName?.asString()}",
-                )
-            }
-        }
-
-        return true
     }
 
     protected fun KSType.isValidInjectedType(node: KSNode, qualifiedName: String?): Boolean {
@@ -224,9 +118,6 @@ abstract class ToothpickProcessor(
     protected fun KSFunctionDeclaration.getParamInjectionTargetList(): List<VariableInjectionTarget> =
         parameters.map { param -> VariableInjectionTarget.create(param, logger) }
 
-    protected fun KSPropertyDeclaration.createFieldOrParamInjectionTarget(): VariableInjectionTarget =
-        VariableInjectionTarget.create(this, logger)
-
     protected fun KSDeclaration.isExcludedByFilters(): Boolean {
         val typeElementName = qualifiedName.toString()
         return options.excludes
@@ -242,13 +133,6 @@ abstract class ToothpickProcessor(
                     )
                 }
             }
-    }
-
-    // overrides are simpler in this case as methods can only be package or protected.
-    // a method with the same name in the type hierarchy would necessarily mean that
-    // the {@code methodElement} would be an override of this method.
-    protected fun KSFunctionDeclaration.isOverride(): Boolean {
-        return findOverridee()?.isAnnotationPresent(Inject::class) == true
     }
 
     protected fun KSClassDeclaration.getMostDirectSuperClassWithInjectedMembers(onlyParents: Boolean): KSClassDeclaration? {
@@ -315,14 +199,4 @@ abstract class ToothpickProcessor(
     }
 
     private val validInjectableTypes = arrayOf(ClassKind.CLASS, ClassKind.INTERFACE, ClassKind.ENUM_CLASS)
-
-    private fun crashOrWarnWhenMethodIsNotPackageVisible(element: KSNode, message: String) {
-        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(element, message)
-        else logger.warn(element, message)
-    }
-
-    companion object {
-        /** Allows to suppress warning when an injected method is not package-private visible.  */
-        private const val SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE = "visible"
-    }
 }
