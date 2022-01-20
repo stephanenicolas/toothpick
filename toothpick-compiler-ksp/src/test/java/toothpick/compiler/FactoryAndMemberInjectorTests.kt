@@ -56,6 +56,7 @@ class FactoryAndMemberInjectorTests {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
                   TestAClassThatNeedsInjection__MemberInjector()
             
+              @Suppress("NAME_SHADOWING")
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
                 return TestAClassThatNeedsInjection()
@@ -199,6 +200,7 @@ class FactoryAndMemberInjectorTests {
               private val memberInjector: MemberInjector<SuperClassThatNeedsInjection> =
                   SuperClassThatNeedsInjection__MemberInjector()
             
+              @Suppress("NAME_SHADOWING")
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
                 return TestAClassThatNeedsInjection()
@@ -262,6 +264,7 @@ class FactoryAndMemberInjectorTests {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
                   TestAClassThatNeedsInjection__MemberInjector()
             
+              @Suppress("NAME_SHADOWING")
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
                 return TestAClassThatNeedsInjection()

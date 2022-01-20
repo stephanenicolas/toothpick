@@ -118,6 +118,12 @@ internal class FactoryGenerator(
                     if (constructorInjectionTarget.parameters.isNotEmpty() ||
                         constructorInjectionTarget.superClassThatNeedsMemberInjection != null
                     ) {
+                        addAnnotation(
+                            AnnotationSpec.builder(Suppress::class)
+                                .addMember("%S", "NAME_SHADOWING")
+                                .build()
+                        )
+
                         // We only need it when the constructor contains parameters or dependencies
                         addStatement("val scope = getTargetScope(scope)")
                     }

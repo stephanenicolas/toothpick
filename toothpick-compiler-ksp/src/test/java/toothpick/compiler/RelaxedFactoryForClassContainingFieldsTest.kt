@@ -57,6 +57,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
               private val memberInjector: MemberInjector<TestRelaxedFactoryCreationForInjectField> =
                   TestRelaxedFactoryCreationForInjectField__MemberInjector()
             
+              @Suppress("NAME_SHADOWING")
               public override fun createInstance(scope: Scope): TestRelaxedFactoryCreationForInjectField {
                 val scope = getTargetScope(scope)
                 return TestRelaxedFactoryCreationForInjectField()
