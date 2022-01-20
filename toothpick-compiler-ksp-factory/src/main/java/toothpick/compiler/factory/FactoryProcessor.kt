@@ -327,40 +327,41 @@ class FactoryProcessor(
                 " but it needs a parameter for its constructor and this parameter is not injectable."
             )
 
-        // search for default constructor
-        for (constructor in constructors) {
-            if (constructor.parameters.isEmpty()) {
-                if (constructor.isPrivate()) {
-                    if (!isInjectableWarningSuppressed()) {
-                        val message = "The class %s has a private default constructor. %s"
-                            .format(qualifiedName?.asString(), cannotCreateAFactoryMessage)
+        val defaultConstructor = constructors.firstOrNull { constructor ->
+            constructor.parameters.isEmpty()
+        }
 
-                        constructor.crashOrWarnWhenNoFactoryCanBeCreated(message)
-                    }
-
-                    return null
-                }
-
-                return ConstructorInjectionTarget(
-                    sourceClass = this,
-                    scopeName = scopeName,
-                    hasSingletonAnnotation = isAnnotationPresent(Singleton::class),
-                    hasReleasableAnnotation = isAnnotationPresent(Releasable::class),
-                    hasProvidesSingletonAnnotation = isAnnotationPresent(ProvidesSingleton::class),
-                    hasProvidesReleasableAnnotation = isAnnotationPresent(ProvidesReleasable::class),
-                    superClassThatNeedsMemberInjection = getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
+        if (defaultConstructor == null) {
+            if (!isInjectableWarningSuppressed()) {
+                crashOrWarnWhenNoFactoryCanBeCreated(
+                    "The class %s has injected members or a scope annotation but has no @Inject-annotated (non-private) constructor nor a non-private default constructor. %s"
+                        .format(qualifiedName?.asString(), cannotCreateAFactoryMessage)
                 )
             }
+
+            return null
         }
 
-        if (!isInjectableWarningSuppressed()) {
-            crashOrWarnWhenNoFactoryCanBeCreated(
-                "The class ${qualifiedName?.asString()} has injected members or a scope annotation but has no " +
-                    "@Inject-annotated (non-private) constructor  nor a non-private default constructor. " +
-                    cannotCreateAFactoryMessage
-            )
+        if (defaultConstructor.isPrivate()) {
+            if (!isInjectableWarningSuppressed()) {
+                crashOrWarnWhenNoFactoryCanBeCreated(
+                    "The class %s has a private default constructor. %s"
+                        .format(qualifiedName?.asString(), cannotCreateAFactoryMessage)
+                )
+            }
+
+            return null
         }
-        return null
+
+        return ConstructorInjectionTarget(
+            sourceClass = this,
+            scopeName = scopeName,
+            hasSingletonAnnotation = isAnnotationPresent(Singleton::class),
+            hasReleasableAnnotation = isAnnotationPresent(Releasable::class),
+            hasProvidesSingletonAnnotation = isAnnotationPresent(ProvidesSingleton::class),
+            hasProvidesReleasableAnnotation = isAnnotationPresent(ProvidesReleasable::class),
+            superClassThatNeedsMemberInjection = getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
+        )
     }
 
     private fun KSNode.crashOrWarnWhenNoFactoryCanBeCreated(message: String) {
