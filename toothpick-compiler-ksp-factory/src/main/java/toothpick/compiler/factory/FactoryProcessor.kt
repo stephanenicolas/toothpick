@@ -33,6 +33,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.Modifier
@@ -91,7 +92,11 @@ class FactoryProcessor(
 ) : ToothpickProcessor(
     processorOptions, codeGenerator, logger
 ) {
+    private lateinit var resolver: Resolver
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        this.resolver = resolver
+
         val parentAndConstructorToInject: Map<KSClassDeclaration, ConstructorInjectionTarget> =
             with(resolver) {
                 createFactoriesForClassesAnnotatedWithInjectConstructor() +
@@ -378,8 +383,8 @@ class FactoryProcessor(
      * @receiver the element for which a scope is to be found.
      * @return the scope of this `typeElement` or `null` if it has no scope annotations.
      */
-    private fun KSAnnotated.getScopeName(): String? {
-        var scopeName: String? = null
+    private fun KSAnnotated.getScopeName(): KSName? {
+        var scopeName: KSName? = null
         var hasScopeAnnotation = false
 
         annotations
@@ -393,7 +398,7 @@ class FactoryProcessor(
                     if (scopeName != null) {
                         logger.error(this, "Only one @Scope qualified annotation is allowed : %s", scopeName)
                     }
-                    scopeName = annotation.qualifiedName?.asString()
+                    scopeName = annotation.qualifiedName
                 }
 
                 if (isSingletonAnnotation) {
@@ -402,7 +407,7 @@ class FactoryProcessor(
             }
 
         if (hasScopeAnnotation && scopeName == null) {
-            return Singleton::class.qualifiedName!!
+            return resolver.getKSNameFromString(Singleton::class.qualifiedName!!)
         }
 
         return scopeName

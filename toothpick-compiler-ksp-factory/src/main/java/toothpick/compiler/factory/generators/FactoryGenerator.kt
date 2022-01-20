@@ -107,142 +107,138 @@ internal class FactoryGenerator(
     }
 
     private fun TypeSpec.Builder.emitCreateInstance(): TypeSpec.Builder = apply {
-        val createInstanceBuilder =
-            FunSpec.builder("createInstance")
-                .addModifiers(KModifier.OVERRIDE)
-                .addParameter("scope", Scope::class)
-                .returns(sourceClassName)
-                .apply {
-                    // change the scope to target scope so that all dependencies are created in the target scope
-                    // and the potential injection take place in the target scope too
-                    if (constructorInjectionTarget.parameters.isNotEmpty() ||
-                        constructorInjectionTarget.superClassThatNeedsMemberInjection != null
-                    ) {
-                        addAnnotation(
-                            AnnotationSpec.builder(Suppress::class)
-                                .addMember("%S", "NAME_SHADOWING")
-                                .build()
-                        )
-
-                        // We only need it when the constructor contains parameters or dependencies
-                        addStatement("val scope = getTargetScope(scope)")
-                    }
-                }
-
-        val codeBlockBuilder = CodeBlock.builder()
+        FunSpec.builder("createInstance")
+            .addModifiers(KModifier.OVERRIDE)
+            .addParameter("scope", Scope::class)
+            .returns(sourceClassName)
             .apply {
-                constructorInjectionTarget.parameters.forEachIndexed { i, param ->
-                    addStatement(
-                        "val %N = scope.%L as %T",
-                        "param${i + 1}",
-                        param.getInvokeScopeGetMethodWithNameCodeBlock(),
-                        param.getParamType()
+                // change the scope to target scope so that all dependencies are created in the target scope
+                // and the potential injection take place in the target scope too
+                if (constructorInjectionTarget.parameters.isNotEmpty() ||
+                    constructorInjectionTarget.superClassThatNeedsMemberInjection != null
+                ) {
+                    addAnnotation(
+                        AnnotationSpec.builder(Suppress::class)
+                            .addMember("%S", "NAME_SHADOWING")
+                            .build()
                     )
-                }
 
-                addStatement(
-                    "return %T(%L)",
-                    sourceClassName,
-                    List(constructorInjectionTarget.parameters.size) { i -> "param${i + 1}" }
-                        .joinToString(", ")
-                )
-
-                if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-                    beginControlFlow(".apply")
-                    addStatement("memberInjector.inject(this, scope)")
-                    endControlFlow()
+                    // We only need it when the constructor contains parameters or dependencies
+                    addStatement("val scope = getTargetScope(scope)")
                 }
             }
+            .addCode(
+                CodeBlock.builder()
+                    .apply {
+                        constructorInjectionTarget.parameters.forEachIndexed { i, param ->
+                            addStatement(
+                                "val %N = scope.%L as %T",
+                                "param${i + 1}",
+                                param.getInvokeScopeGetMethodWithNameCodeBlock(),
+                                param.getParamType()
+                            )
+                        }
 
-        createInstanceBuilder.addCode(codeBlockBuilder.build())
+                        addStatement(
+                            "return %T(%L)",
+                            sourceClassName,
+                            List(constructorInjectionTarget.parameters.size) { i -> "param${i + 1}" }
+                                .joinToString(", ")
+                        )
 
-        addFunction(createInstanceBuilder.build())
+                        if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
+                            beginControlFlow(".apply")
+                            addStatement("memberInjector.inject(this, scope)")
+                            endControlFlow()
+                        }
+                    }
+                    .build()
+            )
+            .build()
+            .also { addFunction(it) }
     }
 
     private fun TypeSpec.Builder.emitGetTargetScope(): TypeSpec.Builder = apply {
-        addFunction(
-            FunSpec.builder("getTargetScope")
-                .addModifiers(KModifier.OVERRIDE)
-                .addParameter("scope", Scope::class)
-                .returns(Scope::class)
-                .addStatement(
-                    "return scope%L",
-                    parentScopeCodeBlock.toString()
-                )
-                .build()
-        )
+        val scopeName = constructorInjectionTarget.scopeName
+        FunSpec.builder("getTargetScope")
+            .addModifiers(KModifier.OVERRIDE)
+            .addParameter("scope", Scope::class)
+            .returns(Scope::class)
+            .addStatement(
+                "return %L",
+                when (scopeName?.asString()) {
+                    null -> CodeBlock.of("scope")
+                    // there is no scope name or the current @Scoped annotation.
+                    Singleton::class.qualifiedName!! -> CodeBlock.of("scope.rootScope")
+                    else -> CodeBlock.of(
+                        "scope.getParentScope(%T::class.java)",
+                        ClassName(
+                            packageName = scopeName.getQualifier(),
+                            scopeName.getShortName()
+                        )
+                    )
+                }
+            )
+            .build()
+            .also { addFunction(it) }
     }
 
     private fun TypeSpec.Builder.emitHasScopeAnnotation(): TypeSpec.Builder = apply {
         val scopeName = constructorInjectionTarget.scopeName
         val hasScopeAnnotation = scopeName != null
-        addFunction(
-            FunSpec.builder("hasScopeAnnotation")
-                .addModifiers(KModifier.OVERRIDE)
-                .returns(Boolean::class)
-                .addStatement("return %L", hasScopeAnnotation)
-                .build()
-        )
+        FunSpec.builder("hasScopeAnnotation")
+            .addModifiers(KModifier.OVERRIDE)
+            .returns(Boolean::class)
+            .addStatement("return %L", hasScopeAnnotation)
+            .build()
+            .also { addFunction(it) }
     }
 
     private fun TypeSpec.Builder.emitHasSingletonAnnotation(): TypeSpec.Builder = apply {
-        addFunction(
-            FunSpec.builder("hasSingletonAnnotation")
-                .addModifiers(KModifier.OVERRIDE)
-                .returns(Boolean::class)
-                .addStatement(
-                    "return %L",
-                    constructorInjectionTarget.hasSingletonAnnotation
-                )
-                .build()
-        )
+        FunSpec.builder("hasSingletonAnnotation")
+            .addModifiers(KModifier.OVERRIDE)
+            .returns(Boolean::class)
+            .addStatement(
+                "return %L",
+                constructorInjectionTarget.hasSingletonAnnotation
+            )
+            .build()
+            .also { addFunction(it) }
     }
 
-    private fun TypeSpec.Builder.emitHasReleasableAnnotation(): TypeSpec.Builder {
-        addFunction(
-            FunSpec.builder("hasReleasableAnnotation")
-                .addModifiers(KModifier.OVERRIDE)
-                .returns(Boolean::class)
-                .addStatement(
-                    "return %L",
-                    constructorInjectionTarget.hasReleasableAnnotation
-                )
-                .build()
-        )
-        return this
+    private fun TypeSpec.Builder.emitHasReleasableAnnotation(): TypeSpec.Builder = apply {
+        FunSpec.builder("hasReleasableAnnotation")
+            .addModifiers(KModifier.OVERRIDE)
+            .returns(Boolean::class)
+            .addStatement(
+                "return %L",
+                constructorInjectionTarget.hasReleasableAnnotation
+            )
+            .build()
+            .also { addFunction(it) }
     }
 
     private fun TypeSpec.Builder.emitHasProvidesSingletonAnnotation(): TypeSpec.Builder = apply {
-        addFunction(
-            FunSpec.builder("hasProvidesSingletonAnnotation")
-                .addModifiers(KModifier.OVERRIDE)
-                .returns(Boolean::class)
-                .addStatement(
-                    "return %L",
-                    constructorInjectionTarget.hasProvidesSingletonAnnotation
-                )
-                .build()
-        )
+        FunSpec.builder("hasProvidesSingletonAnnotation")
+            .addModifiers(KModifier.OVERRIDE)
+            .returns(Boolean::class)
+            .addStatement(
+                "return %L",
+                constructorInjectionTarget.hasProvidesSingletonAnnotation
+            )
+            .build()
+            .also { addFunction(it) }
     }
 
     private fun TypeSpec.Builder.emitHasProvidesReleasableAnnotation(): TypeSpec.Builder = apply {
-        addFunction(
-            FunSpec.builder("hasProvidesReleasableAnnotation")
-                .addModifiers(KModifier.OVERRIDE)
-                .returns(Boolean::class)
-                .addStatement(
-                    "return %L",
-                    constructorInjectionTarget.hasProvidesReleasableAnnotation
-                )
-                .build()
-        )
+        FunSpec.builder("hasProvidesReleasableAnnotation")
+            .addModifiers(KModifier.OVERRIDE)
+            .returns(Boolean::class)
+            .addStatement(
+                "return %L",
+                constructorInjectionTarget.hasProvidesReleasableAnnotation
+            )
+            .build()
+            .also { addFunction(it) }
     }
-
-    private val parentScopeCodeBlock: CodeBlock
-        get() = when (val scopeName = constructorInjectionTarget.scopeName) {
-            null -> CodeBlock.of("")
-            // there is no scope name or the current @Scoped annotation.
-            Singleton::class.java.name -> CodeBlock.of(".rootScope")
-            else -> CodeBlock.of(".getParentScope(%L::class.java)", scopeName)
-        }
 }

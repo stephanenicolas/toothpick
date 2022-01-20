@@ -1001,7 +1001,7 @@ class FactoryTest {
               }
             
               public override fun getTargetScope(scope: Scope): Scope =
-                  scope.getParentScope(test.CustomScope::class.java)
+                  scope.getParentScope(CustomScope::class.java)
             
               public override fun hasScopeAnnotation(): Boolean = true
             
@@ -1060,7 +1060,7 @@ class FactoryTest {
               public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
             
               public override fun getTargetScope(scope: Scope): Scope =
-                  scope.getParentScope(test.CustomScope::class.java)
+                  scope.getParentScope(CustomScope::class.java)
             
               public override fun hasScopeAnnotation(): Boolean = true
             
@@ -1131,7 +1131,7 @@ class FactoryTest {
               }
             
               public override fun getTargetScope(scope: Scope): Scope =
-                  scope.getParentScope(test.CustomScope::class.java)
+                  scope.getParentScope(CustomScope::class.java)
             
               public override fun hasScopeAnnotation(): Boolean = true
             
