@@ -59,9 +59,10 @@ class RelaxedFactoryForClassContainingFieldsTest {
             
               public override fun createInstance(scope: Scope): TestRelaxedFactoryCreationForInjectField {
                 val scope = getTargetScope(scope)
-                val testRelaxedFactoryCreationForInjectField = TestRelaxedFactoryCreationForInjectField()
-                memberInjector.inject(testRelaxedFactoryCreationForInjectField, scope)
-                return testRelaxedFactoryCreationForInjectField
+                return TestRelaxedFactoryCreationForInjectField()
+                .apply {
+                  memberInjector.inject(this, scope)
+                }
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope

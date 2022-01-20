@@ -58,9 +58,10 @@ class FactoryAndMemberInjectorTests {
             
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
-                val testAClassThatNeedsInjection = TestAClassThatNeedsInjection()
-                memberInjector.inject(testAClassThatNeedsInjection, scope)
-                return testAClassThatNeedsInjection
+                return TestAClassThatNeedsInjection()
+                .apply {
+                  memberInjector.inject(this, scope)
+                }
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -200,9 +201,10 @@ class FactoryAndMemberInjectorTests {
             
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
-                val testAClassThatNeedsInjection = TestAClassThatNeedsInjection()
-                memberInjector.inject(testAClassThatNeedsInjection, scope)
-                return testAClassThatNeedsInjection
+                return TestAClassThatNeedsInjection()
+                .apply {
+                  memberInjector.inject(this, scope)
+                }
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -262,9 +264,10 @@ class FactoryAndMemberInjectorTests {
             
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
-                val testAClassThatNeedsInjection = TestAClassThatNeedsInjection()
-                memberInjector.inject(testAClassThatNeedsInjection, scope)
-                return testAClassThatNeedsInjection
+                return TestAClassThatNeedsInjection()
+                .apply {
+                  memberInjector.inject(this, scope)
+                }
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope

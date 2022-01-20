@@ -123,9 +123,6 @@ internal class FactoryGenerator(
                     }
                 }
 
-        val varName = sourceClassName.simpleName
-            .replaceFirstChar { first -> first.lowercaseChar() }
-
         val codeBlockBuilder = CodeBlock.builder()
             .apply {
                 constructorInjectionTarget.parameters.forEachIndexed { i, param ->
@@ -138,18 +135,17 @@ internal class FactoryGenerator(
                 }
 
                 addStatement(
-                    "val %N = %T(%L)",
-                    varName,
+                    "return %T(%L)",
                     sourceClassName,
                     List(constructorInjectionTarget.parameters.size) { i -> "param${i + 1}" }
                         .joinToString(", ")
                 )
 
                 if (constructorInjectionTarget.superClassThatNeedsMemberInjection != null) {
-                    addStatement("memberInjector.inject(%N, scope)", varName)
+                    beginControlFlow(".apply")
+                    addStatement("memberInjector.inject(this, scope)")
+                    endControlFlow()
                 }
-
-                addStatement("return %N", varName)
             }
 
         createInstanceBuilder.addCode(codeBlockBuilder.build())

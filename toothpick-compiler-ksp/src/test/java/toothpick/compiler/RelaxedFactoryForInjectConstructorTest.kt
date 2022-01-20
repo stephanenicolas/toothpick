@@ -82,8 +82,7 @@ class RelaxedFactoryForInjectConstructorTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getLazy(String::class.java) as Lazy<String>
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -151,9 +150,10 @@ class RelaxedFactoryForInjectConstructorTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getLazy(String::class.java) as Lazy<String>
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                memberInjector.inject(testNonEmptyConstructor, scope)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
+                .apply {
+                  memberInjector.inject(this, scope)
+                }
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope

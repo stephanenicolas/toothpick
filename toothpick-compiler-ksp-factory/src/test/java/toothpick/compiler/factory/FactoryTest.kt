@@ -61,10 +61,7 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
-              public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor = TestEmptyConstructor()
-                return testEmptyConstructor
-              }
+              public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
             
@@ -116,10 +113,7 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
-              public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor = TestEmptyConstructor()
-                return testEmptyConstructor
-              }
+              public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
             
@@ -171,10 +165,7 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
-              public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor = TestEmptyConstructor()
-                return testEmptyConstructor
-              }
+              public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
             
@@ -275,10 +266,8 @@ class FactoryTest {
             )
             internal class `Wrapper${'$'}TestConstructorInProtectedClass__Factory` :
                 Factory<Wrapper.TestConstructorInProtectedClass> {
-              public override fun createInstance(scope: Scope): Wrapper.TestConstructorInProtectedClass {
-                val testConstructorInProtectedClass = Wrapper.TestConstructorInProtectedClass()
-                return testConstructorInProtectedClass
-              }
+              public override fun createInstance(scope: Scope): Wrapper.TestConstructorInProtectedClass = 
+                  Wrapper.TestConstructorInProtectedClass()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
             
@@ -330,10 +319,8 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
-              public override fun createInstance(scope: Scope): TestConstructorInPackageClass {
-                val testConstructorInPackageClass = TestConstructorInPackageClass()
-                return testConstructorInPackageClass
-              }
+              public override fun createInstance(scope: Scope): TestConstructorInPackageClass =
+                  TestConstructorInPackageClass()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
             
@@ -409,10 +396,7 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class Test2Constructors__Factory : Factory<Test2Constructors> {
-              public override fun createInstance(scope: Scope): Test2Constructors {
-                val test2Constructors = Test2Constructors()
-                return test2Constructors
-              }
+              public override fun createInstance(scope: Scope): Test2Constructors = Test2Constructors()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
             
@@ -470,8 +454,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(String::class.java) as String
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -532,8 +515,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getLazy(String::class.java) as Lazy<String>
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -594,8 +576,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getProvider(String::class.java) as Provider<String>
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -700,8 +681,7 @@ class FactoryTest {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(MutableList::class.java) as MutableList<String>
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -829,8 +809,7 @@ class FactoryTest {
               public override fun createInstance(scope: Scope): TestClassConstructorThrowingException {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(String::class.java) as String
-                val testClassConstructorThrowingException = TestClassConstructorThrowingException(param1)
-                return testClassConstructorThrowingException
+                return TestClassConstructorThrowingException(param1)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -891,8 +870,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(String::class.java) as String
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope.rootScope
@@ -946,10 +924,7 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
-              public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor = TestEmptyConstructor()
-                return testEmptyConstructor
-              }
+              public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
             
               public override fun getTargetScope(scope: Scope): Scope = scope.rootScope
             
@@ -1015,8 +990,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(String::class.java) as String
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope =
@@ -1076,10 +1050,7 @@ class FactoryTest {
               "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
-              public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor = TestEmptyConstructor()
-                return testEmptyConstructor
-              }
+              public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
             
               public override fun getTargetScope(scope: Scope): Scope =
                   scope.getParentScope(test.CustomScope::class.java)
@@ -1148,8 +1119,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(String::class.java) as String
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope =
@@ -1212,8 +1182,7 @@ class FactoryTest {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getInstance(String::class.java) as String
                 val param2 = scope.getInstance(Int::class.java) as Int
-                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
-                return testNonEmptyConstructor
+                return TestNonEmptyConstructor(param1, param2)
               }
             
               public override fun getTargetScope(scope: Scope): Scope = scope.rootScope
