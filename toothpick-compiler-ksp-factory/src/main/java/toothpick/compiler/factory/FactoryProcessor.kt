@@ -35,6 +35,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import toothpick.InjectConstructor
 import toothpick.ProvidesReleasable
 import toothpick.ProvidesSingleton
@@ -82,7 +83,6 @@ import javax.inject.Singleton
  * Note that if a class is abstract, the relax mechanism doesn't generate a factory and raises no
  * error.
  */
-// http://stackoverflow.com/a/2067863/693752
 @OptIn(KspExperimental::class)
 class FactoryProcessor(
     processorOptions: Map<String, String>,
@@ -450,6 +450,18 @@ class FactoryProcessor(
             return false
         }
         return true
+    }
+
+    private fun KSClassDeclaration.isNonStaticInnerClass(): Boolean {
+        if (modifiers.contains(Modifier.INNER) && !modifiers.contains(Modifier.JAVA_STATIC)) {
+            logger.error(
+                this,
+                "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",
+                qualifiedName?.asString()
+            )
+            return true
+        }
+        return false
     }
 
     /**

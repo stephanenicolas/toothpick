@@ -37,7 +37,6 @@ import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.Variance
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -305,18 +304,6 @@ abstract class ToothpickProcessor(
         return getAllFunctions().filter { function -> function.findOverridee() == null && !function.isConstructor() }
             .plus(getAllProperties().filter { property -> property.findOverridee() == null })
             .any { member -> member.isAnnotationPresent(Inject::class) }
-    }
-
-    protected fun KSClassDeclaration.isNonStaticInnerClass(): Boolean {
-        if (parentDeclaration is KSClassDeclaration && !modifiers.contains(Modifier.JAVA_STATIC)) {
-            logger.error(
-                this,
-                "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",
-                qualifiedName?.asString()
-            )
-            return true
-        }
-        return false
     }
 
     protected fun KSDeclaration.getParentClassOrNull(): KSClassDeclaration? {
