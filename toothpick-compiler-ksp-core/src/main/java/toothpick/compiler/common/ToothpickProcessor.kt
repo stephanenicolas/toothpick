@@ -19,7 +19,6 @@ package toothpick.compiler.common
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.closestClassDeclaration
-import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.isInternal
@@ -47,8 +46,6 @@ import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.common.generators.warn
 import java.io.IOException
 import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Qualifier
 
 /** Base processor class.  */
 @OptIn(KspExperimental::class)
@@ -225,42 +222,10 @@ abstract class ToothpickProcessor(
     }
 
     protected fun KSFunctionDeclaration.getParamInjectionTargetList(): List<VariableInjectionTarget> =
-        parameters.map { variable ->
-            val type = variable.type.resolve()
-            VariableInjectionTarget(
-                memberType = type,
-                memberName = variable.name!!,
-                kind = type.getParamInjectionTargetKind(),
-                kindParamClass = type.getInjectedType(),
-                qualifierName = findQualifierName()
-            )
-        }
+        parameters.map { param -> VariableInjectionTarget.create(param, logger) }
 
-    protected fun KSPropertyDeclaration.createFieldOrParamInjectionTarget(): VariableInjectionTarget {
-        val type = type.resolve()
-        return VariableInjectionTarget(
-            memberType = type,
-            memberName = simpleName,
-            kind = type.getParamInjectionTargetKind(),
-            kindParamClass = type.getInjectedType(),
-            qualifierName = findQualifierName()
-        )
-    }
-
-    /**
-     * Retrieves the type of a field or param. The type can be the type of the parameter in the java
-     * way (e.g. [b: B], type is [B]; but it can also be the type of a [toothpick.Lazy] or
-     * [javax.inject.Provider] (e.g. [Lazy<B>], type is [B] not [Lazy]).
-     *
-     * @receiver the field or variable element type
-     * @return the type has defined above.
-     */
-    private fun KSType.getInjectedType(): KSType {
-        return when (getParamInjectionTargetKind()) {
-            VariableInjectionTarget.Kind.INSTANCE -> this
-            else -> arguments.first().type!!.resolve()
-        }
-    }
+    protected fun KSPropertyDeclaration.createFieldOrParamInjectionTarget(): VariableInjectionTarget =
+        VariableInjectionTarget.create(this, logger)
 
     protected fun KSDeclaration.isExcludedByFilters(): Boolean {
         val typeElementName = qualifiedName.toString()
@@ -343,47 +308,11 @@ abstract class ToothpickProcessor(
         }
     }
 
-    /**
-     * Lookup both [javax.inject.Qualifier] and [javax.inject.Named] to provide the name
-     * of an injection.
-     *
-     * @param element the element for which a qualifier is to be found.
-     * @return the name of this element or null if it has no qualifier annotations.
-     */
-    private fun KSAnnotated.findQualifierName(): String? {
-        val qualifierAnnotationNames = annotations
-            .mapNotNull { annotation ->
-                val annotationClass = annotation.annotationType.resolve().declaration
-                val annotationClassName = annotationClass.qualifiedName?.asString()
-                if (annotationClass.isAnnotationPresent(Qualifier::class)) {
-                    annotationClassName.takeIf { it != Named::class.qualifiedName }
-                } else null
-            }
-
-        val namedValues = getAnnotationsByType(Named::class)
-            .map { annotation -> annotation.value }
-
-        val allNames = qualifierAnnotationNames + namedValues
-
-        if (allNames.count() > 1) {
-            logger.error(this, "Only one javax.inject.Qualifier annotation is allowed to name injections.")
-        }
-
-        return allNames.firstOrNull()
+    private fun KSType.isProviderOrLazy(): Boolean {
+        val qualifiedName = declaration.qualifiedName?.asString()
+        return qualifiedName == javax.inject.Provider::class.qualifiedName ||
+            qualifiedName == toothpick.Lazy::class.qualifiedName
     }
-
-    private fun KSType.isProviderOrLazy(): Boolean =
-        getParamInjectionTargetKind() in arrayOf(
-            VariableInjectionTarget.Kind.PROVIDER,
-            VariableInjectionTarget.Kind.LAZY
-        )
-
-    private fun KSType.getParamInjectionTargetKind(): VariableInjectionTarget.Kind =
-        when (declaration.qualifiedName?.asString()) {
-            javax.inject.Provider::class.qualifiedName -> VariableInjectionTarget.Kind.PROVIDER
-            toothpick.Lazy::class.qualifiedName -> VariableInjectionTarget.Kind.LAZY
-            else -> VariableInjectionTarget.Kind.INSTANCE
-        }
 
     private val validInjectableTypes = arrayOf(ClassKind.CLASS, ClassKind.INTERFACE, ClassKind.ENUM_CLASS)
 
