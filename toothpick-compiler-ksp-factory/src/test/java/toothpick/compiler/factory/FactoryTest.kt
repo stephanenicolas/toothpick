@@ -58,12 +58,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                val testEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
               }
             
@@ -114,12 +113,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                val testEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
               }
             
@@ -170,12 +168,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                val testEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
               }
             
@@ -274,14 +271,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             internal class `Wrapper${'$'}TestConstructorInProtectedClass__Factory` :
                 Factory<Wrapper.TestConstructorInProtectedClass> {
               public override fun createInstance(scope: Scope): Wrapper.TestConstructorInProtectedClass {
-                val testConstructorInProtectedClass: Wrapper.TestConstructorInProtectedClass =
-                    Wrapper.TestConstructorInProtectedClass()
+                val testConstructorInProtectedClass = Wrapper.TestConstructorInProtectedClass()
                 return testConstructorInProtectedClass
               }
             
@@ -332,13 +327,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
               public override fun createInstance(scope: Scope): TestConstructorInPackageClass {
-                val testConstructorInPackageClass: TestConstructorInPackageClass =
-                    TestConstructorInPackageClass()
+                val testConstructorInPackageClass = TestConstructorInPackageClass()
                 return testConstructorInPackageClass
               }
             
@@ -413,12 +406,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class Test2Constructors__Factory : Factory<Test2Constructors> {
               public override fun createInstance(scope: Scope): Test2Constructors {
-                val test2Constructors: Test2Constructors = Test2Constructors()
+                val test2Constructors = Test2Constructors()
                 return test2Constructors
               }
             
@@ -471,15 +463,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: String = scope.getInstance(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getInstance(String::class.java) as String
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -534,15 +525,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: Lazy<String> = scope.getLazy(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getLazy(String::class.java) as Lazy<String>
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -597,15 +587,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: Provider<String> = scope.getProvider(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getProvider(String::class.java) as Provider<String>
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -697,6 +686,7 @@ class FactoryTest {
             package test
             
             import kotlin.Boolean
+            import kotlin.String
             import kotlin.Suppress
             import kotlin.collections.MutableList
             import toothpick.Factory
@@ -704,14 +694,13 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: MutableList<*> = scope.getInstance(MutableList::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1)
+                val param1 = scope.getInstance(MutableList::class.java) as MutableList<String>
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1)
                 return testNonEmptyConstructor
               }
             
@@ -833,16 +822,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestClassConstructorThrowingException__Factory :
                 Factory<TestClassConstructorThrowingException> {
               public override fun createInstance(scope: Scope): TestClassConstructorThrowingException {
                 val scope = getTargetScope(scope)
-                val param1: String = scope.getInstance(String::class.java)
-                val testClassConstructorThrowingException: TestClassConstructorThrowingException =
-                    TestClassConstructorThrowingException(param1)
+                val param1 = scope.getInstance(String::class.java) as String
+                val testClassConstructorThrowingException = TestClassConstructorThrowingException(param1)
                 return testClassConstructorThrowingException
               }
             
@@ -897,15 +884,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: String = scope.getInstance(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getInstance(String::class.java) as String
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -957,12 +943,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                val testEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
               }
             
@@ -1023,15 +1008,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: String = scope.getInstance(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getInstance(String::class.java) as String
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -1089,12 +1073,11 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor {
-                val testEmptyConstructor: TestEmptyConstructor = TestEmptyConstructor()
+                val testEmptyConstructor = TestEmptyConstructor()
                 return testEmptyConstructor
               }
             
@@ -1158,15 +1141,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: String = scope.getInstance(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getInstance(String::class.java) as String
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -1223,15 +1205,14 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: String = scope.getInstance(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getInstance(String::class.java) as String
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             

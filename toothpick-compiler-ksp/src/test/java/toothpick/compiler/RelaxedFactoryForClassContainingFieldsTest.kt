@@ -50,8 +50,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestRelaxedFactoryCreationForInjectField__Factory :
                 Factory<TestRelaxedFactoryCreationForInjectField> {
@@ -60,8 +59,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             
               public override fun createInstance(scope: Scope): TestRelaxedFactoryCreationForInjectField {
                 val scope = getTargetScope(scope)
-                val testRelaxedFactoryCreationForInjectField: TestRelaxedFactoryCreationForInjectField =
-                    TestRelaxedFactoryCreationForInjectField()
+                val testRelaxedFactoryCreationForInjectField = TestRelaxedFactoryCreationForInjectField()
                 memberInjector.inject(testRelaxedFactoryCreationForInjectField, scope)
                 return testRelaxedFactoryCreationForInjectField
               }

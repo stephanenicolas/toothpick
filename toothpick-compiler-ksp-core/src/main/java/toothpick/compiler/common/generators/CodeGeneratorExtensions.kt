@@ -38,7 +38,7 @@ fun ParamInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock(): CodeBlock {
     }
 
     val className: ClassName = when (kind) {
-        ParamInjectionTarget.Kind.INSTANCE -> memberClass.toClassName()
+        ParamInjectionTarget.Kind.INSTANCE -> memberType.toClassName()
         ParamInjectionTarget.Kind.PROVIDER -> kindParamClass.toClassName()
         ParamInjectionTarget.Kind.LAZY -> kindParamClass.toClassName()
     }
@@ -52,7 +52,7 @@ fun ParamInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock(): CodeBlock {
 
 fun ParamInjectionTarget.getParamType(): TypeName {
     return when (kind) {
-        ParamInjectionTarget.Kind.INSTANCE -> memberClass.asStarProjectedType().toTypeName()
-        else -> memberClass.toClassName().parameterizedBy(kindParamClass.toTypeName())
+        ParamInjectionTarget.Kind.INSTANCE -> memberType.toTypeName()
+        else -> memberType.toClassName().parameterizedBy(kindParamClass.toTypeName())
     }
 }

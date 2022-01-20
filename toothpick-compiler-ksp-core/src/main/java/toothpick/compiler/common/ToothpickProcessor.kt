@@ -229,7 +229,7 @@ abstract class ToothpickProcessor(
         parameters.map { variable ->
             val type = variable.type.resolve()
             FieldInjectionTarget(
-                memberClass = type.declaration as KSClassDeclaration,
+                memberType = type,
                 memberName = variable.name!!,
                 kind = type.getParamInjectionTargetKind(),
                 kindParamClass = type.getInjectedType(),
@@ -240,7 +240,7 @@ abstract class ToothpickProcessor(
     protected fun KSPropertyDeclaration.createFieldOrParamInjectionTarget(): FieldInjectionTarget {
         val type = type.resolve()
         return FieldInjectionTarget(
-            memberClass = type.getInjectedType().declaration as KSClassDeclaration,
+            memberType = type,
             memberName = simpleName,
             kind = type.getParamInjectionTargetKind(),
             kindParamClass = type.getInjectedType(),
@@ -258,8 +258,8 @@ abstract class ToothpickProcessor(
      */
     private fun KSType.getInjectedType(): KSType {
         return when (getParamInjectionTargetKind()) {
-            ParamInjectionTarget.Kind.INSTANCE -> starProjection()
-            else -> arguments.first().type!!.resolve().starProjection()
+            ParamInjectionTarget.Kind.INSTANCE -> this
+            else -> arguments.first().type!!.resolve()
         }
     }
 

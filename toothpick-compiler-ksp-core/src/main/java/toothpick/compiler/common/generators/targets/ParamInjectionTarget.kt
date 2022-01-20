@@ -17,12 +17,11 @@
  */
 package toothpick.compiler.common.generators.targets
 
-import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
 
 open class ParamInjectionTarget(
-    val memberClass: KSClassDeclaration,
+    val memberType: KSType,
     val memberName: KSName,
     val kind: Kind?,
     val kindParamClass: KSType,

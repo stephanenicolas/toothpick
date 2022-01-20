@@ -75,15 +75,14 @@ class RelaxedFactoryForInjectConstructorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: Lazy<String> = scope.getLazy(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getLazy(String::class.java) as Lazy<String>
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 return testNonEmptyConstructor
               }
             
@@ -142,8 +141,7 @@ class RelaxedFactoryForInjectConstructorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               private val memberInjector: MemberInjector<TestNonEmptyConstructor> =
@@ -151,9 +149,9 @@ class RelaxedFactoryForInjectConstructorTest {
             
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
-                val param1: Lazy<String> = scope.getLazy(String::class.java)
-                val param2: Int = scope.getInstance(Int::class.java)
-                val testNonEmptyConstructor: TestNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
+                val param1 = scope.getLazy(String::class.java) as Lazy<String>
+                val param2 = scope.getInstance(Int::class.java) as Int
+                val testNonEmptyConstructor = TestNonEmptyConstructor(param1, param2)
                 memberInjector.inject(testNonEmptyConstructor, scope)
                 return testNonEmptyConstructor
               }

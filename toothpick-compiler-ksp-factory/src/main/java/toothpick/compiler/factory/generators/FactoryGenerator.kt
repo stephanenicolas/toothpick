@@ -73,7 +73,6 @@ internal class FactoryGenerator(
                     AnnotationSpec.builder(Suppress::class)
                         .addMember("%S", "ClassName")
                         .addMember("%S", "RedundantVisibilityModifier")
-                        .addMember("%S", "RedundantExplicitType")
                         .build()
                 )
                 .emitSuperMemberInjectorFieldIfNeeded()
@@ -131,17 +130,16 @@ internal class FactoryGenerator(
             .apply {
                 constructorInjectionTarget.parameters.forEachIndexed { i, param ->
                     addStatement(
-                        "val %N: %T = scope.%L",
+                        "val %N = scope.%L as %T",
                         "param${i + 1}",
-                        param.getParamType(),
-                        param.getInvokeScopeGetMethodWithNameCodeBlock()
+                        param.getInvokeScopeGetMethodWithNameCodeBlock(),
+                        param.getParamType()
                     )
                 }
 
                 addStatement(
-                    "val %N: %T = %T(%L)",
+                    "val %N = %T(%L)",
                     varName,
-                    sourceClassName,
                     sourceClassName,
                     List(constructorInjectionTarget.parameters.size) { i -> "param${i + 1}" }
                         .joinToString(", ")

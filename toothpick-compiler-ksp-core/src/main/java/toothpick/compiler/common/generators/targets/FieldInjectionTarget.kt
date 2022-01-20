@@ -17,14 +17,13 @@
  */
 package toothpick.compiler.common.generators.targets
 
-import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSType
 
 class FieldInjectionTarget(
-    memberClass: KSClassDeclaration,
+    memberType: KSType,
     memberName: KSName,
     kind: Kind?,
     kindParamClass: KSType,
     qualifierName: Any?
-) : ParamInjectionTarget(memberClass, memberName, kind, kindParamClass, qualifierName)
+) : ParamInjectionTarget(memberType, memberName, kind, kindParamClass, qualifierName)

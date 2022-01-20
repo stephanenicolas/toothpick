@@ -50,8 +50,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
@@ -59,7 +58,7 @@ class FactoryAndMemberInjectorTests {
             
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
-                val testAClassThatNeedsInjection: TestAClassThatNeedsInjection = TestAClassThatNeedsInjection()
+                val testAClassThatNeedsInjection = TestAClassThatNeedsInjection()
                 memberInjector.inject(testAClassThatNeedsInjection, scope)
                 return testAClassThatNeedsInjection
               }
@@ -193,8 +192,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<SuperClassThatNeedsInjection> =
@@ -202,7 +200,7 @@ class FactoryAndMemberInjectorTests {
             
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
-                val testAClassThatNeedsInjection: TestAClassThatNeedsInjection = TestAClassThatNeedsInjection()
+                val testAClassThatNeedsInjection = TestAClassThatNeedsInjection()
                 memberInjector.inject(testAClassThatNeedsInjection, scope)
                 return testAClassThatNeedsInjection
               }
@@ -256,8 +254,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
@@ -265,7 +262,7 @@ class FactoryAndMemberInjectorTests {
             
               public override fun createInstance(scope: Scope): TestAClassThatNeedsInjection {
                 val scope = getTargetScope(scope)
-                val testAClassThatNeedsInjection: TestAClassThatNeedsInjection = TestAClassThatNeedsInjection()
+                val testAClassThatNeedsInjection = TestAClassThatNeedsInjection()
                 memberInjector.inject(testAClassThatNeedsInjection, scope)
                 return testAClassThatNeedsInjection
               }

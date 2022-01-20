@@ -57,12 +57,11 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
-                val param1: Foo = scope.getInstance(Foo::class.java)
+                val param1 = scope.getInstance(Foo::class.java) as Foo
                 target.m(param1)
               }
             }
@@ -105,12 +104,11 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
-                val param1: Lazy<Foo> = scope.getLazy(Foo::class.java)
+                val param1 = scope.getLazy(Foo::class.java) as Lazy<Foo>
                 target.m(param1)
               }
             }
@@ -153,12 +151,11 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
-                val param1: Provider<Foo> = scope.getProvider(Foo::class.java)
+                val param1 = scope.getProvider(Foo::class.java) as Provider<Foo>
                 target.m(param1)
               }
             }
@@ -193,6 +190,7 @@ class MethodMemberInjectorTest {
             """
             package test
             
+            import kotlin.Any
             import kotlin.Suppress
             import kotlin.Unit
             import toothpick.Lazy
@@ -201,12 +199,11 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
-                val param1: Lazy<Foo<*>> = scope.getLazy(Foo::class.java)
+                val param1 = scope.getLazy(Foo::class.java) as Lazy<Foo<Any>>
                 target.m(param1)
               }
             }
@@ -376,8 +373,7 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class `TestMethodInjectionParent${'$'}TestMethodInjection__MemberInjector` :
                 MemberInjector<TestMethodInjectionParent.TestMethodInjection> {
@@ -426,12 +422,11 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
-                val param1: Foo = scope.getInstance(Foo::class.java)
+                val param1 = scope.getInstance(Foo::class.java) as Foo
                 target.m(param1)
               }
             }
@@ -472,12 +467,11 @@ class MethodMemberInjectorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier",
-              "RedundantExplicitType"
+              "RedundantVisibilityModifier"
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
-                val param1: Foo = scope.getInstance(Foo::class.java)
+                val param1 = scope.getInstance(Foo::class.java) as Foo
                 target.m(param1)
               }
             }

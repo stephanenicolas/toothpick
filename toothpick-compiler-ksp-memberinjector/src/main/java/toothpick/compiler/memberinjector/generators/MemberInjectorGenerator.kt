@@ -76,7 +76,6 @@ internal class MemberInjectorGenerator(
                     AnnotationSpec.builder(Suppress::class)
                         .addMember("%S", "ClassName")
                         .addMember("%S", "RedundantVisibilityModifier")
-                        .addMember("%S", "RedundantExplicitType")
                         .build()
                 )
                 .emitSuperMemberInjectorFieldIfNeeded()
@@ -134,10 +133,10 @@ internal class MemberInjectorGenerator(
                 methodInjectionTarget.parameters
                     .forEachIndexed { paramIndex, paramInjectionTarget ->
                         addStatement(
-                            "val %N: %T = scope.%L",
+                            "val %N = scope.%L as %T",
                             "param${paramIndex + 1}",
-                            paramInjectionTarget.getParamType(),
-                            paramInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock()
+                            paramInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock(),
+                            paramInjectionTarget.getParamType()
                         )
                     }
 
@@ -155,9 +154,10 @@ internal class MemberInjectorGenerator(
     ): FunSpec.Builder = apply {
         fieldInjectionTargetList?.forEach { memberInjectionTarget ->
             addStatement(
-                "target.%N = scope.%L",
+                "target.%N = scope.%L as %T",
                 memberInjectionTarget.memberName.asString(),
-                memberInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock()
+                memberInjectionTarget.getInvokeScopeGetMethodWithNameCodeBlock(),
+                memberInjectionTarget.getParamType()
             )
         }
     }
