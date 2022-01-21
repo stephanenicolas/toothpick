@@ -41,10 +41,12 @@ import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.common.generators.targets.getInvokeScopeGetMethodWithNameCodeBlock
 import toothpick.compiler.common.generators.targets.getParamType
 import toothpick.compiler.memberinjector.targets.MethodInjectionTarget
+import javax.inject.Inject
 
 /**
- * Generates a [MemberInjector] for a given collection of [VariableInjectionTarget].
- * Typically a [MemberInjector] is created for a class a soon as it contains an [ ] annotated field or method.
+ * Generates a [MemberInjector] for a given list of [VariableInjectionTarget] and/or [MethodInjectionTarget].
+ *
+ * Typically, a [MemberInjector] is created for a class a soon as it contains an [Inject] annotated field or method.
  */
 @OptIn(KotlinPoetKspPreview::class)
 internal class MemberInjectorGenerator(
@@ -90,7 +92,6 @@ internal class MemberInjectorGenerator(
         }
 
         addProperty(
-            // TODO use proper typing here
             PropertySpec.builder(
                 "superMemberInjector",
                 MemberInjector::class.asClassName()

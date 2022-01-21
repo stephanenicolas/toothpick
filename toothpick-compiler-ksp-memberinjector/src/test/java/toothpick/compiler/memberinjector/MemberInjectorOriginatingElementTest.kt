@@ -19,7 +19,7 @@ package toothpick.compiler.memberinjector
 
 import org.junit.Test
 import toothpick.compiler.assertLogs
-import toothpick.compiler.common.ToothpickOptions.Companion.DebugLogOriginatingElements
+import toothpick.compiler.common.ToothpickOptions.Companion.VerboseLogging
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.javaSource
@@ -47,7 +47,7 @@ class MemberInjectorOriginatingElementTest {
         compilationAssert()
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
-            .withOptions(DebugLogOriginatingElements to "true")
+            .withOptions(VerboseLogging to "true")
             .compilesWithoutError()
             .assertLogs(
                 "test.TestOriginatingElement generated class test.TestOriginatingElement__MemberInjector"

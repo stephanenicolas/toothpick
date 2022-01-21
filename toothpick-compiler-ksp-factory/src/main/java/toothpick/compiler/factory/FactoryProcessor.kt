@@ -37,6 +37,7 @@ import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.Modifier
+import toothpick.Factory
 import toothpick.InjectConstructor
 import toothpick.ProvidesReleasable
 import toothpick.ProvidesSingleton
@@ -54,35 +55,30 @@ import javax.inject.Scope
 import javax.inject.Singleton
 
 /**
- * This processor's role is to create [Factory]. We create factories in different situations :
+ * This processor's role is to create [Factory] classes for injected classes.
  *
+ * We create factories in different situations:
  *
- *  * When a class `Foo` has an [javax.inject.Inject] annotated constructor : <br></br>
- * --> we create a Factory to create `Foo` instances.
- *
+ *  * When a class `Foo` has an [javax.inject.Inject] annotated constructor:
+ *    * --> we create a Factory to create `Foo` instances.
  *
  * The processor will also try to relax the constraints to generate factories in a few cases. These
- * factories are helpful as they require less work from developers :
+ * factories are helpful as they require less work from developers:
  *
- *
- *  * When a class `Foo` is annotated with [javax.inject.Singleton] : <br></br>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise
- * an error is raised.
- *  * When a class `Foo` is annotated with [ProvidesSingleton] : <br></br>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise
- * an error is raised.
- *  * When a class `Foo` has an [javax.inject.Inject] annotated field `@Inject
- * B b` : <br></br>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise
- * an error is raised.
- *  * When a class `Foo` has an [javax.inject.Inject] method `@Inject m()` :
- * <br></br>
- * --> it will use the annotated constructor or the default constructor if possible. Otherwise
+ *  * When a class `Foo` is annotated with [javax.inject.Singleton]:
+ *    * --> it will use the annotated constructor or the default constructor if possible.
+ *    Otherwise, an error is raised.
+ *  * When a class `Foo` is annotated with [ProvidesSingleton]:
+ *    * --> it will use the annotated constructor or the default constructor if possible.
+ *    Otherwise, an error is raised.
+ *  * When a class `Foo` has an [javax.inject.Inject] annotated field `@Inject B b`:
+ *    * --> it will use the annotated constructor or the default constructor if possible.
+ *    Otherwise, an error is raised.
+ *  * When a class `Foo` has an [javax.inject.Inject] method `@Inject m()`:
+ *    * --> it will use the annotated constructor or the default constructor if possible. Otherwise
  * an error is raised.
  *
- *
- * Note that if a class is abstract, the relax mechanism doesn't generate a factory and raises no
- * error.
+ * Note that if a class is abstract, the relax mechanism doesn't generate a factory and raises no error.
  */
 @OptIn(KspExperimental::class)
 class FactoryProcessor(
@@ -112,7 +108,7 @@ class FactoryProcessor(
                     fileDescription = "Factory for type ${target.sourceClass.qualifiedName?.asString()}"
                 )
 
-                if (options.debugLogOriginatingElements) {
+                if (options.verboseLogging) {
                     logger.info(
                         "%s generated class %s",
                         factoryGenerator.sourceClassName.toString(),
@@ -158,7 +154,7 @@ class FactoryProcessor(
     ): Sequence<ConstructorInjectionTarget> {
         return resolver.getSymbolsWithAnnotation(annotationName)
             .filterIsInstance<KSClassDeclaration>()
-            .mapNotNull { element -> element.processClassContainingInjectAnnotatedMember(resolver) }
+            .mapNotNull { annotatedClass -> annotatedClass.processClassContainingInjectAnnotatedMember(resolver) }
     }
 
     private fun createFactoriesForClassesWithInjectAnnotatedConstructors(resolver: Resolver): Sequence<ConstructorInjectionTarget> {
@@ -182,20 +178,20 @@ class FactoryProcessor(
     private fun createFactoriesForClassesAnnotatedWithInjectConstructor(resolver: Resolver): Sequence<ConstructorInjectionTarget> {
         return resolver.getSymbolsWithAnnotation(InjectConstructor::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
-            .mapNotNull { element ->
-                val constructorElements = element.getConstructors()
-                val firstConstructor = constructorElements.firstOrNull()
+            .mapNotNull { annotatedClass ->
+                val constructors = annotatedClass.getConstructors()
+                val firstConstructor = constructors.firstOrNull()
 
-                if (constructorElements.count() == 1 &&
+                if (constructors.count() == 1 &&
                     firstConstructor != null &&
                     !firstConstructor.isAnnotationPresent(Inject::class)
                 ) {
                     firstConstructor.processInjectAnnotatedConstructor(resolver)
                 } else {
                     logger.error(
-                        constructorElements.firstOrNull(),
+                        constructors.firstOrNull(),
                         "Class %s is annotated with @InjectConstructor. Therefore, It must have one unique constructor and it should not be annotated with @Inject.",
-                        element.qualifiedName?.asString()
+                        annotatedClass.qualifiedName?.asString()
                     )
                     null
                 }
@@ -204,10 +200,7 @@ class FactoryProcessor(
 
     private fun KSClassDeclaration.processClassContainingInjectAnnotatedMember(resolver: Resolver): ConstructorInjectionTarget? {
         if (isExcludedByFilters()) return null
-
-        // Verify common generated code restrictions.
         if (!canTypeHaveAFactory()) return null
-
         return createConstructorInjectionTarget(resolver)
     }
 
@@ -222,7 +215,6 @@ class FactoryProcessor(
     private fun KSFunctionDeclaration.processInjectAnnotatedConstructor(resolver: Resolver): ConstructorInjectionTarget? {
         val parentClass = parentDeclaration as KSClassDeclaration
 
-        // Verify common generated code restrictions.
         if (!isValidInjectAnnotatedConstructor()) return null
         if (parentClass.isExcludedByFilters()) return null
         if (!parentClass.canTypeHaveAFactory()) {
@@ -240,7 +232,6 @@ class FactoryProcessor(
     private fun KSFunctionDeclaration.isValidInjectAnnotatedConstructor(): Boolean {
         val parentClass = parentDeclaration as KSClassDeclaration
 
-        // Verify modifiers.
         if (isPrivate()) {
             logger.error(
                 this,
@@ -250,7 +241,6 @@ class FactoryProcessor(
             return false
         }
 
-        // Verify parentScope modifiers.
         if (parentClass.isPrivate()) {
             logger.error(
                 this,
@@ -317,7 +307,7 @@ class FactoryProcessor(
         // injected constructors will be handled at some point in the compilation cycle
 
         // if there is an injected constructor, it will be caught later, just leave
-        if (constructors.any { element -> element.isAnnotationPresent(Inject::class) }) return null
+        if (constructors.any { constructor -> constructor.isAnnotationPresent(Inject::class) }) return null
 
         val cannotCreateAFactoryMessage = (
             " Toothpick can't create a factory for it." +
@@ -374,11 +364,10 @@ class FactoryProcessor(
 
     /**
      * Lookup [javax.inject.Scope] annotated annotations to provide the name of the scope the
-     * `typeElement` belongs to. The method logs an error if the `typeElement` has
-     * multiple scope annotations.
+     * receiver belongs to. The method logs an error if the receiver has multiple scope annotations.
      *
-     * @receiver the element for which a scope is to be found.
-     * @return the scope of this `typeElement` or `null` if it has no scope annotations.
+     * @receiver the node for which a scope is to be found.
+     * @return the scope of this node or `null` if it has no scope annotations.
      */
     private fun KSAnnotated.getScopeName(resolver: Resolver): KSName? {
         var scopeName: KSName? = null
@@ -467,10 +456,10 @@ class FactoryProcessor(
     }
 
     /**
-     * Checks if the injectable warning is suppressed for the TypeElement, through the usage
+     * Checks if the injectable warning is suppressed for the receiver, through the usage
      * of @SuppressWarning("Injectable").
      *
-     * @param typeElement the element to check if the warning is suppressed.
+     * @receiver the node to check if the warning is suppressed.
      * @return true is the injectable warning is suppressed, false otherwise.
      */
     private fun KSAnnotated.isInjectableWarningSuppressed(): Boolean =

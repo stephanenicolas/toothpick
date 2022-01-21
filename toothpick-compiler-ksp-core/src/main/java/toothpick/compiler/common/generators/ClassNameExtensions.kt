@@ -19,12 +19,18 @@ package toothpick.compiler.common.generators
 
 import com.squareup.kotlinpoet.ClassName
 
+/**
+ * The name of the generated factory class for a given class.
+ */
 val ClassName.factoryClassName: ClassName
     get() = ClassName(
         packageName = packageName,
         simpleNames.joinToString("$") + "__Factory"
     )
 
+/**
+ * The name of the generated member injector class for a given class.
+ */
 val ClassName.memberInjectorClassName: ClassName
     get() = ClassName(
         packageName = packageName,

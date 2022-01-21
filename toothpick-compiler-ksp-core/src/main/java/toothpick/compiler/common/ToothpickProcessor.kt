@@ -43,7 +43,6 @@ import toothpick.compiler.common.generators.warn
 import java.io.IOException
 import javax.inject.Inject
 
-/** Base processor class.  */
 @OptIn(KspExperimental::class, KotlinPoetKspPreview::class)
 abstract class ToothpickProcessor(
     processorOptions: Map<String, String>,
@@ -66,11 +65,11 @@ abstract class ToothpickProcessor(
     }
 
     protected fun KSType.isValidInjectedType(node: KSNode, qualifiedName: String?): Boolean {
-        return if (!isValidInjectedElementKind()) false
+        return if (!isValidInjectedClassKind()) false
         else !isProviderOrLazy() || isValidProviderOrLazy(node, qualifiedName)
     }
 
-    private fun KSType.isValidInjectedElementKind(): Boolean =
+    private fun KSType.isValidInjectedClassKind(): Boolean =
         (declaration as? KSClassDeclaration)?.classKind in validInjectableTypes
 
     private fun KSType.isValidProviderOrLazy(node: KSNode, qualifiedName: String?): Boolean {
@@ -178,9 +177,9 @@ abstract class ToothpickProcessor(
     }
 
     /**
-     * Checks if `element` has a @SuppressWarning("`warningSuppressString`") annotation.
+     * Checks if this node has a @SuppressWarning([warningSuppressString]) annotation.
      *
-     * @param element the element to check if the warning is suppressed.
+     * @receiver the node to check if the warning is suppressed.
      * @param warningSuppressString the value of the SuppressWarning annotation.
      * @return true is the injectable warning is suppressed, false otherwise.
      */

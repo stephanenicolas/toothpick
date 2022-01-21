@@ -19,9 +19,12 @@ package toothpick.compiler.factory.targets
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSName
+import toothpick.Factory
 import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 
-/** Basically all information to create an object / call a constructor of a class.  */
+/**
+ * All information to create a [Factory] for a class's constructor.
+ */
 data class ConstructorInjectionTarget(
     val sourceClass: KSClassDeclaration,
     val scopeName: KSName?,

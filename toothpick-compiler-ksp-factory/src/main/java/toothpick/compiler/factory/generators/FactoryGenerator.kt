@@ -46,9 +46,10 @@ import toothpick.compiler.factory.targets.ConstructorInjectionTarget
 import javax.inject.Singleton
 
 /**
- * Generates a [Factory] for a given [ConstructorInjectionTarget]. Typically a factory
- * is created for a class a soon as it contains an [javax.inject.Inject] annotated
- * constructor. See Optimistic creation of factories in TP wiki.
+ * Generates a [Factory] for a given [ConstructorInjectionTarget].
+ *
+ * Typically, a factory is created for a class a soon as it contains an [javax.inject.Inject] annotated constructor.
+ * See Optimistic creation of factories in TP wiki.
  */
 @OptIn(KotlinPoetKspPreview::class)
 internal class FactoryGenerator(

@@ -45,7 +45,7 @@ class FactoryOriginatingElementTest {
         compilationAssert()
             .that(source)
             .processedWith(FactoryProcessorProvider())
-            .withOptions(ToothpickOptions.DebugLogOriginatingElements to "true")
+            .withOptions(ToothpickOptions.VerboseLogging to "true")
             .compilesWithoutError()
             .assertLogs(
                 "test.TestOriginatingElement generated class test.TestOriginatingElement__Factory"

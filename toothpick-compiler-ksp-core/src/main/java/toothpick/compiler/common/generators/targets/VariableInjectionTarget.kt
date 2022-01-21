@@ -39,6 +39,9 @@ import toothpick.compiler.common.generators.error
 import javax.inject.Named
 import javax.inject.Qualifier
 
+/**
+ * Information necessary to identify the parameter of a method or a class's property.
+ */
 sealed class VariableInjectionTarget(
     val memberType: KSType,
     val memberName: KSName,
@@ -107,8 +110,8 @@ sealed class VariableInjectionTarget(
          * Lookup both [javax.inject.Qualifier] and [javax.inject.Named] to provide the name
          * of an injection.
          *
-         * @param element the element for which a qualifier is to be found.
-         * @return the name of this element or null if it has no qualifier annotations.
+         * @receiver the node for which a qualifier is to be found.
+         * @return the name of this injection, or null if it has no qualifier annotations.
          */
         private fun KSAnnotated.findQualifierName(logger: KSPLogger?): String? {
             val qualifierAnnotationNames = annotations
@@ -133,12 +136,12 @@ sealed class VariableInjectionTarget(
         }
 
         /**
-         * Retrieves the type of a field or param. The type can be the type of the parameter in the java
-         * way (e.g. [b: B], type is [B]; but it can also be the type of a [toothpick.Lazy] or
-         * [javax.inject.Provider] (e.g. [Lazy<B>], type is [B] not [Lazy]).
+         * Retrieves the type of a field or param.
          *
-         * @receiver the field or variable element type
-         * @return the type has defined above.
+         * @receiver The type to inspect.
+         * @return Can be the type of a simple instance (e.g. in `b: B`, type is `B`).
+         * But if the type is [toothpick.Lazy] or [javax.inject.Provider], then we use the type parameter
+         * (e.g. in `Lazy<B>`, type is `B`, not `Lazy`).
          */
         private fun KSType.getInjectedType(): KSType = arguments.first().type!!.resolve()
     }

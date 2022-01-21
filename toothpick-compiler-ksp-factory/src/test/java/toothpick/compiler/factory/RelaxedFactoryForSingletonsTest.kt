@@ -46,7 +46,7 @@ class RelaxedFactoryForSingletonsTest {
 
         compilationAssert()
             .that(source)
-            .processedWith(FactoryProcessorProvider()) // TODO used to use MemberInjector as well; really necessary?
+            .processedWith(FactoryProcessorProvider())
             .compilesWithoutError()
             .generatesFileNamed(
                 "test/TestOptimisticFactoryCreationForSingleton__Factory.kt"

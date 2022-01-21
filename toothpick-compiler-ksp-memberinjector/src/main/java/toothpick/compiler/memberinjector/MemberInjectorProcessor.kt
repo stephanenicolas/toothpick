@@ -43,14 +43,14 @@ import toothpick.compiler.memberinjector.targets.MethodInjectionTarget
 import javax.inject.Inject
 
 /**
- * This processor's role is to create [toothpick.MemberInjector]. We create factories in different
- * situations :
+ * This processor's role is to create [toothpick.MemberInjector].
  *
+ * We create factories in different situations:
  *
- *  * When a class `Foo` has an [javax.inject.Singleton] annotated field : <br></br>
- * --> we create a MemberInjector to inject `Foo` instances.
- *  * When a class `Foo` has an [javax.inject.Singleton] method : <br></br>
- * --> we create a MemberInjector to inject `Foo` instances.
+ *  * When a class `Foo` has an [javax.inject.Singleton] annotated field:
+ *    * --> we create a MemberInjector to inject `Foo` instances.
+ *  * When a class `Foo` has an [javax.inject.Singleton] method:
+ *    * --> we create a MemberInjector to inject `Foo` instances.
  *
  */
 @OptIn(KspExperimental::class)
@@ -62,11 +62,11 @@ class MemberInjectorProcessor(
     processorOptions, codeGenerator, logger
 ) {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val injectedElements: Sequence<KSAnnotated> =
+        val injectedNodes: Sequence<KSAnnotated> =
             resolver.getSymbolsWithAnnotation(Inject::class.qualifiedName!!)
 
         val parentAndPropertiesToInject: Map<KSClassDeclaration, List<VariableInjectionTarget>> =
-            injectedElements
+            injectedNodes
                 .filterIsInstance<KSPropertyDeclaration>()
                 .mapNotNull { property -> property.getParentClassOrNull()?.let { parent -> parent to property } }
                 .filterNot { (parentClass, _) -> parentClass.isExcludedByFilters() }
@@ -77,7 +77,7 @@ class MemberInjectorProcessor(
                 )
 
         val parentAndMethodsToInject: Map<KSClassDeclaration, List<MethodInjectionTarget>> =
-            injectedElements
+            injectedNodes
                 .filterIsInstance<KSFunctionDeclaration>()
                 .filter { function -> function.functionKind == FunctionKind.MEMBER }
                 .filterNot { function -> function.isConstructor() }
@@ -112,7 +112,7 @@ class MemberInjectorProcessor(
                     fileDescription = "MemberInjector for type ${generator.sourceClassName}"
                 )
 
-                if (options.debugLogOriginatingElements) {
+                if (options.verboseLogging) {
                     logger.info(
                         "%s generated class %s",
                         generator.sourceClassName.toString(),
@@ -128,9 +128,8 @@ class MemberInjectorProcessor(
         VariableInjectionTarget.create(this, logger)
 
     /**
-     * overrides are simpler in this case as methods can only be package or protected.
-     * a method with the same name in the type hierarchy would necessarily mean that
-     * the {@code methodElement} would be an override of this method.
+     * Checks if a given method overrides an [Inject]-annotated method.
+     * @receiver The method to check.
      */
     private fun KSFunctionDeclaration.isOverride(): Boolean {
         return findOverridee()?.isAnnotationPresent(Inject::class) == true
@@ -187,9 +186,9 @@ class MemberInjectorProcessor(
 
         if (!isJavaPackagePrivate() && !isInternal()) {
             if (!hasWarningSuppressed(SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
-                crashOrWarnWhenMethodIsNotPackageVisible(
+                crashOrWarnWhenMethodIsNotPackageOrInternal(
                     this,
-                    "@Inject-annotated methods should have package/internal visibility: ${qualifiedName?.asString()}",
+                    "@Inject-annotated methods should have package or internal visibility: ${qualifiedName?.asString()}",
                 )
             }
         }
@@ -197,14 +196,16 @@ class MemberInjectorProcessor(
         return true
     }
 
-    private fun crashOrWarnWhenMethodIsNotPackageVisible(element: KSNode, message: String) {
-        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(element, message)
-        else logger.warn(element, message)
+    private fun crashOrWarnWhenMethodIsNotPackageOrInternal(node: KSNode, message: String) {
+        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(node, message)
+        else logger.warn(node, message)
     }
 
     companion object {
+
         /**
-         * Allows to suppress warning when an injected method is not package-private visible.
+         * Custom value for [SuppressWarnings]. Suppresses warning when an injected
+         * method is not package-private visible.
          */
         private const val SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE = "visible"
     }

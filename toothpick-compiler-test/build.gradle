@@ -18,7 +18,6 @@ compileTestKotlin {
 }
 
 dependencies {
-    implementation deps.kotlinpoet
     implementation deps.junit4
     implementation deps.compiletesting_kt
     implementation deps.compiletesting_ksp
