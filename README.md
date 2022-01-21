@@ -1,4 +1,4 @@
-# KSP Processor for Toothpick ![Release](https://jitpack.io/v/fr.outadoc/toothpick-compiler-ksp.svg)
+# KSP Processor for Toothpick ![Release](https://jitpack.io/v/fr.outadoc/toothpick-compiler-ksp.svg) ![Build and test](https://github.com/outadoc/toothpick-compiler-ksp/actions/workflows/build.yml/badge.svg?branch=main)
 
 ## Background
 
