@@ -25,7 +25,6 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -95,16 +94,15 @@ internal class FactoryGenerator(
                 ?.toClassName()
                 ?: return this
 
-        val memberInjectorSuper: ParameterizedTypeName =
-            MemberInjector::class.asClassName()
-                .parameterizedBy(superTypeThatNeedsInjection)
-
-        addProperty(
-            PropertySpec
-                .builder("memberInjector", memberInjectorSuper, KModifier.PRIVATE)
-                .initializer("%T()", superTypeThatNeedsInjection.memberInjectorClassName)
-                .build()
-        )
+        PropertySpec
+            .builder(
+                "memberInjector",
+                MemberInjector::class.asClassName().parameterizedBy(superTypeThatNeedsInjection),
+                KModifier.PRIVATE
+            )
+            .initializer("%T()", superTypeThatNeedsInjection.memberInjectorClassName)
+            .build()
+            .also { addProperty(it) }
     }
 
     private fun TypeSpec.Builder.emitCreateInstance(): TypeSpec.Builder = apply {
