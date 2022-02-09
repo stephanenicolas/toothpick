@@ -17,6 +17,7 @@
  */
 package toothpick.compiler
 
+import org.junit.Ignore
 import org.junit.Test
 import toothpick.compiler.factory.FactoryProcessorProvider
 import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
@@ -88,6 +89,7 @@ class FactoryAndMemberInjectorTests {
     }
 
     @Test
+    @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
     fun testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField() {
         val source = javaSource(
             "TestAInnerClassThatNeedsInjection",

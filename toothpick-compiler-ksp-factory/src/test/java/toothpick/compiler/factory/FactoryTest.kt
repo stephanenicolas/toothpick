@@ -236,6 +236,7 @@ class FactoryTest {
     }
 
     @Test
+    @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
     fun testInjectedConstructorInProtectedClass_shouldWork() {
         val source = javaSource(
             "TestConstructorInProtectedClass",

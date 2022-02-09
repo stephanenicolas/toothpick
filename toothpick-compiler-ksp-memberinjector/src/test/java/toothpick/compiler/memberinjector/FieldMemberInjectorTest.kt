@@ -723,6 +723,7 @@ class FieldMemberInjectorTest {
     }
 
     @Test
+    @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
     fun testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers() {
         val source = javaSource(
             "TestMemberInjection",
