@@ -188,7 +188,8 @@ class MemberInjectorProcessor(
             if (!hasWarningSuppressed(SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
                 crashOrWarnWhenMethodIsNotPackageOrInternal(
                     this,
-                    "@Inject-annotated methods should have package or internal visibility: ${qualifiedName?.asString()}",
+                    "@Inject-annotated methods should have package or internal visibility: %s",
+                    qualifiedName?.asString()
                 )
             }
         }
@@ -196,9 +197,10 @@ class MemberInjectorProcessor(
         return true
     }
 
-    private fun crashOrWarnWhenMethodIsNotPackageOrInternal(node: KSNode, message: String) {
-        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(node, message)
-        else logger.warn(node, message)
+    @Suppress("SameParameterValue")
+    private fun crashOrWarnWhenMethodIsNotPackageOrInternal(node: KSNode, message: String, vararg args: Any?) {
+        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(node, message, args)
+        else logger.warn(node, message, args)
     }
 
     companion object {
