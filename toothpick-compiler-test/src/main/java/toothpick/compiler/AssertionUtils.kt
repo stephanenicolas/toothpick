@@ -111,8 +111,8 @@ private fun AssertCompiled.generatesSource(expected: RawSource) = apply {
             "Expected file %s does not exist on disk. Actual files: %s".format(
                 actual.toRelativeString(outputDir),
                 outputDir.walk()
-                    .filter { it.isFile }
-                    .map { it.name }
+                    .filter { child -> child.isFile }
+                    .map { outputFile -> outputFile.name }
                     .toList()
             )
         )
@@ -135,8 +135,8 @@ fun AssertCompiled.generatesFileNamed(relativeName: String) = apply {
             "Expected file %s does not exist on disk. Actual files: %s".format(
                 expected.toRelativeString(outputDir),
                 outputDir.walk()
-                    .filter { it.isFile }
-                    .map { it.name }
+                    .filter { child -> child.isFile }
+                    .map { outputFile -> outputFile.name }
                     .toList()
             )
         )

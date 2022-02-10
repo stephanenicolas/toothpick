@@ -141,7 +141,7 @@ abstract class ToothpickProcessor(
         val parentClass: KSClassDeclaration? = superTypes
             .map { superType -> superType.resolve().declaration }
             .filterIsInstance<KSClassDeclaration>()
-            .filter { it.classKind == ClassKind.CLASS }
+            .filter { superClass -> superClass.classKind == ClassKind.CLASS }
             .firstOrNull()
 
         return parentClass?.getMostDirectSuperClassWithInjectedMembers(onlyParents = false)
@@ -189,14 +189,14 @@ abstract class ToothpickProcessor(
             getAnnotationsByType<Suppress>()
                 .flatMap { annotation ->
                     annotation.arguments
-                        .flatMap { it.value as List<*> }
+                        .flatMap { arg -> arg.value as List<*> }
                         .filterIsInstance<String>()
                 }
 
         val javaAnnotations =
             getAnnotationsByType<SuppressWarnings>()
-                .flatMap { annotations ->
-                    annotations.arguments.map { it.value as String }
+                .flatMap { annotation ->
+                    annotation.arguments.map { arg -> arg.value as String }
                 }
 
         return (kotlinAnnotations + javaAnnotations)

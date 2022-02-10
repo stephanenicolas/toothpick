@@ -119,7 +119,9 @@ sealed class VariableInjectionTarget(
                     val annotationClass = annotation.annotationType.resolve().declaration
                     val annotationClassName = annotationClass.qualifiedName?.asString()
                     if (annotationClass.isAnnotationPresent(Qualifier::class)) {
-                        annotationClassName.takeIf { it != Named::class.qualifiedName }
+                        annotationClassName.takeIf { className ->
+                            className != Named::class.qualifiedName
+                        }
                     } else null
                 }
 

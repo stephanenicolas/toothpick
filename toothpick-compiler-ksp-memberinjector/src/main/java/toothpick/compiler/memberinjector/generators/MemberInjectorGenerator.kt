@@ -129,7 +129,7 @@ internal class MemberInjectorGenerator(
         methodInjectionTargetList: List<MethodInjectionTarget>?
     ): FunSpec.Builder = apply {
         methodInjectionTargetList
-            ?.filterNot { it.isOverride }
+            ?.filterNot { methodInjectionTarget -> methodInjectionTarget.isOverride }
             ?.forEach { methodInjectionTarget ->
                 methodInjectionTarget.parameters
                     .forEachIndexed { paramIndex, paramInjectionTarget ->

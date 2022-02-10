@@ -87,13 +87,13 @@ fun Map<String, String>.readOptions(): ToothpickOptions {
     return ToothpickOptions(
         excludes = this[ToothpickOptions.Excludes]
             ?.split(',')
-            ?.map { it.trim() }
+            ?.map { name -> name.trim() }
             ?.toSet()
             ?: default.excludes,
         supportedAnnotationTypes = default.supportedAnnotationTypes + (
             this[ToothpickOptions.AdditionalAnnotationTypes]
                 ?.split(',')
-                ?.map { it.trim() }
+                ?.map { name -> name.trim() }
                 ?: emptyList()
             ),
         crashWhenNoFactoryCanBeCreated = this[ToothpickOptions.CrashWhenNoFactoryCanBeCreated]
