@@ -23,6 +23,7 @@ import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.failsToCompile
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 import toothpick.compiler.withOptions
@@ -30,7 +31,7 @@ import toothpick.compiler.withOptions
 class RelaxedFactoryWarningsTest {
 
     @Test
-    fun testOptimisticFactoryCreationForSingleton_shouldFailTheBuild_whenThereIsNoDefaultConstructor() {
+    fun testOptimisticFactoryCreationForSingleton_shouldFailTheBuild_whenThereIsNoDefaultConstructor_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForSingleton",
             """
@@ -52,7 +53,27 @@ class RelaxedFactoryWarningsTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForSingleton_shouldNotFailTheBuild_whenThereIsNoDefaultConstructorButClassIsAnnotated() {
+    fun testOptimisticFactoryCreationForSingleton_shouldFailTheBuild_whenThereIsNoDefaultConstructor_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForSingleton",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            @Singleton
+            class TestOptimisticFactoryCreationForSingleton(a: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
+            .failsToCompile()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForSingleton_shouldNotFailTheBuild_whenThereIsNoDefaultConstructorButClassIsAnnotated_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForSingleton",
             """
@@ -75,7 +96,28 @@ class RelaxedFactoryWarningsTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationWithInjectedMembers_shouldFailTheBuild_whenThereIsNoDefaultConstructor() {
+    fun testOptimisticFactoryCreationForSingleton_shouldNotFailTheBuild_whenThereIsNoDefaultConstructorButClassIsAnnotated_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForSingleton",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            @Suppress("injectable")
+            @Singleton
+            class TestOptimisticFactoryCreationForSingleton(a: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
+            .compilesWithoutError()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationWithInjectedMembers_shouldFailTheBuild_whenThereIsNoDefaultConstructor_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForSingleton",
             """
@@ -96,7 +138,27 @@ class RelaxedFactoryWarningsTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationWithInjectedMembers_shouldNotFailTheBuild_whenThereIsNoDefaultConstructorButClassIsAnnotated() {
+    fun testOptimisticFactoryCreationWithInjectedMembers_shouldFailTheBuild_whenThereIsNoDefaultConstructor_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForSingleton",
+            """
+            package test
+            import javax.inject.Inject
+            class TestOptimisticFactoryCreationForSingleton(a: Int) {
+              @Inject val s: String
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
+            .failsToCompile()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationWithInjectedMembers_shouldNotFailTheBuild_whenThereIsNoDefaultConstructorButClassIsAnnotated_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForSingleton",
             """
@@ -106,6 +168,27 @@ class RelaxedFactoryWarningsTest {
             public class TestOptimisticFactoryCreationForSingleton {
               @Inject String s;
               TestOptimisticFactoryCreationForSingleton(int a) { }
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(CrashWhenNoFactoryCanBeCreated to "true")
+            .compilesWithoutError()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationWithInjectedMembers_shouldNotFailTheBuild_whenThereIsNoDefaultConstructorButClassIsAnnotated_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForSingleton",
+            """
+            package test
+            import javax.inject.Inject
+            @Suppress("injectable")
+            class TestOptimisticFactoryCreationForSingleton(a: Int) {
+              @Inject val s: String
             }
             """
         )

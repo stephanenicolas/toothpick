@@ -24,6 +24,7 @@ import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.failsToCompile
 import toothpick.compiler.generatesFileNamed
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 import toothpick.compiler.withOptions
@@ -31,7 +32,7 @@ import toothpick.compiler.withOptions
 class RelaxedFactoryForSingletonsTest {
 
     @Test
-    fun testOptimisticFactoryCreationForSingleton() {
+    fun testOptimisticFactoryCreationForSingleton_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForSingleton",
             """
@@ -54,7 +55,29 @@ class RelaxedFactoryForSingletonsTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForScopeAnnotation() {
+    fun testOptimisticFactoryCreationForSingleton_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForSingleton",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            @Singleton
+            class TestOptimisticFactoryCreationForSingleton
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesFileNamed(
+                "test/TestOptimisticFactoryCreationForSingleton__Factory.kt"
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForScopeAnnotation_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForScopeAnnotation",
             """
@@ -83,7 +106,33 @@ class RelaxedFactoryForSingletonsTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRetention() {
+    fun testOptimisticFactoryCreationForScopeAnnotation_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForScopeAnnotation",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            @Scope
+            @Retention(AnnotationRetention.RUNTIME)
+            annotation class CustomScope
+            @CustomScope
+            class TestOptimisticFactoryCreationForScopeAnnotation
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
+            .compilesWithoutError()
+            .generatesFileNamed(
+                "test/TestOptimisticFactoryCreationForScopeAnnotation__Factory.kt"
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRetention_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForScopeAnnotation",
             """
@@ -108,7 +157,28 @@ class RelaxedFactoryForSingletonsTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRuntimeRetention() {
+    fun testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRetention_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForScopeAnnotation",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            @Scope
+            annotation class CustomScope
+            @CustomScope class TestOptimisticFactoryCreationForScopeAnnotation
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
+            .failsToCompile()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRuntimeRetention_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForScopeAnnotation",
             """
@@ -123,6 +193,29 @@ class RelaxedFactoryForSingletonsTest {
             @CustomScope
             public class TestOptimisticFactoryCreationForScopeAnnotation {
             }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
+            .failsToCompile()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForScopeAnnotation_shouldFail_WhenScopeAnnotationDoesNotHaveRuntimeRetention_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForScopeAnnotation",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            @Scope
+            @Retention(AnnotationRetention.BINARY)
+            annotation class CustomScope
+            @CustomScope
+            class TestOptimisticFactoryCreationForScopeAnnotation
             """
         )
 

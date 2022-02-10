@@ -19,6 +19,7 @@ package toothpick.compiler.common
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.closestClassDeclaration
+import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.isPrivate
@@ -37,7 +38,7 @@ import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.writeTo
 import toothpick.compiler.common.generators.TPCodeGenerator
 import toothpick.compiler.common.generators.error
-import toothpick.compiler.common.generators.hasAnnotation
+import toothpick.compiler.common.generators.getAnnotationsByType
 import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.common.generators.warn
 import java.io.IOException
@@ -184,11 +185,22 @@ abstract class ToothpickProcessor(
      * @return true is the injectable warning is suppressed, false otherwise.
      */
     protected fun KSAnnotated.hasWarningSuppressed(warningSuppressString: String): Boolean {
-        return hasAnnotation<SuppressWarnings> { annotation ->
-            annotation.arguments
-                .map { it.value as String }
-                .any { value -> value.equals(warningSuppressString, ignoreCase = true) }
-        }
+        val kotlinAnnotations =
+            getAnnotationsByType<Suppress>()
+                .flatMap { annotation ->
+                    annotation.arguments
+                        .flatMap { it.value as List<*> }
+                        .filterIsInstance<String>()
+                }
+
+        val javaAnnotations =
+            getAnnotationsByType<SuppressWarnings>()
+                .flatMap { annotations ->
+                    annotations.arguments.map { it.value as String }
+                }
+
+        return (kotlinAnnotations + javaAnnotations)
+            .any { value -> value.equals(warningSuppressString, ignoreCase = true) }
     }
 
     private fun KSType.isProviderOrLazy(): Boolean {

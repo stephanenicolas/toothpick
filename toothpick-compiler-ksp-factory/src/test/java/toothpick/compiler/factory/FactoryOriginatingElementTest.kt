@@ -23,6 +23,7 @@ import toothpick.compiler.common.ToothpickOptions
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 import toothpick.compiler.withOptions
@@ -30,7 +31,7 @@ import toothpick.compiler.withOptions
 class FactoryOriginatingElementTest {
 
     @Test
-    fun testOriginatingElement() {
+    fun testOriginatingElement_java() {
         val source = javaSource(
             "TestOriginatingElement",
             """
@@ -39,6 +40,27 @@ class FactoryOriginatingElementTest {
             public class TestOriginatingElement {
               @Inject public TestOriginatingElement() {}
             }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(ToothpickOptions.VerboseLogging to "true")
+            .compilesWithoutError()
+            .assertLogs(
+                "test.TestOriginatingElement generated class test.TestOriginatingElement__Factory"
+            )
+    }
+
+    @Test
+    fun testOriginatingElement_kt() {
+        val source = ktSource(
+            "TestOriginatingElement",
+            """
+            package test
+            import javax.inject.Inject
+            class TestOriginatingElement @Inject constructor()
             """
         )
 

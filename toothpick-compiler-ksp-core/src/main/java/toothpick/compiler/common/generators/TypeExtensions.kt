@@ -21,13 +21,13 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.squareup.kotlinpoet.asClassName
 
-inline fun <reified T : Annotation> KSAnnotated.hasAnnotation(
-    matches: (KSAnnotation) -> Boolean = { true }
-): Boolean {
-    return annotations.any { annotation ->
+/**
+ * Alternative to [com.google.devtools.ksp.getAnnotationsByType] that retrieves [KSAnnotation]s instead.
+ */
+inline fun <reified T : Annotation> KSAnnotated.getAnnotationsByType(): Sequence<KSAnnotation> {
+    return annotations.filter { annotation ->
         val className = T::class.asClassName()
         annotation.shortName.asString() == className.simpleName &&
-            annotation.annotationType.resolve().declaration.qualifiedName?.asString() == className.canonicalName &&
-            matches(annotation)
+            annotation.annotationType.resolve().declaration.qualifiedName?.asString() == className.canonicalName
     }
 }
