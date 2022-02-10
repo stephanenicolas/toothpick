@@ -19,7 +19,6 @@ package toothpick.compiler.common
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.closestClassDeclaration
-import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.isConstructor
 import com.google.devtools.ksp.isPrivate
@@ -38,6 +37,7 @@ import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.writeTo
 import toothpick.compiler.common.generators.TPCodeGenerator
 import toothpick.compiler.common.generators.error
+import toothpick.compiler.common.generators.exception
 import toothpick.compiler.common.generators.getAnnotationsByType
 import toothpick.compiler.common.generators.targets.VariableInjectionTarget
 import toothpick.compiler.common.generators.warn
@@ -60,7 +60,7 @@ abstract class ToothpickProcessor(
                 .writeTo(codeGenerator, aggregating = false)
             true
         } catch (e: IOException) {
-            logger.error("Error writing %s file: %s", fileDescription, e.message)
+            logger.exception(e, "Error writing %s file", fileDescription)
             false
         }
     }
