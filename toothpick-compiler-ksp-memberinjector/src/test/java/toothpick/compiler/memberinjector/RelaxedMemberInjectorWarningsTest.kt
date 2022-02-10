@@ -23,6 +23,7 @@ import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.failsToCompile
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 import toothpick.compiler.withOptions
@@ -30,7 +31,7 @@ import toothpick.compiler.withOptions
 class RelaxedMemberInjectorWarningsTest {
 
     @Test
-    fun testInjectedMethod_shouldFailTheBuild_whenMethodIsPublic() {
+    fun testInjectedMethod_shouldFailTheBuild_whenMethodIsPublic_java() {
         val source = javaSource(
             "TestWarningVisibleInjectedMethod",
             """
@@ -51,7 +52,28 @@ class RelaxedMemberInjectorWarningsTest {
     }
 
     @Test
-    fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsPublicButAnnotated() {
+    fun testInjectedMethod_shouldFailTheBuild_whenMethodIsPublic_kt() {
+        val source = ktSource(
+            "TestWarningVisibleInjectedMethod",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            class TestWarningVisibleInjectedMethod {
+              @Inject fun init()
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .withOptions(CrashWhenInjectedMethodIsNotPackageVisible to "true")
+            .failsToCompile()
+    }
+
+    @Test
+    fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsPublicButAnnotated_java() {
         val source = javaSource(
             "TestWarningVisibleInjectedMethod",
             """
@@ -73,7 +95,29 @@ class RelaxedMemberInjectorWarningsTest {
     }
 
     @Test
-    fun testInjectedMethod_shouldFailTheBuild_whenMethodIsProtected() {
+    fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsPublicButAnnotated_kt() {
+        val source = ktSource(
+            "TestWarningVisibleInjectedMethod",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            class TestWarningVisibleInjectedMethod {
+              @Suppress("visible")
+              @Inject fun init() {}
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .withOptions(CrashWhenInjectedMethodIsNotPackageVisible to "true")
+            .compilesWithoutError()
+    }
+
+    @Test
+    fun testInjectedMethod_shouldFailTheBuild_whenMethodIsProtected_java() {
         val source = javaSource(
             "TestWarningVisibleInjectedMethod",
             """
@@ -94,7 +138,29 @@ class RelaxedMemberInjectorWarningsTest {
     }
 
     @Test
-    fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsProtectedButAnnotated() {
+    fun testInjectedMethod_shouldFailTheBuild_whenMethodIsProtected_kt() {
+        @Suppress("ProtectedInFinal")
+        val source = ktSource(
+            "TestWarningVisibleInjectedMethod",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            class TestWarningVisibleInjectedMethod {
+              @Inject protected fun init() {}
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .withOptions(CrashWhenInjectedMethodIsNotPackageVisible to "true")
+            .failsToCompile()
+    }
+
+    @Test
+    fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsProtectedButAnnotated_java() {
         val source = javaSource(
             "TestWarningVisibleInjectedMethod",
             """
@@ -104,6 +170,29 @@ class RelaxedMemberInjectorWarningsTest {
             public class TestWarningVisibleInjectedMethod {
               @SuppressWarnings("visible")
               @Inject protected void init() {}
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .withOptions(CrashWhenInjectedMethodIsNotPackageVisible to "true")
+            .compilesWithoutError()
+    }
+
+    @Test
+    fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsProtectedButAnnotated_kt() {
+        @Suppress("ProtectedInFinal")
+        val source = ktSource(
+            "TestWarningVisibleInjectedMethod",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            class TestWarningVisibleInjectedMethod {
+              @Suppress("visible")
+              @Inject protected fun init() {}
             }
             """
         )

@@ -23,6 +23,7 @@ import toothpick.compiler.common.ToothpickOptions.Companion.VerboseLogging
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 import toothpick.compiler.withOptions
@@ -30,7 +31,7 @@ import toothpick.compiler.withOptions
 class MemberInjectorOriginatingElementTest {
 
     @Test
-    fun testOriginatingElement() {
+    fun testOriginatingElement_java() {
         val source = javaSource(
             "TestOriginatingElement",
             """
@@ -41,6 +42,30 @@ class MemberInjectorOriginatingElementTest {
               public TestOriginatingElement() {}
             }
             class Foo {}
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .withOptions(VerboseLogging to "true")
+            .compilesWithoutError()
+            .assertLogs(
+                "test.TestOriginatingElement generated class test.TestOriginatingElement__MemberInjector"
+            )
+    }
+
+    @Test
+    fun testOriginatingElement_kt() {
+        val source = ktSource(
+            "TestOriginatingElement",
+            """
+            package test
+            import javax.inject.Inject
+            class TestOriginatingElement {
+              @Inject val foo: Foo
+            }
+            class Foo
             """
         )
 
