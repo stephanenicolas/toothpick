@@ -22,10 +22,11 @@ import org.junit.Test
 import toothpick.compiler.factory.FactoryProcessorProvider
 import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 
+@Suppress("PrivatePropertyName")
 class FactoryAndMemberInjectorTests {
 
     @Test
-    fun testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField() {
+    fun testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_java() {
         val source = javaSource(
             "TestAClassThatNeedsInjection",
             """
@@ -38,7 +39,39 @@ class FactoryAndMemberInjectorTests {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_expected
+            )
+    }
+
+    @Test
+    fun testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_kt() {
+        val source = ktSource(
+            "TestAClassThatNeedsInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestAClassThatNeedsInjection @Inject constructor() {
+                @Inject val s: String
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_expected
+            )
+    }
+
+    private val testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_expected =
+        expectedKtSource(
             "test/TestAClassThatNeedsInjection__Factory",
             """
             package test
@@ -81,16 +114,9 @@ class FactoryAndMemberInjectorTests {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
     @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
-    fun testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField() {
+    fun testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_java() {
         val source = javaSource(
             "TestAInnerClassThatNeedsInjection",
             """
@@ -105,55 +131,25 @@ class FactoryAndMemberInjectorTests {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestAInnerClassThatNeedsInjection\$InnerClass__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_expected
+            )
+    }
+
+    @Test
+    fun testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_kt() {
+        val source = ktSource(
+            "TestAInnerClassThatNeedsInjection",
             """
-            package test;
-            
-            import java.lang.Override;
-            import toothpick.Factory;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
-            
-            public final class TestAInnerClassThatNeedsInjection${'$'}InnerClass__Factory implements Factory<TestAInnerClassThatNeedsInjection.InnerClass> {
-              private MemberInjector<TestAInnerClassThatNeedsInjection.InnerClass> memberInjector = new test.TestAInnerClassThatNeedsInjection${'$'}InnerClass__MemberInjector();
-            
-              @Override
-              public TestAInnerClassThatNeedsInjection.InnerClass createInstance(Scope scope) {
-                scope = getTargetScope(scope);
-                TestAInnerClassThatNeedsInjection.InnerClass innerClass = new TestAInnerClassThatNeedsInjection.InnerClass();
-                memberInjector.inject(innerClass, scope);
-                return innerClass;
-              }
-            
-              @Override
-              public Scope getTargetScope(Scope scope) {
-                return scope;
-              }
-            
-              @Override
-              public boolean hasScopeAnnotation() {
-                return false;
-              }
-            
-              @Override
-              public boolean hasSingletonAnnotation() {
-                return false;
-              }
-            
-              @Override
-              public boolean hasReleasableAnnotation() {
-                return false;
-              }
-            
-              @Override
-              public boolean hasProvidesSingletonAnnotation() {
-                return false;
-              }
-            
-              @Override
-              public boolean hasProvidesReleasableAnnotation() {
-                return false;
+            package test
+            import javax.inject.Inject
+            class TestAInnerClassThatNeedsInjection {
+              class InnerClass @Inject constructor() {
+                @Inject val s: String
               }
             }
             """
@@ -163,11 +159,81 @@ class FactoryAndMemberInjectorTests {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .compilesWithoutError()
-            .generatesSources(expectedSource)
+            .generatesSources(
+                testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_expected
+            )
+    }
+
+    @Suppress("RemoveRedundantBackticks")
+    private val testAInnerClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedField_expected =
+        expectedKtSource(
+            "test/TestAInnerClassThatNeedsInjection\$InnerClass__Factory",
+            """
+            package test
+            
+            import kotlin.Boolean
+            import kotlin.Suppress
+            import toothpick.Factory
+            import toothpick.MemberInjector
+            import toothpick.Scope
+            
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier"
+            )
+            public class `TestAInnerClassThatNeedsInjection${'$'}InnerClass__Factory` :
+                Factory<TestAInnerClassThatNeedsInjection.InnerClass> {
+              private val memberInjector: MemberInjector<TestAInnerClassThatNeedsInjection.InnerClass> =
+                  `TestAInnerClassThatNeedsInjection${'$'}InnerClass__MemberInjector`()
+            
+              @Suppress("NAME_SHADOWING")
+              public override fun createInstance(scope: Scope): TestAInnerClassThatNeedsInjection.InnerClass {
+                val scope = getTargetScope(scope)
+                return TestAInnerClassThatNeedsInjection.InnerClass()
+                .apply {
+                  memberInjector.inject(this, scope)
+                }
+              }
+            
+              public override fun getTargetScope(scope: Scope): Scope = scope
+            
+              public override fun hasScopeAnnotation(): Boolean = false
+            
+              public override fun hasSingletonAnnotation(): Boolean = false
+            
+              public override fun hasReleasableAnnotation(): Boolean = false
+            
+              public override fun hasProvidesSingletonAnnotation(): Boolean = false
+            
+              public override fun hasProvidesReleasableAnnotation(): Boolean = false
+            }
+            """
+        )
+
+    @Test
+    fun testAInnerClassThatNeedsInjection_shouldFail_whenItIsNotStatic_kt() {
+        val source = ktSource(
+            "TestAInnerClassThatNeedsInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestAInnerClassThatNeedsInjection {
+              inner class InnerClass @Inject constructor() {
+                @Inject val s: String
+              }
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs("Class test.TestAInnerClassThatNeedsInjection.InnerClass is a non static inner class. @Inject constructors are not allowed in non static inner classes.")
     }
 
     @Test
-    fun testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector() {
+    fun testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector_java() {
         val source = javaSource(
             "TestAClassThatNeedsInjection",
             """
@@ -183,7 +249,40 @@ class FactoryAndMemberInjectorTests {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector_expected
+            )
+    }
+
+    @Test
+    fun testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector_kt() {
+        val source = ktSource(
+            "TestAClassThatNeedsInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestAClassThatNeedsInjection @Inject constructor(): SuperClassThatNeedsInjection()
+            class SuperClassThatNeedsInjection {
+              @Inject val s: String
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector_expected
+            )
+    }
+
+    private val testAClassThatInheritFromAnotherClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnAnnotatedConstructor_andShouldUseSuperMemberInjector_expected =
+        expectedKtSource(
             "test/TestAClassThatNeedsInjection__Factory",
             """
             package test
@@ -226,15 +325,8 @@ class FactoryAndMemberInjectorTests {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod() {
+    fun testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod_java() {
         val source = javaSource(
             "TestAClassThatNeedsInjection",
             """
@@ -247,7 +339,39 @@ class FactoryAndMemberInjectorTests {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod_expected
+            )
+    }
+
+    @Test
+    fun testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod_kt() {
+        val source = ktSource(
+            "TestAClassThatNeedsInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestAClassThatNeedsInjection @Inject constructor() {
+              @Inject fun m(s: String) {}
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod_expected
+            )
+    }
+
+    private val testAClassThatNeedsInjection_shouldHaveAFactoryThatInjectsIt_whenItHasAnInjectedMethod_expected =
+        expectedKtSource(
             "test/TestAClassThatNeedsInjection__Factory",
             """
             package test
@@ -289,11 +413,4 @@ class FactoryAndMemberInjectorTests {
             }
             """
         )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
 }

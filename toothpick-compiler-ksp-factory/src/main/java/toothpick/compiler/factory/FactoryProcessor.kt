@@ -444,7 +444,7 @@ class FactoryProcessor(
     }
 
     private fun KSClassDeclaration.isNonStaticInnerClass(): Boolean {
-        if (modifiers.contains(Modifier.INNER) && !modifiers.contains(Modifier.JAVA_STATIC)) {
+        if (modifiers.contains(Modifier.INNER)) {
             logger.error(
                 this,
                 "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",

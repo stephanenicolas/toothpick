@@ -21,10 +21,11 @@ import org.junit.Test
 import toothpick.compiler.factory.FactoryProcessorProvider
 import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 
+@Suppress("PrivatePropertyName")
 class RelaxedFactoryForInjectConstructorTest {
 
     @Test
-    fun testOptimisticFactoryCreationForInjectConstructor_shouldWork_whenDefaultConstructorIsPresent() {
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldWork_whenDefaultConstructorIsPresent_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForInjectConstructor",
             """
@@ -46,7 +47,28 @@ class RelaxedFactoryForInjectConstructorTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated() {
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldWork_whenDefaultConstructorIsPresent_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForInjectConstructor",
+            """
+            package test
+            import toothpick.InjectConstructor
+            @InjectConstructor
+            class TestOptimisticFactoryCreationForInjectConstructor
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesFileNamed(
+                "test/TestOptimisticFactoryCreationForInjectConstructor__Factory.kt"
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -60,7 +82,39 @@ class RelaxedFactoryForInjectConstructorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated_expected
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import toothpick.InjectConstructor
+            import toothpick.Lazy
+            @InjectConstructor
+            class TestNonEmptyConstructor(str: Lazy<String>, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated_expected
+            )
+    }
+
+    private val testOptimisticFactoryCreationForInjectConstructor_shouldUse_uniqueConstructorWhenAnnotated_expected =
+        expectedKtSource(
             "test/TestNonEmptyConstructor__Factory",
             """
             package test
@@ -101,15 +155,8 @@ class RelaxedFactoryForInjectConstructorTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector() {
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -125,7 +172,42 @@ class RelaxedFactoryForInjectConstructorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector_expected
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import toothpick.InjectConstructor
+            import javax.inject.Inject
+            import toothpick.Lazy
+            @InjectConstructor
+            class TestNonEmptyConstructor(str: Lazy<String>, n: Int) {
+              @Inject val string: String
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector_expected
+            )
+    }
+
+    private val testOptimisticFactoryCreationForInjectConstructor_shouldHave_referenceToMemberInjector_expected =
+        expectedKtSource(
             "test/TestNonEmptyConstructor__Factory",
             """
             package test
@@ -173,15 +255,8 @@ class RelaxedFactoryForInjectConstructorTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testOptimisticFactoryCreationForInjectConstructor_shouldFail_uniqueConstructorIsAnnotated() {
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldFail_uniqueConstructorIsAnnotated_java() {
         val source = javaSource(
             "TestNonEmptyConstructorInjected",
             """
@@ -207,7 +282,31 @@ class RelaxedFactoryForInjectConstructorTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForInjectConstructor_shouldFail_multipleConstructors() {
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldFail_uniqueConstructorIsAnnotated_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructorInjected",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.InjectConstructor
+            import toothpick.Lazy
+            @InjectConstructor
+            class TestNonEmptyConstructorInjected @Inject constructor(str: Lazy<String>, n: Int)
+           """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Class test.TestNonEmptyConstructorInjected is annotated with @InjectConstructor. " +
+                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldFail_multipleConstructors_java() {
         val source = javaSource(
             "TestMultipleConstructors",
             """
@@ -219,6 +318,32 @@ class RelaxedFactoryForInjectConstructorTest {
             public class TestMultipleConstructors {
               public TestMultipleConstructors(Lazy<String> str, Integer n) {}
               public TestMultipleConstructors() {}
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Class test.TestMultipleConstructors is annotated with @InjectConstructor. " +
+                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForInjectConstructor_shouldFail_multipleConstructors_kt() {
+        val source = ktSource(
+            "TestMultipleConstructors",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.InjectConstructor
+            import toothpick.Lazy
+            @InjectConstructor
+            class TestMultipleConstructors() {
+                constructor(str: Lazy<String>, n: Int)
             }
             """
         )

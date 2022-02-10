@@ -24,7 +24,7 @@ import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 class RelaxedFactoryForScopeInstancesTest {
 
     @Test
-    fun testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsNoScopeAnnotation() {
+    fun testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsNoScopeAnnotation_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForHasScopeInstances",
             """
@@ -48,7 +48,30 @@ class RelaxedFactoryForScopeInstancesTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForHasScopeInstances_shouldWork_whenThereIsAScopeAnnotation() {
+    fun testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsNoScopeAnnotation_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForHasScopeInstances",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.ProvidesSingleton
+            @ProvidesSingleton
+            class TestOptimisticFactoryCreationForHasScopeInstances
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "The type test.TestOptimisticFactoryCreationForHasScopeInstances" +
+                    " uses @ProvidesSingleton but doesn't have a scope annotation."
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForHasScopeInstances_shouldWork_whenThereIsAScopeAnnotation_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForHasScopeInstances",
             """
@@ -77,7 +100,33 @@ class RelaxedFactoryForScopeInstancesTest {
     }
 
     @Test
-    fun testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsAScopeAnnotationWithWrongRetention() {
+    fun testOptimisticFactoryCreationForHasScopeInstances_shouldWork_whenThereIsAScopeAnnotation_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForHasScopeInstances",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            import toothpick.ProvidesSingleton
+            @Scope
+            @Retention(AnnotationRetention.RUNTIME)
+            annotation class CustomScope
+            @ProvidesSingleton @CustomScope
+            class TestOptimisticFactoryCreationForHasScopeInstances
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesFileNamed(
+                "test/TestOptimisticFactoryCreationForHasScopeInstances__Factory.kt"
+            )
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsAScopeAnnotationWithWrongRetention_java() {
         val source = javaSource(
             "TestOptimisticFactoryCreationForHasScopeInstances",
             """
@@ -93,6 +142,29 @@ class RelaxedFactoryForScopeInstancesTest {
             @ProvidesSingleton @CustomScope
             public class TestOptimisticFactoryCreationForHasScopeInstances {
             }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+    }
+
+    @Test
+    fun testOptimisticFactoryCreationForHasScopeInstances_shouldFail_whenThereIsAScopeAnnotationWithWrongRetention_kt() {
+        val source = ktSource(
+            "TestOptimisticFactoryCreationForHasScopeInstances",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            import toothpick.ProvidesSingleton
+            @Scope
+            @Retention(AnnotationRetention.BINARY)
+            annotation class CustomScope
+            @ProvidesSingleton @CustomScope
+            class TestOptimisticFactoryCreationForHasScopeInstances
             """
         )
 

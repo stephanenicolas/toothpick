@@ -21,10 +21,11 @@ import org.junit.Test
 import toothpick.compiler.factory.FactoryProcessorProvider
 import toothpick.compiler.memberinjector.MemberInjectorProcessorProvider
 
+@Suppress("PrivatePropertyName")
 class RelaxedFactoryForClassContainingFieldsTest {
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField() {
+    fun testRelaxedFactoryCreationForInjectedField_java() {
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -37,9 +38,37 @@ class RelaxedFactoryForClassContainingFieldsTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestRelaxedFactoryCreationForInjectField__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testRelaxedFactoryCreationForInjectedField_expected)
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
             """
+            package test
+            import javax.inject.Inject
+            class TestRelaxedFactoryCreationForInjectField {
+              @Inject val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testRelaxedFactoryCreationForInjectedField_expected)
+    }
+
+    private val testRelaxedFactoryCreationForInjectedField_expected = expectedKtSource(
+        "test/TestRelaxedFactoryCreationForInjectField__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -79,17 +108,10 @@ class RelaxedFactoryForClassContainingFieldsTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsPrivate() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsPrivate_java() {
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -112,7 +134,30 @@ class RelaxedFactoryForClassContainingFieldsTest {
     }
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenContainingClassIsPrivate() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsPrivate_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            class TestRelaxedFactoryCreationForInjectField {
+              @Inject private val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Inject-annotated fields must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
+            )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenContainingClassIsPrivate_java() {
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -137,7 +182,33 @@ class RelaxedFactoryForClassContainingFieldsTest {
     }
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalidLazy() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenContainingClassIsPrivate_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            class TestRelaxedFactoryCreationForInjectField {
+              private class InnerClass {
+                @Inject val foo: Foo
+              }
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Injected test.TestRelaxedFactoryCreationForInjectField.InnerClass.foo; the parent class must not be private"
+            )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalidLazy_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -161,7 +232,32 @@ class RelaxedFactoryForClassContainingFieldsTest {
     }
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalidProvider() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalidLazy_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestRelaxedFactoryCreationForInjectField {
+              @Inject val foo: Lazy<*>
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of test.TestRelaxedFactoryCreationForInjectField.foo is not a valid toothpick.Lazy."
+            )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalidProvider_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -185,7 +281,31 @@ class RelaxedFactoryForClassContainingFieldsTest {
     }
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldFail_WhenFieldIsInvalidProvider_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestRelaxedFactoryCreationForInjectField {
+              @Inject val foo: Provider<*>
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of test.TestRelaxedFactoryCreationForInjectField.foo is not a valid javax.inject.Provider."
+            )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract_java() {
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -205,7 +325,27 @@ class RelaxedFactoryForClassContainingFieldsTest {
     }
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeIsAbstract_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            abstract class TestRelaxedFactoryCreationForInjectField {
+              @Inject val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        assertThatCompileWithoutErrorButNoFactoryIsCreated(
+            source = source,
+            noFactoryClass = "TestRelaxedFactoryCreationForInjectField"
+        )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor_java() {
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -226,7 +366,27 @@ class RelaxedFactoryForClassContainingFieldsTest {
     }
 
     @Test
-    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor() {
+    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasANonDefaultConstructor_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            class TestRelaxedFactoryCreationForInjectField(s: String) {
+              @Inject val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        assertThatCompileWithoutErrorButNoFactoryIsCreated(
+            source = source,
+            noFactoryClass = "TestRelaxedFactoryCreationForInjectField"
+        )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor_java() {
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectField",
             """
@@ -237,6 +397,26 @@ class RelaxedFactoryForClassContainingFieldsTest {
               private TestRelaxedFactoryCreationForInjectField() {}
             }
             class Foo {}
+            """
+        )
+
+        assertThatCompileWithoutErrorButNoFactoryIsCreated(
+            source = source,
+            noFactoryClass = "TestRelaxedFactoryCreationForInjectField"
+        )
+    }
+
+    @Test
+    fun testRelaxedFactoryCreationForInjectedField_shouldWorkButNoFactoryIsProduced_whenTypeHasAPrivateDefaultConstructor_kt() {
+        val source = ktSource(
+            "TestRelaxedFactoryCreationForInjectField",
+            """
+            package test
+            import javax.inject.Inject
+            class TestRelaxedFactoryCreationForInjectField private constructor() {
+              @Inject val foo: Foo
+            }
+            class Foo
             """
         )
 
