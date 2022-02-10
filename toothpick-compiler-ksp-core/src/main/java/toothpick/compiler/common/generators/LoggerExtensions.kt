@@ -20,8 +20,8 @@ package toothpick.compiler.common.generators
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSNode
 
-fun KSPLogger.error(node: String, vararg args: Any?) =
-    error(node.format(*args))
+fun KSPLogger.error(message: String, vararg args: Any?) =
+    error(message.format(*args))
 
 fun KSPLogger.error(node: KSNode?, message: String, vararg args: Any?) =
     error(message.format(*args), node)
