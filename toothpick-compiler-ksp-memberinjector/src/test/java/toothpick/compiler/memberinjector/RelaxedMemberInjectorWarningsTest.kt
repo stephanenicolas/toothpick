@@ -139,14 +139,13 @@ class RelaxedMemberInjectorWarningsTest {
 
     @Test
     fun testInjectedMethod_shouldFailTheBuild_whenMethodIsProtected_kt() {
-        @Suppress("ProtectedInFinal")
         val source = ktSource(
             "TestWarningVisibleInjectedMethod",
             """
             package test
             import javax.inject.Inject
             import javax.inject.Singleton
-            class TestWarningVisibleInjectedMethod {
+            open class TestWarningVisibleInjectedMethod {
               @Inject protected fun init() {}
             }
             """
@@ -183,14 +182,13 @@ class RelaxedMemberInjectorWarningsTest {
 
     @Test
     fun testInjectedMethod_shouldNotFailTheBuild_whenMethodIsProtectedButAnnotated_kt() {
-        @Suppress("ProtectedInFinal")
         val source = ktSource(
             "TestWarningVisibleInjectedMethod",
             """
             package test
             import javax.inject.Inject
             import javax.inject.Singleton
-            class TestWarningVisibleInjectedMethod {
+            open class TestWarningVisibleInjectedMethod {
               @Suppress("visible")
               @Inject protected fun init() {}
             }

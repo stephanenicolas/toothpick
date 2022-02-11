@@ -84,7 +84,7 @@ abstract class ToothpickProcessor(
             logger.error(
                 node,
                 "Type of %s is not a valid %s.",
-                (node as KSDeclaration).qualifiedName?.asString(),
+                qualifiedName,
                 declaration.qualifiedName?.asString()
             )
         }
@@ -106,7 +106,7 @@ abstract class ToothpickProcessor(
         if (!areValidArguments) {
             logger.error(
                 node,
-                "Lazy/Provider is not valid in %s. Lazy/Provider cannot be used on generic types.",
+                "%s is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types.",
                 qualifiedName
             )
             return false

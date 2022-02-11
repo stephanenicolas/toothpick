@@ -255,7 +255,7 @@ class FactoryProcessor(
         return parameters.all { param ->
             param.type.resolve().isValidInjectedType(
                 node = this,
-                qualifiedName = qualifiedName?.asString()
+                qualifiedName = param.name?.asString()
             )
         }
     }

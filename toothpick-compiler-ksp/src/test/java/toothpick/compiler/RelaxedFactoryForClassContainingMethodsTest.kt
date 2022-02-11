@@ -208,6 +208,7 @@ class RelaxedFactoryForClassContainingMethodsTest {
 
     @Test
     fun testRelaxedFactoryCreationForInjectedMethod_shouldFail_WhenMethodParameterIsInvalidLazy_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestRelaxedFactoryCreationForInjectMethod",
             """

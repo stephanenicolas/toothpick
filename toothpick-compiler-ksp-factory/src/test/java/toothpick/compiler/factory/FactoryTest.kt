@@ -27,14 +27,16 @@ import toothpick.compiler.expectedKtSource
 import toothpick.compiler.failsToCompile
 import toothpick.compiler.generatesSources
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 import toothpick.compiler.withOptions
 
+@Suppress("PrivatePropertyName")
 class FactoryTest {
 
     @Test
-    fun testEmptyConstructor_shouldWork_whenConstructorIsPublic() {
+    fun testEmptyConstructor_shouldWork_whenConstructorIsPublic_java() {
         val source = javaSource(
             "TestEmptyConstructor",
             """
@@ -46,9 +48,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testEmptyConstructor_shouldWork_whenConstructorIsPublic_expected)
+    }
+
+    @Test
+    fun testEmptyConstructor_shouldWork_whenConstructorIsPublic_kt() {
+        val source = ktSource(
+            "TestEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            class TestEmptyConstructor @Inject constructor()
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testEmptyConstructor_shouldWork_whenConstructorIsPublic_expected)
+    }
+
+    private val testEmptyConstructor_shouldWork_whenConstructorIsPublic_expected = expectedKtSource(
+        "test/TestEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -76,17 +103,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testEmptyConstructor_shouldWork_whenConstructorIsPackage() {
+    fun testEmptyConstructor_shouldWork_whenConstructorIsPackage_java() {
         val source = javaSource(
             "TestEmptyConstructor",
             """
@@ -98,9 +118,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testEmptyConstructor_shouldWork_whenConstructorIsPackage_expected)
+    }
+
+    @Test
+    fun testEmptyConstructor_shouldWork_whenConstructorIsPackage_kt() {
+        val source = ktSource(
+            "TestEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            class TestEmptyConstructor @Inject constructor()
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testEmptyConstructor_shouldWork_whenConstructorIsPackage_expected)
+    }
+
+    private val testEmptyConstructor_shouldWork_whenConstructorIsPackage_expected = expectedKtSource(
+        "test/TestEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -128,17 +173,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testEmptyConstructor_shouldWork_whenConstructorIsProtected() {
+    fun testEmptyConstructor_shouldWork_whenConstructorIsProtected_java() {
         val source = javaSource(
             "TestEmptyConstructor",
             """
@@ -150,9 +188,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testEmptyConstructor_shouldWork_whenConstructorIsProtected_expected)
+    }
+
+    @Test
+    fun testEmptyConstructor_shouldWork_whenConstructorIsProtected_kt() {
+        val source = ktSource(
+            "TestEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            open class TestEmptyConstructor @Inject protected constructor()
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testEmptyConstructor_shouldWork_whenConstructorIsProtected_expected)
+    }
+
+    private val testEmptyConstructor_shouldWork_whenConstructorIsProtected_expected = expectedKtSource(
+        "test/TestEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -180,17 +243,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testPrivateConstructor() {
+    fun testPrivateConstructor_java() {
         val source = javaSource(
             "TestPrivateConstructor",
             """
@@ -212,7 +268,27 @@ class FactoryTest {
     }
 
     @Test
-    fun testInjectedConstructorInPrivateClass_shouldNotAllowInjectionInPrivateClasses() {
+    fun testPrivateConstructor_kt() {
+        val source = ktSource(
+            "TestPrivateConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            class TestPrivateConstructor @Inject private constructor()
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Inject constructors must not be private in class test.TestPrivateConstructor"
+            )
+    }
+
+    @Test
+    fun testInjectedConstructorInPrivateClass_shouldNotAllowInjectionInPrivateClasses_java() {
         val source = javaSource(
             "TestConstructorInPrivateClass",
             """
@@ -236,8 +312,30 @@ class FactoryTest {
     }
 
     @Test
+    fun testInjectedConstructorInPrivateClass_shouldNotAllowInjectionInPrivateClasses_kt() {
+        val source = ktSource(
+            "TestConstructorInPrivateClass",
+            """
+            package test
+            import javax.inject.Inject
+            class Wrapper {
+              private class TestConstructorInPrivateClass @Inject constructor()
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in private classes."
+            )
+    }
+
+    @Test
     @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
-    fun testInjectedConstructorInProtectedClass_shouldWork() {
+    fun testInjectedConstructorInProtectedClass_shouldWork_java() {
         val source = javaSource(
             "TestConstructorInProtectedClass",
             """
@@ -251,9 +349,37 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/Wrapper\$TestConstructorInProtectedClass__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testInjectedConstructorInProtectedClass_shouldWork_expected)
+    }
+
+    @Test
+    fun testInjectedConstructorInProtectedClass_shouldWork_kt() {
+        val source = ktSource(
+            "TestConstructorInProtectedClass",
             """
+            package test
+            import javax.inject.Inject
+            open class Wrapper {
+              protected class TestConstructorInProtectedClass @Inject constructor()
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testInjectedConstructorInProtectedClass_shouldWork_expected)
+    }
+
+    @Suppress("RemoveRedundantBackticks")
+    private val testInjectedConstructorInProtectedClass_shouldWork_expected = expectedKtSource(
+        "test/Wrapper\$TestConstructorInProtectedClass__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -265,9 +391,9 @@ class FactoryTest {
               "ClassName",
               "RedundantVisibilityModifier"
             )
-            internal class `Wrapper${'$'}TestConstructorInProtectedClass__Factory` :
+            protected class `Wrapper${'$'}TestConstructorInProtectedClass__Factory` :
                 Factory<Wrapper.TestConstructorInProtectedClass> {
-              public override fun createInstance(scope: Scope): Wrapper.TestConstructorInProtectedClass = 
+              public override fun createInstance(scope: Scope): Wrapper.TestConstructorInProtectedClass =
                   Wrapper.TestConstructorInProtectedClass()
             
               public override fun getTargetScope(scope: Scope): Scope = scope
@@ -283,17 +409,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testInjectedConstructorInPackageClass_shouldWork() {
+    fun testInjectedConstructorInPackageClass_shouldWork_java() {
         val source = javaSource(
             "TestConstructorInPackageClass",
             """
@@ -305,9 +424,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestConstructorInPackageClass__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testInjectedConstructorInPackageClass_shouldWork_expected)
+    }
+
+    @Test
+    fun testInjectedConstructorInPackageClass_shouldWork_kt() {
+        val source = ktSource(
+            "TestConstructorInPackageClass",
             """
+            package test
+            import javax.inject.Inject
+            class TestConstructorInPackageClass @Inject constructor()
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testInjectedConstructorInPackageClass_shouldWork_expected)
+    }
+
+    private val testInjectedConstructorInPackageClass_shouldWork_expected = expectedKtSource(
+        "test/TestConstructorInPackageClass__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -336,17 +480,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun test2InjectedConstructors() {
+    fun test2InjectedConstructors_java() {
         val source = javaSource(
             "TestPrivateConstructor",
             """
@@ -369,7 +506,29 @@ class FactoryTest {
     }
 
     @Test
-    fun test2Constructors_butOnlyOneIsInjected() {
+    fun test2InjectedConstructors_kt() {
+        val source = ktSource(
+            "TestPrivateConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            class TestPrivateConstructor @Inject private constructor() {
+              @Inject private constructor(s: String)
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Class test.TestPrivateConstructor cannot have more than one @Inject-annotated constructor."
+            )
+    }
+
+    @Test
+    fun test2Constructors_butOnlyOneIsInjected_java() {
         val source = javaSource(
             "Test2Constructors",
             """
@@ -382,9 +541,36 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/Test2Constructors__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(test2Constructors_butOnlyOneIsInjected_expected)
+    }
+
+    @Test
+    fun test2Constructors_butOnlyOneIsInjected_kt() {
+        val source = ktSource(
+            "Test2Constructors",
             """
+            package test
+            import javax.inject.Inject
+            class Test2Constructors @Inject constructor() {
+              constructor(s: String)
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(test2Constructors_butOnlyOneIsInjected_expected)
+    }
+
+    private val test2Constructors_butOnlyOneIsInjected_expected = expectedKtSource(
+        "test/Test2Constructors__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -412,17 +598,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNonEmptyConstructor() {
+    fun testNonEmptyConstructor_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -434,9 +613,34 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestNonEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructor_expected)
+    }
+
+    @Test
+    fun testNonEmptyConstructor_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            class TestNonEmptyConstructor @Inject constructor(str: String, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructor_expected)
+    }
+
+    private val testNonEmptyConstructor_expected = expectedKtSource(
+        "test/TestNonEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -472,17 +676,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNonEmptyConstructorWithLazy() {
+    fun testNonEmptyConstructorWithLazy_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -495,9 +692,35 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestNonEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructorWithLazy_expected)
+    }
+
+    @Test
+    fun testNonEmptyConstructorWithLazy_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestNonEmptyConstructor @Inject constructor(str: Lazy<String>, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructorWithLazy_expected)
+    }
+
+    private val testNonEmptyConstructorWithLazy_expected = expectedKtSource(
+        "test/TestNonEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -534,17 +757,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNonEmptyConstructorWithProvider() {
+    fun testNonEmptyConstructorWithProvider_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -557,9 +773,35 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestNonEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructorWithProvider_expected)
+    }
+
+    @Test
+    fun testNonEmptyConstructorWithProvider_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestNonEmptyConstructor @Inject constructor(str: Provider<String>, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructorWithProvider_expected)
+    }
+
+    private val testNonEmptyConstructorWithProvider_expected = expectedKtSource(
+        "test/TestNonEmptyConstructor__Factory",
+        """
             package test
             
             import javax.inject.Provider
@@ -596,17 +838,11 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNonEmptyConstructor_shouldFail_whenContainsInvalidLazyParameter() {
+    fun testNonEmptyConstructor_shouldFail_whenContainsInvalidLazyParameter_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -624,12 +860,34 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Type of test.TestNonEmptyConstructor.<init> is not a valid toothpick.Lazy."
+                "Type of lazy is not a valid toothpick.Lazy."
             )
     }
 
     @Test
-    fun testNonEmptyConstructor_shouldFail_whenContainsInvalidProviderParameter() {
+    fun testNonEmptyConstructor_shouldFail_whenContainsInvalidLazyParameter_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestNonEmptyConstructor @Inject constructor(lazy: Lazy<*>, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of lazy is not a valid toothpick.Lazy."
+            )
+    }
+
+    @Test
+    fun testNonEmptyConstructor_shouldFail_whenContainsInvalidProviderParameter_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -647,12 +905,33 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Type of test.TestNonEmptyConstructor.<init> is not a valid javax.inject.Provider."
+                "Type of provider is not a valid javax.inject.Provider."
             )
     }
 
     @Test
-    fun testNonEmptyConstructorWithGenerics() {
+    fun testNonEmptyConstructor_shouldFail_whenContainsInvalidProviderParameter_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestNonEmptyConstructor @Inject constructor(provider: Provider<*>, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of provider is not a valid javax.inject.Provider."
+            )
+    }
+
+    @Test
+    fun testNonEmptyConstructorWithGenerics_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -665,9 +944,35 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestNonEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructorWithGenerics_expected)
+    }
+
+    @Test
+    fun testNonEmptyConstructorWithGenerics_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
             """
+            package test
+            import kotlin.collections.MutableList
+            import javax.inject.Inject
+            class TestNonEmptyConstructor @Inject constructor(str: MutableList<String>)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNonEmptyConstructorWithGenerics_expected)
+    }
+
+    private val testNonEmptyConstructorWithGenerics_expected = expectedKtSource(
+        "test/TestNonEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -702,17 +1007,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNonEmptyConstructorWithLazyAndGenerics_shouldFail() {
+    fun testNonEmptyConstructorWithLazyAndGenerics_shouldFail_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -731,12 +1029,34 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Lazy/Provider is not valid in test.TestNonEmptyConstructor.<init>. Lazy/Provider cannot be used on generic types."
+                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
     @Test
-    fun testNonEmptyConstructorWithProviderAndGenerics_shouldFail() {
+    fun testNonEmptyConstructorWithLazyAndGenerics_shouldFail_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import java.util.List
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestNonEmptyConstructor @Inject constructor(str: Lazy<List<String>>)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+            )
+    }
+
+    @Test
+    fun testNonEmptyConstructorWithProviderAndGenerics_shouldFail_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -755,12 +1075,34 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Lazy/Provider is not valid in test.TestNonEmptyConstructor.<init>. Lazy/Provider cannot be used on generic types."
+                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
     @Test
-    fun testAbstractClassWithInjectedConstructor() {
+    fun testNonEmptyConstructorWithProviderAndGenerics_shouldFail_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import java.util.List
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestNonEmptyConstructor @Inject constructor(str: Provider<List<String>>)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+            )
+    }
+
+    @Test
+    fun testAbstractClassWithInjectedConstructor_java() {
         val source = javaSource(
             "TestInvalidClassConstructor",
             """
@@ -782,7 +1124,28 @@ class FactoryTest {
     }
 
     @Test
-    fun testClassWithInjectedConstructorThrowingException() {
+    fun testAbstractClassWithInjectedConstructor_kt() {
+        val source = ktSource(
+            "TestInvalidClassConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            abstract class TestInvalidClassConstructor @Inject constructor()
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor."
+            )
+    }
+
+    @Test
+    fun testClassWithInjectedConstructorThrowingException_java() {
+        @Suppress("RedundantThrows")
         val source = javaSource(
             "TestClassConstructorThrowingException",
             """
@@ -794,7 +1157,7 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        val expected = expectedKtSource(
             "test/TestClassConstructorThrowingException__Factory",
             """
             package test
@@ -837,11 +1200,11 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .compilesWithoutError()
-            .generatesSources(expectedSource)
+            .generatesSources(expected)
     }
 
     @Test
-    fun testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton() {
+    fun testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -855,9 +1218,36 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestNonEmptyConstructor__Factory",
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton_expected)
+    }
+
+    @Test
+    fun testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            @Singleton
+            class TestNonEmptyConstructor @Inject constructor(str: String, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton_expected)
+    }
+
+    private val testAClassWithSingletonAnnotation_shouldHaveAFactoryThatSaysItIsASingleton_expected = expectedKtSource(
+        "test/TestNonEmptyConstructor__Factory",
+        """
             package test
             
             import kotlin.Boolean
@@ -893,17 +1283,10 @@ class FactoryTest {
               public override fun hasProvidesReleasableAnnotation(): Boolean = false
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testAClassWithSingletonAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsASingleton() {
+    fun testAClassWithSingletonAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsASingleton_java() {
         val source = javaSource(
             "TestEmptyConstructor",
             """
@@ -916,7 +1299,39 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithSingletonAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsASingleton_expected
+            )
+    }
+
+    @Test
+    fun testAClassWithSingletonAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsASingleton_kt() {
+        val source = ktSource(
+            "TestEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            @Singleton
+            class TestEmptyConstructor
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithSingletonAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsASingleton_expected
+            )
+    }
+
+    private val testAClassWithSingletonAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsASingleton_expected =
+        expectedKtSource(
             "test/TestEmptyConstructor__Factory",
             """
             package test
@@ -948,15 +1363,8 @@ class FactoryTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope() {
+    fun testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -976,7 +1384,44 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_expected
+            )
+    }
+
+    @Test
+    fun testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            @Scope
+            @Retention(AnnotationRetention.RUNTIME)
+            annotation class CustomScope
+            @CustomScope
+            class TestNonEmptyConstructor @Inject constructor(str: String, n: Int) {
+              annotation class FooScope
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_expected
+            )
+    }
+
+    private val testAClassWithEmptyScopedAnnotation_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_expected =
+        expectedKtSource(
             "test/TestNonEmptyConstructor__Factory",
             """
             package test
@@ -1017,15 +1462,8 @@ class FactoryTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testAClassWithEmptyScopedAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope() {
+    fun testAClassWithEmptyScopedAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_java() {
         val source = javaSource(
             "TestEmptyConstructor",
             """
@@ -1043,7 +1481,44 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithEmptyScopedAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_expected
+            )
+    }
+
+    @Test
+    fun testAClassWithEmptyScopedAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_kt() {
+        val source = ktSource(
+            "TestEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            @Scope
+            @Retention(AnnotationRetention.RUNTIME)
+            annotation class CustomScope
+            @CustomScope
+            class TestEmptyConstructor
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithEmptyScopedAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_expected
+            )
+    }
+
+    private val testAClassWithEmptyScopedAnnotationAndNoConstructor_shouldHaveAFactoryThatSaysItIsScopedInCurrentScope_expected =
+        expectedKtSource(
             "test/TestEmptyConstructor__Factory",
             """
             package test
@@ -1076,16 +1551,8 @@ class FactoryTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .withOptions(AdditionalAnnotationTypes to "test.CustomScope")
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton() {
+    fun testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -1106,7 +1573,45 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton_expected
+            )
+    }
+
+    @Test
+    fun testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Scope
+            import javax.inject.Singleton
+            @Scope
+            @Retention(AnnotationRetention.RUNTIME)
+            annotation class CustomScope
+            @CustomScope @Singleton
+            class TestNonEmptyConstructor @Inject constructor(str: String, n: Int) {
+              annotation class FooScope
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton_expected
+            )
+    }
+
+    private val testAClassWithScopedAnnotationAndSingleton_shouldHaveAFactoryThatSaysItIsScopedInCurrentScopeAndSingleton_expected =
+        expectedKtSource(
             "test/TestNonEmptyConstructor__Factory",
             """
             package test
@@ -1147,15 +1652,8 @@ class FactoryTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton() {
+    fun testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton_java() {
         val source = javaSource(
             "TestNonEmptyConstructor",
             """
@@ -1170,7 +1668,40 @@ class FactoryTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton_expected
+            )
+    }
+
+    @Test
+    fun testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton_kt() {
+        val source = ktSource(
+            "TestNonEmptyConstructor",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Singleton
+            import toothpick.ProvidesSingleton
+            @ProvidesSingleton @Singleton
+            class TestNonEmptyConstructor @Inject constructor(str: String, n: Int)
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(FactoryProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton_expected
+            )
+    }
+
+    private val testAClassWithProvidesSingletonAnnotation_shouldHaveAFactoryThatSaysItIsAProvidesSingleton_expected =
+        expectedKtSource(
             "test/TestNonEmptyConstructor__Factory",
             """
             package test
@@ -1210,16 +1741,9 @@ class FactoryTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(FactoryProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
     @Ignore("KSP does not support checking if type is a Java primitive")
-    fun testInjectedConstructor_withPrimitiveParam() {
+    fun testInjectedConstructor_withPrimitiveParam_java() {
         val source = javaSource(
             "TestPrimitiveConstructor",
             """

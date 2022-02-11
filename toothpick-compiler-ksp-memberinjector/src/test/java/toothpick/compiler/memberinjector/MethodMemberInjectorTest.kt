@@ -25,13 +25,15 @@ import toothpick.compiler.expectedKtSource
 import toothpick.compiler.failsToCompile
 import toothpick.compiler.generatesSources
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 
+@Suppress("PrivatePropertyName")
 class MethodMemberInjectorTest {
 
     @Test
-    fun testSimpleMethodInjection() {
+    fun testSimpleMethodInjection_java() {
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -45,9 +47,38 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMethodInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleMethodInjection_expected)
+    }
+
+    @Test
+    fun testSimpleMethodInjection_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
             """
+            package test
+            import javax.inject.Inject
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Foo) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleMethodInjection_expected)
+    }
+
+    private val testSimpleMethodInjection_expected = expectedKtSource(
+        "test/TestMethodInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -66,17 +97,10 @@ class MethodMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testSimpleMethodInjectionWithLazy() {
+    fun testSimpleMethodInjectionWithLazy_java() {
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -91,9 +115,39 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMethodInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleMethodInjectionWithLazy_expected)
+    }
+
+    @Test
+    fun testSimpleMethodInjectionWithLazy_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
             """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Lazy<Foo>) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleMethodInjectionWithLazy_expected)
+    }
+
+    private val testSimpleMethodInjectionWithLazy_expected = expectedKtSource(
+        "test/TestMethodInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -113,17 +167,10 @@ class MethodMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testSimpleMethodInjectionWithProvider() {
+    fun testSimpleMethodInjectionWithProvider_java() {
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -138,9 +185,39 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMethodInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleMethodInjectionWithProvider_expected)
+    }
+
+    @Test
+    fun testSimpleMethodInjectionWithProvider_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Provider<Foo>) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleMethodInjectionWithProvider_expected)
+    }
+
+    private val testSimpleMethodInjectionWithProvider_expected = expectedKtSource(
+        "test/TestMethodInjection__MemberInjector",
+        """
             package test
             
             import javax.inject.Provider
@@ -160,17 +237,11 @@ class MethodMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testSimpleMethodInjectionWithLazyOfGenericTypeButNotLazyOfGenericType() {
+    fun testSimpleMethodInjectionWithLazyOfGenericTypeButNotLazyOfGenericType_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -185,7 +256,7 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        val expected = expectedKtSource(
             "test/TestMethodInjection__MemberInjector",
             """
             package test
@@ -214,11 +285,58 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .compilesWithoutError()
-            .generatesSources(expectedSource)
+            .generatesSources(expected)
     }
 
     @Test
-    fun testSimpleMethodInjectionWithLazyOfGenericType_shouldFail_WithLazyOfGenericType() {
+    fun testSimpleMethodInjectionWithLazyOfGenericTypeButNotLazyOfGenericType_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Lazy<Foo<*>>) {}
+            }
+            class Foo<T>
+            """
+        )
+
+        val expected = expectedKtSource(
+            "test/TestMethodInjection__MemberInjector",
+            """
+            package test
+            
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.Lazy
+            import toothpick.MemberInjector
+            import toothpick.Scope
+            
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier"
+            )
+            public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
+              public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
+                val param1 = scope.getLazy(Foo::class.java) as Lazy<Foo<*>>
+                target.m(param1)
+              }
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(expected)
+    }
+
+    @Test
+    fun testSimpleMethodInjectionWithLazyOfGenericType_shouldFail_WithLazyOfGenericType_java() {
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -238,12 +356,37 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Lazy/Provider is not valid in test.TestMethodInjection.m. Lazy/Provider cannot be used on generic types."
+                "test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
     @Test
-    fun testMethodInjection_shouldFail_whenInjectedMethodIsPrivate() {
+    fun testSimpleMethodInjectionWithLazyOfGenericType_shouldFail_WithLazyOfGenericType_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Lazy<Foo<String>>) {}
+            }
+            class Foo<T>
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+            )
+    }
+
+    @Test
+    fun testMethodInjection_shouldFail_whenInjectedMethodIsPrivate_java() {
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -267,7 +410,31 @@ class MethodMemberInjectorTest {
     }
 
     @Test
-    fun testMethodInjection_shouldFail_whenContainingClassIsPrivate() {
+    fun testMethodInjection_shouldFail_whenInjectedMethodIsPrivate_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestMethodInjection {
+              @Inject
+              private fun m(foo: Foo) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Inject-annotated methods must not be private: test.TestMethodInjection.m"
+            )
+    }
+
+    @Test
+    fun testMethodInjection_shouldFail_whenContainingClassIsPrivate_java() {
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -293,7 +460,34 @@ class MethodMemberInjectorTest {
     }
 
     @Test
-    fun testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidLazy() {
+    fun testMethodInjection_shouldFail_whenContainingClassIsPrivate_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestMethodInjection {
+              private class InnerClass {
+                @Inject
+                fun m(foo: Foo) {}
+              }
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Injected test.TestMethodInjection.InnerClass.m; the parent class must not be private."
+            )
+    }
+
+    @Test
+    fun testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidLazy_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -318,7 +512,33 @@ class MethodMemberInjectorTest {
     }
 
     @Test
-    fun testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidProvider() {
+    fun testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidLazy_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Lazy<*>) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of test.TestMethodInjection.m is not a valid toothpick.Lazy."
+            )
+    }
+
+    @Test
+    fun testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidProvider_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -343,7 +563,32 @@ class MethodMemberInjectorTest {
     }
 
     @Test
-    fun testOverrideMethodInjection() {
+    fun testMethodInjection_shouldFail_whenInjectedMethodParameterIsInvalidProvider_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestMethodInjection {
+              @Inject
+              fun m(foo: Provider<*>) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of test.TestMethodInjection.m is not a valid javax.inject.Provider."
+            )
+    }
+
+    @Test
+    fun testOverrideMethodInjection_java() {
         val source = javaSource(
             "TestMethodInjectionParent",
             """
@@ -361,9 +606,43 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMethodInjectionParent\$TestMethodInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testOverrideMethodInjection_expected)
+    }
+
+    @Test
+    fun testOverrideMethodInjection_kt() {
+        val source = ktSource(
+            "TestMethodInjectionParent",
             """
+            package test
+            import javax.inject.Inject
+            class TestMethodInjectionParent {
+              @Inject
+              fun m(foo: Foo) {}
+              class TestMethodInjection : TestMethodInjectionParent() {
+                @Inject
+                fun m(foo: Foo) {}
+              }
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testOverrideMethodInjection_expected)
+    }
+
+    @Suppress("RemoveRedundantBackticks")
+    private val testOverrideMethodInjection_expected = expectedKtSource(
+        "test/TestMethodInjectionParent\$TestMethodInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -386,17 +665,11 @@ class MethodMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testMethodInjection_withException() {
+    fun testMethodInjection_withException_java() {
+        @Suppress("RedundantThrows")
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -410,9 +683,39 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMethodInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testMethodInjection_withException_expected)
+    }
+
+    @Test
+    fun testMethodInjection_withException_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
             """
+            package test
+            import javax.inject.Inject
+            class TestMethodInjection {
+              @Inject
+              @Throws(Exception::class)
+              fun m(foo: Foo) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testMethodInjection_withException_expected)
+    }
+
+    private val testMethodInjection_withException_expected = expectedKtSource(
+        "test/TestMethodInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -431,17 +734,11 @@ class MethodMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testMethodInjection_withExceptions() {
+    fun testMethodInjection_withExceptions_java() {
+        @Suppress("RedundantThrows", "DuplicateThrows")
         val source = javaSource(
             "TestMethodInjection",
             """
@@ -455,9 +752,39 @@ class MethodMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMethodInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testMethodInjection_withExceptions_expected)
+    }
+
+    @Test
+    fun testMethodInjection_withExceptions_kt() {
+        val source = ktSource(
+            "TestMethodInjection",
             """
+            package test
+            import javax.inject.Inject
+            class TestMethodInjection {
+              @Inject
+              @Throws(Exception::class, Throwable::class)
+              fun m(foo: Foo) {}
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testMethodInjection_withExceptions_expected)
+    }
+
+    private val testMethodInjection_withExceptions_expected = expectedKtSource(
+        "test/TestMethodInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -476,12 +803,5 @@ class MethodMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 }

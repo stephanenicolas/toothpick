@@ -26,13 +26,15 @@ import toothpick.compiler.expectedKtSource
 import toothpick.compiler.failsToCompile
 import toothpick.compiler.generatesSources
 import toothpick.compiler.javaSource
+import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
 
+@Suppress("PrivatePropertyName")
 class FieldMemberInjectorTest {
 
     @Test
-    fun testSimpleFieldInjection() {
+    fun testSimpleFieldInjection_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -46,9 +48,37 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleFieldInjection_expected)
+    }
+
+    @Test
+    fun testSimpleFieldInjection_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            class TestFieldInjection {
+              @Inject val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testSimpleFieldInjection_expected)
+    }
+
+    private val testSimpleFieldInjection_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -66,17 +96,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNamedFieldInjection_whenUsingNamed() {
+    fun testNamedFieldInjection_whenUsingNamed_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -91,9 +114,38 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_whenUsingNamed_expected)
+    }
+
+    @Test
+    fun testNamedFieldInjection_whenUsingNamed_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            class TestFieldInjection {
+              @Inject @Named("bar") val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_whenUsingNamed_expected)
+    }
+
+    private val testNamedFieldInjection_whenUsingNamed_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -111,17 +163,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNamedFieldInjection_whenUsingQualifierAnnotation() {
+    fun testNamedFieldInjection_whenUsingQualifierAnnotation_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -139,9 +184,41 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_whenUsingQualifierAnnotation_expected)
+    }
+
+    @Test
+    fun testNamedFieldInjection_whenUsingQualifierAnnotation_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            import javax.inject.Qualifier
+            class TestFieldInjection {
+              @Inject @Bar val foo: Foo
+            }
+            class Foo
+            @Qualifier
+            annotation class Bar
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_whenUsingQualifierAnnotation_expected)
+    }
+
+    private val testNamedFieldInjection_whenUsingQualifierAnnotation_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -159,17 +236,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNamedFieldInjection_whenUsingNonQualifierAnnotation() {
+    fun testNamedFieldInjection_whenUsingNonQualifierAnnotation_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -185,9 +255,39 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_whenUsingNonQualifierAnnotation_expected)
+    }
+
+    @Test
+    fun testNamedFieldInjection_whenUsingNonQualifierAnnotation_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            class TestFieldInjection {
+              @Inject @Bar val foo: Foo
+            }
+            class Foo
+            annotation class Bar
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_whenUsingNonQualifierAnnotation_expected)
+    }
+
+    private val testNamedFieldInjection_whenUsingNonQualifierAnnotation_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -205,17 +305,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNamedProviderFieldInjection_whenUsingQualifierAnnotation() {
+    fun testNamedProviderFieldInjection_whenUsingQualifierAnnotation_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -234,9 +327,42 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedProviderFieldInjection_whenUsingQualifierAnnotation_expected)
+    }
+
+    @Test
+    fun testNamedProviderFieldInjection_whenUsingQualifierAnnotation_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            import javax.inject.Provider
+            import javax.inject.Qualifier
+            class TestFieldInjection {
+              @Inject @Bar val foo: Provider<Foo>
+            }
+            class Foo
+            @Qualifier
+            annotation class Bar
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedProviderFieldInjection_whenUsingQualifierAnnotation_expected)
+    }
+
+    private val testNamedProviderFieldInjection_whenUsingQualifierAnnotation_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import javax.inject.Provider
@@ -255,17 +381,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNamedProviderFieldInjection_whenUsingNonQualifierAnnotation() {
+    fun testNamedProviderFieldInjection_whenUsingNonQualifierAnnotation_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -282,9 +401,40 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedProviderFieldInjection_whenUsingNonQualifierAnnotation_expected)
+    }
+
+    @Test
+    fun testNamedProviderFieldInjection_whenUsingNonQualifierAnnotation_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            import javax.inject.Provider
+            class TestFieldInjection {
+              @Inject @Bar val foo: Provider<Foo>
+            }
+            class Foo
+            annotation class Bar
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedProviderFieldInjection_whenUsingNonQualifierAnnotation_expected)
+    }
+
+    private val testNamedProviderFieldInjection_whenUsingNonQualifierAnnotation_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import javax.inject.Provider
@@ -303,17 +453,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testNamedFieldInjection_shouldWork_whenUsingMoreThan2Annotation_butOnly1Qualifier() {
+    fun testNamedFieldInjection_shouldWork_whenUsingMoreThan2Annotation_butOnly1Qualifier_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -332,7 +475,41 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_shouldWork_whenUsingMoreThan2Annotation_butOnly1Qualifier_expected)
+    }
+
+    @Test
+    fun testNamedFieldInjection_shouldWork_whenUsingMoreThan2Annotation_butOnly1Qualifier_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            import javax.inject.Qualifier
+            class TestFieldInjection {
+              @Inject @Bar @Qurtz val foo: Foo
+            }
+            class Foo
+            @Qualifier
+            annotation class Bar
+            annotation class Qurtz
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testNamedFieldInjection_shouldWork_whenUsingMoreThan2Annotation_butOnly1Qualifier_expected)
+    }
+
+    private val testNamedFieldInjection_shouldWork_whenUsingMoreThan2Annotation_butOnly1Qualifier_expected =
+        expectedKtSource(
             "test/TestFieldInjection__MemberInjector",
             """
             package test
@@ -354,15 +531,8 @@ class FieldMemberInjectorTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testNamedFieldInjection_shouldFail_whenUsingMoreThan1QualifierAnnotations() {
+    fun testNamedFieldInjection_shouldFail_whenUsingMoreThan1QualifierAnnotations_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -392,7 +562,36 @@ class FieldMemberInjectorTest {
     }
 
     @Test
-    fun testProviderFieldInjection() {
+    fun testNamedFieldInjection_shouldFail_whenUsingMoreThan1QualifierAnnotations_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Named
+            import javax.inject.Qualifier
+            class TestFieldInjection {
+              @Inject @Bar @Qurtz val foo: Foo
+            }
+            class Foo
+            @Qualifier
+            annotation class Bar
+            @Qualifier
+            annotation class Qurtz
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Only one javax.inject.Qualifier annotation is allowed to name injections."
+            )
+    }
+
+    @Test
+    fun testProviderFieldInjection_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -407,9 +606,38 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testProviderFieldInjection_expected)
+    }
+
+    @Test
+    fun testProviderFieldInjection_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestFieldInjection {
+              @Inject val foo: Provider<Foo>
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testProviderFieldInjection_expected)
+    }
+
+    private val testProviderFieldInjection_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import javax.inject.Provider
@@ -428,17 +656,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testLazyFieldInjection() {
+    fun testLazyFieldInjection_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -453,9 +674,38 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testLazyFieldInjection_expected)
+    }
+
+    @Test
+    fun testLazyFieldInjection_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestFieldInjection {
+              @Inject val foo: Lazy<Foo>
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testLazyFieldInjection_expected)
+    }
+
+    private val testLazyFieldInjection_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -474,17 +724,11 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testLazyFieldInjectionOfGenericTypeButNotDeclaringLazyOfGenericType() {
+    fun testLazyFieldInjectionOfGenericTypeButNotDeclaringLazyOfGenericType_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -499,7 +743,7 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        val expected = expectedKtSource(
             "test/TestFieldInjection__MemberInjector",
             """
             package test
@@ -527,11 +771,55 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .compilesWithoutError()
-            .generatesSources(expectedSource)
+            .generatesSources(expected)
     }
 
     @Test
-    fun testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields() {
+    fun testLazyFieldInjectionOfGenericTypeButNotDeclaringLazyOfGenericType_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestFieldInjection {
+              @Inject val foo: Lazy<Foo<*>>
+            }
+            class Foo<T>
+            """
+        )
+
+        val expected = expectedKtSource(
+            "test/TestFieldInjection__MemberInjector",
+            """
+            package test
+            
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.Lazy
+            import toothpick.MemberInjector
+            import toothpick.Scope
+            
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier"
+            )
+            public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
+              public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
+                target.foo = scope.getLazy(Foo::class.java) as Lazy<Foo<*>>
+              }
+            }
+            """
+        )
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(expected)
+    }
+
+    @Test
+    fun testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -546,9 +834,38 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestFieldInjection__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields_expected)
+    }
+
+    @Test
+    fun testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
             """
+            package test
+            import javax.inject.Inject
+            class TestFieldInjection {
+              @Inject val foo: Foo
+              @Inject val foo2: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields_expected)
+    }
+
+    private val testFieldInjection_shouldProduceMemberInjector_whenClassHas2Fields_expected = expectedKtSource(
+        "test/TestFieldInjection__MemberInjector",
+        """
             package test
             
             import kotlin.Suppress
@@ -567,17 +884,10 @@ class FieldMemberInjectorTest {
               }
             }
             """
-        )
-
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
+    )
 
     @Test
-    fun testFieldInjection_shouldFail_whenFieldIsPrivate() {
+    fun testFieldInjection_shouldFail_whenFieldIsPrivate_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -601,7 +911,30 @@ class FieldMemberInjectorTest {
     }
 
     @Test
-    fun testFieldInjection_shouldFail_WhenContainingClassIsPrivate() {
+    fun testFieldInjection_shouldFail_whenFieldIsPrivate_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestFieldInjection {
+              @Inject private val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Inject-annotated fields must not be private: test.TestFieldInjection.foo"
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_WhenContainingClassIsPrivate_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -627,7 +960,33 @@ class FieldMemberInjectorTest {
     }
 
     @Test
-    fun testFieldInjection_shouldFail_WhenFieldIsInvalidLazy() {
+    fun testFieldInjection_shouldFail_WhenContainingClassIsPrivate_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestFieldInjection {
+              private class InnerClass {
+                @Inject val foo: Foo
+              }
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Injected test.TestFieldInjection.InnerClass.foo; the parent class must not be private."
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidLazy_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -649,7 +1008,29 @@ class FieldMemberInjectorTest {
     }
 
     @Test
-    fun testFieldInjection_shouldFail_WhenFieldIsInvalidProvider() {
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidLazy_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestFieldInjection {
+              @Inject val foo: Lazy<*>
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs("Type of test.TestFieldInjection.foo is not a valid toothpick.Lazy.")
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidProvider_java() {
+        @Suppress("rawtypes")
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -673,7 +1054,30 @@ class FieldMemberInjectorTest {
     }
 
     @Test
-    fun testFieldInjection_shouldFail_WhenFieldIsInvalidLazyGenerics() {
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidProvider_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestFieldInjection {
+              @Inject val foo: Provider<*>
+            }
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "Type of test.TestFieldInjection.foo is not a valid javax.inject.Provider."
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidLazyGenerics_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -693,12 +1097,36 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Lazy/Provider is not valid in test.TestFieldInjection.foo. Lazy/Provider cannot be used on generic types."
+                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
     @Test
-    fun testFieldInjection_shouldFail_WhenFieldIsInvalidProviderGenerics() {
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidLazyGenerics_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import toothpick.Lazy
+            class TestFieldInjection {
+              @Inject val foo: Lazy<Foo<String>>
+            }
+            class Foo<T>
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidProviderGenerics_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
@@ -718,13 +1146,37 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "Lazy/Provider is not valid in test.TestFieldInjection.foo. Lazy/Provider cannot be used on generic types."
+                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_WhenFieldIsInvalidProviderGenerics_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            import javax.inject.Provider
+            class TestFieldInjection {
+              @Inject val foo: Provider<Foo<String>>
+            }
+            class Foo<T>
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
     @Test
     @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
-    fun testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers() {
+    fun testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers_java() {
         val source = javaSource(
             "TestMemberInjection",
             """
@@ -744,24 +1196,31 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
-            "test/TestMemberInjection\$InnerClass__MemberInjector",
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers_expected
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers_kt() {
+        val source = ktSource(
+            "TestMemberInjection",
             """
-            package test;
-            
-            import java.lang.Override;
-            import toothpick.MemberInjector;
-            import toothpick.Scope;
-            
-            public final class TestMemberInjection${'$'}InnerClass__MemberInjector implements MemberInjector<TestMemberInjection.InnerClass> {
-              private MemberInjector<TestMemberInjection.InnerSuperClass> superMemberInjector = new test.TestMemberInjection${'$'}InnerSuperClass__MemberInjector();
-            
-              @Override
-              public void inject(TestMemberInjection.InnerClass target, Scope scope) {
-                superMemberInjector.inject(target, scope);
-                target.foo = scope.getInstance(Foo.class);
+            package test
+            import javax.inject.Inject
+            class TestMemberInjection {
+              class InnerSuperClass {
+                @Inject val foo: Foo
+              }
+              class InnerClass : InnerSuperClass() {
+                @Inject val foo: Foo
               }
             }
+            class Foo
             """
         )
 
@@ -769,11 +1228,42 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .compilesWithoutError()
-            .generatesSources(expectedSource)
+            .generatesSources(
+                testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers_expected
+            )
     }
 
+    @Suppress("RemoveRedundantBackticks")
+    private val testFieldInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassIsStaticHasInjectedMembers_expected =
+        expectedKtSource(
+            "test/TestMemberInjection\$InnerClass__MemberInjector",
+            """
+            package test
+            
+            import kotlin.Suppress
+            import kotlin.Unit
+            import toothpick.MemberInjector
+            import toothpick.Scope
+            
+            @Suppress(
+              "ClassName",
+              "RedundantVisibilityModifier"
+            )
+            public class `TestMemberInjection${'$'}InnerClass__MemberInjector` :
+                MemberInjector<TestMemberInjection.InnerClass> {
+              private val superMemberInjector: MemberInjector<TestMemberInjection.InnerSuperClass> =
+                  `TestMemberInjection${'$'}InnerSuperClass__MemberInjector`()
+            
+              public override fun inject(target: TestMemberInjection.InnerClass, scope: Scope): Unit {
+                superMemberInjector.inject(target, scope)
+                target.foo = scope.getInstance(Foo::class.java) as Foo
+              }
+            }
+            """
+        )
+
     @Test
-    fun testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers() {
+    fun testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers_java() {
         val source = javaSource(
             "TestMemberInjection",
             """
@@ -789,7 +1279,43 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers_expected
+            )
+    }
+
+    @Test
+    fun testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers_kt() {
+        val source = ktSource(
+            "TestMemberInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestMemberInjection : TestMemberInjectionParent() {
+              @Inject val foo: Foo
+            }
+            class TestMemberInjectionParent {
+              @Inject val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers_expected
+            )
+    }
+
+    private val testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembers_expected =
+        expectedKtSource(
             "test/TestMemberInjection__MemberInjector",
             """
             package test
@@ -815,15 +1341,8 @@ class FieldMemberInjectorTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
-    fun testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument() {
+    fun testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument_java() {
         val source = javaSource(
             "TestMemberInjection",
             """
@@ -839,7 +1358,43 @@ class FieldMemberInjectorTest {
             """
         )
 
-        val expectedSource = expectedKtSource(
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument_expected
+            )
+    }
+
+    @Test
+    fun testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument_kt() {
+        val source = ktSource(
+            "TestMemberInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestMemberInjection : TestMemberInjectionParent<Integer>() {
+              @Inject val foo: Foo
+            }
+            class TestMemberInjectionParent<T> {
+              @Inject val foo: Foo
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .compilesWithoutError()
+            .generatesSources(
+                testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument_expected
+            )
+    }
+
+    private val testMemberInjection_shouldInjectAsAnInstanceOfSuperClass_whenSuperClassHasInjectedMembersAndTypeArgument_expected =
+        expectedKtSource(
             "test/TestMemberInjection__MemberInjector",
             """
             package test
@@ -865,16 +1420,9 @@ class FieldMemberInjectorTest {
             """
         )
 
-        compilationAssert()
-            .that(source)
-            .processedWith(MemberInjectorProcessorProvider())
-            .compilesWithoutError()
-            .generatesSources(expectedSource)
-    }
-
     @Test
     @Ignore("KSP does not support checking if type is a Java primitive")
-    fun testFieldInjection_shouldFail_WhenFieldIsPrimitive() {
+    fun testFieldInjection_shouldFail_WhenFieldIsPrimitive_java() {
         val source = javaSource(
             "TestFieldInjection",
             """
