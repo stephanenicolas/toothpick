@@ -199,8 +199,8 @@ class MemberInjectorProcessor(
 
     @Suppress("SameParameterValue")
     private fun crashOrWarnWhenMethodIsNotPackageOrInternal(node: KSNode, message: String, vararg args: Any?) {
-        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(node, message, args)
-        else logger.warn(node, message, args)
+        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(node, message, *args)
+        else logger.warn(node, message, *args)
     }
 
     companion object {

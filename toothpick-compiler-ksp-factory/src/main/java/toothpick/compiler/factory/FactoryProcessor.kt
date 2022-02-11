@@ -324,8 +324,10 @@ class FactoryProcessor(
         if (defaultConstructor == null) {
             if (!isInjectableWarningSuppressed()) {
                 crashOrWarnWhenNoFactoryCanBeCreated(
-                    "The class %s has injected members or a scope annotation but has no @Inject-annotated (non-private) constructor nor a non-private default constructor. %s"
-                        .format(qualifiedName?.asString(), cannotCreateAFactoryMessage)
+                    this,
+                    "The class %s has injected members or a scope annotation but has no @Inject-annotated (non-private) constructor nor a non-private default constructor. %s",
+                    qualifiedName?.asString(),
+                    cannotCreateAFactoryMessage
                 )
             }
 
@@ -335,8 +337,10 @@ class FactoryProcessor(
         if (defaultConstructor.isPrivate()) {
             if (!isInjectableWarningSuppressed()) {
                 crashOrWarnWhenNoFactoryCanBeCreated(
-                    "The class %s has a private default constructor. %s"
-                        .format(qualifiedName?.asString(), cannotCreateAFactoryMessage)
+                    this,
+                    "The class %s has a private default constructor. %s",
+                    qualifiedName?.asString(),
+                    cannotCreateAFactoryMessage
                 )
             }
 
@@ -354,12 +358,9 @@ class FactoryProcessor(
         )
     }
 
-    private fun KSNode.crashOrWarnWhenNoFactoryCanBeCreated(message: String) {
-        if (options.crashWhenNoFactoryCanBeCreated) {
-            logger.error(this, message)
-        } else {
-            logger.warn(this, message)
-        }
+    private fun crashOrWarnWhenNoFactoryCanBeCreated(node: KSNode, message: String, vararg args: Any?) {
+        if (options.crashWhenNoFactoryCanBeCreated) logger.error(node, message, *args)
+        else logger.warn(node, message, *args)
     }
 
     /**
