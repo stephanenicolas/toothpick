@@ -56,7 +56,7 @@ class FactoryAndMemberInjectorTests {
             package test
             import javax.inject.Inject
             class TestAClassThatNeedsInjection @Inject constructor() {
-                @Inject val s: String
+                @Inject lateinit var s: String
             }
             """
         )
@@ -149,7 +149,7 @@ class FactoryAndMemberInjectorTests {
             import javax.inject.Inject
             class TestAInnerClassThatNeedsInjection {
               class InnerClass @Inject constructor() {
-                @Inject val s: String
+                @Inject lateinit var s: String
               }
             }
             """
@@ -219,7 +219,7 @@ class FactoryAndMemberInjectorTests {
             import javax.inject.Inject
             class TestAInnerClassThatNeedsInjection {
               inner class InnerClass @Inject constructor() {
-                @Inject val s: String
+                @Inject lateinit var s: String
               }
             }
             """
@@ -267,7 +267,7 @@ class FactoryAndMemberInjectorTests {
             import javax.inject.Inject
             class TestAClassThatNeedsInjection @Inject constructor(): SuperClassThatNeedsInjection()
             class SuperClassThatNeedsInjection {
-              @Inject val s: String
+              @Inject lateinit var s: String
             }
             """
         )

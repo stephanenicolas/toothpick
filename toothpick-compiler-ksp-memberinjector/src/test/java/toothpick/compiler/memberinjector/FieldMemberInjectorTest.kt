@@ -63,7 +63,7 @@ class FieldMemberInjectorTest {
             package test
             import javax.inject.Inject
             class TestFieldInjection {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """
@@ -130,7 +130,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import javax.inject.Named
             class TestFieldInjection {
-              @Inject @Named("bar") val foo: Foo
+              @Inject @Named("bar") lateinit var foo: Foo
             }
             class Foo
             """
@@ -201,7 +201,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Named
             import javax.inject.Qualifier
             class TestFieldInjection {
-              @Inject @Bar val foo: Foo
+              @Inject @Bar lateinit var foo: Foo
             }
             class Foo
             @Qualifier
@@ -271,7 +271,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import javax.inject.Named
             class TestFieldInjection {
-              @Inject @Bar val foo: Foo
+              @Inject @Bar lateinit var foo: Foo
             }
             class Foo
             annotation class Bar
@@ -345,7 +345,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Provider
             import javax.inject.Qualifier
             class TestFieldInjection {
-              @Inject @Bar val foo: Provider<Foo>
+              @Inject @Bar lateinit var foo: Provider<Foo>
             }
             class Foo
             @Qualifier
@@ -418,7 +418,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Named
             import javax.inject.Provider
             class TestFieldInjection {
-              @Inject @Bar val foo: Provider<Foo>
+              @Inject @Bar lateinit var foo: Provider<Foo>
             }
             class Foo
             annotation class Bar
@@ -492,7 +492,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Named
             import javax.inject.Qualifier
             class TestFieldInjection {
-              @Inject @Bar @Qurtz val foo: Foo
+              @Inject @Bar @Qurtz lateinit var foo: Foo
             }
             class Foo
             @Qualifier
@@ -571,7 +571,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Named
             import javax.inject.Qualifier
             class TestFieldInjection {
-              @Inject @Bar @Qurtz val foo: Foo
+              @Inject @Bar @Qurtz lateinit var foo: Foo
             }
             class Foo
             @Qualifier
@@ -622,7 +622,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import javax.inject.Provider
             class TestFieldInjection {
-              @Inject val foo: Provider<Foo>
+              @Inject lateinit var foo: Provider<Foo>
             }
             class Foo
             """
@@ -690,7 +690,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import toothpick.Lazy
             class TestFieldInjection {
-              @Inject val foo: Lazy<Foo>
+              @Inject lateinit var foo: Lazy<Foo>
             }
             class Foo
             """
@@ -783,7 +783,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import toothpick.Lazy
             class TestFieldInjection {
-              @Inject val foo: Lazy<Foo<*>>
+              @Inject lateinit var foo: Lazy<Foo<*>>
             }
             class Foo<T>
             """
@@ -849,8 +849,8 @@ class FieldMemberInjectorTest {
             package test
             import javax.inject.Inject
             class TestFieldInjection {
-              @Inject val foo: Foo
-              @Inject val foo2: Foo
+              @Inject lateinit var foo: Foo
+              @Inject lateinit var foo2: Foo
             }
             class Foo
             """
@@ -906,7 +906,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "@Inject-annotated fields must not be private: test.TestFieldInjection.foo"
+                "@Inject-annotated properties must not be private: test.TestFieldInjection.foo"
             )
     }
 
@@ -929,7 +929,54 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "@Inject-annotated fields must not be private: test.TestFieldInjection.foo"
+                "@Inject-annotated properties must not be private: test.TestFieldInjection.foo"
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_whenFieldIsImmutable_java() {
+        val source = javaSource(
+            "TestFieldInjection",
+            """
+            package test;
+            import javax.inject.Inject;
+            public class TestFieldInjection {
+              @Inject final Foo foo = null;
+              public TestFieldInjection() {}
+            }
+            class Foo {}
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Inject-annotated properties must be mutable: test.TestFieldInjection.foo"
+            )
+    }
+
+    @Test
+    fun testFieldInjection_shouldFail_whenFieldIsImmutable_kt() {
+        val source = ktSource(
+            "TestFieldInjection",
+            """
+            package test
+            import javax.inject.Inject
+            class TestFieldInjection {
+              @Inject val foo: Foo? = null
+            }
+            class Foo
+            """
+        )
+
+        compilationAssert()
+            .that(source)
+            .processedWith(MemberInjectorProcessorProvider())
+            .failsToCompile()
+            .assertLogs(
+                "@Inject-annotated properties must be mutable: test.TestFieldInjection.foo"
             )
     }
 
@@ -968,7 +1015,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             class TestFieldInjection {
               private class InnerClass {
-                @Inject val foo: Foo
+                @Inject lateinit var foo: Foo
               }
             }
             class Foo
@@ -1016,7 +1063,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import toothpick.Lazy
             class TestFieldInjection {
-              @Inject val foo: Lazy<*>
+              @Inject lateinit var foo: Lazy<*>
             }
             """
         )
@@ -1062,7 +1109,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import javax.inject.Provider
             class TestFieldInjection {
-              @Inject val foo: Provider<*>
+              @Inject lateinit var foo: Provider<*>
             }
             """
         )
@@ -1110,7 +1157,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import toothpick.Lazy
             class TestFieldInjection {
-              @Inject val foo: Lazy<Foo<String>>
+              @Inject lateinit var foo: Lazy<Foo<String>>
             }
             class Foo<T>
             """
@@ -1159,7 +1206,7 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             import javax.inject.Provider
             class TestFieldInjection {
-              @Inject val foo: Provider<Foo<String>>
+              @Inject lateinit var foo: Provider<Foo<String>>
             }
             class Foo<T>
             """
@@ -1214,10 +1261,10 @@ class FieldMemberInjectorTest {
             import javax.inject.Inject
             class TestMemberInjection {
               class InnerSuperClass {
-                @Inject val foo: Foo
+                @Inject lateinit var foo: Foo
               }
               class InnerClass : InnerSuperClass() {
-                @Inject val foo: Foo
+                @Inject lateinit var foo: Foo
               }
             }
             class Foo
@@ -1296,10 +1343,10 @@ class FieldMemberInjectorTest {
             package test
             import javax.inject.Inject
             class TestMemberInjection : TestMemberInjectionParent() {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class TestMemberInjectionParent {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """
@@ -1375,10 +1422,10 @@ class FieldMemberInjectorTest {
             package test
             import javax.inject.Inject
             class TestMemberInjection : TestMemberInjectionParent<Integer>() {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class TestMemberInjectionParent<T> {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """

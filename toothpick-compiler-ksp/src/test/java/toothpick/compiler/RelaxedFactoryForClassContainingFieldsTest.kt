@@ -53,7 +53,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             package test
             import javax.inject.Inject
             class TestRelaxedFactoryCreationForInjectField {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """
@@ -129,7 +129,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "@Inject-annotated fields must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
+                "@Inject-annotated properties must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
             )
     }
 
@@ -152,7 +152,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .assertLogs(
-                "@Inject-annotated fields must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
+                "@Inject-annotated properties must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
             )
     }
 
@@ -190,7 +190,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             import javax.inject.Inject
             class TestRelaxedFactoryCreationForInjectField {
               private class InnerClass {
-                @Inject val foo: Foo
+                @Inject lateinit var foo: Foo
               }
             }
             class Foo
@@ -240,7 +240,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             import javax.inject.Inject
             import toothpick.Lazy
             class TestRelaxedFactoryCreationForInjectField {
-              @Inject val foo: Lazy<*>
+              @Inject lateinit var foo: Lazy<*>
             }
             class Foo
             """
@@ -289,7 +289,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             import javax.inject.Inject
             import javax.inject.Provider
             class TestRelaxedFactoryCreationForInjectField {
-              @Inject val foo: Provider<*>
+              @Inject lateinit var foo: Provider<*>
             }
             class Foo
             """
@@ -332,7 +332,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             package test
             import javax.inject.Inject
             abstract class TestRelaxedFactoryCreationForInjectField {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """
@@ -373,7 +373,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             package test
             import javax.inject.Inject
             class TestRelaxedFactoryCreationForInjectField(s: String) {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """
@@ -414,7 +414,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             package test
             import javax.inject.Inject
             class TestRelaxedFactoryCreationForInjectField private constructor() {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """

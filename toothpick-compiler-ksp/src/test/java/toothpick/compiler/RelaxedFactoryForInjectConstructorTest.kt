@@ -192,7 +192,7 @@ class RelaxedFactoryForInjectConstructorTest {
             import toothpick.Lazy
             @InjectConstructor
             class TestNonEmptyConstructor(str: Lazy<String>, n: Int) {
-              @Inject val string: String
+              @Inject lateinit var string: String
             }
             """
         )

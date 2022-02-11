@@ -33,6 +33,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import toothpick.compiler.common.ToothpickProcessor
 import toothpick.compiler.common.generators.error
 import toothpick.compiler.common.generators.info
@@ -136,11 +137,19 @@ class MemberInjectorProcessor(
     }
 
     private fun KSPropertyDeclaration.isValidInjectAnnotatedProperty(): Boolean {
-        // Verify modifiers.
         if (isPrivate()) {
             logger.error(
                 this,
-                "@Inject-annotated fields must not be private: %s",
+                "@Inject-annotated properties must not be private: %s",
+                qualifiedName?.asString()
+            )
+            return false
+        }
+
+        if (!isMutable || modifiers.contains(Modifier.FINAL)) {
+            logger.error(
+                this,
+                "@Inject-annotated properties must be mutable: %s",
                 qualifiedName?.asString()
             )
             return false

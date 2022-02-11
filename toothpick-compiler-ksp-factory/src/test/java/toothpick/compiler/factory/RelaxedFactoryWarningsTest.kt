@@ -145,7 +145,7 @@ class RelaxedFactoryWarningsTest {
             package test
             import javax.inject.Inject
             class TestOptimisticFactoryCreationForSingleton(a: Int) {
-              @Inject val s: String
+              @Inject lateinit var s: String
             }
             """
         )
@@ -188,7 +188,7 @@ class RelaxedFactoryWarningsTest {
             import javax.inject.Inject
             @Suppress("injectable")
             class TestOptimisticFactoryCreationForSingleton(a: Int) {
-              @Inject val s: String
+              @Inject lateinit var s: String
             }
             """
         )

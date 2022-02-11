@@ -63,7 +63,7 @@ class MemberInjectorOriginatingElementTest {
             package test
             import javax.inject.Inject
             class TestOriginatingElement {
-              @Inject val foo: Foo
+              @Inject lateinit var foo: Foo
             }
             class Foo
             """
