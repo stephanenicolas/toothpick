@@ -78,6 +78,7 @@ internal class MemberInjectorGenerator(
                     AnnotationSpec.builder(Suppress::class)
                         .addMember("%S", "ClassName")
                         .addMember("%S", "RedundantVisibilityModifier")
+                        .addMember("%S", "UNCHECKED_CAST")
                         .build()
                 )
                 .emitSuperMemberInjectorFieldIfNeeded()

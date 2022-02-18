@@ -106,29 +106,42 @@ internal class FactoryGenerator(
     }
 
     private fun TypeSpec.Builder.emitCreateInstance(): TypeSpec.Builder = apply {
+        val useTargetScope = with(constructorInjectionTarget) {
+            parameters.isNotEmpty() || superClassThatNeedsMemberInjection != null
+        }
+
         FunSpec.builder("createInstance")
             .addModifiers(KModifier.OVERRIDE)
             .addParameter("scope", Scope::class)
             .returns(sourceClassName)
             .apply {
-                // change the scope to target scope so that all dependencies are created in the target scope
-                // and the potential injection take place in the target scope too
-                if (constructorInjectionTarget.parameters.isNotEmpty() ||
-                    constructorInjectionTarget.superClassThatNeedsMemberInjection != null
-                ) {
-                    addAnnotation(
-                        AnnotationSpec.builder(Suppress::class)
-                            .addMember("%S", "NAME_SHADOWING")
-                            .build()
-                    )
+                AnnotationSpec.builder(Suppress::class)
+                    .apply {
+                        if (constructorInjectionTarget.parameters.isNotEmpty()) {
+                            addMember("%S", "UNCHECKED_CAST")
+                        }
 
-                    // We only need it when the constructor contains parameters or dependencies
-                    addStatement("val scope = getTargetScope(scope)")
-                }
+                        if (useTargetScope) {
+                            addMember("%S", "NAME_SHADOWING")
+                        }
+                    }
+                    .build()
+                    .let { annotation ->
+                        if (annotation.members.isNotEmpty()) {
+                            addAnnotation(annotation)
+                        }
+                    }
             }
             .addCode(
                 CodeBlock.builder()
                     .apply {
+                        if (useTargetScope) {
+                            // change the scope to target scope so that all dependencies are created in the target scope
+                            // and the potential injection take place in the target scope too
+                            // We only need it when the constructor contains parameters or dependencies
+                            addStatement("val scope = getTargetScope(scope)")
+                        }
+
                         constructorInjectionTarget.parameters.forEachIndexed { i, param ->
                             addStatement(
                                 "val %N = scope.%L as %T",

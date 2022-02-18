@@ -132,7 +132,10 @@ class RelaxedFactoryForInjectConstructorTest {
               "RedundantVisibilityModifier"
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
-              @Suppress("NAME_SHADOWING")
+              @Suppress(
+                "UNCHECKED_CAST",
+                "NAME_SHADOWING"
+              )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getLazy(String::class.java) as Lazy<String>
@@ -229,7 +232,10 @@ class RelaxedFactoryForInjectConstructorTest {
               private val memberInjector: MemberInjector<TestNonEmptyConstructor> =
                   TestNonEmptyConstructor__MemberInjector()
             
-              @Suppress("NAME_SHADOWING")
+              @Suppress(
+                "UNCHECKED_CAST",
+                "NAME_SHADOWING"
+              )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
                 val param1 = scope.getLazy(String::class.java) as Lazy<String>
