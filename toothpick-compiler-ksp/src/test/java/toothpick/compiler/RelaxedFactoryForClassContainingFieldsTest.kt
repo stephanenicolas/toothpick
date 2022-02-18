@@ -128,7 +128,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated properties must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
             )
     }
@@ -151,7 +151,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated properties must not be private: test.TestRelaxedFactoryCreationForInjectField.foo"
             )
     }
@@ -176,7 +176,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Injected test.TestRelaxedFactoryCreationForInjectField.InnerClass.foo; the parent class must not be private"
             )
     }
@@ -201,7 +201,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Injected test.TestRelaxedFactoryCreationForInjectField.InnerClass.foo; the parent class must not be private"
             )
     }
@@ -226,7 +226,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestRelaxedFactoryCreationForInjectField.foo is not a valid toothpick.Lazy."
             )
     }
@@ -250,7 +250,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestRelaxedFactoryCreationForInjectField.foo is not a valid toothpick.Lazy."
             )
     }
@@ -275,7 +275,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestRelaxedFactoryCreationForInjectField.foo is not a valid javax.inject.Provider."
             )
     }
@@ -299,7 +299,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestRelaxedFactoryCreationForInjectField.foo is not a valid javax.inject.Provider."
             )
     }

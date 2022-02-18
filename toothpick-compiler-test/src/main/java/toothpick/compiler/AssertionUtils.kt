@@ -94,7 +94,7 @@ fun AssertInitial.failsToCompile(): AssertCompiled =
             assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         }
 
-fun AssertCompiled.assertLogs(message: String) = apply {
+fun AssertCompiled.withLogContaining(message: String) = apply {
     assertTrue(result.messages.contains(message))
 }
 

@@ -18,7 +18,6 @@
 package toothpick.compiler.factory
 
 import org.junit.Test
-import toothpick.compiler.assertLogs
 import toothpick.compiler.common.ToothpickOptions
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
@@ -26,6 +25,7 @@ import toothpick.compiler.javaSource
 import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
+import toothpick.compiler.withLogContaining
 import toothpick.compiler.withOptions
 
 class FactoryOriginatingElementTest {
@@ -48,7 +48,7 @@ class FactoryOriginatingElementTest {
             .processedWith(FactoryProcessorProvider())
             .withOptions(ToothpickOptions.VerboseLogging to "true")
             .compilesWithoutError()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestOriginatingElement generated class test.TestOriginatingElement__Factory"
             )
     }
@@ -69,7 +69,7 @@ class FactoryOriginatingElementTest {
             .processedWith(FactoryProcessorProvider())
             .withOptions(ToothpickOptions.VerboseLogging to "true")
             .compilesWithoutError()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestOriginatingElement generated class test.TestOriginatingElement__Factory"
             )
     }

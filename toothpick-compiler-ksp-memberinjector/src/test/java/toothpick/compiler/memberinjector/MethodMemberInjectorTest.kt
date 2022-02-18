@@ -18,7 +18,6 @@
 package toothpick.compiler.memberinjector
 
 import org.junit.Test
-import toothpick.compiler.assertLogs
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.expectedKtSource
@@ -28,6 +27,7 @@ import toothpick.compiler.javaSource
 import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
+import toothpick.compiler.withLogContaining
 
 @Suppress("PrivatePropertyName")
 class MethodMemberInjectorTest {
@@ -360,7 +360,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -385,7 +385,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -409,7 +409,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated methods must not be private: test.TestMethodInjection.m"
             )
     }
@@ -433,7 +433,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated methods must not be private: test.TestMethodInjection.m"
             )
     }
@@ -459,7 +459,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Injected test.TestMethodInjection.InnerClass.m; the parent class must not be private."
             )
     }
@@ -485,7 +485,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Injected test.TestMethodInjection.InnerClass.m; the parent class must not be private."
             )
     }
@@ -511,7 +511,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestMethodInjection.m is not a valid toothpick.Lazy."
             )
     }
@@ -536,7 +536,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestMethodInjection.m is not a valid toothpick.Lazy."
             )
     }
@@ -562,7 +562,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestMethodInjection.m is not a valid javax.inject.Provider."
             )
     }
@@ -587,7 +587,7 @@ class MethodMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestMethodInjection.m is not a valid javax.inject.Provider."
             )
     }

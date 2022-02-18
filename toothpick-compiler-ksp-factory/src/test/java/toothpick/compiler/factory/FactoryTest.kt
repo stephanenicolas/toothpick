@@ -19,7 +19,6 @@ package toothpick.compiler.factory
 
 import org.junit.Ignore
 import org.junit.Test
-import toothpick.compiler.assertLogs
 import toothpick.compiler.common.ToothpickOptions.Companion.AdditionalAnnotationTypes
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
@@ -30,6 +29,7 @@ import toothpick.compiler.javaSource
 import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
+import toothpick.compiler.withLogContaining
 import toothpick.compiler.withOptions
 
 @Suppress("PrivatePropertyName")
@@ -262,7 +262,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject constructors must not be private in class test.TestPrivateConstructor"
             )
     }
@@ -282,7 +282,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject constructors must not be private in class test.TestPrivateConstructor"
             )
     }
@@ -306,7 +306,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in private classes."
             )
     }
@@ -328,7 +328,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in private classes."
             )
     }
@@ -500,7 +500,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Class test.TestPrivateConstructor cannot have more than one @Inject-annotated constructor."
             )
     }
@@ -522,7 +522,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Class test.TestPrivateConstructor cannot have more than one @Inject-annotated constructor."
             )
     }
@@ -868,7 +868,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of lazy is not a valid toothpick.Lazy."
             )
     }
@@ -889,7 +889,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of lazy is not a valid toothpick.Lazy."
             )
     }
@@ -913,7 +913,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of provider is not a valid javax.inject.Provider."
             )
     }
@@ -934,7 +934,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of provider is not a valid javax.inject.Provider."
             )
     }
@@ -1040,7 +1040,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1062,7 +1062,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1086,7 +1086,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1108,7 +1108,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1130,7 +1130,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor."
             )
     }
@@ -1150,7 +1150,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "The class test.TestInvalidClassConstructor is abstract or private. It cannot have an injected constructor."
             )
     }
@@ -1786,7 +1786,7 @@ class FactoryTest {
             .that(source)
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Parameter n in method/constructor test.TestPrimitiveConstructor#<init> is of type int which is not supported by Toothpick."
             )
     }

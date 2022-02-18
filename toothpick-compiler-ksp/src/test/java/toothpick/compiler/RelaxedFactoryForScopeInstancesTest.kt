@@ -41,7 +41,7 @@ class RelaxedFactoryForScopeInstancesTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "The type test.TestOptimisticFactoryCreationForHasScopeInstances" +
                     " uses @ProvidesSingleton but doesn't have a scope annotation."
             )
@@ -64,7 +64,7 @@ class RelaxedFactoryForScopeInstancesTest {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "The type test.TestOptimisticFactoryCreationForHasScopeInstances" +
                     " uses @ProvidesSingleton but doesn't have a scope annotation."
             )

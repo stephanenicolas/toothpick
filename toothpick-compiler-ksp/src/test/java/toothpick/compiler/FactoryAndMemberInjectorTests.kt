@@ -229,7 +229,7 @@ class FactoryAndMemberInjectorTests {
             .that(source)
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs("Class test.TestAInnerClassThatNeedsInjection.InnerClass is a non static inner class. @Inject constructors are not allowed in non static inner classes.")
+            .withLogContaining("Class test.TestAInnerClassThatNeedsInjection.InnerClass is a non static inner class. @Inject constructors are not allowed in non static inner classes.")
     }
 
     @Test

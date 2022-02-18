@@ -19,7 +19,6 @@ package toothpick.compiler.memberinjector
 
 import org.junit.Ignore
 import org.junit.Test
-import toothpick.compiler.assertLogs
 import toothpick.compiler.compilationAssert
 import toothpick.compiler.compilesWithoutError
 import toothpick.compiler.expectedKtSource
@@ -29,6 +28,7 @@ import toothpick.compiler.javaSource
 import toothpick.compiler.ktSource
 import toothpick.compiler.processedWith
 import toothpick.compiler.that
+import toothpick.compiler.withLogContaining
 
 @Suppress("PrivatePropertyName")
 class FieldMemberInjectorTest {
@@ -563,7 +563,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Only one javax.inject.Qualifier annotation is allowed to name injections."
             )
     }
@@ -592,7 +592,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Only one javax.inject.Qualifier annotation is allowed to name injections."
             )
     }
@@ -917,7 +917,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated properties must not be private: test.TestFieldInjection.foo"
             )
     }
@@ -940,7 +940,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated properties must not be private: test.TestFieldInjection.foo"
             )
     }
@@ -964,7 +964,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated properties must be mutable: test.TestFieldInjection.foo"
             )
     }
@@ -987,7 +987,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Inject-annotated properties must be mutable: test.TestFieldInjection.foo"
             )
     }
@@ -1013,7 +1013,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Injected test.TestFieldInjection.InnerClass.foo; the parent class must not be private."
             )
     }
@@ -1038,7 +1038,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "@Injected test.TestFieldInjection.InnerClass.foo; the parent class must not be private."
             )
     }
@@ -1063,7 +1063,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs("Type of test.TestFieldInjection.foo is not a valid toothpick.Lazy.")
+            .withLogContaining("Type of test.TestFieldInjection.foo is not a valid toothpick.Lazy.")
     }
 
     @Test
@@ -1084,7 +1084,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs("Type of test.TestFieldInjection.foo is not a valid toothpick.Lazy.")
+            .withLogContaining("Type of test.TestFieldInjection.foo is not a valid toothpick.Lazy.")
     }
 
     @Test
@@ -1107,7 +1107,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestFieldInjection.foo is not a valid javax.inject.Provider."
             )
     }
@@ -1130,7 +1130,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Type of test.TestFieldInjection.foo is not a valid javax.inject.Provider."
             )
     }
@@ -1155,7 +1155,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1179,7 +1179,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1204,7 +1204,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1228,7 +1228,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
@@ -1501,7 +1501,7 @@ class FieldMemberInjectorTest {
             .that(source)
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
-            .assertLogs(
+            .withLogContaining(
                 "Field test.TestFieldInjection.foo is of type int which is not supported by Toothpick."
             )
     }
