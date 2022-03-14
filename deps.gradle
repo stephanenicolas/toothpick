@@ -5,7 +5,7 @@ ext.deps = [
     // Compiler
     kotlinpoet        : 'com.squareup:kotlinpoet:1.10.2',
     kotlinpoet_ksp    : 'com.squareup:kotlinpoet-ksp:1.10.2',
-    ksp               : 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.2',
+    ksp               : 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.4',
 
     // Kotlin
     kotlin_plugin     : 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10',
