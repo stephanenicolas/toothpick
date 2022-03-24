@@ -41,7 +41,6 @@ import toothpick.Factory
 import toothpick.InjectConstructor
 import toothpick.ProvidesReleasable
 import toothpick.ProvidesSingleton
-import toothpick.ProvidesSingletonInScope
 import toothpick.Releasable
 import toothpick.compiler.common.ToothpickProcessor
 import toothpick.compiler.common.generators.error
@@ -190,7 +189,7 @@ class FactoryProcessor(
                 } else {
                     logger.error(
                         constructors.firstOrNull(),
-                        "Class %s is annotated with @InjectConstructor. Therefore, It must have one unique constructor and it should not be annotated with @Inject.",
+                        "Class %s is annotated with @InjectConstructor. Therefore, it must have a unique constructor and it should not be annotated with @Inject.",
                         annotatedClass.qualifiedName?.asString()
                     )
                     null
@@ -235,7 +234,7 @@ class FactoryProcessor(
         if (isPrivate()) {
             logger.error(
                 this,
-                "@Inject constructors must not be private in class %s.",
+                "@Inject-annotated constructor must not be private in class %s.",
                 parentClass.qualifiedName?.asString()
             )
             return false
@@ -244,7 +243,7 @@ class FactoryProcessor(
         if (parentClass.isPrivate()) {
             logger.error(
                 this,
-                "Class %s is private. @Inject constructors are not allowed in private classes.",
+                "Class %s is private. @Inject-annotated constructors are not allowed in private classes.",
                 parentClass.qualifiedName?.asString()
             )
             return false
@@ -270,7 +269,7 @@ class FactoryProcessor(
         if (parentClass.isAnnotationPresent(ProvidesSingleton::class) && scopeName == null) {
             logger.error(
                 parentClass,
-                "The type %s uses @ProvidesSingleton but doesn't have a scope annotation.",
+                "Class %s is annotated with @ProvidesSingleton but doesn't have a scope annotation.",
                 parentClass.qualifiedName?.asString()
             )
         }
@@ -295,7 +294,7 @@ class FactoryProcessor(
         if (isAnnotationPresent(ProvidesSingleton::class) && scopeName == null) {
             logger.error(
                 this,
-                "The type %s uses @ProvidesSingleton but doesn't have a scope annotation.",
+                "Class %s is annotated with @ProvidesSingleton but doesn't have a scope annotation.",
                 qualifiedName?.asString()
             )
         }
@@ -310,11 +309,11 @@ class FactoryProcessor(
         if (constructors.any { constructor -> constructor.isAnnotationPresent(Inject::class) }) return null
 
         val cannotCreateAFactoryMessage = (
-            " Toothpick can't create a factory for it." +
-                " If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " +
-                " then you can remove this warning by adding @Suppress(\"Injectable\") to the class." +
-                " A typical example is a class using injection to assign its fields, that calls TP.inject(this)," +
-                " but it needs a parameter for its constructor and this parameter is not injectable."
+            "Toothpick can't create a factory for it. " +
+                "If this class is itself a DI entry point (i.e. you call TP.inject(this) at some point), " +
+                "then you can remove this warning by adding @Suppress(\"Injectable\") to the class. " +
+                "A typical example is a class using injection to assign its fields, that calls TP.inject(this), " +
+                "but it needs a parameter for its constructor and this parameter is not injectable."
             )
 
         val defaultConstructor = constructors.firstOrNull { constructor ->
@@ -323,9 +322,9 @@ class FactoryProcessor(
 
         if (defaultConstructor == null) {
             if (!isInjectableWarningSuppressed()) {
-                crashOrWarnWhenNoFactoryCanBeCreated(
+                logger.crashOrWarnWhenNoFactoryCanBeCreated(
                     this,
-                    "The class %s has injected members or a scope annotation but has no @Inject-annotated (non-private) constructor nor a non-private default constructor. %s",
+                    "Class %s has injected members or a scope annotation but has no @Inject-annotated (non-private) constructor nor a non-private default constructor. %s",
                     qualifiedName?.asString(),
                     cannotCreateAFactoryMessage
                 )
@@ -336,9 +335,9 @@ class FactoryProcessor(
 
         if (defaultConstructor.isPrivate()) {
             if (!isInjectableWarningSuppressed()) {
-                crashOrWarnWhenNoFactoryCanBeCreated(
+                logger.crashOrWarnWhenNoFactoryCanBeCreated(
                     this,
-                    "The class %s has a private default constructor. %s",
+                    "Class %s has a private default constructor. %s",
                     qualifiedName?.asString(),
                     cannotCreateAFactoryMessage
                 )
@@ -358,9 +357,9 @@ class FactoryProcessor(
         )
     }
 
-    private fun crashOrWarnWhenNoFactoryCanBeCreated(node: KSNode, message: String, vararg args: Any?) {
-        if (options.crashWhenNoFactoryCanBeCreated) logger.error(node, message, *args)
-        else logger.warn(node, message, *args)
+    private fun KSPLogger.crashOrWarnWhenNoFactoryCanBeCreated(node: KSNode, message: String, vararg args: Any?) {
+        if (options.crashWhenNoFactoryCanBeCreated) error(node, message, *args)
+        else warn(node, message, *args)
     }
 
     /**
@@ -383,7 +382,11 @@ class FactoryProcessor(
                 if (!isSingletonAnnotation && annotation.isAnnotationPresent(Scope::class)) {
                     annotation.checkScopeAnnotationValidity()
                     if (scopeName != null) {
-                        logger.error(this, "Only one @Scope qualified annotation is allowed: %s", scopeName)
+                        logger.error(
+                            this,
+                            "Only one @Scope qualified annotation is allowed: %s",
+                            scopeName
+                        )
                     }
                     scopeName = annotation.qualifiedName
                 }
@@ -411,10 +414,10 @@ class FactoryProcessor(
     }
 
     private fun KSAnnotated.checkProvidesReleasableAnnotationValidity() {
-        if (isAnnotationPresent(ProvidesReleasable::class) && !isAnnotationPresent(ProvidesSingletonInScope::class)) {
+        if (isAnnotationPresent(ProvidesReleasable::class) && !isAnnotationPresent(ProvidesSingleton::class)) {
             logger.error(
                 this,
-                "Class %s is annotated with @ProvidesReleasable, it should also be annotated with either @ProvidesSingleton.",
+                "Class %s is annotated with @ProvidesReleasable, it should also be annotated with @ProvidesSingleton.",
                 (this as? KSDeclaration)?.qualifiedName?.asString()
             )
         }
@@ -424,7 +427,7 @@ class FactoryProcessor(
         if (!isAnnotationPresent(Scope::class)) {
             logger.error(
                 this,
-                "Scope Annotation %s does not contain Scope annotation.",
+                "Scope annotation %s is not annotated with @Scope.",
                 (this as? KSDeclaration)?.qualifiedName?.asString()
             )
             return false
@@ -436,7 +439,7 @@ class FactoryProcessor(
         if (javaRetention != RetentionPolicy.RUNTIME && ktRetention != AnnotationRetention.RUNTIME) {
             logger.error(
                 this,
-                "Scope Annotation %s does not have RUNTIME retention policy.",
+                "Scope annotation %s does not have RUNTIME retention policy.",
                 (this as? KSDeclaration)?.qualifiedName?.asString()
             )
             return false
@@ -448,7 +451,7 @@ class FactoryProcessor(
         if (modifiers.contains(Modifier.INNER)) {
             logger.error(
                 this,
-                "Class %s is a non static inner class. @Inject constructors are not allowed in non static inner classes.",
+                "Class %s is a non static inner class. @Inject-annotated constructors are not allowed in non static inner classes.",
                 qualifiedName?.asString()
             )
             return true

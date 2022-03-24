@@ -361,7 +361,7 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -386,7 +386,7 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of test.TestMethodInjection.m is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -410,7 +410,7 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated methods must not be private: test.TestMethodInjection.m"
+                "@Inject-annotated method test.TestMethodInjection.m must not be private."
             )
     }
 
@@ -434,7 +434,7 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated methods must not be private: test.TestMethodInjection.m"
+                "@Inject-annotated method test.TestMethodInjection.m must not be private."
             )
     }
 
@@ -460,7 +460,7 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Injected test.TestMethodInjection.InnerClass.m; the parent class must not be private."
+                "Parent class of @Inject-annotated class test.TestMethodInjection.InnerClass.m must not be private."
             )
     }
 
@@ -486,7 +486,7 @@ class MethodMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Injected test.TestMethodInjection.InnerClass.m; the parent class must not be private."
+                "Parent class of @Inject-annotated class test.TestMethodInjection.InnerClass.m must not be private."
             )
     }
 

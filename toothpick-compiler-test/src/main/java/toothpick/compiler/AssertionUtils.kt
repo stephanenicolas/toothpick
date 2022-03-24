@@ -94,8 +94,8 @@ fun AssertInitial.failsToCompile(): AssertCompiled =
             assertEquals(KotlinCompilation.ExitCode.COMPILATION_ERROR, result.exitCode)
         }
 
-fun AssertCompiled.withLogContaining(message: String) = apply {
-    assertTrue(result.messages.contains(message))
+fun AssertCompiled.withLogContaining(expected: String) = apply {
+    assertTrue(result.messages.lineSequence().any { line -> line.endsWith(expected) })
 }
 
 fun AssertCompiled.generatesSources(vararg expected: RawSource) = apply {

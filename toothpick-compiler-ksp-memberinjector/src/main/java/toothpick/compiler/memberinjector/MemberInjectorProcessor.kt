@@ -140,7 +140,7 @@ class MemberInjectorProcessor(
         if (isPrivate()) {
             logger.error(
                 this,
-                "@Inject-annotated properties must not be private: %s",
+                "@Inject-annotated property %s must not be private.",
                 qualifiedName?.asString()
             )
             return false
@@ -149,7 +149,7 @@ class MemberInjectorProcessor(
         if (!isMutable || modifiers.contains(Modifier.FINAL)) {
             logger.error(
                 this,
-                "@Inject-annotated properties must be mutable: %s",
+                "@Inject-annotated property %s must be mutable.",
                 qualifiedName?.asString()
             )
             return false
@@ -165,7 +165,7 @@ class MemberInjectorProcessor(
         if (isPrivate()) {
             logger.error(
                 this,
-                "@Inject-annotated methods must not be private: %s",
+                "@Inject-annotated method %s must not be private.",
                 qualifiedName?.asString()
             )
             return false
@@ -195,9 +195,9 @@ class MemberInjectorProcessor(
 
         if (!isJavaPackagePrivate() && !isInternal()) {
             if (!hasWarningSuppressed(SUPPRESS_WARNING_ANNOTATION_VISIBLE_VALUE)) {
-                crashOrWarnWhenMethodIsNotPackageOrInternal(
+                logger.crashOrWarnWhenMethodIsNotPackageOrInternal(
                     this,
-                    "@Inject-annotated methods should have package or internal visibility: %s",
+                    "@Inject-annotated method %s should have package or internal visibility.",
                     qualifiedName?.asString()
                 )
             }
@@ -207,9 +207,9 @@ class MemberInjectorProcessor(
     }
 
     @Suppress("SameParameterValue")
-    private fun crashOrWarnWhenMethodIsNotPackageOrInternal(node: KSNode, message: String, vararg args: Any?) {
-        if (options.crashWhenInjectedMethodIsNotPackageVisible) logger.error(node, message, *args)
-        else logger.warn(node, message, *args)
+    private fun KSPLogger.crashOrWarnWhenMethodIsNotPackageOrInternal(node: KSNode, message: String, vararg args: Any?) {
+        if (options.crashWhenInjectedMethodIsNotPackageVisible) error(node, message, *args)
+        else warn(node, message, *args)
     }
 
     companion object {

@@ -918,7 +918,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated properties must not be private: test.TestFieldInjection.foo"
+                "@Inject-annotated property test.TestFieldInjection.foo must not be private."
             )
     }
 
@@ -941,7 +941,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated properties must not be private: test.TestFieldInjection.foo"
+                "@Inject-annotated property test.TestFieldInjection.foo must not be private."
             )
     }
 
@@ -965,7 +965,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated properties must be mutable: test.TestFieldInjection.foo"
+                "@Inject-annotated property test.TestFieldInjection.foo must be mutable."
             )
     }
 
@@ -988,7 +988,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated properties must be mutable: test.TestFieldInjection.foo"
+                "@Inject-annotated property test.TestFieldInjection.foo must be mutable."
             )
     }
 
@@ -1014,7 +1014,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Injected test.TestFieldInjection.InnerClass.foo; the parent class must not be private."
+                "Parent class of @Inject-annotated class test.TestFieldInjection.InnerClass.foo must not be private."
             )
     }
 
@@ -1039,7 +1039,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Injected test.TestFieldInjection.InnerClass.foo; the parent class must not be private."
+                "Parent class of @Inject-annotated class test.TestFieldInjection.InnerClass.foo must not be private."
             )
     }
 
@@ -1156,7 +1156,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -1180,7 +1180,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -1205,7 +1205,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -1229,7 +1229,7 @@ class FieldMemberInjectorTest {
             .processedWith(MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of test.TestFieldInjection.foo is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 

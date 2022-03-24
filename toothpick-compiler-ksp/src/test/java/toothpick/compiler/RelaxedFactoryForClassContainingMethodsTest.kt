@@ -129,7 +129,7 @@ class RelaxedFactoryForClassContainingMethodsTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated methods must not be private: test.TestRelaxedFactoryCreationForInjectMethod.m"
+                "@Inject-annotated method test.TestRelaxedFactoryCreationForInjectMethod.m must not be private."
             )
     }
 
@@ -152,7 +152,7 @@ class RelaxedFactoryForClassContainingMethodsTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject-annotated methods must not be private: test.TestRelaxedFactoryCreationForInjectMethod.m"
+                "@Inject-annotated method test.TestRelaxedFactoryCreationForInjectMethod.m must not be private."
             )
     }
 
@@ -177,7 +177,7 @@ class RelaxedFactoryForClassContainingMethodsTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Injected test.TestRelaxedFactoryCreationForInjectMethod.InnerClass.m; the parent class must not be private."
+                "Parent class of @Inject-annotated class test.TestRelaxedFactoryCreationForInjectMethod.InnerClass.m must not be private."
             )
     }
 
@@ -202,7 +202,7 @@ class RelaxedFactoryForClassContainingMethodsTest {
             .processedWith(FactoryProcessorProvider(), MemberInjectorProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Injected test.TestRelaxedFactoryCreationForInjectMethod.InnerClass.m; the parent class must not be private."
+                "Parent class of @Inject-annotated class test.TestRelaxedFactoryCreationForInjectMethod.InnerClass.m must not be private."
             )
     }
 

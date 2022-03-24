@@ -283,7 +283,7 @@ class RelaxedFactoryForInjectConstructorTest {
             .failsToCompile()
             .withLogContaining(
                 "Class test.TestNonEmptyConstructorInjected is annotated with @InjectConstructor. " +
-                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+                    "Therefore, it must have a unique constructor and it should not be annotated with @Inject."
             )
     }
 
@@ -307,7 +307,7 @@ class RelaxedFactoryForInjectConstructorTest {
             .failsToCompile()
             .withLogContaining(
                 "Class test.TestNonEmptyConstructorInjected is annotated with @InjectConstructor. " +
-                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+                    "Therefore, it must have a unique constructor and it should not be annotated with @Inject."
             )
     }
 
@@ -334,7 +334,7 @@ class RelaxedFactoryForInjectConstructorTest {
             .failsToCompile()
             .withLogContaining(
                 "Class test.TestMultipleConstructors is annotated with @InjectConstructor. " +
-                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+                    "Therefore, it must have a unique constructor and it should not be annotated with @Inject."
             )
     }
 
@@ -360,7 +360,7 @@ class RelaxedFactoryForInjectConstructorTest {
             .failsToCompile()
             .withLogContaining(
                 "Class test.TestMultipleConstructors is annotated with @InjectConstructor. " +
-                    "Therefore, It must have one unique constructor and it should not be annotated with @Inject."
+                    "Therefore, it must have a unique constructor and it should not be annotated with @Inject."
             )
     }
 }

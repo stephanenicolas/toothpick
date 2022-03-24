@@ -263,7 +263,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject constructors must not be private in class test.TestPrivateConstructor"
+                "@Inject-annotated constructor must not be private in class test.TestPrivateConstructor."
             )
     }
 
@@ -283,7 +283,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "@Inject constructors must not be private in class test.TestPrivateConstructor"
+                "@Inject-annotated constructor must not be private in class test.TestPrivateConstructor."
             )
     }
 
@@ -307,7 +307,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in private classes."
+                "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject-annotated constructors are not allowed in private classes."
             )
     }
 
@@ -329,7 +329,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject constructors are not allowed in private classes."
+                "Class test.Wrapper.TestConstructorInPrivateClass is private. @Inject-annotated constructors are not allowed in private classes."
             )
     }
 
@@ -1041,7 +1041,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -1063,7 +1063,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -1087,7 +1087,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
@@ -1109,7 +1109,7 @@ class FactoryTest {
             .processedWith(FactoryProcessorProvider())
             .failsToCompile()
             .withLogContaining(
-                "str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
+                "Type of str is not a valid Lazy/Provider. Lazy/Provider cannot be used on generic types."
             )
     }
 
