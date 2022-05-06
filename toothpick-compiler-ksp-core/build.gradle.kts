@@ -12,11 +12,10 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-    api(libs.inject)
     api(libs.tp)
+    api(libs.inject)
 
     implementation(libs.ksp)
-
     implementation(libs.kotlinpoet.core)
     implementation(libs.kotlinpoet.ksp)
 }
