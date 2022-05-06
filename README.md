@@ -39,7 +39,7 @@ dependencies {
     // Remove this:
     // kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:...")
 
-    ksp("fr.outadoc.toothpick-compiler-ksp:toothpick-compiler-ksp:0.0.3")
+    ksp("fr.outadoc.toothpick-ksp:compiler:0.0.3")
 }
 
 ksp {

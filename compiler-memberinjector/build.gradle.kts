@@ -18,9 +18,9 @@ dependencies {
     implementation(libs.ksp)
     implementation(libs.kotlinpoet.core)
     implementation(libs.kotlinpoet.ksp)
-    implementation(projects.toothpickCompilerKspCore)
+    implementation(projects.compilerCore)
 
     testImplementation(libs.junit4)
     testImplementation(libs.compiletesting.kt)
-    testImplementation(projects.toothpickCompilerTest)
+    testImplementation(projects.compilerTest)
 }

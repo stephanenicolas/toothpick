@@ -1,10 +1,10 @@
-rootProject.name = "toothpick-compiler-ksp-parent"
+rootProject.name = "toothpick-ksp"
 
-include(":toothpick-compiler-ksp")
-include(":toothpick-compiler-ksp-core")
-include(":toothpick-compiler-ksp-factory")
-include(":toothpick-compiler-ksp-memberinjector")
-include(":toothpick-compiler-test")
+include(":compiler")
+include(":compiler-core")
+include(":compiler-factory")
+include(":compiler-memberinjector")
+include(":compiler-test")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

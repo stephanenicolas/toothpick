@@ -12,15 +12,11 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-    api(libs.tp)
-    api(libs.inject)
-
     implementation(libs.ksp)
-    implementation(libs.kotlinpoet.core)
-    implementation(libs.kotlinpoet.ksp)
-    implementation(projects.toothpickCompilerKspCore)
+    implementation(projects.compilerFactory)
+    implementation(projects.compilerMemberinjector)
 
     testImplementation(libs.junit4)
     testImplementation(libs.compiletesting.kt)
-    testImplementation(projects.toothpickCompilerTest)
+    testImplementation(projects.compilerTest)
 }
