@@ -1,4 +1,4 @@
-# KSP Processor for Toothpick [![Release](https://jitpack.io/v/fr.outadoc/toothpick-compiler-ksp.svg)](https://jitpack.io/#fr.outadoc/toothpick-compiler-ksp) [![Build and test](https://github.com/outadoc/toothpick-compiler-ksp/actions/workflows/build.yml/badge.svg)](https://github.com/outadoc/toothpick-compiler-ksp/actions/workflows/build.yml)
+# KSP Processor for Toothpick [![Release](https://jitpack.io/v/fr.outadoc/toothpick-ksp.svg)](https://jitpack.io/#fr.outadoc/toothpick-ksp) [![Build and test](https://github.com/outadoc/toothpick-ksp/actions/workflows/build.yml/badge.svg)](https://github.com/outadoc/toothpick-ksp/actions/workflows/build.yml)
 
 ## Background
 
@@ -39,7 +39,7 @@ dependencies {
     // Remove this:
     // kapt("com.github.stephanenicolas.toothpick:toothpick-compiler:...")
 
-    ksp("fr.outadoc.toothpick-ksp:compiler:0.0.3")
+    ksp("fr.outadoc.toothpick-ksp:compiler:0.0.4")
 }
 
 ksp {
