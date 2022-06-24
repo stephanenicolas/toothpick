@@ -29,7 +29,6 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toKModifier
@@ -50,7 +49,6 @@ import javax.inject.Singleton
  * Typically, a factory is created for a class a soon as it contains an [javax.inject.Inject] annotated constructor.
  * See Optimistic creation of factories in TP wiki.
  */
-@OptIn(KotlinPoetKspPreview::class)
 internal class FactoryGenerator(
     private val constructorInjectionTarget: ConstructorInjectionTarget
 ) : TPCodeGenerator {

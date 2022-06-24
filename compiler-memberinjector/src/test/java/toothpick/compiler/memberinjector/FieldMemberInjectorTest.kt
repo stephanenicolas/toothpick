@@ -89,7 +89,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -157,7 +157,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -231,7 +231,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -301,7 +301,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -378,7 +378,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -451,7 +451,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -528,7 +528,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -656,7 +656,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -725,7 +725,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -767,7 +767,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -813,7 +813,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -887,7 +887,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestFieldInjection__MemberInjector : MemberInjector<TestFieldInjection> {
               public override fun inject(target: TestFieldInjection, scope: Scope): Unit {
@@ -1307,7 +1307,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class `TestMemberInjection${'$'}InnerClass__MemberInjector` :
                 MemberInjector<TestMemberInjection.InnerClass> {
@@ -1388,7 +1388,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMemberInjection__MemberInjector : MemberInjector<TestMemberInjection> {
               private val superMemberInjector: MemberInjector<TestMemberInjectionParent> =
@@ -1468,7 +1468,7 @@ class FieldMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMemberInjection__MemberInjector : MemberInjector<TestMemberInjection> {
               private val superMemberInjector: MemberInjector<TestMemberInjectionParent<*>> =

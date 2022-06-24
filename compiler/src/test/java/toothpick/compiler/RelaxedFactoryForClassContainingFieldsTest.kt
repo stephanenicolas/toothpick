@@ -79,7 +79,7 @@ class RelaxedFactoryForClassContainingFieldsTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestRelaxedFactoryCreationForInjectField__Factory :
                 Factory<TestRelaxedFactoryCreationForInjectField> {

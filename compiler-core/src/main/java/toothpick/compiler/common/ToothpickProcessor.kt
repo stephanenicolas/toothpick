@@ -33,7 +33,6 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Variance
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.writeTo
 import toothpick.compiler.common.generators.TPCodeGenerator
 import toothpick.compiler.common.generators.error
@@ -44,7 +43,7 @@ import toothpick.compiler.common.generators.warn
 import java.io.IOException
 import javax.inject.Inject
 
-@OptIn(KspExperimental::class, KotlinPoetKspPreview::class)
+@OptIn(KspExperimental::class)
 abstract class ToothpickProcessor(
     processorOptions: Map<String, String>,
     private val codeGenerator: CodeGenerator,

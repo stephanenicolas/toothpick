@@ -1,14 +1,13 @@
+[versions]
+kotlinpoet = "1.12.0"
+compiletesting = "1.4.9"
+
 [libraries]
+compiletesting-kt = { module = "com.github.tschuchortdev:kotlin-compile-testing", version.ref = "compiletesting" }
+compiletesting-ksp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "compiletesting" }
 inject = "javax.inject:javax.inject:1"
-
-kotlinpoet-core = "com.squareup:kotlinpoet:1.10.2"
-kotlinpoet-ksp = "com.squareup:kotlinpoet-ksp:1.10.2"
-ksp = "com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.4"
-
-tp = "com.github.stephanenicolas.toothpick:toothpick:3.1.0"
-
 junit4 = "junit:junit:4.13-beta-3"
-compiletesting-kt = "com.github.tschuchortdev:kotlin-compile-testing:1.4.7"
-compiletesting-ksp = "com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.7"
-mockito = "org.mockito:mockito-core:2.4.0"
-mockito_kotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
+ksp = "com.google.devtools.ksp:symbol-processing-api:1.7.0-1.0.6"
+tp = "com.github.stephanenicolas.toothpick:toothpick:3.1.0"

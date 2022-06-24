@@ -28,7 +28,6 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toKModifier
@@ -48,7 +47,6 @@ import javax.inject.Inject
  *
  * Typically, a [MemberInjector] is created for a class a soon as it contains an [Inject] annotated field or method.
  */
-@OptIn(KotlinPoetKspPreview::class)
 internal class MemberInjectorGenerator(
     private val sourceClass: KSClassDeclaration,
     private val superClassThatNeedsInjection: KSClassDeclaration?,

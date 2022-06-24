@@ -89,7 +89,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
@@ -160,7 +160,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
@@ -231,7 +231,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
@@ -274,7 +274,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
@@ -322,7 +322,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
@@ -658,7 +658,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class `TestMethodInjectionParent${'$'}TestMethodInjection__MemberInjector` :
                 MemberInjector<TestMethodInjectionParent.TestMethodInjection> {
@@ -732,7 +732,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {
@@ -802,7 +802,7 @@ class MethodMemberInjectorTest {
             @Suppress(
               "ClassName",
               "RedundantVisibilityModifier",
-              "UNCHECKED_CAST"
+              "UNCHECKED_CAST",
             )
             public class TestMethodInjection__MemberInjector : MemberInjector<TestMethodInjection> {
               public override fun inject(target: TestMethodInjection, scope: Scope): Unit {

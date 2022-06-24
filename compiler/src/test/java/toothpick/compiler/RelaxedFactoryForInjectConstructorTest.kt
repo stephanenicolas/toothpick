@@ -129,12 +129,12 @@ class RelaxedFactoryForInjectConstructorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -226,7 +226,7 @@ class RelaxedFactoryForInjectConstructorTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               private val memberInjector: MemberInjector<TestNonEmptyConstructor> =
@@ -234,7 +234,7 @@ class RelaxedFactoryForInjectConstructorTest {
             
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)

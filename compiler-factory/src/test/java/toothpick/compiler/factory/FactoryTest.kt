@@ -85,7 +85,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
@@ -155,7 +155,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
@@ -225,7 +225,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
@@ -389,7 +389,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             protected class `Wrapper${'$'}TestConstructorInProtectedClass__Factory` :
                 Factory<Wrapper.TestConstructorInProtectedClass> {
@@ -461,7 +461,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestConstructorInPackageClass__Factory : Factory<TestConstructorInPackageClass> {
               public override fun createInstance(scope: Scope): TestConstructorInPackageClass =
@@ -580,7 +580,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class Test2Constructors__Factory : Factory<Test2Constructors> {
               public override fun createInstance(scope: Scope): Test2Constructors = Test2Constructors()
@@ -652,12 +652,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -736,12 +736,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -820,12 +820,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -993,12 +993,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -1182,13 +1182,13 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestClassConstructorThrowingException__Factory :
                 Factory<TestClassConstructorThrowingException> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestClassConstructorThrowingException {
                 val scope = getTargetScope(scope)
@@ -1274,12 +1274,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -1361,7 +1361,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
@@ -1453,12 +1453,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -1551,7 +1551,7 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestEmptyConstructor__Factory : Factory<TestEmptyConstructor> {
               public override fun createInstance(scope: Scope): TestEmptyConstructor = TestEmptyConstructor()
@@ -1646,12 +1646,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)
@@ -1739,12 +1739,12 @@ class FactoryTest {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestNonEmptyConstructor__Factory : Factory<TestNonEmptyConstructor> {
               @Suppress(
                 "UNCHECKED_CAST",
-                "NAME_SHADOWING"
+                "NAME_SHADOWING",
               )
               public override fun createInstance(scope: Scope): TestNonEmptyConstructor {
                 val scope = getTargetScope(scope)

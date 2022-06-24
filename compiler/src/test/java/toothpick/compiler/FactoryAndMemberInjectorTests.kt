@@ -84,7 +84,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
@@ -179,7 +179,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class `TestAInnerClassThatNeedsInjection${'$'}InnerClass__Factory` :
                 Factory<TestAInnerClassThatNeedsInjection.InnerClass> {
@@ -295,7 +295,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<SuperClassThatNeedsInjection> =
@@ -384,7 +384,7 @@ class FactoryAndMemberInjectorTests {
             
             @Suppress(
               "ClassName",
-              "RedundantVisibilityModifier"
+              "RedundantVisibilityModifier",
             )
             public class TestAClassThatNeedsInjection__Factory : Factory<TestAClassThatNeedsInjection> {
               private val memberInjector: MemberInjector<TestAClassThatNeedsInjection> =
